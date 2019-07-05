@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>R Markdown on Andrea Gabrio</title>
+    <link>/tags/r-markdown/</link>
+    <description>Recent content in R Markdown on Andrea Gabrio</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 23 Jul 2019 21:13:14 -0500</lastBuildDate>
+    
+	    <atom:link href="/tags/r-markdown/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Some new post</title>
+      <link>/post/new-post/2019-06-25-some-new-post/</link>
+      <pubDate>Tue, 23 Jul 2019 21:13:14 -0500</pubDate>
+      
+      <guid>/post/new-post/2019-06-25-some-new-post/</guid>
+      <description>
+
+
+&lt;div id=&#34;r-markdown&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;R Markdown&lt;/h1&gt;
+&lt;p&gt;This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see &lt;a href=&#34;http://rmarkdown.rstudio.com&#34; class=&#34;uri&#34;&gt;http://rmarkdown.rstudio.com&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;You can embed an R code chunk like this:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;summary(cars)
+##      speed           dist       
+##  Min.   : 4.0   Min.   :  2.00  
+##  1st Qu.:12.0   1st Qu.: 26.00  
+##  Median :15.0   Median : 36.00  
+##  Mean   :15.4   Mean   : 42.98  
+##  3rd Qu.:19.0   3rd Qu.: 56.00  
+##  Max.   :25.0   Max.   :120.00
+fit &amp;lt;- lm(dist ~ speed, data = cars)
+fit
+## 
+## Call:
+## lm(formula = dist ~ speed, data = cars)
+## 
+## Coefficients:
+## (Intercept)        speed  
+##     -17.579        3.932&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;including-plots&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Including Plots&lt;/h1&gt;
+&lt;p&gt;Some cool plots&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(cars$speed,cars$dist)&lt;/code&gt;&lt;/pre&gt;
+&lt;div class=&#34;figure&#34;&gt;&lt;span id=&#34;fig:scat&#34;&gt;&lt;/span&gt;
+&lt;img src=&#34;/post/new-post/2019-06-25-some-new-post_files/figure-html/scat-1.png&#34; alt=&#34;A fancy scatter plot&#34; width=&#34;672&#34; /&gt;
+&lt;p class=&#34;caption&#34;&gt;
+Figure 1: A fancy scatter plot
+&lt;/p&gt;
+&lt;/div&gt;
+&lt;p&gt;Figure &lt;a href=&#34;#fig:scat&#34;&gt;1&lt;/a&gt; is so cool&lt;/p&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Example</title>
+      <link>/post/example/example/</link>
+      <pubDate>Sun, 23 Jun 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/example/example/</guid>
+      <description>
+
+
+&lt;p&gt;With &lt;strong&gt;blogdown&lt;/strong&gt;, you can include figures that result from R code like plots, as well as images from other sources in posts. For the former, you will need to be working from an R Markdown post, but for the latter, you can be working in either a markdown or R Markdown post. To read more about the differences between the two posting formats, read &lt;a href=&#34;https://bookdown.org/yihui/blogdown/output-format.html&#34;&gt;this chapter&lt;/a&gt; in the &lt;strong&gt;blogdown&lt;/strong&gt; book.&lt;/p&gt;
+&lt;div id=&#34;example-1-including-figures-from-r-code&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Example 1: Including figures from R code&lt;/h1&gt;
+&lt;p&gt;In an R Markdown post, you can insert an R code chunk that produces a figure like this:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(ggplot2)
+oplot &amp;lt;- ggplot(Orange, aes(x = age, 
+                   y = circumference, 
+                   colour = Tree)) +
+  geom_point() +
+  geom_line() +
+  guides(colour = FALSE) +
+  theme_bw()
+oplot&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/example/2019-06-23-example_files/figure-html/unnamed-chunk-1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;You can use the &lt;strong&gt;knitr&lt;/strong&gt; chunk options to control aspects of how the figure is displayed. Read more about these options in the &lt;a href=&#34;https://bookdown.org/yihui/bookdown/figures.html&#34;&gt;&lt;strong&gt;bookdown&lt;/strong&gt; book&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;You may also use the chunk options to automatically produce numbered figures with captions. To do this, you will need to do two things:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;Label the R code chunk used to produce the figure&lt;/li&gt;
+&lt;li&gt;Use the &lt;code&gt;fig.cap =&lt;/code&gt; chunk option to provide a figure caption.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Note that the chunk label should not have underscores; it should only contain alphanumeric characters (a-z, A-Z, 0-9), slashes (/), or dashes (-).&lt;/p&gt;
+&lt;p&gt;To reference the figure in the text of your post, use the syntax &lt;code&gt;\@ref(fig:chunk-label)&lt;/code&gt;,&lt;a href=&#34;#fn1&#34; class=&#34;footnote-ref&#34; id=&#34;fnref1&#34;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt; where &lt;code&gt;chunk-label&lt;/code&gt; is the label of the chunk containing the R code that produces the figure.&lt;/p&gt;
+&lt;pre class=&#34;markdown&#34;&gt;&lt;code&gt;```{r orange-tree-fig, fig.cap = &amp;quot;Growth of orange trees&amp;quot;}
+oplot
+```&lt;/code&gt;&lt;/pre&gt;
+&lt;div class=&#34;figure&#34;&gt;&lt;span id=&#34;fig:orange-tree-fig&#34;&gt;&lt;/span&gt;
+&lt;img src=&#34;/post/example/2019-06-23-example_files/figure-html/orange-tree-fig-1.png&#34; alt=&#34;Growth of orange trees&#34; width=&#34;672&#34; /&gt;
+&lt;p class=&#34;caption&#34;&gt;
+Figure 1: Growth of orange trees
+&lt;/p&gt;
+&lt;/div&gt;
+&lt;p&gt;Now, a reference in the text of the post to &lt;code&gt;\@ref(fig:orange-tree-fig)&lt;/code&gt; will produce a link to Figure &lt;a href=&#34;#fig:orange-tree-fig&#34;&gt;1&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;example-2-including-other-images&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Example 2: Including other images&lt;/h1&gt;
+&lt;p&gt;You have a few options for adding other types of images to posts. First, you can use markdown syntax, as in:&lt;/p&gt;
+&lt;pre class=&#34;markdown&#34;&gt;&lt;code&gt;![](/path/to/my/image.png)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In a &lt;strong&gt;blogdown&lt;/strong&gt; site, this image file is assumed to be located in the &lt;code&gt;/static/&lt;/code&gt; directory. So if you save your image file in a subdirectory called &lt;code&gt;/static/images/&lt;/code&gt;, the file path would be &lt;code&gt;(/images/image.png)&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;If you are working in an R Markdown post, you may also include images via the function &lt;code&gt;knitr::include_graphics()&lt;/code&gt; within an R code chunk. Again, &lt;strong&gt;blogdown&lt;/strong&gt; assumes that the image file is in your &lt;code&gt;/static/&lt;/code&gt; directory, so the file path you provide should be relative to that directory. In the example below, the knit-logo.png file is located in the &lt;code&gt;/static/images/&lt;/code&gt; directory.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;knitr::include_graphics(rep(&amp;#39;/img/boards.jpg&amp;#39;, 3))&lt;/code&gt;&lt;/pre&gt;
+&lt;div class=&#34;figure&#34;&gt;&lt;span id=&#34;fig:knitr-logo&#34;&gt;&lt;/span&gt;
+&lt;img src=&#34;/img/boards.jpg&#34; alt=&#34;Three knitr logos included in the document from an external PNG image file.&#34; width=&#34;32.8%&#34; /&gt;&lt;img src=&#34;/img/boards.jpg&#34; alt=&#34;Three knitr logos included in the document from an external PNG image file.&#34; width=&#34;32.8%&#34; /&gt;&lt;img src=&#34;/img/boards.jpg&#34; alt=&#34;Three knitr logos included in the document from an external PNG image file.&#34; width=&#34;32.8%&#34; /&gt;
+&lt;p class=&#34;caption&#34;&gt;
+Figure 2: Three knitr logos included in the document from an external PNG image file.
+&lt;/p&gt;
+&lt;/div&gt;
+&lt;p&gt;Figure &lt;a href=&#34;#fig:knitr-logo&#34;&gt;2&lt;/a&gt; is an example of three &lt;strong&gt;knitr&lt;/strong&gt; logos included in a figure environment. You can read more about the advantages of using the &lt;code&gt;knitr::include_graphics()&lt;/code&gt; function &lt;a href=&#34;https://bookdown.org/yihui/bookdown/figures.html&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;footnotes&#34;&gt;
+&lt;hr /&gt;
+&lt;ol&gt;
+&lt;li id=&#34;fn1&#34;&gt;&lt;p&gt;Do not forget the leading backslash! And also note the parentheses &lt;code&gt;()&lt;/code&gt; after &lt;code&gt;ref&lt;/code&gt;; they are not curly braces &lt;code&gt;{}&lt;/code&gt;.&lt;a href=&#34;#fnref1&#34; class=&#34;footnote-back&#34;&gt;↩&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Hello R Markdown</title>
+      <link>/post/r-markdown/2015-07-23-r-rmarkdown/</link>
+      <pubDate>Thu, 23 Jul 2015 21:13:14 -0500</pubDate>
+      
+      <guid>/post/r-markdown/2015-07-23-r-rmarkdown/</guid>
+      <description>
+
+
+&lt;div id=&#34;r-markdown&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;R Markdown&lt;/h1&gt;
+&lt;p&gt;This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see &lt;a href=&#34;http://rmarkdown.rstudio.com&#34; class=&#34;uri&#34;&gt;http://rmarkdown.rstudio.com&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;You can embed an R code chunk like this:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;summary(cars)
+##      speed           dist       
+##  Min.   : 4.0   Min.   :  2.00  
+##  1st Qu.:12.0   1st Qu.: 26.00  
+##  Median :15.0   Median : 36.00  
+##  Mean   :15.4   Mean   : 42.98  
+##  3rd Qu.:19.0   3rd Qu.: 56.00  
+##  Max.   :25.0   Max.   :120.00
+fit &amp;lt;- lm(dist ~ speed, data = cars)
+fit
+## 
+## Call:
+## lm(formula = dist ~ speed, data = cars)
+## 
+## Coefficients:
+## (Intercept)        speed  
+##     -17.579        3.932&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;including-plots&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Including Plots&lt;/h1&gt;
+&lt;p&gt;You can also embed plots. See Figure &lt;a href=&#34;#fig:pie&#34;&gt;1&lt;/a&gt; for example:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;par(mar = c(0, 1, 0, 1))
+pie(
+  c(280, 60, 20),
+  c(&amp;#39;Sky&amp;#39;, &amp;#39;Sunny side of pyramid&amp;#39;, &amp;#39;Shady side of pyramid&amp;#39;),
+  col = c(&amp;#39;#0292D8&amp;#39;, &amp;#39;#F7EA39&amp;#39;, &amp;#39;#C4B632&amp;#39;),
+  init.angle = -50, border = NA
+)&lt;/code&gt;&lt;/pre&gt;
+&lt;div class=&#34;figure&#34;&gt;&lt;span id=&#34;fig:pie&#34;&gt;&lt;/span&gt;
+&lt;img src=&#34;/post/r-markdown/2015-07-23-r-rmarkdown_files/figure-html/pie-1.png&#34; alt=&#34;A fancy pie chart.&#34; width=&#34;672&#34; /&gt;
+&lt;p class=&#34;caption&#34;&gt;
+Figure 1: A fancy pie chart.
+&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
