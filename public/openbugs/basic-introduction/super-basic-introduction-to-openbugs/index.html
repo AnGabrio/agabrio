@@ -28,12 +28,12 @@
   
     
   
-  <meta name="description" content="The focus of this simple tutorial is to provide a brief introduction and overview about how to fit Bayesian models using JAGS via R.
+  <meta name="description" content="The focus of this simple tutorial is to provide a brief introduction and overview about how to fit Bayesian models using OpenBUGS via R.
 Prerequisites:
-The latest version of R, which can be downloaded and installed for Windows, Mac or Linux OS from the CRAN websiteI also strongly recommend to download and install Rstudio, an integrated development environment which provides an “user-friendly” interaction with R (e.g. many drop-down menus, tabs, customisation options)PreliminariesWhat is JAGS?">
+The latest version of R, which can be downloaded and installed for Windows, Mac or Linux OS from the CRAN websiteI also strongly recommend to download and install Rstudio, an integrated development environment which provides an “user-friendly” interaction with R (e.g. many drop-down menus, tabs, customisation options)PreliminariesWhat is OpenBUGS?">
 
   
-  <link rel="alternate" hreflang="en-us" href="/jags/basic-introduction/2019-06-29-super-basic-introduction-to-jags/">
+  <link rel="alternate" hreflang="en-us" href="/openbugs/basic-introduction/super-basic-introduction-to-openbugs/">
 
   
 
@@ -108,7 +108,7 @@ Prerequisites:
   <link rel="icon" type="image/png" href="/img/icon.png">
   <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
 
-  <link rel="canonical" href="/jags/basic-introduction/2019-06-29-super-basic-introduction-to-jags/">
+  <link rel="canonical" href="/openbugs/basic-introduction/super-basic-introduction-to-openbugs/">
 
   
   
@@ -120,11 +120,11 @@ Prerequisites:
   <meta property="twitter:card" content="summary">
   
   <meta property="og:site_name" content="Andrea Gabrio">
-  <meta property="og:url" content="/jags/basic-introduction/2019-06-29-super-basic-introduction-to-jags/">
-  <meta property="og:title" content="Super basic introduction to JAGS | Andrea Gabrio">
-  <meta property="og:description" content="The focus of this simple tutorial is to provide a brief introduction and overview about how to fit Bayesian models using JAGS via R.
+  <meta property="og:url" content="/openbugs/basic-introduction/super-basic-introduction-to-openbugs/">
+  <meta property="og:title" content="Super basic introduction to OpenBUGS | Andrea Gabrio">
+  <meta property="og:description" content="The focus of this simple tutorial is to provide a brief introduction and overview about how to fit Bayesian models using OpenBUGS via R.
 Prerequisites:
-The latest version of R, which can be downloaded and installed for Windows, Mac or Linux OS from the CRAN websiteI also strongly recommend to download and install Rstudio, an integrated development environment which provides an “user-friendly” interaction with R (e.g. many drop-down menus, tabs, customisation options)PreliminariesWhat is JAGS?"><meta property="og:image" content="/img/icon-192.png">
+The latest version of R, which can be downloaded and installed for Windows, Mac or Linux OS from the CRAN websiteI also strongly recommend to download and install Rstudio, an integrated development environment which provides an “user-friendly” interaction with R (e.g. many drop-down menus, tabs, customisation options)PreliminariesWhat is OpenBUGS?"><meta property="og:image" content="/img/icon-192.png">
   <meta property="og:locale" content="en-us">
   
   <meta property="article:published_time" content="2018-07-23T21:13:14-05:00">
@@ -141,7 +141,7 @@ Prerequisites:
 
 
 
-  <title>Super basic introduction to JAGS | Andrea Gabrio</title>
+  <title>Super basic introduction to OpenBUGS | Andrea Gabrio</title>
 
 </head>
 
@@ -400,7 +400,7 @@ Prerequisites:
   
   
 <div class="article-container pt-3">
-  <h1 itemprop="name">Super basic introduction to JAGS</h1>
+  <h1 itemprop="name">Super basic introduction to OpenBUGS</h1>
 
   
 
@@ -486,7 +486,7 @@ Prerequisites:
       
 
 
-<p>The focus of this simple tutorial is to provide a brief introduction and overview about how to fit Bayesian models using <code>JAGS</code> via <code>R</code>.</p>
+<p>The focus of this simple tutorial is to provide a brief introduction and overview about how to fit Bayesian models using <code>OpenBUGS</code> via <code>R</code>.</p>
 <p>Prerequisites:</p>
 <ul>
 <li>The latest version of <code>R</code>, which can be downloaded and installed for Windows, Mac or Linux OS from the <a href="https://www.r-project.org/%7D">CRAN</a> website</li>
@@ -494,15 +494,15 @@ Prerequisites:
 </ul>
 <div id="preliminaries" class="section level1">
 <h1>Preliminaries</h1>
-<div id="what-is-jags" class="section level2">
-<h2>What is JAGS?</h2>
-<p><code>JAGS</code> or <strong>J</strong>ust <strong>A</strong>nother <strong>G</strong>ibbs <strong>S</strong>ampler is a program for analysis of Bayesian models using Markov Chain Monte Carlo (MCMC) methods (<span class="citation">Plummer (2004)</span>). <code>JAGS</code> is a free software based on the <strong>B</strong>ayesian inference <strong>U</strong>sing <strong>G</strong>ibbs <strong>S</strong>ampling (informally <code>BUGS</code>) language at the base of <code>WinBUGS/OpenBUGS</code> but, unlike these programs, it is written in <code>C++</code> and is platform independent. The latest version of <code>JAGS</code> can be dowloaded from Martyn Plummer’s <a href="https://sourceforge.net/projects/mcmc-jags/files/JAGS/">repository</a> and is available for different OS. There are different <code>R</code> packages which function as frontends for <code>JAGS</code>. These packages make it easy to process the output of Bayesian models and present it in publication-ready form. In this brief introduction, I will specifically focus on the <code>R2jags</code> package (<span class="citation">Su et al. (2015)</span>) and show how to fit <code>JAGS</code> models using this package.</p>
+<div id="what-is-openbugs" class="section level2">
+<h2>What is OpenBUGS?</h2>
+<p><code>OpenBUGS</code> is a program for analysis of Bayesian models using Markov Chain Monte Carlo (MCMC) methods (<span class="citation">Spiegelhalter et al. (2007)</span>). <code>OpenBUGS</code> is a free software based on the <strong>B</strong>ayesian inference <strong>U</strong>sing <strong>G</strong>ibbs <strong>S</strong>ampling (informally <code>BUGS</code>) language at the base of <code>WinBUGS</code> but, unlike this program, is platform independent. The latest version of <code>OpenBUGS</code> can be dowloaded from the web <a href="http://www.openbugs.net/w/FrontPage">repository</a> and is available for different OS. There are different <code>R</code> packages which function as frontends for <code>OpenBUGS</code>. These packages make it easy to process the output of Bayesian models and present it in publication-ready form. In this brief introduction, I will specifically focus on the <code>R2OpenBUGS</code> package (<span class="citation">Sturtz, Ligges, and Gelman (2010)</span>) and show how to fit <code>OpenBUGS</code> models using this package.</p>
 </div>
-<div id="installing-jags-and-r2jags" class="section level2">
-<h2>Installing JAGS and R2jags</h2>
-<p>Install the latest version of <code>JAGS</code> for your OS. Next, install the package <code>R2jags</code> from within <code>R</code> or <code>Rstudio</code>, via the package installer or by typing in the command line</p>
-<pre class="r"><code>&gt; install.packages(&quot;R2jags&quot;, dependencies = TRUE)</code></pre>
-<p>The <code>dependencies = TRUE</code> option will automatically install all the packages on which the functions in the <code>R2jags</code> package rely.</p>
+<div id="installing-openbugs-and-r2openbugs" class="section level2">
+<h2>Installing OpenBUGS and R2OpenBUGS</h2>
+<p>Install the latest version of <code>OpenBUGS</code> for your OS. Next, install the package <code>R2OpenBUGS</code> from within <code>R</code> or <code>Rstudio</code>, via the package installer or by typing in the command line</p>
+<pre class="r"><code>&gt; install.packages(&quot;OpenBUGS&quot;, dependencies = TRUE)</code></pre>
+<p>The <code>dependencies = TRUE</code> option will automatically install all the packages on which the functions in the <code>R2OpenBUGS</code> package rely.</p>
 </div>
 </div>
 <div id="basic-model" class="section level1">
@@ -518,18 +518,18 @@ Prerequisites:
 &gt; beta0=1.5
 &gt; beta1=1.2
 &gt; y=beta0 + beta1 * x + epsilon</code></pre>
-<p>Then, I define all the data for <code>JAGS</code> in a list object</p>
+<p>Then, I define all the data for <code>OpenBUGS</code> in a list object</p>
 <pre class="r"><code>&gt; datalist=list(&quot;y&quot;,&quot;x&quot;,&quot;n.sim&quot;)</code></pre>
 </div>
 <div id="model-file" class="section level2">
 <h2>Model file</h2>
-<p>Now, I write the model for <code>JAGS</code> and save it as a text file named <code>"basic.mod.txt"</code> in the current working directory</p>
+<p>Now, I write the model for <code>OpenBUGS</code> and save it as a text file named <code>"basic.mod.txt"</code> in the current working directory</p>
 <pre class="r"><code>&gt; basic.mod= &quot;
 + model {
 + #model
 +  for(i in 1:n.sim){
 +   y[i] ~ dnorm(mu[i], tau)
-+   mu[i] = beta0 + beta1 * x[i]
++   mu[i] &lt;- beta0 + beta1 * x[i]
 +  }
 + #priors
 + beta0 ~ dnorm(0, 0.01)
@@ -543,66 +543,59 @@ Prerequisites:
 </div>
 <div id="pre-processing" class="section level2">
 <h2>Pre-processing</h2>
-<p>Define the parameters whose posterior distribtuions we are interested in summarising later and set up the initial values for the MCMC sampler in <code>JAGS</code></p>
+<p>Define the parameters whose posterior distribtuions we are interested in summarising later and set up the initial values for the MCMC sampler in <code>OpenBUGS</code></p>
 <pre class="r"><code>&gt; params=c(&quot;beta0&quot;,&quot;beta1&quot;)
-&gt; inits=function(){list(&quot;beta0&quot;=rnorm(1), &quot;beta1&quot;=rnorm(1))}</code></pre>
-<p>The function creates a list that contains one element for each parameter, which gets assigned a random draw from a normal distribution as a strating value for each chain in the model. For simple models like this, it is generally easy to define the intial values for all parameters. However, for more complex models, this may not be immediate and a lot of trial and error may be required. However, <code>JAGS</code> can automatically select the initial values for all parameters in an efficient way even for relatively complex models. This can be achieved by setting <code>inits=NULL</code>, which is then passed to the <code>jags</code> function in <code>R2jags</code>.</p>
-<p>Before using <code>R2jags</code> for the first time, you need to load the package, and you may want to set a random seed number for making your estimates replicable</p>
-<pre class="r"><code>&gt; library(R2jags)
+&gt; inits=function(){list(&quot;beta0&quot;=rnorm(1), &quot;beta1&quot;=rnorm(1), &quot;tau&quot;=rgamma(1,1,1))}</code></pre>
+<p>The function creates a list that contains one element for each parameter, which gets assigned a random draw from a normal distribution as a strating value for each chain in the model. For simple models like this, it is generally easy to define the intial values for all parameters in the object <code>inits</code> which is then passed to the <code>bugs</code> function in <code>R2OpenBUGS</code>. However, for more complex models, this may not be immediate and a lot of trial and error may be required.</p>
+<p>Before using <code>R2OpenBUGS</code> for the first time, you need to load the package, and you may want to set a random seed number for making your estimates replicable</p>
+<pre class="r"><code>&gt; library(R2OpenBUGS)
 &gt; set.seed(123)</code></pre>
 </div>
 <div id="fit-the-model" class="section level2">
 <h2>Fit the model</h2>
-<p>Now, we can fit the model in <code>JAGS</code> using the <code>jags</code> function in the <code>R2jags</code> package and save it in the object <code>basic.mod</code></p>
-<pre class="r"><code>&gt; basic.mod=jags(data = datalist, inits = inits,
-+   parameters.to.save = params, n.chains = 2, n.iter = 9000, 
-+   n.burnin = 1000, model.file = &quot;basic.mod.txt&quot;)
-Compiling model graph
-   Resolving undeclared variables
-   Allocating nodes
-Graph information:
-   Observed stochastic nodes: 100
-   Unobserved stochastic nodes: 3
-   Total graph size: 406
-
-Initializing model</code></pre>
-<p>While the model is running, the function prints out some information related to the Bayesian graph (corresponding to the specification used for the model) underneath <code>JAGS</code>, such as number of observed and unobserved nodes and graph size.</p>
+<p>Now, we can fit the model in <code>OpenBUGS</code> using the <code>bugs</code> function in the <code>R2openBUGS</code> package and save it in the object <code>basic.mod</code></p>
+<pre class="r"><code>&gt; basic.mod=bugs(data = datalist, inits = inits, 
++   parameters.to.save = params, n.chains = 2, n.iter = 9000,
++   n.burnin = 1000, model.file = &quot;basic.mod.txt&quot;)</code></pre>
+<p>While the model is running, the function prints out some information related to the Bayesian graph (corresponding to the specification used for the model) underneath <code>OpenBUGS</code>, such as number of observed and unobserved nodes and graph size.</p>
 </div>
 <div id="post-processing" class="section level2">
 <h2>Post-processing</h2>
 <p>Once the model has finished running, a summary of the posteiror estimates and convergence diagnostics for all parameters specified can be seen by typing <code>print(basic.mod)</code> or, alternatively,</p>
-<pre class="r"><code>&gt; print(basic.mod$BUGSoutput$summary)</code></pre>
+<pre class="r"><code>&gt; print(basic.mod$summary)</code></pre>
 <pre><code>          mean    sd   2.5%   25%   50%   75% 97.5% Rhat n.eff
-beta0      1.5 0.293   0.95   1.3   1.5   1.7   2.1    1  1600
-beta1      1.2 0.053   1.07   1.1   1.2   1.2   1.3    1   920
-deviance 278.9 2.508 276.04 277.1 278.2 279.9 285.5    1  2000</code></pre>
+beta0      1.5 0.296   0.94   1.3   1.5   1.7   2.1    1   730
+beta1      1.2 0.054   1.07   1.1   1.2   1.2   1.3    1   660
+deviance 278.9 2.519 276.00 277.1 278.3 280.0 285.3    1 16000</code></pre>
 <p>The posterior distribution of each parameter is summarised in terms of:</p>
 <ul>
 <li>The mean, sd and some percentiles</li>
 <li>Potential scale reduction factor <code>Rhat</code> and effective sample size <code>n.eff</code> (<span class="citation">Gelman (2013)</span>). The first is a measure to assess issues in convergence of the MCMC algorithm (typically a value below <span class="math inline">\(1.05\)</span> for all parameters is considered ok). The second is a measure which assesses the adequacy of the posterior sample (typically values close to the total number of iterations are desirable for all parameters).</li>
 </ul>
 <p>The deviance is a goodness of fit statistic and is used in the construction of the “Deviance Information Criterion” or DIC (<span class="citation">Spiegelhalter et al. (2014)</span>), which is a <em>relative</em> measure of model comparison. The DIC of the model can be accessed by typing</p>
-<pre class="r"><code>&gt; basic.mod$BUGSoutput$DIC
+<pre class="r"><code>&gt; basic.mod$DIC
 [1] 282</code></pre>
 </div>
 <div id="diagnostics" class="section level2">
 <h2>Diagnostics</h2>
-<p>More diagnostics are available when we convert the model output into an MCMC object using the command</p>
-<pre class="r"><code>&gt; basic.mod.mcmc=as.mcmc(basic.mod)</code></pre>
+<p>More diagnostics are available when we convert the model output into an MCMC object. The function <code>as.mcmc.list</code> in the package <code>coda</code> (<span class="citation">Plummer et al. (2018)</span>), which should be installed and loaded, can be used for doing this by typing</p>
+<pre class="r"><code>&gt; install.packages(&quot;coda&quot;)
+&gt; library(coda)
+&gt; basic.mod.mcmc=as.mcmc.list(basic.mod)</code></pre>
 <p>Different packages are available to perform diagnostic checks for Bayesian models. Here, I install and load the <code>mcmcplots</code> package (<span class="citation">Curtis (2015)</span>) to obtain graphical diagnostics and results.</p>
 <pre class="r"><code>&gt; install.packages(&quot;mcmcplots&quot;)
 &gt; library(mcmcplots)</code></pre>
 <p>For example, density and trace plots can be obtained by typing</p>
 <pre class="r"><code>&gt; denplot(basic.mod.mcmc, parms = c(&quot;beta0&quot;,&quot;beta1&quot;))</code></pre>
-<p><img src="/JAGS/basic-introduction/2019-06-29-super-basic-introduction-to-jags_files/figure-html/diagnostic3-1.png" width="672" /></p>
+<p><img src="/OpenBUGS/basic-introduction/2018-07-05-super-basic-introduction-to-openbugs_files/figure-html/diagnostic3-1.png" width="672" /></p>
 <pre class="r"><code>&gt; traplot(basic.mod.mcmc, parms = c(&quot;beta0&quot;,&quot;beta1&quot;))</code></pre>
-<p><img src="/JAGS/basic-introduction/2019-06-29-super-basic-introduction-to-jags_files/figure-html/diagnostic3-2.png" width="672" /></p>
+<p><img src="/OpenBUGS/basic-introduction/2018-07-05-super-basic-introduction-to-openbugs_files/figure-html/diagnostic3-2.png" width="672" /></p>
 <p>Both types of graphs suggest that there are not issues in the convergence of the algorithm (smooth normal densities and hairy caterpillar graphs for both MCMC chains).</p>
 </div>
 </div>
 <div id="conclusions" class="section level1">
 <h1>Conclusions</h1>
-<p>This tutorial was simply a brief introduction on how simple linear regression models can be fitted using the Bayesian software <code>JAGS</code> via the <code>R2jags</code> package. Although this may seem a complex procedure compared with simply fitting a linear model under the frequentist framework, however, the real advantages of Bayesian methods become evident when the complexity of the analysis is increased (which is often the case in real applications). Indeed, the flexibility in Bayesian modelling allows to account for increasingly complex models in a relatively easy way. In addition, Bayesian methods are ideal when the interest is in taking into account the potential impact that different sources of uncertainty may have on the final results, as they allow the natural propagation of uncertainty throughout each quantity in the model.</p>
+<p>This tutorial was simply a brief introduction on how simple linear regression models can be fitted using the Bayesian software <code>OpenBUGS</code> via the <code>R2OpenBUGS</code> package. Although this may seem a complex procedure compared with simply fitting a linear model under the frequentist framework, however, the real advantages of Bayesian methods become evident when the complexity of the analysis is increased (which is often the case in real applications). Indeed, the flexibility in Bayesian modelling allows to account for increasingly complex models in a relatively easy way. In addition, Bayesian methods are ideal when the interest is in taking into account the potential impact that different sources of uncertainty may have on the final results, as they allow the natural propagation of uncertainty throughout each quantity in the model.</p>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1>References</h1>
@@ -613,14 +606,17 @@ deviance 278.9 2.508 276.04 277.1 278.2 279.9 285.5    1  2000</code></pre>
 <div id="ref-gelman2013bayesian">
 <p>Gelman, Andrew. 2013. <em>Bayesian Data Analysis</em>. Chapman; Hall/CRC.</p>
 </div>
-<div id="ref-plummer2004jags">
-<p>Plummer, Martyn. 2004. “JAGS: Just Another Gibbs Sampler.”</p>
+<div id="ref-plummer2018package">
+<p>Plummer, Martyn, Nicky Best, Kate Cowles, and Karen Vines. 2018. “Package ‘Coda’.” Recuperado.</p>
 </div>
 <div id="ref-spiegelhalter2014deviance">
 <p>Spiegelhalter, David J, Nicola G Best, Bradley P Carlin, and Angelika Van Der Linde. 2014. “The Deviance Information Criterion: 12 Years on.” <em>Journal of the Royal Statistical Society: Series B (Statistical Methodology)</em> 76 (3): 485–93.</p>
 </div>
-<div id="ref-su2015package">
-<p>Su, Yu-Sung, Masanao Yajima, Maintainer Yu-Sung Su, and JAGS SystemRequirements. 2015. “Package ‘R2jags’.” <em>R Package Version 0.03-08, URL Http://CRAN. R-Project. Org/Package= R2jags</em>.</p>
+<div id="ref-spiegelhalter2007openbugs">
+<p>Spiegelhalter, David, Andrew Thomas, Nicky Best, and Dave Lunn. 2007. “OpenBUGS User Manual, Version 3.0. 2.” <em>MRC Biostatistics Unit, Cambridge</em>.</p>
+</div>
+<div id="ref-sturtz2010r2openbugs">
+<p>Sturtz, Sibylle, Uwe Ligges, and Andrew Gelman. 2010. “R2OpenBUGS: A Package for Running Openbugs from R.” <em>URL Http://Cran. Rproject. Org/Web/Packages/R2OpenBUGS/Vignettes/R2OpenBUGS. Pdf</em>.</p>
 </div>
 </div>
 </div>
@@ -633,7 +629,7 @@ deviance 278.9 2.508 276.04 277.1 278.2 279.9 285.5    1  2000</code></pre>
   
   <a class="badge badge-light" href="/tags/linear-regression/">linear regression</a>
   
-  <a class="badge badge-light" href="/tags/jags/">JAGS</a>
+  <a class="badge badge-light" href="/tags/openbugs/">OpenBUGS</a>
   
   <a class="badge badge-light" href="/tags/introduction/">introduction</a>
   
@@ -687,7 +683,7 @@ deviance 278.9 2.508 276.04 277.1 278.2 279.9 285.5    1  2000</code></pre>
         <h3>Related</h3>
         <ul>
           
-          <li><a href="/openbugs/basic-introduction/super-basic-introduction-to-openbugs/">Super basic introduction to OpenBUGS</a></li>
+          <li><a href="/jags/basic-introduction/super-basic-introduction-to-jags/">Super basic introduction to JAGS</a></li>
           
         </ul>
       </div>

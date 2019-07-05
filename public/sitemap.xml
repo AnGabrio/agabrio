@@ -232,13 +232,29 @@
   </url>
   
   <url>
+    <loc>/openbugs/</loc>
+    <lastmod>2018-07-23T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/tags/jags/</loc>
     <lastmod>2018-07-23T21:13:14-05:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>/jags/basic-introduction/2019-06-29-super-basic-introduction-to-jags/</loc>
+    <loc>/tags/openbugs/</loc>
+    <lastmod>2018-07-23T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/jags/basic-introduction/super-basic-introduction-to-jags/</loc>
+    <lastmod>2018-07-23T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/openbugs/basic-introduction/super-basic-introduction-to-openbugs/</loc>
     <lastmod>2018-07-23T21:13:14-05:00</lastmod>
   </url>
   
@@ -325,10 +341,6 @@
   <url>
     <loc>/post/r-markdown/2015-07-23-r-rmarkdown/</loc>
     <lastmod>2015-07-23T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/openbugs/</loc>
   </url>
   
   <url>
