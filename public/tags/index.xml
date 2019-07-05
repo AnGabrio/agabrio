@@ -12,38 +12,11 @@
     
     
     <item>
-      <title>JAGS</title>
-      <link>/tags/jags/</link>
-      <pubDate>Tue, 23 Jul 2019 21:13:14 -0500</pubDate>
-      
-      <guid>/tags/jags/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>R Markdown</title>
       <link>/tags/r-markdown/</link>
       <pubDate>Tue, 23 Jul 2019 21:13:14 -0500</pubDate>
       
       <guid>/tags/r-markdown/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>introduction</title>
-      <link>/tags/introduction/</link>
-      <pubDate>Tue, 23 Jul 2019 21:13:14 -0500</pubDate>
-      
-      <guid>/tags/introduction/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>linear regression</title>
-      <link>/tags/linear-regression/</link>
-      <pubDate>Tue, 23 Jul 2019 21:13:14 -0500</pubDate>
-      
-      <guid>/tags/linear-regression/</guid>
       <description></description>
     </item>
     
@@ -116,6 +89,33 @@
       <pubDate>Tue, 05 Feb 2019 00:00:00 +0000</pubDate>
       
       <guid>/tags/health-economics/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>JAGS</title>
+      <link>/tags/jags/</link>
+      <pubDate>Mon, 23 Jul 2018 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/jags/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>introduction</title>
+      <link>/tags/introduction/</link>
+      <pubDate>Mon, 23 Jul 2018 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/introduction/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>linear regression</title>
+      <link>/tags/linear-regression/</link>
+      <pubDate>Mon, 23 Jul 2018 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/linear-regression/</guid>
       <description></description>
     </item>
     

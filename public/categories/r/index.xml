@@ -58,9 +58,104 @@ Figure 1: A fancy scatter plot
     </item>
     
     <item>
+      <title>Citations</title>
+      <link>/post/citations/citations/</link>
+      <pubDate>Sun, 23 Jun 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/citations/citations/</guid>
+      <description>
+
+
+&lt;p&gt;With &lt;strong&gt;blogdown&lt;/strong&gt;, you are able to take advantage of several features of Pandoc’s Markdown, including adding citations. You can read more about adding citations in the &lt;strong&gt;bookdown&lt;/strong&gt; book &lt;a href=&#34;https://bookdown.org/yihui/bookdown/citations.html&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;This post will demonstrate how you can add citations. There are 3 steps:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;p&gt;Save a BibTeX file(s) in the &lt;code&gt;/content/post/&lt;/code&gt; directory. The file should be a plain-text file that contains citations that generally look like this&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Reference the BibTeX file(s) in the YAML header of your post&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;In the text of your post, reference items in BibTeX file(s) using &lt;code&gt;@key&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div id=&#34;example-1-adding-citations-for-books-or-articles&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Example 1: Adding citations for books or articles&lt;/h1&gt;
+&lt;p&gt;There are several ways to export citations for books or articles as a BibTeX file. One simple way is to use &lt;a href=&#34;https://scholar.google.com&#34;&gt;Google Scholar&lt;/a&gt; to obtain a BibTeX entry. For example, if you search for “Bookdown: Authoring Books and Technical Documents with R Markdown”, you can view the citation by clicking on the quote icon underneath the entry.&lt;/p&gt;
+&lt;p&gt;If you then click on the BibTeX link, you will see the formatted plain text version, which you can download as a file with the .bib extension. To now cite this item in the text of your post, use the format &lt;code&gt;@key&lt;/code&gt;, so &lt;code&gt;@xie2016bookdown&lt;/code&gt; generates: &lt;span class=&#34;citation&#34;&gt;Xie (2016)&lt;/span&gt;. Notice that you can click on the year to see the full reference.&lt;/p&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references&#34;&gt;
+&lt;div id=&#34;ref-xie2016bookdown&#34;&gt;
+&lt;p&gt;Xie, Yihui. 2016. &lt;em&gt;Bookdown: Authoring Books and Technical Documents with R Markdown&lt;/em&gt;. Chapman; Hall/CRC.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Example</title>
+      <link>/post/example/example/</link>
+      <pubDate>Sun, 23 Jun 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/example/example/</guid>
+      <description>
+
+
+&lt;p&gt;With &lt;strong&gt;blogdown&lt;/strong&gt;, you can include figures that result from R code like plots, as well as images from other sources in posts. For the former, you will need to be working from an R Markdown post, but for the latter, you can be working in either a markdown or R Markdown post. To read more about the differences between the two posting formats, read &lt;a href=&#34;https://bookdown.org/yihui/blogdown/output-format.html&#34;&gt;this chapter&lt;/a&gt; in the &lt;strong&gt;blogdown&lt;/strong&gt; book.&lt;/p&gt;
+&lt;div id=&#34;example-1-including-figures-from-r-code&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Example 1: Including figures from R code&lt;/h1&gt;
+&lt;p&gt;In an R Markdown post, you can insert an R code chunk that produces a figure like this:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(ggplot2)
+oplot &amp;lt;- ggplot(Orange, aes(x = age, 
+                   y = circumference, 
+                   colour = Tree)) +
+  geom_point() +
+  geom_line() +
+  guides(colour = FALSE) +
+  theme_bw()
+oplot&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/example/2019-06-23-example_files/figure-html/unnamed-chunk-1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;You can use the &lt;strong&gt;knitr&lt;/strong&gt; chunk options to control aspects of how the figure is displayed. Read more about these options in the &lt;a href=&#34;https://bookdown.org/yihui/bookdown/figures.html&#34;&gt;&lt;strong&gt;bookdown&lt;/strong&gt; book&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;You may also use the chunk options to automatically produce numbered figures with captions. To do this, you will need to do two things:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;Label the R code chunk used to produce the figure&lt;/li&gt;
+&lt;li&gt;Use the &lt;code&gt;fig.cap =&lt;/code&gt; chunk option to provide a figure caption.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Note that the chunk label should not have underscores; it should only contain alphanumeric characters (a-z, A-Z, 0-9), slashes (/), or dashes (-).&lt;/p&gt;
+&lt;p&gt;To reference the figure in the text of your post, use the syntax &lt;code&gt;\@ref(fig:chunk-label)&lt;/code&gt;,&lt;a href=&#34;#fn1&#34; class=&#34;footnote-ref&#34; id=&#34;fnref1&#34;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt; where &lt;code&gt;chunk-label&lt;/code&gt; is the label of the chunk containing the R code that produces the figure.&lt;/p&gt;
+&lt;pre class=&#34;markdown&#34;&gt;&lt;code&gt;```{r orange-tree-fig, fig.cap = &amp;quot;Growth of orange trees&amp;quot;}
+oplot
+```&lt;/code&gt;&lt;/pre&gt;
+&lt;div class=&#34;figure&#34;&gt;&lt;span id=&#34;fig:orange-tree-fig&#34;&gt;&lt;/span&gt;
+&lt;img src=&#34;/post/example/2019-06-23-example_files/figure-html/orange-tree-fig-1.png&#34; alt=&#34;Growth of orange trees&#34; width=&#34;672&#34; /&gt;
+&lt;p class=&#34;caption&#34;&gt;
+Figure 1: Growth of orange trees
+&lt;/p&gt;
+&lt;/div&gt;
+&lt;p&gt;Now, a reference in the text of the post to &lt;code&gt;\@ref(fig:orange-tree-fig)&lt;/code&gt; will produce a link to Figure &lt;a href=&#34;#fig:orange-tree-fig&#34;&gt;1&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;example-2-including-other-images&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Example 2: Including other images&lt;/h1&gt;
+&lt;p&gt;You have a few options for adding other types of images to posts. First, you can use markdown syntax, as in:&lt;/p&gt;
+&lt;pre class=&#34;markdown&#34;&gt;&lt;code&gt;![](/path/to/my/image.png)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In a &lt;strong&gt;blogdown&lt;/strong&gt; site, this image file is assumed to be located in the &lt;code&gt;/static/&lt;/code&gt; directory. So if you save your image file in a subdirectory called &lt;code&gt;/static/images/&lt;/code&gt;, the file path would be &lt;code&gt;(/images/image.png)&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;If you are working in an R Markdown post, you may also include images via the function &lt;code&gt;knitr::include_graphics()&lt;/code&gt; within an R code chunk. Again, &lt;strong&gt;blogdown&lt;/strong&gt; assumes that the image file is in your &lt;code&gt;/static/&lt;/code&gt; directory, so the file path you provide should be relative to that directory. In the example below, the knit-logo.png file is located in the &lt;code&gt;/static/images/&lt;/code&gt; directory.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;knitr::include_graphics(rep(&amp;#39;/img/boards.jpg&amp;#39;, 3))&lt;/code&gt;&lt;/pre&gt;
+&lt;div class=&#34;figure&#34;&gt;&lt;span id=&#34;fig:knitr-logo&#34;&gt;&lt;/span&gt;
+&lt;img src=&#34;/img/boards.jpg&#34; alt=&#34;Three knitr logos included in the document from an external PNG image file.&#34; width=&#34;32.8%&#34; /&gt;&lt;img src=&#34;/img/boards.jpg&#34; alt=&#34;Three knitr logos included in the document from an external PNG image file.&#34; width=&#34;32.8%&#34; /&gt;&lt;img src=&#34;/img/boards.jpg&#34; alt=&#34;Three knitr logos included in the document from an external PNG image file.&#34; width=&#34;32.8%&#34; /&gt;
+&lt;p class=&#34;caption&#34;&gt;
+Figure 2: Three knitr logos included in the document from an external PNG image file.
+&lt;/p&gt;
+&lt;/div&gt;
+&lt;p&gt;Figure &lt;a href=&#34;#fig:knitr-logo&#34;&gt;2&lt;/a&gt; is an example of three &lt;strong&gt;knitr&lt;/strong&gt; logos included in a figure environment. You can read more about the advantages of using the &lt;code&gt;knitr::include_graphics()&lt;/code&gt; function &lt;a href=&#34;https://bookdown.org/yihui/bookdown/figures.html&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;footnotes&#34;&gt;
+&lt;hr /&gt;
+&lt;ol&gt;
+&lt;li id=&#34;fn1&#34;&gt;&lt;p&gt;Do not forget the leading backslash! And also note the parentheses &lt;code&gt;()&lt;/code&gt; after &lt;code&gt;ref&lt;/code&gt;; they are not curly braces &lt;code&gt;{}&lt;/code&gt;.&lt;a href=&#34;#fnref1&#34; class=&#34;footnote-back&#34;&gt;↩&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Super basic introduction to JAGS</title>
       <link>/jags/basic-introduction/2019-06-29-super-basic-introduction-to-jags/</link>
-      <pubDate>Tue, 23 Jul 2019 21:13:14 -0500</pubDate>
+      <pubDate>Mon, 23 Jul 2018 21:13:14 -0500</pubDate>
       
       <guid>/jags/basic-introduction/2019-06-29-super-basic-introduction-to-jags/</guid>
       <description>
@@ -203,101 +298,6 @@ deviance 278.9 2.508 276.04 277.1 278.2 279.9 285.5    1  2000&lt;/code&gt;&lt;/
 &lt;p&gt;Su, Yu-Sung, Masanao Yajima, Maintainer Yu-Sung Su, and JAGS SystemRequirements. 2015. “Package ‘R2jags’.” &lt;em&gt;R Package Version 0.03-08, URL Http://CRAN. R-Project. Org/Package= R2jags&lt;/em&gt;.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-&lt;/div&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Citations</title>
-      <link>/post/citations/citations/</link>
-      <pubDate>Sun, 23 Jun 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/post/citations/citations/</guid>
-      <description>
-
-
-&lt;p&gt;With &lt;strong&gt;blogdown&lt;/strong&gt;, you are able to take advantage of several features of Pandoc’s Markdown, including adding citations. You can read more about adding citations in the &lt;strong&gt;bookdown&lt;/strong&gt; book &lt;a href=&#34;https://bookdown.org/yihui/bookdown/citations.html&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;This post will demonstrate how you can add citations. There are 3 steps:&lt;/p&gt;
-&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
-&lt;li&gt;&lt;p&gt;Save a BibTeX file(s) in the &lt;code&gt;/content/post/&lt;/code&gt; directory. The file should be a plain-text file that contains citations that generally look like this&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;Reference the BibTeX file(s) in the YAML header of your post&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;In the text of your post, reference items in BibTeX file(s) using &lt;code&gt;@key&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;div id=&#34;example-1-adding-citations-for-books-or-articles&#34; class=&#34;section level1&#34;&gt;
-&lt;h1&gt;Example 1: Adding citations for books or articles&lt;/h1&gt;
-&lt;p&gt;There are several ways to export citations for books or articles as a BibTeX file. One simple way is to use &lt;a href=&#34;https://scholar.google.com&#34;&gt;Google Scholar&lt;/a&gt; to obtain a BibTeX entry. For example, if you search for “Bookdown: Authoring Books and Technical Documents with R Markdown”, you can view the citation by clicking on the quote icon underneath the entry.&lt;/p&gt;
-&lt;p&gt;If you then click on the BibTeX link, you will see the formatted plain text version, which you can download as a file with the .bib extension. To now cite this item in the text of your post, use the format &lt;code&gt;@key&lt;/code&gt;, so &lt;code&gt;@xie2016bookdown&lt;/code&gt; generates: &lt;span class=&#34;citation&#34;&gt;Xie (2016)&lt;/span&gt;. Notice that you can click on the year to see the full reference.&lt;/p&gt;
-&lt;div id=&#34;refs&#34; class=&#34;references&#34;&gt;
-&lt;div id=&#34;ref-xie2016bookdown&#34;&gt;
-&lt;p&gt;Xie, Yihui. 2016. &lt;em&gt;Bookdown: Authoring Books and Technical Documents with R Markdown&lt;/em&gt;. Chapman; Hall/CRC.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Example</title>
-      <link>/post/example/example/</link>
-      <pubDate>Sun, 23 Jun 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/post/example/example/</guid>
-      <description>
-
-
-&lt;p&gt;With &lt;strong&gt;blogdown&lt;/strong&gt;, you can include figures that result from R code like plots, as well as images from other sources in posts. For the former, you will need to be working from an R Markdown post, but for the latter, you can be working in either a markdown or R Markdown post. To read more about the differences between the two posting formats, read &lt;a href=&#34;https://bookdown.org/yihui/blogdown/output-format.html&#34;&gt;this chapter&lt;/a&gt; in the &lt;strong&gt;blogdown&lt;/strong&gt; book.&lt;/p&gt;
-&lt;div id=&#34;example-1-including-figures-from-r-code&#34; class=&#34;section level1&#34;&gt;
-&lt;h1&gt;Example 1: Including figures from R code&lt;/h1&gt;
-&lt;p&gt;In an R Markdown post, you can insert an R code chunk that produces a figure like this:&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(ggplot2)
-oplot &amp;lt;- ggplot(Orange, aes(x = age, 
-                   y = circumference, 
-                   colour = Tree)) +
-  geom_point() +
-  geom_line() +
-  guides(colour = FALSE) +
-  theme_bw()
-oplot&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/example/2019-06-23-example_files/figure-html/unnamed-chunk-1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;p&gt;You can use the &lt;strong&gt;knitr&lt;/strong&gt; chunk options to control aspects of how the figure is displayed. Read more about these options in the &lt;a href=&#34;https://bookdown.org/yihui/bookdown/figures.html&#34;&gt;&lt;strong&gt;bookdown&lt;/strong&gt; book&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;You may also use the chunk options to automatically produce numbered figures with captions. To do this, you will need to do two things:&lt;/p&gt;
-&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
-&lt;li&gt;Label the R code chunk used to produce the figure&lt;/li&gt;
-&lt;li&gt;Use the &lt;code&gt;fig.cap =&lt;/code&gt; chunk option to provide a figure caption.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;Note that the chunk label should not have underscores; it should only contain alphanumeric characters (a-z, A-Z, 0-9), slashes (/), or dashes (-).&lt;/p&gt;
-&lt;p&gt;To reference the figure in the text of your post, use the syntax &lt;code&gt;\@ref(fig:chunk-label)&lt;/code&gt;,&lt;a href=&#34;#fn1&#34; class=&#34;footnote-ref&#34; id=&#34;fnref1&#34;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt; where &lt;code&gt;chunk-label&lt;/code&gt; is the label of the chunk containing the R code that produces the figure.&lt;/p&gt;
-&lt;pre class=&#34;markdown&#34;&gt;&lt;code&gt;```{r orange-tree-fig, fig.cap = &amp;quot;Growth of orange trees&amp;quot;}
-oplot
-```&lt;/code&gt;&lt;/pre&gt;
-&lt;div class=&#34;figure&#34;&gt;&lt;span id=&#34;fig:orange-tree-fig&#34;&gt;&lt;/span&gt;
-&lt;img src=&#34;/post/example/2019-06-23-example_files/figure-html/orange-tree-fig-1.png&#34; alt=&#34;Growth of orange trees&#34; width=&#34;672&#34; /&gt;
-&lt;p class=&#34;caption&#34;&gt;
-Figure 1: Growth of orange trees
-&lt;/p&gt;
-&lt;/div&gt;
-&lt;p&gt;Now, a reference in the text of the post to &lt;code&gt;\@ref(fig:orange-tree-fig)&lt;/code&gt; will produce a link to Figure &lt;a href=&#34;#fig:orange-tree-fig&#34;&gt;1&lt;/a&gt;.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div id=&#34;example-2-including-other-images&#34; class=&#34;section level1&#34;&gt;
-&lt;h1&gt;Example 2: Including other images&lt;/h1&gt;
-&lt;p&gt;You have a few options for adding other types of images to posts. First, you can use markdown syntax, as in:&lt;/p&gt;
-&lt;pre class=&#34;markdown&#34;&gt;&lt;code&gt;![](/path/to/my/image.png)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;In a &lt;strong&gt;blogdown&lt;/strong&gt; site, this image file is assumed to be located in the &lt;code&gt;/static/&lt;/code&gt; directory. So if you save your image file in a subdirectory called &lt;code&gt;/static/images/&lt;/code&gt;, the file path would be &lt;code&gt;(/images/image.png)&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;If you are working in an R Markdown post, you may also include images via the function &lt;code&gt;knitr::include_graphics()&lt;/code&gt; within an R code chunk. Again, &lt;strong&gt;blogdown&lt;/strong&gt; assumes that the image file is in your &lt;code&gt;/static/&lt;/code&gt; directory, so the file path you provide should be relative to that directory. In the example below, the knit-logo.png file is located in the &lt;code&gt;/static/images/&lt;/code&gt; directory.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;knitr::include_graphics(rep(&amp;#39;/img/boards.jpg&amp;#39;, 3))&lt;/code&gt;&lt;/pre&gt;
-&lt;div class=&#34;figure&#34;&gt;&lt;span id=&#34;fig:knitr-logo&#34;&gt;&lt;/span&gt;
-&lt;img src=&#34;/img/boards.jpg&#34; alt=&#34;Three knitr logos included in the document from an external PNG image file.&#34; width=&#34;32.8%&#34; /&gt;&lt;img src=&#34;/img/boards.jpg&#34; alt=&#34;Three knitr logos included in the document from an external PNG image file.&#34; width=&#34;32.8%&#34; /&gt;&lt;img src=&#34;/img/boards.jpg&#34; alt=&#34;Three knitr logos included in the document from an external PNG image file.&#34; width=&#34;32.8%&#34; /&gt;
-&lt;p class=&#34;caption&#34;&gt;
-Figure 2: Three knitr logos included in the document from an external PNG image file.
-&lt;/p&gt;
-&lt;/div&gt;
-&lt;p&gt;Figure &lt;a href=&#34;#fig:knitr-logo&#34;&gt;2&lt;/a&gt; is an example of three &lt;strong&gt;knitr&lt;/strong&gt; logos included in a figure environment. You can read more about the advantages of using the &lt;code&gt;knitr::include_graphics()&lt;/code&gt; function &lt;a href=&#34;https://bookdown.org/yihui/bookdown/figures.html&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&#34;footnotes&#34;&gt;
-&lt;hr /&gt;
-&lt;ol&gt;
-&lt;li id=&#34;fn1&#34;&gt;&lt;p&gt;Do not forget the leading backslash! And also note the parentheses &lt;code&gt;()&lt;/code&gt; after &lt;code&gt;ref&lt;/code&gt;; they are not curly braces &lt;code&gt;{}&lt;/code&gt;.&lt;a href=&#34;#fnref1&#34; class=&#34;footnote-back&#34;&gt;↩&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
-&lt;/ol&gt;
 &lt;/div&gt;
 </description>
     </item>
