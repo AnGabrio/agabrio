@@ -84,15 +84,6 @@
     </item>
     
     <item>
-      <title>Health economics</title>
-      <link>/tags/health-economics/</link>
-      <pubDate>Tue, 05 Feb 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/health-economics/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>JAGS</title>
       <link>/tags/jags/</link>
       <pubDate>Mon, 23 Jul 2018 21:13:14 -0500</pubDate>
@@ -125,6 +116,15 @@
       <pubDate>Mon, 23 Jul 2018 21:13:14 -0500</pubDate>
       
       <guid>/tags/linear-regression/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Health economics</title>
+      <link>/tags/health-economics/</link>
+      <pubDate>Mon, 05 Feb 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/health-economics/</guid>
       <description></description>
     </item>
     
