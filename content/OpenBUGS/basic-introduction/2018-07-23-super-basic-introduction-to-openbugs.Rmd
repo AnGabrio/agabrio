@@ -118,7 +118,7 @@ set.seed(123)
 
 Now, we can fit the model in `OpenBUGS` using the `bugs` function in the `R2openBUGS` package and save it in the object `basic.mod`
 
-```{r fit_model, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE,error=FALSE,message=FALSE, cache=TRUE}
+```{r fit_model, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE,error=FALSE,message=FALSE, cache=FALSE}
 basic.mod=bugs(data = datalist, inits = inits, 
   parameters.to.save = params, n.chains = 2, n.iter = 9000,
   n.burnin = 1000, model.file = "basic.mod.txt")
