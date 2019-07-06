@@ -72,7 +72,7 @@ model {
 #model
  for(i in 1:n.sim){
   y[i] ~ dnorm(mu[i], tau)
-  mu[i] = beta0 + beta1 * x[i]
+  mu[i] <- beta0 + beta1 * x[i]
  }
 #priors
 beta0 ~ dnorm(0, 0.01)
@@ -111,7 +111,6 @@ Before using `R2OpenBUGS` for the first time, you need to load the package, and 
 
 ```{r set_seed, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE,error=FALSE,message=FALSE}
 library(R2OpenBUGS)
-library(R2jags)
 set.seed(123)
 ```
 
@@ -120,8 +119,8 @@ set.seed(123)
 Now, we can fit the model in `OpenBUGS` using the `bugs` function in the `R2openBUGS` package and save it in the object `basic.mod`
 
 ```{r fit_model, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE,error=FALSE,message=FALSE}
-basic.mod=jags(data = datalist, inits = inits,
-  parameters.to.save = params, n.chains = 2, n.iter = 9000, 
+basic.mod.bugs=bugs(data = datalist, inits = inits, 
+  parameters.to.save = params, n.chains = 2, n.iter = 9000,
   n.burnin = 1000, model.file = "basicmodbugs.txt")
 ```
 
@@ -132,11 +131,11 @@ While the model is running, the function prints out some information related to 
 Once the model has finished running, a summary of the posteiror estimates and convergence diagnostics for all parameters specified can be seen by typing `print(basic.mod)` or, alternatively,
 
 ```{r print_model, eval=FALSE, echo=TRUE, comment=NA, warning=FALSE,error=FALSE,message=FALSE}
-print(basic.mod$BUGSoutput$summary)
+print(basic.mod.bugs$summary)
 ```
 ```{r print_model2, eval=TRUE, echo=FALSE, comment=NA, warning=FALSE,error=FALSE,message=FALSE}
 options(width = 80, digits = 2)
-print(basic.mod$BUGSoutput$summary)
+print(basic.mod.bugs$summary)
 ```
 
 The posterior distribution of each parameter is summarised in terms of: 
@@ -147,15 +146,22 @@ The posterior distribution of each parameter is summarised in terms of:
 The deviance is a goodness of fit statistic and is used in the construction of the "Deviance Information Criterion" or DIC (@spiegelhalter2014deviance), which is a *relative* measure of model comparison. The DIC of the model can be accessed by typing
 
 ```{r dic, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE,error=FALSE,message=FALSE}
-basic.mod$BUGSoutput$DIC
+basic.mod.bugs$DIC
 ```
 
 ## Diagnostics
 
 More diagnostics are available when we convert the model output into an MCMC object using the command 
 
-```{r diagnostic, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE,error=FALSE,message=FALSE}
-basic.mod.mcmc2=as.mcmc(basic.mod)
+```{r diagnostic, eval=FALSE, echo=TRUE, comment=NA, warning=FALSE,error=FALSE,message=FALSE}
+install.packages("coda")
+library(coda)
+basic.mod.mcmc.bugs=as.mcmc.list(basic.mod.bugs)
+```
+
+```{r diagnosticcoda, eval=TRUE, echo=FALSE, comment=NA, warning=FALSE,error=FALSE,message=FALSE}
+library(coda)
+basic.mod.mcmc.bugs=as.mcmc.list(basic.mod.bugs)
 ```
 
 Different packages are available to perform diagnostic checks for Bayesian models. Here, I install and load the `mcmcplots` package (@curtis2015mcmcplots) to obtain graphical diagnostics and results.
@@ -172,8 +178,8 @@ library(mcmcplots)
 For example, density and trace plots can be obtained by typing 
 
 ```{r diagnostic3, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE,error=FALSE,message=FALSE}
-denplot(basic.mod.mcmc2, parms = c("beta0","beta1"))
-traplot(basic.mod.mcmc2, parms = c("beta0","beta1"))
+denplot(basic.mod.mcmc.bugs, parms = c("beta0","beta1"))
+traplot(basic.mod.mcmc.bugs, parms = c("beta0","beta1"))
 ```
 
 Both types of graphs suggest that there are not issues in the convergence of the algorithm (smooth normal densities and hairy caterpillar graphs for both MCMC chains).

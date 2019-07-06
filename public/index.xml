@@ -594,7 +594,7 @@ deviance 278.9 2.508 276.04 277.1 278.2 279.9 285.5    1  2000&lt;/code&gt;&lt;/
 + #model
 +  for(i in 1:n.sim){
 +   y[i] ~ dnorm(mu[i], tau)
-+   mu[i] = beta0 + beta1 * x[i]
++   mu[i] &amp;lt;- beta0 + beta1 * x[i]
 +  }
 + #priors
 + beta0 ~ dnorm(0, 0.01)
@@ -614,54 +614,46 @@ deviance 278.9 2.508 276.04 277.1 278.2 279.9 285.5    1  2000&lt;/code&gt;&lt;/
 &lt;p&gt;The function creates a list that contains one element for each parameter, which gets assigned a random draw from a normal distribution as a strating value for each chain in the model. For simple models like this, it is generally easy to define the intial values for all parameters in the object &lt;code&gt;inits&lt;/code&gt; which is then passed to the &lt;code&gt;bugs&lt;/code&gt; function in &lt;code&gt;R2OpenBUGS&lt;/code&gt;. However, for more complex models, this may not be immediate and a lot of trial and error may be required.&lt;/p&gt;
 &lt;p&gt;Before using &lt;code&gt;R2OpenBUGS&lt;/code&gt; for the first time, you need to load the package, and you may want to set a random seed number for making your estimates replicable&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(R2OpenBUGS)
-&amp;gt; library(R2jags)
 &amp;gt; set.seed(123)&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 &lt;div id=&#34;fit-the-model&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Fit the model&lt;/h2&gt;
 &lt;p&gt;Now, we can fit the model in &lt;code&gt;OpenBUGS&lt;/code&gt; using the &lt;code&gt;bugs&lt;/code&gt; function in the &lt;code&gt;R2openBUGS&lt;/code&gt; package and save it in the object &lt;code&gt;basic.mod&lt;/code&gt;&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; basic.mod=jags(data = datalist, inits = inits,
-+   parameters.to.save = params, n.chains = 2, n.iter = 9000, 
-+   n.burnin = 1000, model.file = &amp;quot;basicmodbugs.txt&amp;quot;)
-Compiling model graph
-   Resolving undeclared variables
-   Allocating nodes
-Graph information:
-   Observed stochastic nodes: 100
-   Unobserved stochastic nodes: 3
-   Total graph size: 406
-
-Initializing model&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; basic.mod.bugs=bugs(data = datalist, inits = inits, 
++   parameters.to.save = params, n.chains = 2, n.iter = 9000,
++   n.burnin = 1000, model.file = &amp;quot;basicmodbugs.txt&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;While the model is running, the function prints out some information related to the Bayesian graph (corresponding to the specification used for the model) underneath &lt;code&gt;OpenBUGS&lt;/code&gt;, such as number of observed and unobserved nodes and graph size.&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;post-processing&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Post-processing&lt;/h2&gt;
 &lt;p&gt;Once the model has finished running, a summary of the posteiror estimates and convergence diagnostics for all parameters specified can be seen by typing &lt;code&gt;print(basic.mod)&lt;/code&gt; or, alternatively,&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; print(basic.mod$BUGSoutput$summary)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; print(basic.mod.bugs$summary)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;          mean    sd   2.5%   25%   50%   75% 97.5% Rhat n.eff
-beta0      1.5 0.297   0.93   1.3   1.5   1.7   2.1    1  2000
-beta1      1.2 0.054   1.07   1.1   1.2   1.2   1.3    1  2000
-deviance 278.9 2.508 276.03 277.1 278.2 280.0 285.3    1  1600&lt;/code&gt;&lt;/pre&gt;
+beta0      1.5 0.296   0.94   1.3   1.5   1.7   2.1    1   730
+beta1      1.2 0.054   1.07   1.1   1.2   1.2   1.3    1   660
+deviance 278.9 2.519 276.00 277.1 278.3 280.0 285.3    1 16000&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;The posterior distribution of each parameter is summarised in terms of:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;The mean, sd and some percentiles&lt;/li&gt;
 &lt;li&gt;Potential scale reduction factor &lt;code&gt;Rhat&lt;/code&gt; and effective sample size &lt;code&gt;n.eff&lt;/code&gt; (&lt;span class=&#34;citation&#34;&gt;Gelman (2013)&lt;/span&gt;). The first is a measure to assess issues in convergence of the MCMC algorithm (typically a value below &lt;span class=&#34;math inline&#34;&gt;\(1.05\)&lt;/span&gt; for all parameters is considered ok). The second is a measure which assesses the adequacy of the posterior sample (typically values close to the total number of iterations are desirable for all parameters).&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;The deviance is a goodness of fit statistic and is used in the construction of the “Deviance Information Criterion” or DIC (&lt;span class=&#34;citation&#34;&gt;Spiegelhalter et al. (2014)&lt;/span&gt;), which is a &lt;em&gt;relative&lt;/em&gt; measure of model comparison. The DIC of the model can be accessed by typing&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; basic.mod$BUGSoutput$DIC
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; basic.mod.bugs$DIC
 [1] 282&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 &lt;div id=&#34;diagnostics&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Diagnostics&lt;/h2&gt;
 &lt;p&gt;More diagnostics are available when we convert the model output into an MCMC object using the command&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; basic.mod.mcmc2=as.mcmc(basic.mod)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; install.packages(&amp;quot;coda&amp;quot;)
+&amp;gt; library(coda)
+&amp;gt; basic.mod.mcmc.bugs=as.mcmc.list(basic.mod.bugs)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;Different packages are available to perform diagnostic checks for Bayesian models. Here, I install and load the &lt;code&gt;mcmcplots&lt;/code&gt; package (&lt;span class=&#34;citation&#34;&gt;Curtis (2015)&lt;/span&gt;) to obtain graphical diagnostics and results.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; install.packages(&amp;quot;mcmcplots&amp;quot;)
 &amp;gt; library(mcmcplots)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;For example, density and trace plots can be obtained by typing&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; denplot(basic.mod.mcmc2, parms = c(&amp;quot;beta0&amp;quot;,&amp;quot;beta1&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; denplot(basic.mod.mcmc.bugs, parms = c(&amp;quot;beta0&amp;quot;,&amp;quot;beta1&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/OpenBUGS/basic-introduction-to-openbugs/2018-07-23-super-basic-introduction-to-openbugs_files/figure-html/diagnostic3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; traplot(basic.mod.mcmc2, parms = c(&amp;quot;beta0&amp;quot;,&amp;quot;beta1&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; traplot(basic.mod.mcmc.bugs, parms = c(&amp;quot;beta0&amp;quot;,&amp;quot;beta1&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/OpenBUGS/basic-introduction-to-openbugs/2018-07-23-super-basic-introduction-to-openbugs_files/figure-html/diagnostic3-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Both types of graphs suggest that there are not issues in the convergence of the algorithm (smooth normal densities and hairy caterpillar graphs for both MCMC chains).&lt;/p&gt;
 &lt;/div&gt;
