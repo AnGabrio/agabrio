@@ -291,13 +291,12 @@
   </url>
   
   <url>
-    <loc>/tags/health-economics/</loc>
+    <loc>/missinghe/</loc>
     <lastmod>2018-02-05T00:00:00+00:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
-    <loc>/missinghe/</loc>
+    <loc>/missinghe/missinghe/missinghe/</loc>
     <lastmod>2018-02-05T00:00:00+00:00</lastmod>
   </url>
   
@@ -342,6 +341,12 @@
   <url>
     <loc>/project/bayesian-modelling/</loc>
     <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/health-economics/</loc>
+    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>

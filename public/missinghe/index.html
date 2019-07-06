@@ -28,7 +28,7 @@
   
     
   
-  <meta name="description" content="missingHE is a R package aimed at providing some useful tools to analysts in order to handle missing outcome data under a Full Bayesian framework in economic evaluations. The package relies on the R package R2jags to implement Bayesian methods via the statistical software JAGS. The package allows to obtain inferences using Markov Chain Monte Carlo (MCMC) methods under a range of modelling approaches and missing data assumptions. The package also contains functions specifically defined to assess model fit and possible issues in model convergence as well as to summarise the main results from the economic analysis.">
+  <meta name="description" content="Research Fellow in Statistics and Health Economics">
 
   
   <link rel="alternate" hreflang="en-us" href="/missinghe/">
@@ -101,6 +101,9 @@
   
 
   
+  <link rel="alternate" href="/missinghe/index.xml" type="application/rss+xml" title="Andrea Gabrio">
+  <link rel="feed" href="/missinghe/index.xml" type="application/rss+xml" title="Andrea Gabrio">
+  
 
   <link rel="manifest" href="/site.webmanifest">
   <link rel="icon" type="image/png" href="/img/icon.png">
@@ -120,12 +123,10 @@
   <meta property="og:site_name" content="Andrea Gabrio">
   <meta property="og:url" content="/missinghe/">
   <meta property="og:title" content="missingHE | Andrea Gabrio">
-  <meta property="og:description" content="missingHE is a R package aimed at providing some useful tools to analysts in order to handle missing outcome data under a Full Bayesian framework in economic evaluations. The package relies on the R package R2jags to implement Bayesian methods via the statistical software JAGS. The package allows to obtain inferences using Markov Chain Monte Carlo (MCMC) methods under a range of modelling approaches and missing data assumptions. The package also contains functions specifically defined to assess model fit and possible issues in model convergence as well as to summarise the main results from the economic analysis."><meta property="og:image" content="/img/icon-192.png">
+  <meta property="og:description" content="Research Fellow in Statistics and Health Economics"><meta property="og:image" content="/img/icon-192.png">
   <meta property="og:locale" content="en-us">
   
-  <meta property="article:published_time" content="2018-02-05T00:00:00&#43;00:00">
-  
-  <meta property="article:modified_time" content="2018-02-05T00:00:00&#43;00:00">
+  <meta property="og:updated_time" content="2018-02-05T00:00:00&#43;00:00">
   
 
   
@@ -142,7 +143,7 @@
 </head>
 
 
-<body id="top" data-spy="scroll" data-target="#TableOfContents" data-offset="71" >
+<body id="top" data-spy="scroll" data-target="#navbar-main" data-offset="71" >
 
   <aside class="search-results" id="search">
   <div class="container">
@@ -375,8 +376,6 @@
 </nav>
 
 
-  <article class="article" itemscope itemtype="http://schema.org/Article">
-
   
 
 
@@ -395,12 +394,42 @@
   
   
   
-<div class="article-container pt-3">
+    
+  
+<div class="universal-wrapper pt-3">
   <h1 itemprop="name">missingHE</h1>
 
   
-  <p class="page-subtitle">A R package to handle missingness in health economic evaluations</p>
+  <p class="page-subtitle">A R package to handle missingness in health economic evaluations.</p>
   
+
+  
+</div>
+
+
+
+<div class="universal-wrapper">
+
+  
+
+  
+  
+    
+      
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<div class="card-simple" itemscope itemtype="http://schema.org/CreativeWork">
 
   
     
@@ -427,192 +456,58 @@
   
 
   
-
-  
-
-  
-
-  
-  
-
-  
-  
-
-  
+  <span class="article-date">
     
-
-  
-
-</div>
-
     
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="btn-links mb-3">
-  
-  
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
-
-  
-  
-    
-  
-<a class="btn btn-outline-primary my-1 mr-1" href="https://github.com/AnGabrio/missingHE" target="_blank" rel="noopener">
-  Code
-</a>
-
-
-
-
-  
-    
-  
-
-
-
-
-
-
-
-
-
-
-  
-  
-  
-    
-  
-  
-  
-  
-  
-    
-  
-  <a class="btn btn-outline-primary my-1 mr-1" href="https://github.com/AnGabrio/short-course/blob/master/solutions/solutions-knitr.pdf" target="_blank" rel="noopener">
-    
-    Workshop
-  </a>
-
-
-</div>
-
-
-  
-</div>
-
-
-
-  <div class="article-container">
-
-    <div class="article-style" itemprop="articleBody">
       
-
-<p><code>missingHE</code> is a <code>R</code> package aimed at providing some useful tools to analysts in order to handle missing outcome data under a Full Bayesian framework in economic evaluations. The package relies on the <code>R</code> package <code>R2jags</code> to implement Bayesian methods via the statistical software <code>JAGS</code>. The package allows to obtain inferences using Markov Chain Monte Carlo (MCMC) methods under a range of modelling approaches and missing data assumptions. The package also contains functions specifically defined to assess model fit and possible issues in model convergence as well as to summarise the main results from the economic analysis.</p>
-
-<p>Missing data are iteratively imputed using data augmentation methods according to the type of model, distribution and missingness assumptions specified by the user using different arguments in the functions of the package. The posterior distribution of the main quantities of interest (e.g. some suitable measures of costs and clinical benefits) is then summarised to assess the cost-effectiveness of a new intervention ($t=2$) against a standard intervention ($t=1$).</p>
-
-<p><code>missingHE</code> produces plots which compares the observed and imputed values for both cost and benefit measures in each treatment intervention considered to detect possible concerns about the plausibility of the imputation methods. In addition, the output of <code>missingHE</code> cab be analysed using different funtions in the <code>R</code> package <code>BCEA</code> which produces a synthesis of the decision process given the current evidence and uncertainty, as well as several indicators that can be used to perform Probabilistic Sensitivity Analysis to parameter and model uncertainty.</p>
-
-<p><img src="imputed.jpg" alt="png" /></p>
-
-<h1 id="example">Example</h1>
-
-<pre><code class="language-r">library(missingHE)
-model.sel &lt;- selection(data = MenSS, model.eff = e ~ u.0, model.cost = c ~ e, model.me = me ~ 1, model.mc = mc ~ 1, 
-                       type = &quot;MAR&quot;, n.chains = 2, n.iter = 10000, n.burnin = 1000, dist_e = &quot;norm&quot;, dist_c = &quot;norm&quot;)
-summary(model.sel)
-</code></pre>
-
-<pre><code class="language-r"> Cost-effectiveness analysis summary 
- 
- Comparator intervention: intervention 1 
- Reference intervention: intervention 2 
- 
- Parameter estimates under MAR assumption
- 
- Comparator intervention 
-               mean     sd      LB      UB
-mean.effects  0.874  0.017   0.846   0.901
-mean.costs   238.34 52.432 153.541 325.355
-
- Reference intervention 
-                  mean    sd      LB      UB
-mean.effects.1   0.917 0.022   0.881   0.953
-mean.costs.1   186.825 41.26 119.672 254.125
-
- Incremental results 
-                   mean     sd       LB     UB
-delta.effects     0.043  0.028   -0.003  0.089
-delta.costs     -51.514 67.025 -162.862 58.327
-ICER          -1198.431
-</code></pre>
-
-<h1 id="installation">Installation</h1>
-
-<p>There are two ways of installing <code>missingHE</code>. A <em>stable</em> version (currently 1.1.1) is packaged and available from <a href="https://cran.r-project.org/web/packages/missingHE/" target="_blank">CRAN</a>. You can simply type on your <code>R</code> terminal</p>
-
-<pre><code class="language-r">install.packages(&quot;missingHE&quot;)
-</code></pre>
-
-<p>The second way involves using the <em>development</em> version of <code>missingHE</code>, which is available from <a href="https://github.com/AnGabrio/missingHE" target="_blank">GitHub</a> - this will usually be updated more frequently and may be continuously tested. On Windows machines, you need to install a few dependencies, including Rtools first, e.g. by running</p>
-
-<pre><code class="language-r">pkgs &lt;- c(&quot;R2jags&quot;,&quot;Rtools&quot;,&quot;devtools&quot;)
-</code></pre>
-
-<p>before installing the package using <code>devtools</code>:</p>
-
-<pre><code class="language-r">devtools::install_github(&quot;AnGabrio/missingHE&quot;)
-</code></pre>
-
-    </div>
-
     
+    <time>Feb 5, 2018</time>
+  </span>
+  
 
-<div class="article-tags">
   
-  <a class="badge badge-light" href="/tags/bayesian-statistics/">Bayesian statistics</a>
+
   
-  <a class="badge badge-light" href="/tags/missing-data/">Missing Data</a>
+
   
-  <a class="badge badge-light" href="/tags/health-economics/">Health economics</a>
   
+
+  
+  
+  <span class="middot-divider"></span>
+  <span class="article-categories">
+    <i class="fas fa-folder"></i>
+    <a href="/categories/r/">R</a></span>
+  
+
+  
+
 </div>
 
+  
 
+  
+  
+  
+
+  <h3 class="article-title mb-1 mt-3" itemprop="name">
+    <a href="/missinghe/missinghe/missinghe/" itemprop="url">missingHE</a>
+  </h3>
+
+
+
+
+
+  
+
+</div>
 
     
 
-    
-
-    
+  
 
 
-  </div>
-</article>
+</div>
 
       
 

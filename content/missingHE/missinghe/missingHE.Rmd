@@ -1,0 +1,43 @@
+---
+title: "missingHE"
+subtitle: "A R package to handle missingness in health economic evaluations"
+author: "Andrea Gabrio"
+date: 2018-02-05T00:00:00Z
+categories: ["R"]
+tags: ["missing data", "Bayesian statistics"]
+authors: ["Andrea Gabrio"]
+draft: no
+slug: missinghe
+links:
+- name: Workshop
+  url: https://github.com/AnGabrio/short-course/blob/master/solutions/solutions-knitr.pdf
+url_code: "https://github.com/AnGabrio/missingHE"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, prompt = TRUE, background = '#FFFFFF')
+```
+
+The focus of this simple tutorial is to provide a brief introduction and overview about how to fit Bayesian models using `STAN` via `R`.
+
+Prerequisites:
+
+* The latest version of `R`, which can be downloaded and installed for Windows, Mac or Linux OS from the [CRAN](https://www.r-project.org/}) website
+* I also **strongly** recommend to download and install [Rstudio](https://www.rstudio.com/), an integrated development environment which provides an "user-friendly" interaction with `R` (e.g. many drop-down menus, tabs, customisation options)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

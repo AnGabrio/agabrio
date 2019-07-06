@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>missingHE on Andrea Gabrio</title>
+    <link>/missinghe/</link>
+    <description>Recent content in missingHE on Andrea Gabrio</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 05 Feb 2018 00:00:00 +0000</lastBuildDate>
+    
+	    <atom:link href="/missinghe/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>missingHE</title>
+      <link>/missinghe/missinghe/missinghe/</link>
+      <pubDate>Mon, 05 Feb 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/missinghe/missinghe/missinghe/</guid>
+      <description>
+
+
+&lt;p&gt;The focus of this simple tutorial is to provide a brief introduction and overview about how to fit Bayesian models using &lt;code&gt;STAN&lt;/code&gt; via &lt;code&gt;R&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Prerequisites:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The latest version of &lt;code&gt;R&lt;/code&gt;, which can be downloaded and installed for Windows, Mac or Linux OS from the &lt;a href=&#34;https://www.r-project.org/%7D&#34;&gt;CRAN&lt;/a&gt; website&lt;/li&gt;
+&lt;li&gt;I also &lt;strong&gt;strongly&lt;/strong&gt; recommend to download and install &lt;a href=&#34;https://www.rstudio.com/&#34;&gt;Rstudio&lt;/a&gt;, an integrated development environment which provides an “user-friendly” interaction with &lt;code&gt;R&lt;/code&gt; (e.g. many drop-down menus, tabs, customisation options)&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
