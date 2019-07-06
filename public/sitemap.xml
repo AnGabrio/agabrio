@@ -216,34 +216,6 @@
   </url>
   
   <url>
-    <loc>/openbugs/</loc>
-    <lastmod>2018-07-23T21:13:15-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/openbugs/</loc>
-    <lastmod>2018-07-23T21:13:15-05:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/openbugs/basic-introduction/super-basic-introduction-to-openbugs/</loc>
-    <lastmod>2018-07-23T21:13:15-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/introduction/</loc>
-    <lastmod>2018-07-23T21:13:15-05:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/tags/linear-regression/</loc>
-    <lastmod>2018-07-23T21:13:15-05:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>/jags/</loc>
     <lastmod>2018-07-23T21:13:14-05:00</lastmod>
   </url>
@@ -273,6 +245,34 @@
   <url>
     <loc>/stan/basic-introduction/super-basic-introduction-to-stan/</loc>
     <lastmod>2018-07-23T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/introduction/</loc>
+    <lastmod>2018-07-23T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/linear-regression/</loc>
+    <lastmod>2018-07-23T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/openbugs/</loc>
+    <lastmod>2018-07-23T21:13:12-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/openbugs/</loc>
+    <lastmod>2018-07-23T21:13:12-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/openbugs/basic-introduction/super-basic-introduction-to-openbugs/</loc>
+    <lastmod>2018-07-23T21:13:12-05:00</lastmod>
   </url>
   
   <url>

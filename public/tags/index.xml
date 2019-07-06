@@ -84,33 +84,6 @@
     </item>
     
     <item>
-      <title>OpenBUGS</title>
-      <link>/tags/openbugs/</link>
-      <pubDate>Mon, 23 Jul 2018 21:13:15 -0500</pubDate>
-      
-      <guid>/tags/openbugs/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>introduction</title>
-      <link>/tags/introduction/</link>
-      <pubDate>Mon, 23 Jul 2018 21:13:15 -0500</pubDate>
-      
-      <guid>/tags/introduction/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>linear regression</title>
-      <link>/tags/linear-regression/</link>
-      <pubDate>Mon, 23 Jul 2018 21:13:15 -0500</pubDate>
-      
-      <guid>/tags/linear-regression/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>JAGS</title>
       <link>/tags/jags/</link>
       <pubDate>Mon, 23 Jul 2018 21:13:14 -0500</pubDate>
@@ -125,6 +98,33 @@
       <pubDate>Mon, 23 Jul 2018 21:13:14 -0500</pubDate>
       
       <guid>/tags/stan/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>introduction</title>
+      <link>/tags/introduction/</link>
+      <pubDate>Mon, 23 Jul 2018 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/introduction/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>linear regression</title>
+      <link>/tags/linear-regression/</link>
+      <pubDate>Mon, 23 Jul 2018 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/linear-regression/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>OpenBUGS</title>
+      <link>/tags/openbugs/</link>
+      <pubDate>Mon, 23 Jul 2018 21:13:12 -0500</pubDate>
+      
+      <guid>/tags/openbugs/</guid>
       <description></description>
     </item>
     
