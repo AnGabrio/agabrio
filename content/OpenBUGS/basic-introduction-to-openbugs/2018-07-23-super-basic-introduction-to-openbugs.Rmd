@@ -1,11 +1,11 @@
 ---
 title: "Super basic introduction to OpenBUGS"
 author: "Andrea Gabrio"
-date: 2018-07-23T21:13:14-05:00
+date: 2018-07-23T21:11:14-05:00
 categories: ["R"]
 tags: ["linear regression", "OpenBUGS", "introduction"]
 authors: ["Andrea Gabrio"]
-bibliography: [citations_jags.bib]
+bibliography: [citations_openbugs.bib]
 draft: no
 slug: super-basic-introduction-to-openbugs
 ---
@@ -14,7 +14,7 @@ slug: super-basic-introduction-to-openbugs
 knitr::opts_chunk$set(collapse = TRUE, prompt = TRUE, background = '#FFFFFF')
 ```
 
-The focus of this simple tutorial is to provide a brief introduction and overview about how to fit Bayesian models using `JAGS` via `R`.
+The focus of this simple tutorial is to provide a brief introduction and overview about how to fit Bayesian models using `OpenBUGS` via `R`.
 
 Prerequisites:
 

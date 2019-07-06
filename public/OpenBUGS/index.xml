@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Bayesian analysis using R and JAGS on Andrea Gabrio</title>
+    <title>Bayesian analysis using R and OpenBUGS on Andrea Gabrio</title>
     <link>/openbugs/</link>
-    <description>Recent content in Bayesian analysis using R and JAGS on Andrea Gabrio</description>
+    <description>Recent content in Bayesian analysis using R and OpenBUGS on Andrea Gabrio</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 23 Jul 2018 21:13:14 -0500</lastBuildDate>
+    <lastBuildDate>Mon, 23 Jul 2018 21:11:14 -0500</lastBuildDate>
     
 	    <atom:link href="/openbugs/index.xml" rel="self" type="application/rss+xml" />
     
@@ -14,13 +14,13 @@
     <item>
       <title>Super basic introduction to OpenBUGS</title>
       <link>/openbugs/basic-introduction-to-openbugs/super-basic-introduction-to-openbugs/</link>
-      <pubDate>Mon, 23 Jul 2018 21:13:14 -0500</pubDate>
+      <pubDate>Mon, 23 Jul 2018 21:11:14 -0500</pubDate>
       
       <guid>/openbugs/basic-introduction-to-openbugs/super-basic-introduction-to-openbugs/</guid>
       <description>
 
 
-&lt;p&gt;The focus of this simple tutorial is to provide a brief introduction and overview about how to fit Bayesian models using &lt;code&gt;JAGS&lt;/code&gt; via &lt;code&gt;R&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;The focus of this simple tutorial is to provide a brief introduction and overview about how to fit Bayesian models using &lt;code&gt;OpenBUGS&lt;/code&gt; via &lt;code&gt;R&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;Prerequisites:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;The latest version of &lt;code&gt;R&lt;/code&gt;, which can be downloaded and installed for Windows, Mac or Linux OS from the &lt;a href=&#34;https://www.r-project.org/%7D&#34;&gt;CRAN&lt;/a&gt; website&lt;/li&gt;
@@ -30,7 +30,7 @@
 &lt;h1&gt;Preliminaries&lt;/h1&gt;
 &lt;div id=&#34;what-is-jags&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;What is JAGS?&lt;/h2&gt;
-&lt;p&gt;&lt;code&gt;JAGS&lt;/code&gt; or &lt;strong&gt;J&lt;/strong&gt;ust &lt;strong&gt;A&lt;/strong&gt;nother &lt;strong&gt;G&lt;/strong&gt;ibbs &lt;strong&gt;S&lt;/strong&gt;ampler is a program for analysis of Bayesian models using Markov Chain Monte Carlo (MCMC) methods (&lt;span class=&#34;citation&#34;&gt;Plummer (2004)&lt;/span&gt;). &lt;code&gt;JAGS&lt;/code&gt; is a free software based on the &lt;strong&gt;B&lt;/strong&gt;ayesian inference &lt;strong&gt;U&lt;/strong&gt;sing &lt;strong&gt;G&lt;/strong&gt;ibbs &lt;strong&gt;S&lt;/strong&gt;ampling (informally &lt;code&gt;BUGS&lt;/code&gt;) language at the base of &lt;code&gt;WinBUGS/OpenBUGS&lt;/code&gt; but, unlike these programs, it is written in &lt;code&gt;C++&lt;/code&gt; and is platform independent. The latest version of &lt;code&gt;JAGS&lt;/code&gt; can be dowloaded from Martyn Plummer’s &lt;a href=&#34;https://sourceforge.net/projects/mcmc-jags/files/JAGS/&#34;&gt;repository&lt;/a&gt; and is available for different OS. There are different &lt;code&gt;R&lt;/code&gt; packages which function as frontends for &lt;code&gt;JAGS&lt;/code&gt;. These packages make it easy to process the output of Bayesian models and present it in publication-ready form. In this brief introduction, I will specifically focus on the &lt;code&gt;R2jags&lt;/code&gt; package (&lt;span class=&#34;citation&#34;&gt;Su et al. (2015)&lt;/span&gt;) and show how to fit &lt;code&gt;JAGS&lt;/code&gt; models using this package.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;JAGS&lt;/code&gt; or &lt;strong&gt;J&lt;/strong&gt;ust &lt;strong&gt;A&lt;/strong&gt;nother &lt;strong&gt;G&lt;/strong&gt;ibbs &lt;strong&gt;S&lt;/strong&gt;ampler is a program for analysis of Bayesian models using Markov Chain Monte Carlo (MCMC) methods (&lt;span class=&#34;citation&#34;&gt;(&lt;span class=&#34;citeproc-not-found&#34; data-reference-id=&#34;plummer2004jags&#34;&gt;&lt;strong&gt;???&lt;/strong&gt;&lt;/span&gt;)&lt;/span&gt;). &lt;code&gt;JAGS&lt;/code&gt; is a free software based on the &lt;strong&gt;B&lt;/strong&gt;ayesian inference &lt;strong&gt;U&lt;/strong&gt;sing &lt;strong&gt;G&lt;/strong&gt;ibbs &lt;strong&gt;S&lt;/strong&gt;ampling (informally &lt;code&gt;BUGS&lt;/code&gt;) language at the base of &lt;code&gt;WinBUGS/OpenBUGS&lt;/code&gt; but, unlike these programs, it is written in &lt;code&gt;C++&lt;/code&gt; and is platform independent. The latest version of &lt;code&gt;JAGS&lt;/code&gt; can be dowloaded from Martyn Plummer’s &lt;a href=&#34;https://sourceforge.net/projects/mcmc-jags/files/JAGS/&#34;&gt;repository&lt;/a&gt; and is available for different OS. There are different &lt;code&gt;R&lt;/code&gt; packages which function as frontends for &lt;code&gt;JAGS&lt;/code&gt;. These packages make it easy to process the output of Bayesian models and present it in publication-ready form. In this brief introduction, I will specifically focus on the &lt;code&gt;R2jags&lt;/code&gt; package (&lt;span class=&#34;citation&#34;&gt;(&lt;span class=&#34;citeproc-not-found&#34; data-reference-id=&#34;su2015package&#34;&gt;&lt;strong&gt;???&lt;/strong&gt;&lt;/span&gt;)&lt;/span&gt;) and show how to fit &lt;code&gt;JAGS&lt;/code&gt; models using this package.&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;installing-jags-and-r2jags&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Installing JAGS and R2jags&lt;/h2&gt;
@@ -147,14 +147,8 @@ deviance 278.9 2.508 276.04 277.1 278.2 279.9 285.5    1  2000&lt;/code&gt;&lt;/
 &lt;div id=&#34;ref-gelman2013bayesian&#34;&gt;
 &lt;p&gt;Gelman, Andrew. 2013. &lt;em&gt;Bayesian Data Analysis&lt;/em&gt;. Chapman; Hall/CRC.&lt;/p&gt;
 &lt;/div&gt;
-&lt;div id=&#34;ref-plummer2004jags&#34;&gt;
-&lt;p&gt;Plummer, Martyn. 2004. “JAGS: Just Another Gibbs Sampler.”&lt;/p&gt;
-&lt;/div&gt;
 &lt;div id=&#34;ref-spiegelhalter2014deviance&#34;&gt;
 &lt;p&gt;Spiegelhalter, David J, Nicola G Best, Bradley P Carlin, and Angelika Van Der Linde. 2014. “The Deviance Information Criterion: 12 Years on.” &lt;em&gt;Journal of the Royal Statistical Society: Series B (Statistical Methodology)&lt;/em&gt; 76 (3): 485–93.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div id=&#34;ref-su2015package&#34;&gt;
-&lt;p&gt;Su, Yu-Sung, Masanao Yajima, Maintainer Yu-Sung Su, and JAGS SystemRequirements. 2015. “Package ‘R2jags’.” &lt;em&gt;R Package Version 0.03-08, URL Http://CRAN. R-Project. Org/Package= R2jags&lt;/em&gt;.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;

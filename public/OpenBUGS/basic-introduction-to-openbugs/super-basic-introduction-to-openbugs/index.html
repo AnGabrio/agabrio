@@ -28,7 +28,7 @@
   
     
   
-  <meta name="description" content="The focus of this simple tutorial is to provide a brief introduction and overview about how to fit Bayesian models using JAGS via R.
+  <meta name="description" content="The focus of this simple tutorial is to provide a brief introduction and overview about how to fit Bayesian models using OpenBUGS via R.
 Prerequisites:
 The latest version of R, which can be downloaded and installed for Windows, Mac or Linux OS from the CRAN websiteI also strongly recommend to download and install Rstudio, an integrated development environment which provides an “user-friendly” interaction with R (e.g. many drop-down menus, tabs, customisation options)PreliminariesWhat is JAGS?">
 
@@ -122,14 +122,14 @@ Prerequisites:
   <meta property="og:site_name" content="Andrea Gabrio">
   <meta property="og:url" content="/openbugs/basic-introduction-to-openbugs/super-basic-introduction-to-openbugs/">
   <meta property="og:title" content="Super basic introduction to OpenBUGS | Andrea Gabrio">
-  <meta property="og:description" content="The focus of this simple tutorial is to provide a brief introduction and overview about how to fit Bayesian models using JAGS via R.
+  <meta property="og:description" content="The focus of this simple tutorial is to provide a brief introduction and overview about how to fit Bayesian models using OpenBUGS via R.
 Prerequisites:
 The latest version of R, which can be downloaded and installed for Windows, Mac or Linux OS from the CRAN websiteI also strongly recommend to download and install Rstudio, an integrated development environment which provides an “user-friendly” interaction with R (e.g. many drop-down menus, tabs, customisation options)PreliminariesWhat is JAGS?"><meta property="og:image" content="/img/icon-192.png">
   <meta property="og:locale" content="en-us">
   
-  <meta property="article:published_time" content="2018-07-23T21:13:14-05:00">
+  <meta property="article:published_time" content="2018-07-23T21:11:14-05:00">
   
-  <meta property="article:modified_time" content="2018-07-23T21:13:14-05:00">
+  <meta property="article:modified_time" content="2018-07-23T21:11:14-05:00">
   
 
   
@@ -409,8 +409,8 @@ Prerequisites:
 
 
 
-<meta content="2018-07-23 21:13:14 -0500 -0500" itemprop="datePublished">
-<meta content="2018-07-23 21:13:14 -0500 -0500" itemprop="dateModified">
+<meta content="2018-07-23 21:11:14 -0500 -0500" itemprop="datePublished">
+<meta content="2018-07-23 21:11:14 -0500 -0500" itemprop="dateModified">
 
 <div class="article-metadata">
 
@@ -486,7 +486,7 @@ Prerequisites:
       
 
 
-<p>The focus of this simple tutorial is to provide a brief introduction and overview about how to fit Bayesian models using <code>JAGS</code> via <code>R</code>.</p>
+<p>The focus of this simple tutorial is to provide a brief introduction and overview about how to fit Bayesian models using <code>OpenBUGS</code> via <code>R</code>.</p>
 <p>Prerequisites:</p>
 <ul>
 <li>The latest version of <code>R</code>, which can be downloaded and installed for Windows, Mac or Linux OS from the <a href="https://www.r-project.org/%7D">CRAN</a> website</li>
@@ -496,7 +496,7 @@ Prerequisites:
 <h1>Preliminaries</h1>
 <div id="what-is-jags" class="section level2">
 <h2>What is JAGS?</h2>
-<p><code>JAGS</code> or <strong>J</strong>ust <strong>A</strong>nother <strong>G</strong>ibbs <strong>S</strong>ampler is a program for analysis of Bayesian models using Markov Chain Monte Carlo (MCMC) methods (<span class="citation">Plummer (2004)</span>). <code>JAGS</code> is a free software based on the <strong>B</strong>ayesian inference <strong>U</strong>sing <strong>G</strong>ibbs <strong>S</strong>ampling (informally <code>BUGS</code>) language at the base of <code>WinBUGS/OpenBUGS</code> but, unlike these programs, it is written in <code>C++</code> and is platform independent. The latest version of <code>JAGS</code> can be dowloaded from Martyn Plummer’s <a href="https://sourceforge.net/projects/mcmc-jags/files/JAGS/">repository</a> and is available for different OS. There are different <code>R</code> packages which function as frontends for <code>JAGS</code>. These packages make it easy to process the output of Bayesian models and present it in publication-ready form. In this brief introduction, I will specifically focus on the <code>R2jags</code> package (<span class="citation">Su et al. (2015)</span>) and show how to fit <code>JAGS</code> models using this package.</p>
+<p><code>JAGS</code> or <strong>J</strong>ust <strong>A</strong>nother <strong>G</strong>ibbs <strong>S</strong>ampler is a program for analysis of Bayesian models using Markov Chain Monte Carlo (MCMC) methods (<span class="citation">(<span class="citeproc-not-found" data-reference-id="plummer2004jags"><strong>???</strong></span>)</span>). <code>JAGS</code> is a free software based on the <strong>B</strong>ayesian inference <strong>U</strong>sing <strong>G</strong>ibbs <strong>S</strong>ampling (informally <code>BUGS</code>) language at the base of <code>WinBUGS/OpenBUGS</code> but, unlike these programs, it is written in <code>C++</code> and is platform independent. The latest version of <code>JAGS</code> can be dowloaded from Martyn Plummer’s <a href="https://sourceforge.net/projects/mcmc-jags/files/JAGS/">repository</a> and is available for different OS. There are different <code>R</code> packages which function as frontends for <code>JAGS</code>. These packages make it easy to process the output of Bayesian models and present it in publication-ready form. In this brief introduction, I will specifically focus on the <code>R2jags</code> package (<span class="citation">(<span class="citeproc-not-found" data-reference-id="su2015package"><strong>???</strong></span>)</span>) and show how to fit <code>JAGS</code> models using this package.</p>
 </div>
 <div id="installing-jags-and-r2jags" class="section level2">
 <h2>Installing JAGS and R2jags</h2>
@@ -613,14 +613,8 @@ deviance 278.9 2.508 276.04 277.1 278.2 279.9 285.5    1  2000</code></pre>
 <div id="ref-gelman2013bayesian">
 <p>Gelman, Andrew. 2013. <em>Bayesian Data Analysis</em>. Chapman; Hall/CRC.</p>
 </div>
-<div id="ref-plummer2004jags">
-<p>Plummer, Martyn. 2004. “JAGS: Just Another Gibbs Sampler.”</p>
-</div>
 <div id="ref-spiegelhalter2014deviance">
 <p>Spiegelhalter, David J, Nicola G Best, Bradley P Carlin, and Angelika Van Der Linde. 2014. “The Deviance Information Criterion: 12 Years on.” <em>Journal of the Royal Statistical Society: Series B (Statistical Methodology)</em> 76 (3): 485–93.</p>
-</div>
-<div id="ref-su2015package">
-<p>Su, Yu-Sung, Masanao Yajima, Maintainer Yu-Sung Su, and JAGS SystemRequirements. 2015. “Package ‘R2jags’.” <em>R Package Version 0.03-08, URL Http://CRAN. R-Project. Org/Package= R2jags</em>.</p>
 </div>
 </div>
 </div>
@@ -681,18 +675,6 @@ deviance 278.9 2.508 276.04 277.1 278.2 279.9 285.5    1  2000</code></pre>
 
 
       
-      
-      <div class="article-widget">
-        <div class="hr-light"></div>
-        <h3>Related</h3>
-        <ul>
-          
-          <li><a href="/jags/basic-introduction-to-jags/super-basic-introduction-to-jags/">Super basic introduction to JAGS</a></li>
-          
-          <li><a href="/stan/basic-introduction-to-stan/super-basic-introduction-to-stan/">Super basic introduction to STAN</a></li>
-          
-        </ul>
-      </div>
       
     
 
