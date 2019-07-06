@@ -35,8 +35,8 @@
   weight = 60
   
 [[main]]
-  name = "missingHE"
-  url = "missingHE/"
+  name = "MISSINGHE"
+  url = "MISSINGHE/"
   parent = "software"
 
 [[main]]
@@ -46,7 +46,7 @@
   weight = 70
 
 [[main]]
-  name = "OpenBUGS"
+  name = "OPENBUGS"
   url = "OPENBUGS/"
   parent = "tutorials"
 
