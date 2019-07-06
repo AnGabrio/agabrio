@@ -49,7 +49,7 @@ slug: super-basic-introduction-to-openbugs
 </div>
 <div id="model-file" class="section level2">
 <h2>Model file</h2>
-<p>Now, I write the model for <code>OpenBUGS</code> and save it as a text file named <code>"basic.mod.txt"</code> in the current working directory</p>
+<p>Now, I write the model for <code>OpenBUGS</code> and save it as a text file named <code>"basicmodbugs.txt"</code> in the current working directory</p>
 <pre class="r"><code>&gt; basic.mod= &quot;
 + model {
 + #model
@@ -64,8 +64,8 @@ slug: super-basic-introduction-to-openbugs
 + }
 + &quot;</code></pre>
 <p>The part of the model inside the for loop denotes the likelihood, which is evaluated for each individual in the sample using a Normal distribution parameterised by some mean <code>mu</code> and precision <code>tau</code> (where, precision = 1/variance). The covariate <code>x</code> is included at the mean level using a linear regression, which is indexed by the intercept <code>beta0</code> and slope <code>beta1</code> terms. The second part defines the prior distributions for all parameters of the model, namely the regression coefficients and the precision. Weakly informative priors are used since I assume that I do not have any prior knowledge about these parameters.</p>
-<p>To write and save the model as the text file “basic.mod.txt” in the current working directory, I use the <code>writeLines</code> function</p>
-<pre class="r"><code>&gt; writeLines(basic.mod, &quot;basic.mod.txt&quot;)</code></pre>
+<p>To write and save the model as the text file “basicmodbugs.txt” in the current working directory, I use the <code>writeLines</code> function</p>
+<pre class="r"><code>&gt; writeLines(basic.mod, &quot;basicmodbugs.txt&quot;)</code></pre>
 </div>
 <div id="pre-processing" class="section level2">
 <h2>Pre-processing</h2>
@@ -82,7 +82,7 @@ slug: super-basic-introduction-to-openbugs
 <p>Now, we can fit the model in <code>OpenBUGS</code> using the <code>bugs</code> function in the <code>R2openBUGS</code> package and save it in the object <code>basic.mod</code></p>
 <pre class="r"><code>&gt; basic.mod=bugs(data = datalist, inits = inits, 
 +   parameters.to.save = params, n.chains = 2, n.iter = 9000,
-+   n.burnin = 1000, model.file = &quot;basic.mod.txt&quot;)</code></pre>
++   n.burnin = 1000, model.file = &quot;basicmodbugs.txt&quot;)</code></pre>
 <p>While the model is running, the function prints out some information related to the Bayesian graph (corresponding to the specification used for the model) underneath <code>OpenBUGS</code>, such as number of observed and unobserved nodes and graph size.</p>
 </div>
 <div id="post-processing" class="section level2">

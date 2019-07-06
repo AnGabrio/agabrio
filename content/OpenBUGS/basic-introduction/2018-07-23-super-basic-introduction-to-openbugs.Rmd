@@ -64,7 +64,7 @@ datalist=list("y","x","n.sim")
 
 ## Model file
 
-Now, I write the model for `OpenBUGS` and save it as a text file named `"basic.mod.txt"` in the current working directory
+Now, I write the model for `OpenBUGS` and save it as a text file named `"basicmodbugs.txt"` in the current working directory
 
 ```{r txt_model, eval=TRUE, echo=TRUE}
 basic.mod= "
@@ -84,10 +84,10 @@ tau ~ dgamma(0.01,0.01)
 
 The part of the model inside the for loop denotes the likelihood, which is evaluated for each individual in the sample using a Normal distribution parameterised by some mean `mu` and precision `tau` (where, precision = 1/variance). The covariate `x` is included at the mean level using a linear regression, which is indexed by the intercept `beta0` and slope `beta1` terms. The second part defines the prior distributions for all parameters of the model, namely the regression coefficients and the precision. Weakly informative priors are used since I assume that I do not have any prior knowledge about these parameters.  
 
-To write and save the model as the text file "basic.mod.txt" in the current working directory, I use the `writeLines` function 
+To write and save the model as the text file "basicmodbugs.txt" in the current working directory, I use the `writeLines` function 
 
 ```{r write_txt, eval=TRUE, echo=TRUE}
-writeLines(basic.mod, "basic.mod.txt")
+writeLines(basic.mod, "basicmodbugs.txt")
 ```
 
 ## Pre-processing
@@ -118,10 +118,10 @@ set.seed(123)
 
 Now, we can fit the model in `OpenBUGS` using the `bugs` function in the `R2openBUGS` package and save it in the object `basic.mod`
 
-```{r fit_model, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE,error=FALSE,message=FALSE, cache=FALSE}
+```{r fit_model, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE,error=FALSE,message=FALSE, cache=TRUE}
 basic.mod=bugs(data = datalist, inits = inits, 
   parameters.to.save = params, n.chains = 2, n.iter = 9000,
-  n.burnin = 1000, model.file = "basic.mod.txt")
+  n.burnin = 1000, model.file = "basicmodbugs.txt")
 ```
 
 While the model is running, the function prints out some information related to the Bayesian graph (corresponding to the specification used for the model) underneath `OpenBUGS`, such as number of observed and unobserved nodes and graph size. 
