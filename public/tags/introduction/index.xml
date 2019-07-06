@@ -13,10 +13,10 @@
     
     <item>
       <title>Super basic introduction to JAGS</title>
-      <link>/jags/basic-introduction/super-basic-introduction-to-jags/</link>
+      <link>/tutorials/jags/basic-introduction/super-basic-introduction-to-jags/</link>
       <pubDate>Mon, 23 Jul 2018 21:13:14 -0500</pubDate>
       
-      <guid>/jags/basic-introduction/super-basic-introduction-to-jags/</guid>
+      <guid>/tutorials/jags/basic-introduction/super-basic-introduction-to-jags/</guid>
       <description>
 
 
@@ -163,10 +163,10 @@ deviance 278.9 2.508 276.04 277.1 278.2 279.9 285.5    1  2000&lt;/code&gt;&lt;/
     
     <item>
       <title>Super basic introduction to OpenBUGS</title>
-      <link>/openbugs/basic-introduction/super-basic-introduction-to-openbugs/</link>
+      <link>/tutorials/openbugs/basic-introduction/super-basic-introduction-to-openbugs/</link>
       <pubDate>Mon, 23 Jul 2018 21:13:14 -0500</pubDate>
       
-      <guid>/openbugs/basic-introduction/super-basic-introduction-to-openbugs/</guid>
+      <guid>/tutorials/openbugs/basic-introduction/super-basic-introduction-to-openbugs/</guid>
       <description>
 
 
@@ -309,10 +309,10 @@ deviance 278.9 2.519 276.00 277.1 278.3 280.0 285.3    1 16000&lt;/code&gt;&lt;/
     
     <item>
       <title>Super basic introduction to STAN</title>
-      <link>/stan/basic-introduction/super-basic-introduction-to-stan/</link>
+      <link>/tutorials/stan/basic-introduction/super-basic-introduction-to-stan/</link>
       <pubDate>Mon, 23 Jul 2018 21:13:14 -0500</pubDate>
       
-      <guid>/stan/basic-introduction/super-basic-introduction-to-stan/</guid>
+      <guid>/tutorials/stan/basic-introduction/super-basic-introduction-to-stan/</guid>
       <description>
 
 

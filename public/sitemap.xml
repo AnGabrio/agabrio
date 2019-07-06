@@ -216,17 +216,17 @@
   </url>
   
   <url>
-    <loc>/jags/</loc>
+    <loc>/tutorials/jags/</loc>
     <lastmod>2018-07-23T21:13:14-05:00</lastmod>
   </url>
   
   <url>
-    <loc>/openbugs/</loc>
+    <loc>/tutorials/openbugs/</loc>
     <lastmod>2018-07-23T21:13:14-05:00</lastmod>
   </url>
   
   <url>
-    <loc>/stan/</loc>
+    <loc>/tutorials/stan/</loc>
     <lastmod>2018-07-23T21:13:14-05:00</lastmod>
   </url>
   
@@ -249,17 +249,17 @@
   </url>
   
   <url>
-    <loc>/jags/basic-introduction/super-basic-introduction-to-jags/</loc>
+    <loc>/tutorials/jags/basic-introduction/super-basic-introduction-to-jags/</loc>
     <lastmod>2018-07-23T21:13:14-05:00</lastmod>
   </url>
   
   <url>
-    <loc>/openbugs/basic-introduction/super-basic-introduction-to-openbugs/</loc>
+    <loc>/tutorials/openbugs/basic-introduction/super-basic-introduction-to-openbugs/</loc>
     <lastmod>2018-07-23T21:13:14-05:00</lastmod>
   </url>
   
   <url>
-    <loc>/stan/basic-introduction/super-basic-introduction-to-stan/</loc>
+    <loc>/tutorials/stan/basic-introduction/super-basic-introduction-to-stan/</loc>
     <lastmod>2018-07-23T21:13:14-05:00</lastmod>
   </url>
   
