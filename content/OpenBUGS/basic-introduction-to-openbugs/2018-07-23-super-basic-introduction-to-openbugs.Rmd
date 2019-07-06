@@ -23,19 +23,19 @@ Prerequisites:
 
 # Preliminaries
 
-## What is JAGS?
+## What is OpenBUGS?
 
-`JAGS` or **J**ust **A**nother **G**ibbs **S**ampler is a program for analysis of Bayesian models using Markov Chain Monte Carlo (MCMC) methods (@plummer2004jags). `JAGS` is a free software based on the **B**ayesian inference **U**sing **G**ibbs **S**ampling (informally `BUGS`) language at the base of `WinBUGS/OpenBUGS` but, unlike these programs, it is written in `C++` and is platform independent. The latest version of `JAGS` can be dowloaded from Martyn Plummer's [repository](https://sourceforge.net/projects/mcmc-jags/files/JAGS/) and is available for different OS. There are different `R` packages which function as frontends for `JAGS`. These packages make it easy to process the output of Bayesian models and present it in publication-ready form. In this brief introduction, I will specifically focus on the `R2jags` package (@su2015package) and show how to fit `JAGS` models using this package.
+`OpenBUGS` is a program for analysis of Bayesian models using Markov Chain Monte Carlo (MCMC) methods (@spiegelhalter2007openbugs). `OpenBUGS` is a free software based on the **B**ayesian inference **U**sing **G**ibbs **S**ampling (informally `BUGS`) language at the base of `WinBUGS` but, unlike this program, is platform independent. The latest version of `OpenBUGS` can be dowloaded from the web [repository](http://www.openbugs.net/w/FrontPage) and is available for different OS. There are different `R` packages which function as frontends for `OpenBUGS`. These packages make it easy to process the output of Bayesian models and present it in publication-ready form. In this brief introduction, I will specifically focus on the `R2OpenBUGS` package (@sturtz2010r2openbugs) and show how to fit `OpenBUGS` models using this package.
 
-## Installing JAGS and R2jags
+## Installing OpenBUGS and R2OpenBUGS
 
-Install the latest version of `JAGS` for your OS. Next, install the package `R2jags` from within `R` or `Rstudio`, via the package installer or by typing in the command line
+Install the latest version of `OpenBUGS` for your OS. Next, install the package `R2OpenBUGS` from within `R` or `Rstudio`, via the package installer or by typing in the command line
 
 ```{r install_jags, eval=FALSE, echo=TRUE}
-install.packages("R2jags", dependencies = TRUE)
+install.packages("R2OpenBUGS", dependencies = TRUE)
 ```
 
-The `dependencies = TRUE` option will automatically install all the packages on which the functions in the `R2jags` package rely.
+The `dependencies = TRUE` option will automatically install all the packages on which the functions in the `R2OpenBUGS` package rely.
 
 # Basic model
 
@@ -64,7 +64,7 @@ datalist=list("y","x","n.sim")
 
 ## Model file
 
-Now, I write the model for `JAGS` and save it as a text file named `"basic.mod.txt"` in the current working directory
+Now, I write the model for `OpenBUGS` and save it as a text file named `"basicmodbugs.txt"` in the current working directory
 
 ```{r txt_model, eval=TRUE, echo=TRUE}
 basic.mod= "
@@ -84,41 +84,48 @@ tau ~ dgamma(0.01,0.01)
 
 The part of the model inside the for loop denotes the likelihood, which is evaluated for each individual in the sample using a Normal distribution parameterised by some mean `mu` and precision `tau` (where, precision = 1/variance). The covariate `x` is included at the mean level using a linear regression, which is indexed by the intercept `beta0` and slope `beta1` terms. The second part defines the prior distributions for all parameters of the model, namely the regression coefficients and the precision. Weakly informative priors are used since I assume that I do not have any prior knowledge about these parameters.  
 
-To write and save the model as the text file "basic.mod.txt" in the current working directory, I use the `writeLines` function 
+To write and save the model as the text file "basicmodbugs.txt" in the current working directory, I use the `writeLines` function 
 
 ```{r write_txt, eval=TRUE, echo=TRUE}
-writeLines(basic.mod, "basic.mod.txt")
+writeLines(basic.mod, "basicmodbugs.txt")
 ```
 
 ## Pre-processing
 
-Define the parameters whose posterior distribtuions we are interested in summarising later and set up the initial values for the MCMC sampler in `JAGS`
+Define the parameters whose posterior distribtuions we are interested in summarising later and set up the initial values for the MCMC sampler in `OpenBUGS`
 
-```{r initial_values, eval=TRUE, echo=TRUE}
+```{r initial_valuesfix, eval=TRUE, echo=FALSE}
+set.seed(123)
 params=c("beta0","beta1")
-inits=function(){list("beta0"=rnorm(1), "beta1"=rnorm(1))}
+inits=function(){list("beta0"=rnorm(1), "beta1"=rnorm(1), "tau"=rgamma(1,1,1))}
 ```
 
-The function creates a list that contains one element for each parameter, which gets assigned a random draw from a normal distribution as a strating value for each chain in the model. For simple models like this, it is generally easy to define the intial values for all parameters. However, for more complex models, this may not be immediate and a lot of trial and error may be required. However, `JAGS` can automatically select the initial values for all parameters in an efficient way even for relatively complex models. This can be achieved by setting `inits=NULL`, which is then passed to the `jags` function in `R2jags`.
+```{r initial_values, eval=FALSE, echo=TRUE}
+params=c("beta0","beta1")
+inits=function(){list("beta0"=rnorm(1), "beta1"=rnorm(1), "tau"=rgamma(1,1,1))}
+```
 
-Before using `R2jags` for the first time, you need to load the package, and you may want to set a random seed number for making your estimates replicable
+The function creates a list that contains one element for each parameter, which gets assigned a random draw from a normal distribution as a strating value for each chain in the model. For simple models like this, it is generally easy to define the intial values for all parameters in the object `inits` which is then passed to the `bugs` function in `R2OpenBUGS`. However, for more complex models, this may not be immediate and a lot of trial and error may be required. 
+
+Before using `R2OpenBUGS` for the first time, you need to load the package, and you may want to set a random seed number for making your estimates replicable
 
 ```{r set_seed, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE,error=FALSE,message=FALSE}
+library(R2OpenBUGS)
 library(R2jags)
 set.seed(123)
 ```
 
 ## Fit the model
 
-Now, we can fit the model in `JAGS` using the `jags` function in the `R2jags` package and save it in the object `basic.mod`
+Now, we can fit the model in `OpenBUGS` using the `bugs` function in the `R2openBUGS` package and save it in the object `basic.mod`
 
 ```{r fit_model, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE,error=FALSE,message=FALSE}
 basic.mod=jags(data = datalist, inits = inits,
   parameters.to.save = params, n.chains = 2, n.iter = 9000, 
-  n.burnin = 1000, model.file = "basic.mod.txt")
+  n.burnin = 1000, model.file = "basicmodbugs.txt")
 ```
 
-While the model is running, the function prints out some information related to the Bayesian graph (corresponding to the specification used for the model) underneath `JAGS`, such as number of observed and unobserved nodes and graph size. 
+While the model is running, the function prints out some information related to the Bayesian graph (corresponding to the specification used for the model) underneath `OpenBUGS`, such as number of observed and unobserved nodes and graph size. 
 
 ## Post-processing
 
@@ -148,7 +155,7 @@ basic.mod$BUGSoutput$DIC
 More diagnostics are available when we convert the model output into an MCMC object using the command 
 
 ```{r diagnostic, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE,error=FALSE,message=FALSE}
-basic.mod.mcmc=as.mcmc(basic.mod)
+basic.mod.mcmc2=as.mcmc(basic.mod)
 ```
 
 Different packages are available to perform diagnostic checks for Bayesian models. Here, I install and load the `mcmcplots` package (@curtis2015mcmcplots) to obtain graphical diagnostics and results.
@@ -165,15 +172,15 @@ library(mcmcplots)
 For example, density and trace plots can be obtained by typing 
 
 ```{r diagnostic3, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE,error=FALSE,message=FALSE}
-denplot(basic.mod.mcmc, parms = c("beta0","beta1"))
-traplot(basic.mod.mcmc, parms = c("beta0","beta1"))
+denplot(basic.mod.mcmc2, parms = c("beta0","beta1"))
+traplot(basic.mod.mcmc2, parms = c("beta0","beta1"))
 ```
 
 Both types of graphs suggest that there are not issues in the convergence of the algorithm (smooth normal densities and hairy caterpillar graphs for both MCMC chains).
 
 # Conclusions
 
-This tutorial was simply a brief introduction on how simple linear regression models can be fitted using the  Bayesian software `JAGS` via the `R2jags` package. Although this may seem a complex procedure compared with simply fitting a linear model under the frequentist framework, however, the real advantages of Bayesian methods become evident when the complexity of the analysis is increased (which is often the case in real applications). Indeed, the flexibility in Bayesian modelling allows to account for increasingly complex models in a relatively easy way. In addition, Bayesian methods are ideal when the interest is in taking into account the potential impact that different sources of uncertainty may have on the final results, as they allow the natural propagation of uncertainty throughout each quantity in the model.
+This tutorial was simply a brief introduction on how simple linear regression models can be fitted using the  Bayesian software `OpenBUGS` via the `R2OpenBUGS` package. Although this may seem a complex procedure compared with simply fitting a linear model under the frequentist framework, however, the real advantages of Bayesian methods become evident when the complexity of the analysis is increased (which is often the case in real applications). Indeed, the flexibility in Bayesian modelling allows to account for increasingly complex models in a relatively easy way. In addition, Bayesian methods are ideal when the interest is in taking into account the potential impact that different sources of uncertainty may have on the final results, as they allow the natural propagation of uncertainty throughout each quantity in the model.
 
 # References
 
