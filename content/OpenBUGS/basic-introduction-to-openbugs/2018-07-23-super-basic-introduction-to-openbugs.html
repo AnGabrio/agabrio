@@ -7,7 +7,7 @@ tags: ["linear regression", "JAGS", "introduction"]
 authors: ["Andrea Gabrio"]
 bibliography: [citations_jags.bib]
 draft: no
-slug: super-basic-introduction-to-jags
+slug: super-basic-introduction-to-openbugs
 ---
 
 
@@ -120,9 +120,9 @@ deviance 278.9 2.508 276.04 277.1 278.2 279.9 285.5    1  2000</code></pre>
 &gt; library(mcmcplots)</code></pre>
 <p>For example, density and trace plots can be obtained by typing</p>
 <pre class="r"><code>&gt; denplot(basic.mod.mcmc, parms = c(&quot;beta0&quot;,&quot;beta1&quot;))</code></pre>
-<p><img src="/JAGS/basic-introduction/2018-07-23-super-basic-introduction-to-jags_files/figure-html/diagnostic3-1.png" width="672" /></p>
+<p><img src="/OpenBUGS/basic-introduction-to-openbugs/2018-07-23-super-basic-introduction-to-openbugs_files/figure-html/diagnostic3-1.png" width="672" /></p>
 <pre class="r"><code>&gt; traplot(basic.mod.mcmc, parms = c(&quot;beta0&quot;,&quot;beta1&quot;))</code></pre>
-<p><img src="/JAGS/basic-introduction/2018-07-23-super-basic-introduction-to-jags_files/figure-html/diagnostic3-2.png" width="672" /></p>
+<p><img src="/OpenBUGS/basic-introduction-to-openbugs/2018-07-23-super-basic-introduction-to-openbugs_files/figure-html/diagnostic3-2.png" width="672" /></p>
 <p>Both types of graphs suggest that there are not issues in the convergence of the algorithm (smooth normal densities and hairy caterpillar graphs for both MCMC chains).</p>
 </div>
 </div>

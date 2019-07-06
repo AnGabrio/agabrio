@@ -7,7 +7,7 @@ tags: ["linear regression", "JAGS", "introduction"]
 authors: ["Andrea Gabrio"]
 bibliography: [citations_jags.bib]
 draft: no
-slug: super-basic-introduction-to-jags
+slug: super-basic-introduction-to-openbugs
 ---
 
 ```{r setup, include=FALSE}
