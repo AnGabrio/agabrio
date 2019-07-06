@@ -281,7 +281,7 @@ rm Untitled.md
     <item>
       <title>Super basic introduction to JAGS</title>
       <link>/jags/basic-introduction-to-jags/super-basic-introduction-to-jags/</link>
-      <pubDate>Mon, 23 Jul 2018 21:13:14 -0500</pubDate>
+      <pubDate>Thu, 23 Aug 2018 21:13:14 -0500</pubDate>
       
       <guid>/jags/basic-introduction-to-jags/super-basic-introduction-to-jags/</guid>
       <description>
@@ -395,9 +395,9 @@ deviance 278.9 2.508 276.04 277.1 278.2 279.9 285.5    1  2000&lt;/code&gt;&lt;/
 &amp;gt; library(mcmcplots)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;For example, density and trace plots can be obtained by typing&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; denplot(basic.mod.mcmc, parms = c(&amp;quot;beta0&amp;quot;,&amp;quot;beta1&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/JAGS/basic-introduction/2018-07-23-super-basic-introduction-to-jags_files/figure-html/diagnostic3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/basic-introduction-to-jags/2018-08-23-super-basic-introduction-to-jags_files/figure-html/diagnostic3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; traplot(basic.mod.mcmc, parms = c(&amp;quot;beta0&amp;quot;,&amp;quot;beta1&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/JAGS/basic-introduction/2018-07-23-super-basic-introduction-to-jags_files/figure-html/diagnostic3-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/basic-introduction-to-jags/2018-08-23-super-basic-introduction-to-jags_files/figure-html/diagnostic3-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Both types of graphs suggest that there are not issues in the convergence of the algorithm (smooth normal densities and hairy caterpillar graphs for both MCMC chains).&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
