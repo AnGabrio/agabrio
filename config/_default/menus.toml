@@ -33,11 +33,6 @@
   url = "software/"
   identifier = "software"
   weight = 60
-  
-[[main]]
-  name = "missingHE"
-  url = "missingHE/"
-  parent = "software"
 
 [[main]]
   name = "Tutorials"
@@ -45,6 +40,11 @@
   identifier = "tutorials"
   weight = 70
 
+[[main]]
+  name = "missingHE"
+  url = "missingHE/"
+  parent = "software"
+  
 [[main]]
   name = "OpenBUGS"
   url = "OpenBUGS/"

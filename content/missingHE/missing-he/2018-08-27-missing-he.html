@@ -1,0 +1,78 @@
+---
+title: "Super basic introduction to missingHE"
+author: "Andrea Gabrio"
+date: 2018-08-27T21:13:14-05:00
+categories: ["R"]
+tags: ["linear regression", "JAGS", "introduction"]
+authors: ["Andrea Gabrio"]
+bibliography: [citations_jags.bib]
+draft: no
+slug: super-basic-introduction-to-missinghe
+---
+
+
+
+<p>The focus of this simple tutorial is to provide a brief introduction and overview about how to fit Bayesian models using <code>JAGS</code> via <code>R</code>.</p>
+<p>Prerequisites:</p>
+<ul>
+<li>The latest version of <code>R</code>, which can be downloaded and installed for Windows, Mac or Linux OS from the <a href="https://www.r-project.org/%7D">CRAN</a> website</li>
+<li>I also <strong>strongly</strong> recommend to download and install <a href="https://www.rstudio.com/">Rstudio</a>, an integrated development environment which provides an “user-friendly” interaction with <code>R</code> (e.g. many drop-down menus, tabs, customisation options)</li>
+</ul>
+<div id="preliminaries" class="section level1">
+<h1>Preliminaries</h1>
+<div id="what-is-jags" class="section level2">
+<h2>What is JAGS?</h2>
+<p><code>JAGS</code> or <strong>J</strong>ust <strong>A</strong>nother <strong>G</strong>ibbs <strong>S</strong>ampler is a program for analysis of Bayesian models using Markov Chain Monte Carlo (MCMC) methods (<span class="citation">Plummer (2004)</span>). <code>JAGS</code> is a free software based on the <strong>B</strong>ayesian inference <strong>U</strong>sing <strong>G</strong>ibbs <strong>S</strong>ampling (informally <code>BUGS</code>) language at the base of <code>WinBUGS/OpenBUGS</code> but, unlike these programs, it is written in <code>C++</code> and is platform independent. The latest version of <code>JAGS</code> can be dowloaded from Martyn Plummer’s <a href="https://sourceforge.net/projects/mcmc-jags/files/JAGS/">repository</a> and is available for different OS. There are different <code>R</code> packages which function as frontends for <code>JAGS</code>. These packages make it easy to process the output of Bayesian models and present it in publication-ready form. In this brief introduction, I will specifically focus on the <code>R2jags</code> package (<span class="citation">Su et al. (2015)</span>) and show how to fit <code>JAGS</code> models using this package.</p>
+</div>
+<div id="installing-jags-and-r2jags" class="section level2">
+<h2>Installing JAGS and R2jags</h2>
+<p>Install the latest version of <code>JAGS</code> for your OS. Next, install the package <code>R2jags</code> from within <code>R</code> or <code>Rstudio</code>, via the package installer or by typing in the command line</p>
+<pre class="r"><code>&gt; install.packages(&quot;R2jags&quot;, dependencies = TRUE)</code></pre>
+<p>The <code>dependencies = TRUE</code> option will automatically install all the packages on which the functions in the <code>R2jags</code> package rely.</p>
+</div>
+</div>
+<div id="basic-model" class="section level1">
+<h1>Basic model</h1>
+<div id="simulate-data" class="section level2">
+<h2>Simulate data</h2>
+<p>For an example dataset, I simulate my own data in <code>R</code>. I create a continuous outcome variable <span class="math inline">\(y\)</span> as a function of one predictor <span class="math inline">\(x\)</span> and a disturbance term <span class="math inline">\(\epsilon\)</span>. I simulate a dataset with 100 observations. Create the error term, the predictor and the outcome using a linear form with an intercept <span class="math inline">\(\beta_0\)</span> and slope <span class="math inline">\(\beta_1\)</span> coefficients, i.e.</p>
+<p><span class="math display">\[y = \beta_0 + \beta_1 x + \epsilon  \]</span></p>
+<p>The <code>R</code> commands which I use to simulate the data are the following:</p>
+<pre class="r"><code>&gt; n.sim=100; set.seed(123)
+&gt; x=rnorm(n.sim, mean = 5, sd = 2)
+&gt; epsilon=rnorm(n.sim, mean = 0, sd = 1)
+&gt; beta0=1.5
+&gt; beta1=1.2
+&gt; y=beta0 + beta1 * x + epsilon</code></pre>
+<p>Then, I define all the data for <code>JAGS</code> in a list object</p>
+<pre class="r"><code>&gt; datalist=list(&quot;y&quot;,&quot;x&quot;,&quot;n.sim&quot;)</code></pre>
+</div>
+<div id="model-file" class="section level2">
+<h2>Model file</h2>
+<p>Now, I write the model for <code>JAGS</code> and save it as a text file named <code>"basic.mod.txt"</code> in the current working directory</p>
+<pre class="r"><code>&gt; basic.mod= &quot;
++ model {
++ #model
++  for(i in 1:n.sim){
++   y[i] ~ dnorm(mu[i], tau)
++   mu[i] = beta0 + beta1 * x[i]
++  }
++ #priors
++ beta0 ~ dnorm(0, 0.01)
++ beta1 ~ dnorm(0, 0.01)
++ tau ~ dgamma(0.01,0.01)
++ }
++ &quot;</code></pre>
+</div>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references">
+<div id="ref-plummer2004jags">
+<p>Plummer, Martyn. 2004. “JAGS: Just Another Gibbs Sampler.”</p>
+</div>
+<div id="ref-su2015package">
+<p>Su, Yu-Sung, Masanao Yajima, Maintainer Yu-Sung Su, and JAGS SystemRequirements. 2015. “Package ‘R2jags’.” <em>R Package Version 0.03-08, URL Http://CRAN. R-Project. Org/Package= R2jags</em>.</p>
+</div>
+</div>
+</div>
