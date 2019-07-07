@@ -143,7 +143,7 @@
 </head>
 
 
-<body id="top" data-spy="scroll" data-target="#navbar-main" data-offset="71" >
+<body id="top" data-spy="scroll" data-target="#TableOfContents" data-offset="71" >
 
   <aside class="search-results" id="search">
   <div class="container">
@@ -400,7 +400,7 @@
   <h1 itemprop="name">missingHE</h1>
 
   
-  <p class="page-subtitle">A R package to handle missingness in health economic evaluations.</p>
+  <p class="page-subtitle">A R package to handle missingness in health economic evaluations</p>
   
 
   
@@ -411,102 +411,69 @@
 <div class="universal-wrapper">
 
   
+  <div class="article-style" itemprop="articleBody">
 
-  
-  
-    
-      
+<p><code>missingHE</code> is a <code>R</code> package aimed at providing some useful tools to analysts in order to handle missing outcome data under a Full Bayesian framework in economic evaluations. The package relies on the <code>R</code> package <code>R2jags</code> to implement Bayesian methods via the statistical software <code>JAGS</code>. The package allows to obtain inferences using Markov Chain Monte Carlo (MCMC) methods under a range of modelling approaches and missing data assumptions. The package also contains functions specifically defined to assess model fit and possible issues in model convergence as well as to summarise the main results from the economic analysis.</p>
 
+<p>Missing data are iteratively imputed using data augmentation methods according to the type of model, distribution and missingness assumptions specified by the user using different arguments in the functions of the package. The posterior distribution of the main quantities of interest (e.g. some suitable measures of costs and clinical benefits) is then summarised to assess the cost-effectiveness of a new intervention ($t=2$) against a standard intervention ($t=1$).</p>
 
+<p><code>missingHE</code> produces plots which compares the observed and imputed values for both cost and benefit measures in each treatment intervention considered to detect possible concerns about the plausibility of the imputation methods. In addition, the output of <code>missingHE</code> cab be analysed using different funtions in the <code>R</code> package <code>BCEA</code> which produces a synthesis of the decision process given the current evidence and uncertainty, as well as several indicators that can be used to perform Probabilistic Sensitivity Analysis to parameter and model uncertainty.</p>
 
+<p><img src="imputed.jpg" alt="png" /></p>
 
+<h1 id="example">Example</h1>
 
+<pre><code class="language-r">library(missingHE)
+model.sel &lt;- selection(data = MenSS, model.eff = e ~ u.0, model.cost = c ~ e, model.me = me ~ 1, model.mc = mc ~ 1, 
+                       type = &quot;MAR&quot;, n.chains = 2, n.iter = 10000, n.burnin = 1000, dist_e = &quot;norm&quot;, dist_c = &quot;norm&quot;)
+summary(model.sel)
+</code></pre>
 
+<pre><code class="language-r"> Cost-effectiveness analysis summary 
+ 
+ Comparator intervention: intervention 1 
+ Reference intervention: intervention 2 
+ 
+ Parameter estimates under MAR assumption
+ 
+ Comparator intervention 
+               mean     sd      LB      UB
+mean.effects  0.874  0.017   0.846   0.901
+mean.costs   238.34 52.432 153.541 325.355
 
+ Reference intervention 
+                  mean    sd      LB      UB
+mean.effects.1   0.917 0.022   0.881   0.953
+mean.costs.1   186.825 41.26 119.672 254.125
 
+ Incremental results 
+                   mean     sd       LB     UB
+delta.effects     0.043  0.028   -0.003  0.089
+delta.costs     -51.514 67.025 -162.862 58.327
+ICER          -1198.431
+</code></pre>
 
+<h1 id="installation">Installation</h1>
 
+<p>There are two ways of installing <code>missingHE</code>. A <em>stable</em> version (currently 1.1.1) is packaged and available from <a href="https://cran.r-project.org/web/packages/missingHE/" target="_blank">CRAN</a>. You can simply type on your <code>R</code> terminal</p>
 
-  
+<pre><code class="language-r">install.packages(&quot;missingHE&quot;)
+</code></pre>
 
+<p>The second way involves using the <em>development</em> version of <code>missingHE</code>, which is available from <a href="https://github.com/AnGabrio/missingHE" target="_blank">GitHub</a> - this will usually be updated more frequently and may be continuously tested. On Windows machines, you need to install a few dependencies, including Rtools first, e.g. by running</p>
 
-<div class="media stream-item" itemscope itemtype="http://schema.org/CreativeWork">
-  <div class="media-body">
+<pre><code class="language-r">pkgs &lt;- c(&quot;R2jags&quot;,&quot;Rtools&quot;,&quot;devtools&quot;)
+</code></pre>
 
-    <h3 class="article-title mb-0 mt-0" itemprop="name">
-      <a href="/missinghe/2018-08-27-missing-he/" itemprop="url">missingHE</a>
-    </h3>
+<p>before installing the package using <code>devtools</code>:</p>
 
-
-
-
-    <div class="stream-meta article-metadata">
-
-      
-
-      
-        
-
-
-
-<meta content="2018-02-05 00:00:00 &#43;0000 UTC" itemprop="datePublished">
-<meta content="2018-02-05 00:00:00 &#43;0000 UTC" itemprop="dateModified">
-
-<div class="article-metadata">
-
-  
-  
-  
-  
-  <div>
-    
-
-
-
-  <span itemprop="author name" itemtype="http://schema.org/Person"><a>Andrea Gabrio</a></span>
-  </div>
-  
-  
-
-  
-  <span class="article-date">
-    
-    
-      
-    
-    <time>Feb 5, 2018</time>
-  </span>
-  
-
-  
-
-  
-
-  
-  
-
-  
-  
-
-  
-
+<pre><code class="language-r">devtools::install_github(&quot;AnGabrio/missingHE&quot;)
+</code></pre>
 </div>
+  
 
-      
-    </div>
-
-    
-
-  </div>
-  <div class="ml-3">
-    
-    
-  </div>
-</div>
-
-    <a class="btn btn-outline-primary my-1" href="/missinghe/2018-08-27-missing-he/">
-          Continue reading
-        </a>
+  
+  
 
   
 
