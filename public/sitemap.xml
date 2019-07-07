@@ -116,14 +116,14 @@
   </url>
   
   <url>
-    <loc>/tags/bayesian-statistics/</loc>
+    <loc>/talk/albacete2019/</loc>
     <lastmod>2019-06-11T10:00:00+00:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
-    <loc>/talk/albacete2019/</loc>
+    <loc>/tags/bayesian-statistics/</loc>
     <lastmod>2019-06-11T10:00:00+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
@@ -216,41 +216,31 @@
   </url>
   
   <url>
-    <loc>/tags/jags/</loc>
-    <lastmod>2018-08-27T21:13:14-05:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/missinghe/missing-he/super-basic-introduction-to-missinghe/</loc>
-    <lastmod>2018-08-27T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/introduction/</loc>
-    <lastmod>2018-08-27T21:13:14-05:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/tags/linear-regression/</loc>
-    <lastmod>2018-08-27T21:13:14-05:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/missinghe/</loc>
-    <lastmod>2018-08-27T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/jags/</loc>
     <lastmod>2018-08-23T21:13:14-05:00</lastmod>
   </url>
   
   <url>
+    <loc>/tags/jags/</loc>
+    <lastmod>2018-08-23T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>/jags/basic-introduction-to-jags/super-basic-introduction-to-jags/</loc>
     <lastmod>2018-08-23T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/introduction/</loc>
+    <lastmod>2018-08-23T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/linear-regression/</loc>
+    <lastmod>2018-08-23T21:13:14-05:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
@@ -301,6 +291,22 @@
   </url>
   
   <url>
+    <loc>/tags/health-economics/</loc>
+    <lastmod>2018-02-05T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/missinghe/</loc>
+    <lastmod>2018-02-05T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/missinghe/missing-he/2018-08-27-missing-he/</loc>
+    <lastmod>2018-02-05T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/publication/gabrio2017/</loc>
     <lastmod>2017-06-01T00:00:00+00:00</lastmod>
   </url>
@@ -341,12 +347,6 @@
   <url>
     <loc>/project/bayesian-modelling/</loc>
     <lastmod>2016-04-27T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/health-economics/</loc>
-    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>

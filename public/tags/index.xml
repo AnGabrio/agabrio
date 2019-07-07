@@ -75,7 +75,7 @@
     </item>
     
     <item>
-      <title>Bayesian Statistics</title>
+      <title>Bayesian statistics</title>
       <link>/tags/bayesian-statistics/</link>
       <pubDate>Tue, 11 Jun 2019 10:00:00 +0000</pubDate>
       
@@ -86,7 +86,7 @@
     <item>
       <title>JAGS</title>
       <link>/tags/jags/</link>
-      <pubDate>Mon, 27 Aug 2018 21:13:14 -0500</pubDate>
+      <pubDate>Thu, 23 Aug 2018 21:13:14 -0500</pubDate>
       
       <guid>/tags/jags/</guid>
       <description></description>
@@ -95,7 +95,7 @@
     <item>
       <title>introduction</title>
       <link>/tags/introduction/</link>
-      <pubDate>Mon, 27 Aug 2018 21:13:14 -0500</pubDate>
+      <pubDate>Thu, 23 Aug 2018 21:13:14 -0500</pubDate>
       
       <guid>/tags/introduction/</guid>
       <description></description>
@@ -104,7 +104,7 @@
     <item>
       <title>linear regression</title>
       <link>/tags/linear-regression/</link>
-      <pubDate>Mon, 27 Aug 2018 21:13:14 -0500</pubDate>
+      <pubDate>Thu, 23 Aug 2018 21:13:14 -0500</pubDate>
       
       <guid>/tags/linear-regression/</guid>
       <description></description>
@@ -129,6 +129,15 @@
     </item>
     
     <item>
+      <title>Health economics</title>
+      <link>/tags/health-economics/</link>
+      <pubDate>Mon, 05 Feb 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/health-economics/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Literature Review</title>
       <link>/tags/literature-review/</link>
       <pubDate>Thu, 01 Jun 2017 00:00:00 +0000</pubDate>
@@ -143,15 +152,6 @@
       <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
       
       <guid>/tags/bayesian-modelling/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Health Economics</title>
-      <link>/tags/health-economics/</link>
-      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/health-economics/</guid>
       <description></description>
     </item>
     

@@ -75,6 +75,73 @@ rm Untitled.md
     </item>
     
     <item>
+      <title>missingHE</title>
+      <link>/missinghe/missing-he/2018-08-27-missing-he/</link>
+      <pubDate>Mon, 05 Feb 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/missinghe/missing-he/2018-08-27-missing-he/</guid>
+      <description>
+
+&lt;p&gt;&lt;code&gt;missingHE&lt;/code&gt; is a &lt;code&gt;R&lt;/code&gt; package aimed at providing some useful tools to analysts in order to handle missing outcome data under a Full Bayesian framework in economic evaluations. The package relies on the &lt;code&gt;R&lt;/code&gt; package &lt;code&gt;R2jags&lt;/code&gt; to implement Bayesian methods via the statistical software &lt;code&gt;JAGS&lt;/code&gt;. The package allows to obtain inferences using Markov Chain Monte Carlo (MCMC) methods under a range of modelling approaches and missing data assumptions. The package also contains functions specifically defined to assess model fit and possible issues in model convergence as well as to summarise the main results from the economic analysis.&lt;/p&gt;
+
+&lt;p&gt;Missing data are iteratively imputed using data augmentation methods according to the type of model, distribution and missingness assumptions specified by the user using different arguments in the functions of the package. The posterior distribution of the main quantities of interest (e.g. some suitable measures of costs and clinical benefits) is then summarised to assess the cost-effectiveness of a new intervention ($t=2$) against a standard intervention ($t=1$).&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;missingHE&lt;/code&gt; produces plots which compares the observed and imputed values for both cost and benefit measures in each treatment intervention considered to detect possible concerns about the plausibility of the imputation methods. In addition, the output of &lt;code&gt;missingHE&lt;/code&gt; cab be analysed using different funtions in the &lt;code&gt;R&lt;/code&gt; package &lt;code&gt;BCEA&lt;/code&gt; which produces a synthesis of the decision process given the current evidence and uncertainty, as well as several indicators that can be used to perform Probabilistic Sensitivity Analysis to parameter and model uncertainty.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;imputed.jpg&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;h1 id=&#34;example&#34;&gt;Example&lt;/h1&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;library(missingHE)
+model.sel &amp;lt;- selection(data = MenSS, model.eff = e ~ u.0, model.cost = c ~ e, model.me = me ~ 1, model.mc = mc ~ 1, 
+                       type = &amp;quot;MAR&amp;quot;, n.chains = 2, n.iter = 10000, n.burnin = 1000, dist_e = &amp;quot;norm&amp;quot;, dist_c = &amp;quot;norm&amp;quot;)
+summary(model.sel)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt; Cost-effectiveness analysis summary 
+ 
+ Comparator intervention: intervention 1 
+ Reference intervention: intervention 2 
+ 
+ Parameter estimates under MAR assumption
+ 
+ Comparator intervention 
+               mean     sd      LB      UB
+mean.effects  0.874  0.017   0.846   0.901
+mean.costs   238.34 52.432 153.541 325.355
+
+ Reference intervention 
+                  mean    sd      LB      UB
+mean.effects.1   0.917 0.022   0.881   0.953
+mean.costs.1   186.825 41.26 119.672 254.125
+
+ Incremental results 
+                   mean     sd       LB     UB
+delta.effects     0.043  0.028   -0.003  0.089
+delta.costs     -51.514 67.025 -162.862 58.327
+ICER          -1198.431
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h1 id=&#34;installation&#34;&gt;Installation&lt;/h1&gt;
+
+&lt;p&gt;There are two ways of installing &lt;code&gt;missingHE&lt;/code&gt;. A &lt;em&gt;stable&lt;/em&gt; version (currently 1.1.1) is packaged and available from &lt;a href=&#34;https://cran.r-project.org/web/packages/missingHE/&#34; target=&#34;_blank&#34;&gt;CRAN&lt;/a&gt;. You can simply type on your &lt;code&gt;R&lt;/code&gt; terminal&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;install.packages(&amp;quot;missingHE&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The second way involves using the &lt;em&gt;development&lt;/em&gt; version of &lt;code&gt;missingHE&lt;/code&gt;, which is available from &lt;a href=&#34;https://github.com/AnGabrio/missingHE&#34; target=&#34;_blank&#34;&gt;GitHub&lt;/a&gt; - this will usually be updated more frequently and may be continuously tested. On Windows machines, you need to install a few dependencies, including Rtools first, e.g. by running&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;pkgs &amp;lt;- c(&amp;quot;R2jags&amp;quot;,&amp;quot;Rtools&amp;quot;,&amp;quot;devtools&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;before installing the package using &lt;code&gt;devtools&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;devtools::install_github(&amp;quot;AnGabrio/missingHE&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Academic: the website builder for Hugo</title>
       <link>/post/getting-started/</link>
       <pubDate>Wed, 20 Apr 2016 00:00:00 +0000</pubDate>
