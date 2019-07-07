@@ -6,15 +6,24 @@
     <description>Recent content in Categories on Andrea Gabrio</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 23 Jul 2019 21:13:14 -0500</lastBuildDate>
+    <lastBuildDate>Wed, 03 Jul 2019 00:00:00 +0000</lastBuildDate>
     
 	    <atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
+      <title>courses</title>
+      <link>/categories/courses/</link>
+      <pubDate>Wed, 03 Jul 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/courses/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>R</title>
       <link>/categories/r/</link>
-      <pubDate>Tue, 23 Jul 2019 21:13:14 -0500</pubDate>
+      <pubDate>Thu, 23 Aug 2018 21:13:14 -0500</pubDate>
       
       <guid>/categories/r/</guid>
       <description></description>
