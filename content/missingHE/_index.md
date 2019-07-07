@@ -4,5 +4,6 @@ header:
   image: ""
 title: "missingHE"
 subtitle: "A R package to handle missingness in health economic evaluations."
-view: 1
+type: "widget_page"
+view: 3
 ---
