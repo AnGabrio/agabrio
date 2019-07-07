@@ -19,7 +19,7 @@
 <div class="article-header">
   {{ $img_src := urls.Parse .Params.header.image }}
   {{ if $img_src.Scheme }}
-  <img src="{{ .Params.header.image }}" class="article-banner" itemprop="image" alt="">
+  <img src="{{ .Params.header.image }}" class="article-banner" itemprop="image">
   {{ else }}
   <img src="{{ (printf "/img/%s" .Params.header.image) | relURL }}" class="article-banner" itemprop="image" alt="">
   {{ end }}
