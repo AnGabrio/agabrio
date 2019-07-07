@@ -5,7 +5,7 @@ summary:
 authors:
 - agabrio
 tags: [Bayesian statistics, Missing Data, Health economics]
-date: "2018-02-05T00:00:00Z"
+date: "2018-08-21T21:13:14-05:00"
 draft: no
 projects: ["internal-project"]
 links:

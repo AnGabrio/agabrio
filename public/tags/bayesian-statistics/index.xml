@@ -48,18 +48,9 @@
     </item>
     
     <item>
-      <title>A Full Bayesian Model to Handle Structural Ones and Missingness in Health Economic Evaluations from Individual-Level Data</title>
-      <link>/talk/hesymposium2018/</link>
-      <pubDate>Mon, 05 Feb 2018 10:00:00 +0000</pubDate>
-      
-      <guid>/talk/hesymposium2018/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>missingHE</title>
       <link>/missinghe/missing-he/missinghe/</link>
-      <pubDate>Mon, 05 Feb 2018 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 21 Aug 2018 21:13:14 -0500</pubDate>
       
       <guid>/missinghe/missing-he/missinghe/</guid>
       <description>
@@ -121,6 +112,15 @@ ICER          -1198.431
 &lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;devtools::install_github(&amp;quot;AnGabrio/missingHE&amp;quot;)
 &lt;/code&gt;&lt;/pre&gt;
 </description>
+    </item>
+    
+    <item>
+      <title>A Full Bayesian Model to Handle Structural Ones and Missingness in Health Economic Evaluations from Individual-Level Data</title>
+      <link>/talk/hesymposium2018/</link>
+      <pubDate>Mon, 05 Feb 2018 10:00:00 +0000</pubDate>
+      
+      <guid>/talk/hesymposium2018/</guid>
+      <description></description>
     </item>
     
   </channel>
