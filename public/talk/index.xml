@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Recent &amp; Upcoming Talks on Andrea Gabrio</title>
+    <link>/talk/</link>
+    <description>Recent content in Recent &amp; Upcoming Talks on Andrea Gabrio</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 04 Jul 2019 16:00:00 +0000</lastBuildDate>
+    
+	    <atom:link href="/talk/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Adjusting for partially-observed utilities and costs in trial-based cost-effectiveness analysis: a comparison of different methods and their performance</title>
+      <link>/talk/hesg2019/</link>
+      <pubDate>Thu, 04 Jul 2019 16:00:00 +0000</pubDate>
+      
+      <guid>/talk/hesg2019/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Understanding Health Economics in Clinical Trials</title>
+      <link>/talk/heartcourse2019/</link>
+      <pubDate>Tue, 02 Jul 2019 09:00:00 +0000</pubDate>
+      
+      <guid>/talk/heartcourse2019/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Bayesian methods for addressing missing data in health economic evaluations</title>
+      <link>/talk/albacete2019/</link>
+      <pubDate>Tue, 11 Jun 2019 10:00:00 +0000</pubDate>
+      
+      <guid>/talk/albacete2019/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Bayesian Parametric Approach to Handle Nonignorable Missingness in Economic Evaluations</title>
+      <link>/talk/priment2018/</link>
+      <pubDate>Fri, 01 Jun 2018 13:00:00 +0000</pubDate>
+      
+      <guid>/talk/priment2018/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Full Bayesian Model to Handle Structural Ones and Missingness in Health Economic Evaluations from Individual-Level Data</title>
+      <link>/talk/hesymposium2018/</link>
+      <pubDate>Mon, 05 Feb 2018 10:00:00 +0000</pubDate>
+      
+      <guid>/talk/hesymposium2018/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Handling Missing Data in Within-Trial Cost-Effectiveness Analysis: a Review with Future Recommendations</title>
+      <link>/talk/euhea2016/</link>
+      <pubDate>Thu, 08 Sep 2016 15:00:00 +0000</pubDate>
+      
+      <guid>/talk/euhea2016/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
