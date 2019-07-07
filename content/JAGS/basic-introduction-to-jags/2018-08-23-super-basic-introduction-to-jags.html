@@ -81,7 +81,7 @@ slug: super-basic-introduction-to-jags
 <h2>Fit the model</h2>
 <p>Now, we can fit the model in <code>JAGS</code> using the <code>jags</code> function in the <code>R2jags</code> package and save it in the object <code>basic.mod</code></p>
 <pre class="r"><code>&gt; basic.mod=jags(data = datalist, inits = inits,
-+   parameters.to.save = params, n.chains = 2, n.iter = 9000, 
++   parameters.to.save = params, n.chains = 2, n.iter = 2000, 
 +   n.burnin = 1000, model.file = &quot;basic.mod.txt&quot;)
 Compiling model graph
    Resolving undeclared variables
@@ -99,9 +99,9 @@ Initializing model</code></pre>
 <p>Once the model has finished running, a summary of the posteiror estimates and convergence diagnostics for all parameters specified can be seen by typing <code>print(basic.mod)</code> or, alternatively,</p>
 <pre class="r"><code>&gt; print(basic.mod$BUGSoutput$summary)</code></pre>
 <pre><code>          mean    sd   2.5%   25%   50%   75% 97.5% Rhat n.eff
-beta0      1.5 0.293   0.95   1.3   1.5   1.7   2.1    1  1600
-beta1      1.2 0.053   1.07   1.1   1.2   1.2   1.3    1   920
-deviance 278.9 2.508 276.04 277.1 278.2 279.9 285.5    1  2000</code></pre>
+beta0      1.5 0.294   0.95   1.3   1.5   1.7   2.1    1  2000
+beta1      1.2 0.054   1.07   1.1   1.2   1.2   1.3    1  2000
+deviance 278.8 2.475 276.03 277.1 278.2 279.9 285.1    1  2000</code></pre>
 <p>The posterior distribution of each parameter is summarised in terms of:</p>
 <ul>
 <li>The mean, sd and some percentiles</li>

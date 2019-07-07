@@ -81,7 +81,7 @@ slug: super-basic-introduction-to-openbugs
 <h2>Fit the model</h2>
 <p>Now, we can fit the model in <code>OpenBUGS</code> using the <code>bugs</code> function in the <code>R2openBUGS</code> package and save it in the object <code>basic.mod</code></p>
 <pre class="r"><code>&gt; basic.mod.bugs=bugs(data = datalist, inits = inits, 
-+   parameters.to.save = params, n.chains = 2, n.iter = 9000,
++   parameters.to.save = params, n.chains = 2, n.iter = 2000,
 +   n.burnin = 1000, model.file = &quot;basicmodbugs.txt&quot;)</code></pre>
 <p>While the model is running, the function prints out some information related to the Bayesian graph (corresponding to the specification used for the model) underneath <code>OpenBUGS</code>, such as number of observed and unobserved nodes and graph size.</p>
 </div>
@@ -90,9 +90,9 @@ slug: super-basic-introduction-to-openbugs
 <p>Once the model has finished running, a summary of the posteiror estimates and convergence diagnostics for all parameters specified can be seen by typing <code>print(basic.mod)</code> or, alternatively,</p>
 <pre class="r"><code>&gt; print(basic.mod.bugs$summary)</code></pre>
 <pre><code>          mean    sd   2.5%   25%   50%   75% 97.5% Rhat n.eff
-beta0      1.5 0.296   0.94   1.3   1.5   1.7   2.1    1   730
-beta1      1.2 0.054   1.07   1.1   1.2   1.2   1.3    1   660
-deviance 278.9 2.519 276.00 277.1 278.3 280.0 285.3    1 16000</code></pre>
+beta0      1.5 0.293   0.99   1.3   1.5   1.7   2.1    1  1700
+beta1      1.2 0.053   1.06   1.1   1.2   1.2   1.3    1  2000
+deviance 278.8 2.439 276.00 277.1 278.2 280.0 285.2    1  2000</code></pre>
 <p>The posterior distribution of each parameter is summarised in terms of:</p>
 <ul>
 <li>The mean, sd and some percentiles</li>

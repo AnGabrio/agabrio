@@ -120,7 +120,7 @@ Now, we can fit the model in `OpenBUGS` using the `bugs` function in the `R2open
 
 ```{r fit_model, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE,error=FALSE,message=FALSE}
 basic.mod.bugs=bugs(data = datalist, inits = inits, 
-  parameters.to.save = params, n.chains = 2, n.iter = 9000,
+  parameters.to.save = params, n.chains = 2, n.iter = 2000,
   n.burnin = 1000, model.file = "basicmodbugs.txt")
 ```
 

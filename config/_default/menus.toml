@@ -35,8 +35,8 @@
   weight = 60
   
 [[main]]
-  name = "MISSINGHE"
-  url = "MISSINGHE/"
+  name = "missingHE"
+  url = "missingHE/"
   parent = "software"
 
 [[main]]
