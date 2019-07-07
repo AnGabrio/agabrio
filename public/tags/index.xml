@@ -57,20 +57,38 @@
     </item>
     
     <item>
+      <title>Academic</title>
+      <link>/tags/academic/</link>
+      <pubDate>Wed, 03 Jul 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/academic/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Clinical Trials</title>
       <link>/tags/clinical-trials/</link>
-      <pubDate>Tue, 02 Jul 2019 09:00:00 +0000</pubDate>
+      <pubDate>Wed, 03 Jul 2019 00:00:00 +0000</pubDate>
       
       <guid>/tags/clinical-trials/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Academic</title>
-      <link>/tags/academic/</link>
-      <pubDate>Sun, 23 Jun 2019 00:00:00 +0000</pubDate>
+      <title>Health economics</title>
+      <link>/tags/health-economics/</link>
+      <pubDate>Wed, 03 Jul 2019 00:00:00 +0000</pubDate>
       
-      <guid>/tags/academic/</guid>
+      <guid>/tags/health-economics/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>introduction</title>
+      <link>/tags/introduction/</link>
+      <pubDate>Wed, 03 Jul 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/introduction/</guid>
       <description></description>
     </item>
     
@@ -89,15 +107,6 @@
       <pubDate>Thu, 23 Aug 2018 21:13:14 -0500</pubDate>
       
       <guid>/tags/jags/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>introduction</title>
-      <link>/tags/introduction/</link>
-      <pubDate>Thu, 23 Aug 2018 21:13:14 -0500</pubDate>
-      
-      <guid>/tags/introduction/</guid>
       <description></description>
     </item>
     
@@ -125,15 +134,6 @@
       <pubDate>Mon, 23 Jul 2018 21:11:14 -0500</pubDate>
       
       <guid>/tags/openbugs/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Health economics</title>
-      <link>/tags/health-economics/</link>
-      <pubDate>Mon, 05 Feb 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/health-economics/</guid>
       <description></description>
     </item>
     
