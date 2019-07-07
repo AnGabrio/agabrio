@@ -116,14 +116,14 @@
   </url>
   
   <url>
-    <loc>/talk/albacete2019/</loc>
-    <lastmod>2019-06-11T10:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/tags/bayesian-statistics/</loc>
     <lastmod>2019-06-11T10:00:00+00:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/talk/albacete2019/</loc>
+    <lastmod>2019-06-11T10:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -297,12 +297,12 @@
   </url>
   
   <url>
-    <loc>/missinghe/</loc>
+    <loc>/missinghe/2018-08-27-missing-he/</loc>
     <lastmod>2018-02-05T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/missinghe/missing-he/2018-08-27-missing-he/</loc>
+    <loc>/missinghe/</loc>
     <lastmod>2018-02-05T00:00:00+00:00</lastmod>
   </url>
   

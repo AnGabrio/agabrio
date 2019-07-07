@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Bayesian statistics on Andrea Gabrio</title>
+    <title>Bayesian Statistics on Andrea Gabrio</title>
     <link>/tags/bayesian-statistics/</link>
-    <description>Recent content in Bayesian statistics on Andrea Gabrio</description>
+    <description>Recent content in Bayesian Statistics on Andrea Gabrio</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
     <lastBuildDate>Tue, 11 Jun 2019 10:00:00 +0000</lastBuildDate>
@@ -58,10 +58,10 @@
     
     <item>
       <title>missingHE</title>
-      <link>/missinghe/missing-he/2018-08-27-missing-he/</link>
+      <link>/missinghe/2018-08-27-missing-he/</link>
       <pubDate>Mon, 05 Feb 2018 00:00:00 +0000</pubDate>
       
-      <guid>/missinghe/missing-he/2018-08-27-missing-he/</guid>
+      <guid>/missinghe/2018-08-27-missing-he/</guid>
       <description>
 
 &lt;p&gt;&lt;code&gt;missingHE&lt;/code&gt; is a &lt;code&gt;R&lt;/code&gt; package aimed at providing some useful tools to analysts in order to handle missing outcome data under a Full Bayesian framework in economic evaluations. The package relies on the &lt;code&gt;R&lt;/code&gt; package &lt;code&gt;R2jags&lt;/code&gt; to implement Bayesian methods via the statistical software &lt;code&gt;JAGS&lt;/code&gt;. The package allows to obtain inferences using Markov Chain Monte Carlo (MCMC) methods under a range of modelling approaches and missing data assumptions. The package also contains functions specifically defined to assess model fit and possible issues in model convergence as well as to summarise the main results from the economic analysis.&lt;/p&gt;
