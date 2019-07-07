@@ -76,10 +76,10 @@
     
     <item>
       <title>missingHE</title>
-      <link>/missinghe/</link>
+      <link>/missinghe/missinghe/</link>
       <pubDate>Mon, 05 Feb 2018 00:00:00 +0000</pubDate>
       
-      <guid>/missinghe/</guid>
+      <guid>/missinghe/missinghe/</guid>
       <description>
 
 &lt;p&gt;&lt;code&gt;missingHE&lt;/code&gt; is a &lt;code&gt;R&lt;/code&gt; package aimed at providing some useful tools to analysts in order to handle missing outcome data under a Full Bayesian framework in economic evaluations. The package relies on the &lt;code&gt;R&lt;/code&gt; package &lt;code&gt;R2jags&lt;/code&gt; to implement Bayesian methods via the statistical software &lt;code&gt;JAGS&lt;/code&gt;. The package allows to obtain inferences using Markov Chain Monte Carlo (MCMC) methods under a range of modelling approaches and missing data assumptions. The package also contains functions specifically defined to assess model fit and possible issues in model convergence as well as to summarise the main results from the economic analysis.&lt;/p&gt;
