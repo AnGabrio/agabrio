@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Literature Review on Andrea Gabrio</title>
+    <link>/tags/literature-review/</link>
+    <description>Recent content in Literature Review on Andrea Gabrio</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 01 Jun 2017 00:00:00 +0000</lastBuildDate>
+    
+	    <atom:link href="/tags/literature-review/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Handling Missing Data in Within-Trial Cost-Effectiveness Analysis: A Review with Future Recommendations</title>
+      <link>/publication/gabrio2017/</link>
+      <pubDate>Thu, 01 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/publication/gabrio2017/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>linear regression on Andrea Gabrio</title>
+    <link>/tags/linear-regression/</link>
+    <description>Recent content in linear regression on Andrea Gabrio</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 23 Aug 2018 21:13:14 -0500</lastBuildDate>
+    
+	    <atom:link href="/tags/linear-regression/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Super basic introduction to JAGS</title>
+      <link>/jags/basic-introduction-to-jags/super-basic-introduction-to-jags/</link>
+      <pubDate>Thu, 23 Aug 2018 21:13:14 -0500</pubDate>
+      
+      <guid>/jags/basic-introduction-to-jags/super-basic-introduction-to-jags/</guid>
+      <description>
+
+
+&lt;p&gt;The focus of this simple tutorial is to provide a brief introduction and overview about how to fit Bayesian models using &lt;code&gt;JAGS&lt;/code&gt; via &lt;code&gt;R&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Prerequisites:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The latest version of &lt;code&gt;R&lt;/code&gt;, which can be downloaded and installed for Windows, Mac or Linux OS from the &lt;a href=&#34;https://www.r-project.org/%7D&#34;&gt;CRAN&lt;/a&gt; website&lt;/li&gt;
+&lt;li&gt;I also &lt;strong&gt;strongly&lt;/strong&gt; recommend to download and install &lt;a href=&#34;https://www.rstudio.com/&#34;&gt;Rstudio&lt;/a&gt;, an integrated development environment which provides an “user-friendly” interaction with &lt;code&gt;R&lt;/code&gt; (e.g. many drop-down menus, tabs, customisation options)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div id=&#34;preliminaries&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Preliminaries&lt;/h1&gt;
+&lt;div id=&#34;what-is-jags&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;What is JAGS?&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;JAGS&lt;/code&gt; or &lt;strong&gt;J&lt;/strong&gt;ust &lt;strong&gt;A&lt;/strong&gt;nother &lt;strong&gt;G&lt;/strong&gt;ibbs &lt;strong&gt;S&lt;/strong&gt;ampler is a program for analysis of Bayesian models using Markov Chain Monte Carlo (MCMC) methods (&lt;span class=&#34;citation&#34;&gt;Plummer (2004)&lt;/span&gt;). &lt;code&gt;JAGS&lt;/code&gt; is a free software based on the &lt;strong&gt;B&lt;/strong&gt;ayesian inference &lt;strong&gt;U&lt;/strong&gt;sing &lt;strong&gt;G&lt;/strong&gt;ibbs &lt;strong&gt;S&lt;/strong&gt;ampling (informally &lt;code&gt;BUGS&lt;/code&gt;) language at the base of &lt;code&gt;WinBUGS/OpenBUGS&lt;/code&gt; but, unlike these programs, it is written in &lt;code&gt;C++&lt;/code&gt; and is platform independent. The latest version of &lt;code&gt;JAGS&lt;/code&gt; can be dowloaded from Martyn Plummer’s &lt;a href=&#34;https://sourceforge.net/projects/mcmc-jags/files/JAGS/&#34;&gt;repository&lt;/a&gt; and is available for different OS. There are different &lt;code&gt;R&lt;/code&gt; packages which function as frontends for &lt;code&gt;JAGS&lt;/code&gt;. These packages make it easy to process the output of Bayesian models and present it in publication-ready form. In this brief introduction, I will specifically focus on the &lt;code&gt;R2jags&lt;/code&gt; package (&lt;span class=&#34;citation&#34;&gt;Su et al. (2015)&lt;/span&gt;) and show how to fit &lt;code&gt;JAGS&lt;/code&gt; models using this package.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;installing-jags-and-r2jags&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Installing JAGS and R2jags&lt;/h2&gt;
+&lt;p&gt;Install the latest version of &lt;code&gt;JAGS&lt;/code&gt; for your OS. Next, install the package &lt;code&gt;R2jags&lt;/code&gt; from within &lt;code&gt;R&lt;/code&gt; or &lt;code&gt;Rstudio&lt;/code&gt;, via the package installer or by typing in the command line&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; install.packages(&amp;quot;R2jags&amp;quot;, dependencies = TRUE)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The &lt;code&gt;dependencies = TRUE&lt;/code&gt; option will automatically install all the packages on which the functions in the &lt;code&gt;R2jags&lt;/code&gt; package rely.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;basic-model&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Basic model&lt;/h1&gt;
+&lt;div id=&#34;simulate-data&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Simulate data&lt;/h2&gt;
+&lt;p&gt;For an example dataset, I simulate my own data in &lt;code&gt;R&lt;/code&gt;. I create a continuous outcome variable &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; as a function of one predictor &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt; and a disturbance term &lt;span class=&#34;math inline&#34;&gt;\(\epsilon\)&lt;/span&gt;. I simulate a dataset with 100 observations. Create the error term, the predictor and the outcome using a linear form with an intercept &lt;span class=&#34;math inline&#34;&gt;\(\beta_0\)&lt;/span&gt; and slope &lt;span class=&#34;math inline&#34;&gt;\(\beta_1\)&lt;/span&gt; coefficients, i.e.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[y = \beta_0 + \beta_1 x + \epsilon  \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;R&lt;/code&gt; commands which I use to simulate the data are the following:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; n.sim=100; set.seed(123)
+&amp;gt; x=rnorm(n.sim, mean = 5, sd = 2)
+&amp;gt; epsilon=rnorm(n.sim, mean = 0, sd = 1)
+&amp;gt; beta0=1.5
+&amp;gt; beta1=1.2
+&amp;gt; y=beta0 + beta1 * x + epsilon&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Then, I define all the data for &lt;code&gt;JAGS&lt;/code&gt; in a list object&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; datalist=list(&amp;quot;y&amp;quot;,&amp;quot;x&amp;quot;,&amp;quot;n.sim&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;model-file&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Model file&lt;/h2&gt;
+&lt;p&gt;Now, I write the model for &lt;code&gt;JAGS&lt;/code&gt; and save it as a text file named &lt;code&gt;&#34;basic.mod.txt&#34;&lt;/code&gt; in the current working directory&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; basic.mod= &amp;quot;
++ model {
++ #model
++  for(i in 1:n.sim){
++   y[i] ~ dnorm(mu[i], tau)
++   mu[i] = beta0 + beta1 * x[i]
++  }
++ #priors
++ beta0 ~ dnorm(0, 0.01)
++ beta1 ~ dnorm(0, 0.01)
++ tau ~ dgamma(0.01,0.01)
++ }
++ &amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The part of the model inside the for loop denotes the likelihood, which is evaluated for each individual in the sample using a Normal distribution parameterised by some mean &lt;code&gt;mu&lt;/code&gt; and precision &lt;code&gt;tau&lt;/code&gt; (where, precision = 1/variance). The covariate &lt;code&gt;x&lt;/code&gt; is included at the mean level using a linear regression, which is indexed by the intercept &lt;code&gt;beta0&lt;/code&gt; and slope &lt;code&gt;beta1&lt;/code&gt; terms. The second part defines the prior distributions for all parameters of the model, namely the regression coefficients and the precision. Weakly informative priors are used since I assume that I do not have any prior knowledge about these parameters.&lt;/p&gt;
+&lt;p&gt;To write and save the model as the text file “basic.mod.txt” in the current working directory, I use the &lt;code&gt;writeLines&lt;/code&gt; function&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; writeLines(basic.mod, &amp;quot;basic.mod.txt&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;pre-processing&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Pre-processing&lt;/h2&gt;
+&lt;p&gt;Define the parameters whose posterior distribtuions we are interested in summarising later and set up the initial values for the MCMC sampler in &lt;code&gt;JAGS&lt;/code&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; params=c(&amp;quot;beta0&amp;quot;,&amp;quot;beta1&amp;quot;)
+&amp;gt; inits=function(){list(&amp;quot;beta0&amp;quot;=rnorm(1), &amp;quot;beta1&amp;quot;=rnorm(1))}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The function creates a list that contains one element for each parameter, which gets assigned a random draw from a normal distribution as a strating value for each chain in the model. For simple models like this, it is generally easy to define the intial values for all parameters. However, for more complex models, this may not be immediate and a lot of trial and error may be required. However, &lt;code&gt;JAGS&lt;/code&gt; can automatically select the initial values for all parameters in an efficient way even for relatively complex models. This can be achieved by setting &lt;code&gt;inits=NULL&lt;/code&gt;, which is then passed to the &lt;code&gt;jags&lt;/code&gt; function in &lt;code&gt;R2jags&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Before using &lt;code&gt;R2jags&lt;/code&gt; for the first time, you need to load the package, and you may want to set a random seed number for making your estimates replicable&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(R2jags)
+&amp;gt; set.seed(123)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;fit-the-model&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Fit the model&lt;/h2&gt;
+&lt;p&gt;Now, we can fit the model in &lt;code&gt;JAGS&lt;/code&gt; using the &lt;code&gt;jags&lt;/code&gt; function in the &lt;code&gt;R2jags&lt;/code&gt; package and save it in the object &lt;code&gt;basic.mod&lt;/code&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; basic.mod=jags(data = datalist, inits = inits,
++   parameters.to.save = params, n.chains = 2, n.iter = 2000, 
++   n.burnin = 1000, model.file = &amp;quot;basic.mod.txt&amp;quot;)
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 100
+   Unobserved stochastic nodes: 3
+   Total graph size: 406
+
+Initializing model&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;While the model is running, the function prints out some information related to the Bayesian graph (corresponding to the specification used for the model) underneath &lt;code&gt;JAGS&lt;/code&gt;, such as number of observed and unobserved nodes and graph size.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;post-processing&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Post-processing&lt;/h2&gt;
+&lt;p&gt;Once the model has finished running, a summary of the posteiror estimates and convergence diagnostics for all parameters specified can be seen by typing &lt;code&gt;print(basic.mod)&lt;/code&gt; or, alternatively,&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; print(basic.mod$BUGSoutput$summary)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;          mean    sd   2.5%   25%   50%   75% 97.5% Rhat n.eff
+beta0      1.5 0.294   0.95   1.3   1.5   1.7   2.1    1  2000
+beta1      1.2 0.054   1.07   1.1   1.2   1.2   1.3    1  2000
+deviance 278.8 2.475 276.03 277.1 278.2 279.9 285.1    1  2000&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The posterior distribution of each parameter is summarised in terms of:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The mean, sd and some percentiles&lt;/li&gt;
+&lt;li&gt;Potential scale reduction factor &lt;code&gt;Rhat&lt;/code&gt; and effective sample size &lt;code&gt;n.eff&lt;/code&gt; (&lt;span class=&#34;citation&#34;&gt;Gelman (2013)&lt;/span&gt;). The first is a measure to assess issues in convergence of the MCMC algorithm (typically a value below &lt;span class=&#34;math inline&#34;&gt;\(1.05\)&lt;/span&gt; for all parameters is considered ok). The second is a measure which assesses the adequacy of the posterior sample (typically values close to the total number of iterations are desirable for all parameters).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The deviance is a goodness of fit statistic and is used in the construction of the “Deviance Information Criterion” or DIC (&lt;span class=&#34;citation&#34;&gt;Spiegelhalter et al. (2014)&lt;/span&gt;), which is a &lt;em&gt;relative&lt;/em&gt; measure of model comparison. The DIC of the model can be accessed by typing&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; basic.mod$BUGSoutput$DIC
+[1] 282&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;diagnostics&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Diagnostics&lt;/h2&gt;
+&lt;p&gt;More diagnostics are available when we convert the model output into an MCMC object using the command&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; basic.mod.mcmc=as.mcmc(basic.mod)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Different packages are available to perform diagnostic checks for Bayesian models. Here, I install and load the &lt;code&gt;mcmcplots&lt;/code&gt; package (&lt;span class=&#34;citation&#34;&gt;Curtis (2015)&lt;/span&gt;) to obtain graphical diagnostics and results.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; install.packages(&amp;quot;mcmcplots&amp;quot;)
+&amp;gt; library(mcmcplots)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;For example, density and trace plots can be obtained by typing&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; denplot(basic.mod.mcmc, parms = c(&amp;quot;beta0&amp;quot;,&amp;quot;beta1&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/basic-introduction-to-jags/2018-08-23-super-basic-introduction-to-jags_files/figure-html/diagnostic3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; traplot(basic.mod.mcmc, parms = c(&amp;quot;beta0&amp;quot;,&amp;quot;beta1&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/basic-introduction-to-jags/2018-08-23-super-basic-introduction-to-jags_files/figure-html/diagnostic3-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Both types of graphs suggest that there are not issues in the convergence of the algorithm (smooth normal densities and hairy caterpillar graphs for both MCMC chains).&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;conclusions&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Conclusions&lt;/h1&gt;
+&lt;p&gt;This tutorial was simply a brief introduction on how simple linear regression models can be fitted using the Bayesian software &lt;code&gt;JAGS&lt;/code&gt; via the &lt;code&gt;R2jags&lt;/code&gt; package. Although this may seem a complex procedure compared with simply fitting a linear model under the frequentist framework, however, the real advantages of Bayesian methods become evident when the complexity of the analysis is increased (which is often the case in real applications). Indeed, the flexibility in Bayesian modelling allows to account for increasingly complex models in a relatively easy way. In addition, Bayesian methods are ideal when the interest is in taking into account the potential impact that different sources of uncertainty may have on the final results, as they allow the natural propagation of uncertainty throughout each quantity in the model.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
+&lt;h1&gt;References&lt;/h1&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references&#34;&gt;
+&lt;div id=&#34;ref-curtis2015mcmcplots&#34;&gt;
+&lt;p&gt;Curtis, SM. 2015. “Mcmcplots: Create Plots from Mcmc Output.” &lt;em&gt;R Package Version 0.4&lt;/em&gt; 2.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-gelman2013bayesian&#34;&gt;
+&lt;p&gt;Gelman, Andrew. 2013. &lt;em&gt;Bayesian Data Analysis&lt;/em&gt;. Chapman; Hall/CRC.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-plummer2004jags&#34;&gt;
+&lt;p&gt;Plummer, Martyn. 2004. “JAGS: Just Another Gibbs Sampler.”&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-spiegelhalter2014deviance&#34;&gt;
+&lt;p&gt;Spiegelhalter, David J, Nicola G Best, Bradley P Carlin, and Angelika Van Der Linde. 2014. “The Deviance Information Criterion: 12 Years on.” &lt;em&gt;Journal of the Royal Statistical Society: Series B (Statistical Methodology)&lt;/em&gt; 76 (3): 485–93.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-su2015package&#34;&gt;
+&lt;p&gt;Su, Yu-Sung, Masanao Yajima, Maintainer Yu-Sung Su, and JAGS SystemRequirements. 2015. “Package ‘R2jags’.” &lt;em&gt;R Package Version 0.03-08, URL Http://CRAN. R-Project. Org/Package= R2jags&lt;/em&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Super basic introduction to STAN</title>
+      <link>/stan/basic-introduction-to-stan/super-basic-introduction-to-stan/</link>
+      <pubDate>Mon, 23 Jul 2018 21:13:14 -0500</pubDate>
+      
+      <guid>/stan/basic-introduction-to-stan/super-basic-introduction-to-stan/</guid>
+      <description>
+
+
+&lt;p&gt;The focus of this simple tutorial is to provide a brief introduction and overview about how to fit Bayesian models using &lt;code&gt;STAN&lt;/code&gt; via &lt;code&gt;R&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Prerequisites:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The latest version of &lt;code&gt;R&lt;/code&gt;, which can be downloaded and installed for Windows, Mac or Linux OS from the &lt;a href=&#34;https://www.r-project.org/%7D&#34;&gt;CRAN&lt;/a&gt; website&lt;/li&gt;
+&lt;li&gt;I also &lt;strong&gt;strongly&lt;/strong&gt; recommend to download and install &lt;a href=&#34;https://www.rstudio.com/&#34;&gt;Rstudio&lt;/a&gt;, an integrated development environment which provides an “user-friendly” interaction with &lt;code&gt;R&lt;/code&gt; (e.g. many drop-down menus, tabs, customisation options)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div id=&#34;preliminaries&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Preliminaries&lt;/h1&gt;
+&lt;div id=&#34;what-is-stan&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;What is STAN?&lt;/h2&gt;
+&lt;p&gt;Stan provides full Bayesian inference for continuous-variable models through Markov Chain Monte Carlo methods such as the No-U-Turn sampler, an adaptive form of Hamiltonian Monte Carlo sampling&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;STAN&lt;/code&gt; is a program for analysis of Bayesian models using Markov Chain Monte Carlo (MCMC) methods (&lt;span class=&#34;citation&#34;&gt;Gelman, Lee, and Guo (2015)&lt;/span&gt;). &lt;code&gt;STAN&lt;/code&gt; is a free software and a probabilistic programming language for specifying statistical models using a specific class of MCMC algorithms known as &lt;strong&gt;H&lt;/strong&gt;amiltonian &lt;strong&gt;M&lt;/strong&gt;onte &lt;strong&gt;C&lt;/strong&gt;arlo methods (HMC). The latest version of &lt;code&gt;STAN&lt;/code&gt; can be dowloaded from the web &lt;a href=&#34;https://mc-stan.org/users/interfaces/&#34;&gt;repository&lt;/a&gt; and is available for different OS. There are different &lt;code&gt;R&lt;/code&gt; packages which function as frontends for &lt;code&gt;STAN&lt;/code&gt;. These packages make it easy to process the output of Bayesian models and present it in publication-ready form. In this brief introduction, I will specifically focus on the &lt;code&gt;rstan&lt;/code&gt; package (&lt;span class=&#34;citation&#34;&gt;Stan Development Team (2018)&lt;/span&gt;) and show how to fit &lt;code&gt;STAN&lt;/code&gt; models using this package.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;installing-stan-and-rstan&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Installing STAN and rstan&lt;/h2&gt;
+&lt;p&gt;Unlike other Bayesian software, such as &lt;code&gt;JAGS&lt;/code&gt; or &lt;code&gt;OpenBUGS&lt;/code&gt;, it is not required to separately install the program and the corresponding frontend &lt;code&gt;R&lt;/code&gt; package. Indeed, installing the &lt;code&gt;R&lt;/code&gt; package &lt;code&gt;rstan&lt;/code&gt; will automatically install &lt;code&gt;STAN&lt;/code&gt; on your machine. However, you will also need to make sure to having installed on your pc a &lt;code&gt;C++&lt;/code&gt; compiler which is used by &lt;code&gt;rstan&lt;/code&gt; to fit the models. Under a Windows OS, for example, this can be done by installing &lt;code&gt;Rtools&lt;/code&gt;, a collection of resources for building packages for &lt;code&gt;R&lt;/code&gt;, which is freely available from the web &lt;a href=&#34;https://cran.r-project.org/bin/windows/Rtools/&#34;&gt;repository&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Next, install the package &lt;code&gt;rstan&lt;/code&gt; from within &lt;code&gt;R&lt;/code&gt; or &lt;code&gt;Rstudio&lt;/code&gt;, via the package installer or by typing in the command line&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; install.packages(&amp;quot;rstan&amp;quot;, dependencies = TRUE)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The &lt;code&gt;dependencies = TRUE&lt;/code&gt; option will automatically install all the packages on which the functions in the &lt;code&gt;rstan&lt;/code&gt; package rely.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;basic-model&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Basic model&lt;/h1&gt;
+&lt;div id=&#34;simulate-data&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Simulate data&lt;/h2&gt;
+&lt;p&gt;For an example dataset, I simulate my own data in &lt;code&gt;R&lt;/code&gt;. I create a continuous outcome variable &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; as a function of one predictor &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt; and a disturbance term &lt;span class=&#34;math inline&#34;&gt;\(\epsilon\)&lt;/span&gt;. I simulate a dataset with 100 observations. Create the error term, the predictor and the outcome using a linear form with an intercept &lt;span class=&#34;math inline&#34;&gt;\(\beta_0\)&lt;/span&gt; and slope &lt;span class=&#34;math inline&#34;&gt;\(\beta_1\)&lt;/span&gt; coefficients, i.e.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[y = \beta_0 + \beta_1 x + \epsilon  \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;R&lt;/code&gt; commands which I use to simulate the data are the following:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; n.sim=100; set.seed(123)
+&amp;gt; x=rnorm(n.sim, mean = 5, sd = 2)
+&amp;gt; epsilon=rnorm(n.sim, mean = 0, sd = 1)
+&amp;gt; beta0=1.5
+&amp;gt; beta1=1.2
+&amp;gt; y=beta0 + beta1 * x + epsilon&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Then, I define all the data for &lt;code&gt;STAN&lt;/code&gt; in a list object&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; datalist=list(&amp;quot;y&amp;quot;,&amp;quot;x&amp;quot;,&amp;quot;n.sim&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;model-file&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Model file&lt;/h2&gt;
+&lt;p&gt;Now, I write the model for &lt;code&gt;STAN&lt;/code&gt; and save it as a stan file named &lt;code&gt;&#34;basic.mod.stan&#34;&lt;/code&gt; in the current working directory&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; basic.mod= &amp;quot;
++ data {
++ int&amp;lt;lower=0&amp;gt; N;
++ vector[N] y;
++ vector[N] x;
++ }
++ parameters {
++ real beta0;
++ real beta1;
++ real&amp;lt;lower=0&amp;gt; sigma;
++ }
++ transformed parameters {
++ vector[N] mu;
++ mu=beta0 + beta1*x;
++ } 
++ model {
++ sigma~uniform(0,100);
++ beta0~normal(0,1000);
++ beta1~normal(0,1000);
++ y~normal(mu,sigma);
++ }
++ 
++ &amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;STAN&lt;/code&gt; models are written using an imperative programming language, which means that the order in which you write the elements in your model file matters, i.e. you first need to define your variables (e.g. integers, vectors, matrices, etc.), the constraints which define the range of values your variable can take (e.g. only positive values for standard deviations), and finally define the relationship among the variables (e.g. one is a liner function of another).&lt;/p&gt;
+&lt;p&gt;A Stan model is defined by six program blocks:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Data (required). The &lt;em&gt;data block&lt;/em&gt; reads external information – e.g. data vectors, matrices, integers, etc.&lt;/li&gt;
+&lt;li&gt;Transformed data (optional). The &lt;em&gt;transformed data block&lt;/em&gt; allows for preprocessing of the data – e.g. transformation or rescaling of the data.&lt;/li&gt;
+&lt;li&gt;Parameters (required). The &lt;em&gt;parameters block&lt;/em&gt; defines the sampling space – e.g. parameters to which prior distributions must be assigned.&lt;/li&gt;
+&lt;li&gt;Transformed parameters (optional). The &lt;em&gt;transformed parameters block&lt;/em&gt; allows for parameter processing before the posterior is computed – e.g. tranformation or rescaling of the parameters.&lt;/li&gt;
+&lt;li&gt;Model (required). In the &lt;em&gt;model block&lt;/em&gt; we define our posterior distributions – e.g. choice of distributions for all variables.&lt;/li&gt;
+&lt;li&gt;Generated quantities (optional). The &lt;em&gt;generated quantities block&lt;/em&gt; allows for postprocessing – e.g. backtranformation of the parameters using the posterior samples.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;For this introduction I consider a very simple model which only requires the specification of four blocks in the &lt;code&gt;STAN&lt;/code&gt; model. In the data block, I first define the size of the sample &lt;code&gt;N&lt;/code&gt; as a positive integer number using the expression &lt;code&gt;int&amp;lt;lower=0&amp;gt; N&lt;/code&gt;; then I declare the two variables &lt;code&gt;y&lt;/code&gt; and &lt;code&gt;x&lt;/code&gt; as reals (or vectors) with length equal to N. In the parameters block, I define the coefficients for the linear regression &lt;code&gt;beta0&lt;/code&gt; and &lt;code&gt;beta1&lt;/code&gt; (as two real numbers) and the standard deviation parameter &lt;code&gt;sigma&lt;/code&gt; (as a positive real number). In the transformed parameters block, I define the conditional mean &lt;code&gt;mu&lt;/code&gt; (a real vector of length N) as a linear function of the intercept &lt;code&gt;beta0&lt;/code&gt;, the slope &lt;code&gt;beta1&lt;/code&gt;, and the covariate &lt;code&gt;x&lt;/code&gt;. Finally, in the model block, I assign weakly informative priors to the regression coefficients and the standard deviation parameters, and I model the outcome data &lt;code&gt;y&lt;/code&gt; using a normal distribution indexed by the conditional mean &lt;code&gt;mu&lt;/code&gt; and the standard deviation &lt;code&gt;sd&lt;/code&gt; parameters. I note that &lt;code&gt;STAN&lt;/code&gt; in many cases uses sampling statements which can be vectorized, i.e. you do not need to use for loops statements.&lt;/p&gt;
+&lt;p&gt;To write and save the model as the text file “basic.mod.stan” in the current working directory, I use the &lt;code&gt;writeLines&lt;/code&gt; function&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; writeLines(basic.mod, &amp;quot;basic.mod.stan&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;pre-processing&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Pre-processing&lt;/h2&gt;
+&lt;p&gt;Define the parameters whose posterior distribtuions we are interested in summarising later and set up the initial values for the MCMC sampler in &lt;code&gt;STAN&lt;/code&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; params=c(&amp;quot;beta0&amp;quot;,&amp;quot;beta1&amp;quot;)
+&amp;gt; inits=function(){list(&amp;quot;beta0&amp;quot;=rnorm(1), &amp;quot;beta1&amp;quot;=rnorm(1))}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The function creates a list that contains one element for each parameter, which gets assigned a random draw from a normal distribution as a strating value for each chain in the model. For simple models like this, it is generally easy to define the intial values for all parameters in the object &lt;code&gt;inits&lt;/code&gt; which is then passed to the &lt;code&gt;stan&lt;/code&gt; function in &lt;code&gt;rstan&lt;/code&gt;. However, for more complex models, this may not be immediate and a lot of trial and error may be required. However, &lt;code&gt;STAN&lt;/code&gt; can automatically select the initial values for all parameters randomly. This can be achieved by setting &lt;code&gt;inits=&#34;random&#34;&lt;/code&gt;, which is then passed to the &lt;code&gt;stan&lt;/code&gt; function in &lt;code&gt;rstan&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Before using &lt;code&gt;rstan&lt;/code&gt; for the first time, you need to load the package, and you may want to set a random seed number for making your estimates replicable&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(rstan)
+&amp;gt; set.seed(123)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;fit-the-model&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Fit the model&lt;/h2&gt;
+&lt;p&gt;Now, we can fit the model in &lt;code&gt;STAN&lt;/code&gt; using the &lt;code&gt;stan&lt;/code&gt; function in the &lt;code&gt;rstan&lt;/code&gt; package and save it in the object &lt;code&gt;basic.mod&lt;/code&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; #basic.mod&amp;lt;-stan(data = datalist, pars = params, 
+&amp;gt; #  iter = 9000, warmup = 1000, chains = 2, file = &amp;quot;basic.mod.stan&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references&#34;&gt;
+&lt;div id=&#34;ref-gelman2015stan&#34;&gt;
+&lt;p&gt;Gelman, Andrew, Daniel Lee, and Jiqiang Guo. 2015. “Stan: A Probabilistic Programming Language for Bayesian Inference and Optimization.” &lt;em&gt;Journal of Educational and Behavioral Statistics&lt;/em&gt; 40 (5): 530–43.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-rstanpackage&#34;&gt;
+&lt;p&gt;Stan Development Team. 2018. “RStan: The R Interface to Stan.” &lt;a href=&#34;http://mc-stan.org/&#34;&gt;http://mc-stan.org/&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Super basic introduction to OpenBUGS</title>
+      <link>/openbugs/basic-introduction-to-openbugs/super-basic-introduction-to-openbugs/</link>
+      <pubDate>Mon, 23 Jul 2018 21:11:14 -0500</pubDate>
+      
+      <guid>/openbugs/basic-introduction-to-openbugs/super-basic-introduction-to-openbugs/</guid>
+      <description>
+
+
+&lt;p&gt;The focus of this simple tutorial is to provide a brief introduction and overview about how to fit Bayesian models using &lt;code&gt;OpenBUGS&lt;/code&gt; via &lt;code&gt;R&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Prerequisites:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The latest version of &lt;code&gt;R&lt;/code&gt;, which can be downloaded and installed for Windows, Mac or Linux OS from the &lt;a href=&#34;https://www.r-project.org/%7D&#34;&gt;CRAN&lt;/a&gt; website&lt;/li&gt;
+&lt;li&gt;I also &lt;strong&gt;strongly&lt;/strong&gt; recommend to download and install &lt;a href=&#34;https://www.rstudio.com/&#34;&gt;Rstudio&lt;/a&gt;, an integrated development environment which provides an “user-friendly” interaction with &lt;code&gt;R&lt;/code&gt; (e.g. many drop-down menus, tabs, customisation options)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div id=&#34;preliminaries&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Preliminaries&lt;/h1&gt;
+&lt;div id=&#34;what-is-openbugs&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;What is OpenBUGS?&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;OpenBUGS&lt;/code&gt; is a program for analysis of Bayesian models using Markov Chain Monte Carlo (MCMC) methods (&lt;span class=&#34;citation&#34;&gt;Spiegelhalter et al. (2007)&lt;/span&gt;). &lt;code&gt;OpenBUGS&lt;/code&gt; is a free software based on the &lt;strong&gt;B&lt;/strong&gt;ayesian inference &lt;strong&gt;U&lt;/strong&gt;sing &lt;strong&gt;G&lt;/strong&gt;ibbs &lt;strong&gt;S&lt;/strong&gt;ampling (informally &lt;code&gt;BUGS&lt;/code&gt;) language at the base of &lt;code&gt;WinBUGS&lt;/code&gt; but, unlike this program, is platform independent. The latest version of &lt;code&gt;OpenBUGS&lt;/code&gt; can be dowloaded from the web &lt;a href=&#34;http://www.openbugs.net/w/FrontPage&#34;&gt;repository&lt;/a&gt; and is available for different OS. There are different &lt;code&gt;R&lt;/code&gt; packages which function as frontends for &lt;code&gt;OpenBUGS&lt;/code&gt;. These packages make it easy to process the output of Bayesian models and present it in publication-ready form. In this brief introduction, I will specifically focus on the &lt;code&gt;R2OpenBUGS&lt;/code&gt; package (&lt;span class=&#34;citation&#34;&gt;Sturtz, Ligges, and Gelman (2010)&lt;/span&gt;) and show how to fit &lt;code&gt;OpenBUGS&lt;/code&gt; models using this package.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;installing-openbugs-and-r2openbugs&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Installing OpenBUGS and R2OpenBUGS&lt;/h2&gt;
+&lt;p&gt;Install the latest version of &lt;code&gt;OpenBUGS&lt;/code&gt; for your OS. Next, install the package &lt;code&gt;R2OpenBUGS&lt;/code&gt; from within &lt;code&gt;R&lt;/code&gt; or &lt;code&gt;Rstudio&lt;/code&gt;, via the package installer or by typing in the command line&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; install.packages(&amp;quot;R2OpenBUGS&amp;quot;, dependencies = TRUE)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The &lt;code&gt;dependencies = TRUE&lt;/code&gt; option will automatically install all the packages on which the functions in the &lt;code&gt;R2OpenBUGS&lt;/code&gt; package rely.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;basic-model&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Basic model&lt;/h1&gt;
+&lt;div id=&#34;simulate-data&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Simulate data&lt;/h2&gt;
+&lt;p&gt;For an example dataset, I simulate my own data in &lt;code&gt;R&lt;/code&gt;. I create a continuous outcome variable &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; as a function of one predictor &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt; and a disturbance term &lt;span class=&#34;math inline&#34;&gt;\(\epsilon\)&lt;/span&gt;. I simulate a dataset with 100 observations. Create the error term, the predictor and the outcome using a linear form with an intercept &lt;span class=&#34;math inline&#34;&gt;\(\beta_0\)&lt;/span&gt; and slope &lt;span class=&#34;math inline&#34;&gt;\(\beta_1\)&lt;/span&gt; coefficients, i.e.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[y = \beta_0 + \beta_1 x + \epsilon  \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;R&lt;/code&gt; commands which I use to simulate the data are the following:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; n.sim=100; set.seed(123)
+&amp;gt; x=rnorm(n.sim, mean = 5, sd = 2)
+&amp;gt; epsilon=rnorm(n.sim, mean = 0, sd = 1)
+&amp;gt; beta0=1.5
+&amp;gt; beta1=1.2
+&amp;gt; y=beta0 + beta1 * x + epsilon&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Then, I define all the data for &lt;code&gt;JAGS&lt;/code&gt; in a list object&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; datalist=list(&amp;quot;y&amp;quot;,&amp;quot;x&amp;quot;,&amp;quot;n.sim&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;model-file&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Model file&lt;/h2&gt;
+&lt;p&gt;Now, I write the model for &lt;code&gt;OpenBUGS&lt;/code&gt; and save it as a text file named &lt;code&gt;&#34;basicmodbugs.txt&#34;&lt;/code&gt; in the current working directory&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; basic.mod= &amp;quot;
++ model {
++ #model
++  for(i in 1:n.sim){
++   y[i] ~ dnorm(mu[i], tau)
++   mu[i] &amp;lt;- beta0 + beta1 * x[i]
++  }
++ #priors
++ beta0 ~ dnorm(0, 0.01)
++ beta1 ~ dnorm(0, 0.01)
++ tau ~ dgamma(0.01,0.01)
++ }
++ &amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The part of the model inside the for loop denotes the likelihood, which is evaluated for each individual in the sample using a Normal distribution parameterised by some mean &lt;code&gt;mu&lt;/code&gt; and precision &lt;code&gt;tau&lt;/code&gt; (where, precision = 1/variance). The covariate &lt;code&gt;x&lt;/code&gt; is included at the mean level using a linear regression, which is indexed by the intercept &lt;code&gt;beta0&lt;/code&gt; and slope &lt;code&gt;beta1&lt;/code&gt; terms. The second part defines the prior distributions for all parameters of the model, namely the regression coefficients and the precision. Weakly informative priors are used since I assume that I do not have any prior knowledge about these parameters.&lt;/p&gt;
+&lt;p&gt;To write and save the model as the text file “basicmodbugs.txt” in the current working directory, I use the &lt;code&gt;writeLines&lt;/code&gt; function&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; writeLines(basic.mod, &amp;quot;basicmodbugs.txt&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;pre-processing&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Pre-processing&lt;/h2&gt;
+&lt;p&gt;Define the parameters whose posterior distribtuions we are interested in summarising later and set up the initial values for the MCMC sampler in &lt;code&gt;OpenBUGS&lt;/code&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; params=c(&amp;quot;beta0&amp;quot;,&amp;quot;beta1&amp;quot;)
+&amp;gt; inits=function(){list(&amp;quot;beta0&amp;quot;=rnorm(1), &amp;quot;beta1&amp;quot;=rnorm(1), &amp;quot;tau&amp;quot;=rgamma(1,1,1))}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The function creates a list that contains one element for each parameter, which gets assigned a random draw from a normal distribution as a strating value for each chain in the model. For simple models like this, it is generally easy to define the intial values for all parameters in the object &lt;code&gt;inits&lt;/code&gt; which is then passed to the &lt;code&gt;bugs&lt;/code&gt; function in &lt;code&gt;R2OpenBUGS&lt;/code&gt;. However, for more complex models, this may not be immediate and a lot of trial and error may be required.&lt;/p&gt;
+&lt;p&gt;Before using &lt;code&gt;R2OpenBUGS&lt;/code&gt; for the first time, you need to load the package, and you may want to set a random seed number for making your estimates replicable&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(R2OpenBUGS)
+&amp;gt; set.seed(123)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;fit-the-model&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Fit the model&lt;/h2&gt;
+&lt;p&gt;Now, we can fit the model in &lt;code&gt;OpenBUGS&lt;/code&gt; using the &lt;code&gt;bugs&lt;/code&gt; function in the &lt;code&gt;R2openBUGS&lt;/code&gt; package and save it in the object &lt;code&gt;basic.mod&lt;/code&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; basic.mod.bugs=bugs(data = datalist, inits = inits, 
++   parameters.to.save = params, n.chains = 2, n.iter = 2000,
++   n.burnin = 1000, model.file = &amp;quot;basicmodbugs.txt&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;While the model is running, the function prints out some information related to the Bayesian graph (corresponding to the specification used for the model) underneath &lt;code&gt;OpenBUGS&lt;/code&gt;, such as number of observed and unobserved nodes and graph size.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;post-processing&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Post-processing&lt;/h2&gt;
+&lt;p&gt;Once the model has finished running, a summary of the posteiror estimates and convergence diagnostics for all parameters specified can be seen by typing &lt;code&gt;print(basic.mod)&lt;/code&gt; or, alternatively,&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; print(basic.mod.bugs$summary)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;          mean    sd   2.5%   25%   50%   75% 97.5% Rhat n.eff
+beta0      1.5 0.293   0.99   1.3   1.5   1.7   2.1    1  1700
+beta1      1.2 0.053   1.06   1.1   1.2   1.2   1.3    1  2000
+deviance 278.8 2.439 276.00 277.1 278.2 280.0 285.2    1  2000&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The posterior distribution of each parameter is summarised in terms of:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The mean, sd and some percentiles&lt;/li&gt;
+&lt;li&gt;Potential scale reduction factor &lt;code&gt;Rhat&lt;/code&gt; and effective sample size &lt;code&gt;n.eff&lt;/code&gt; (&lt;span class=&#34;citation&#34;&gt;Gelman (2013)&lt;/span&gt;). The first is a measure to assess issues in convergence of the MCMC algorithm (typically a value below &lt;span class=&#34;math inline&#34;&gt;\(1.05\)&lt;/span&gt; for all parameters is considered ok). The second is a measure which assesses the adequacy of the posterior sample (typically values close to the total number of iterations are desirable for all parameters).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The deviance is a goodness of fit statistic and is used in the construction of the “Deviance Information Criterion” or DIC (&lt;span class=&#34;citation&#34;&gt;Spiegelhalter et al. (2014)&lt;/span&gt;), which is a &lt;em&gt;relative&lt;/em&gt; measure of model comparison. The DIC of the model can be accessed by typing&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; basic.mod.bugs$DIC
+[1] 282&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;diagnostics&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Diagnostics&lt;/h2&gt;
+&lt;p&gt;More diagnostics are available when we convert the model output into an MCMC object using the command&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; install.packages(&amp;quot;coda&amp;quot;)
+&amp;gt; library(coda)
+&amp;gt; basic.mod.mcmc.bugs=as.mcmc.list(basic.mod.bugs)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Different packages are available to perform diagnostic checks for Bayesian models. Here, I install and load the &lt;code&gt;mcmcplots&lt;/code&gt; package (&lt;span class=&#34;citation&#34;&gt;Curtis (2015)&lt;/span&gt;) to obtain graphical diagnostics and results.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; install.packages(&amp;quot;mcmcplots&amp;quot;)
+&amp;gt; library(mcmcplots)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;For example, density and trace plots can be obtained by typing&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; denplot(basic.mod.mcmc.bugs, parms = c(&amp;quot;beta0&amp;quot;,&amp;quot;beta1&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/OpenBUGS/basic-introduction-to-openbugs/2018-07-23-super-basic-introduction-to-openbugs_files/figure-html/diagnostic3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; traplot(basic.mod.mcmc.bugs, parms = c(&amp;quot;beta0&amp;quot;,&amp;quot;beta1&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/OpenBUGS/basic-introduction-to-openbugs/2018-07-23-super-basic-introduction-to-openbugs_files/figure-html/diagnostic3-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Both types of graphs suggest that there are not issues in the convergence of the algorithm (smooth normal densities and hairy caterpillar graphs for both MCMC chains).&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;conclusions&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Conclusions&lt;/h1&gt;
+&lt;p&gt;This tutorial was simply a brief introduction on how simple linear regression models can be fitted using the Bayesian software &lt;code&gt;OpenBUGS&lt;/code&gt; via the &lt;code&gt;R2OpenBUGS&lt;/code&gt; package. Although this may seem a complex procedure compared with simply fitting a linear model under the frequentist framework, however, the real advantages of Bayesian methods become evident when the complexity of the analysis is increased (which is often the case in real applications). Indeed, the flexibility in Bayesian modelling allows to account for increasingly complex models in a relatively easy way. In addition, Bayesian methods are ideal when the interest is in taking into account the potential impact that different sources of uncertainty may have on the final results, as they allow the natural propagation of uncertainty throughout each quantity in the model.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
+&lt;h1&gt;References&lt;/h1&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references&#34;&gt;
+&lt;div id=&#34;ref-curtis2015mcmcplots&#34;&gt;
+&lt;p&gt;Curtis, SM. 2015. “Mcmcplots: Create Plots from Mcmc Output.” &lt;em&gt;R Package Version 0.4&lt;/em&gt; 2.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-gelman2013bayesian&#34;&gt;
+&lt;p&gt;Gelman, Andrew. 2013. &lt;em&gt;Bayesian Data Analysis&lt;/em&gt;. Chapman; Hall/CRC.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-spiegelhalter2014deviance&#34;&gt;
+&lt;p&gt;Spiegelhalter, David J, Nicola G Best, Bradley P Carlin, and Angelika Van Der Linde. 2014. “The Deviance Information Criterion: 12 Years on.” &lt;em&gt;Journal of the Royal Statistical Society: Series B (Statistical Methodology)&lt;/em&gt; 76 (3): 485–93.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-spiegelhalter2007openbugs&#34;&gt;
+&lt;p&gt;Spiegelhalter, David, Andrew Thomas, Nicky Best, and Dave Lunn. 2007. “OpenBUGS User Manual, Version 3.0. 2.” &lt;em&gt;MRC Biostatistics Unit, Cambridge&lt;/em&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-sturtz2010r2openbugs&#34;&gt;
+&lt;p&gt;Sturtz, Sibylle, Uwe Ligges, and Andrew Gelman. 2010. “R2OpenBUGS: A Package for Running Openbugs from R.” &lt;em&gt;URL Http://Cran. Rproject. Org/Web/Packages/R2OpenBUGS/Vignettes/R2OpenBUGS. Pdf&lt;/em&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Clinical Trials on Andrea Gabrio</title>
+    <link>/tags/clinical-trials/</link>
+    <description>Recent content in Clinical Trials on Andrea Gabrio</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 02 Jul 2019 09:00:00 +0000</lastBuildDate>
+    
+	    <atom:link href="/tags/clinical-trials/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Understanding Health Economics in Clinical Trials</title>
+      <link>/talk/heartcourse2019/</link>
+      <pubDate>Tue, 02 Jul 2019 09:00:00 +0000</pubDate>
+      
+      <guid>/talk/heartcourse2019/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
