@@ -53,10 +53,9 @@ With respect to the quality assessment of the studies, the aggregation of the qu
 
 The Figure below shows a visual representation of the grade (and score) assignment in the quality evaluation scheme. Although the importance between the different components is subjective, the chosen structure represents a reasonable and relatively straightforward assessment scheme.
 
-{{< figure library="1" src="diagram.jpg" title="Quality Evaluation Scheme" >}}
+{{< figure library="1" src="diagram.jpg" title="Quality Evaluation Scheme." >}}
 
 The articles reviewed for the two periods are presented and compared by type of analysis performed. First, the base-case methods are considered, i.e.~those used in the main analysis. Second, any alternative methods in these analyses are discussed; when present, these assess the robustness of the results obtained in the main analysis against departures from the initial assumptions on missingness. 
-
 
 # Summary of the findings
 
@@ -66,7 +65,9 @@ In our literature review, information about missing data information and methods
 
 ## Descriptive Review
 
-From the comparison of the base-case methods used for the costs and effects between 2009 and 2015, a marked reduction is observed in the number of methods not clearly described for the effects, compared to those for the costs. A possible reason for this is that, while clinical effectiveness measures are often collected through self-reported questionnaires, which are naturally prone to missingness, cost measures rely more on clinical patient files which may ensure a higher completeness rate. It was not possible to confirm this interpretation in the reviewed studies due to the high proportions of articles not clearly reporting the missing rates in both 2003-2009 and 2009-2015 periods, for effects 
+{{< figure library="1" src="res_methods.jpg" title="Missingness methods by outcome and period." >}}
+
+From the comparison of the base-case methods used for the costs and effects between 2009 and 2015, the Figure above shows a marked reduction in the number of methods not clearly described for the effects, compared to those for the costs. A possible reason for this is that, while clinical effectiveness measures are often collected through self-reported questionnaires, which are naturally prone to missingness, cost measures rely more on clinical patient files which may ensure a higher completeness rate. It was not possible to confirm this interpretation in the reviewed studies due to the high proportions of articles not clearly reporting the missing rates in both 2003-2009 and 2009-2015 periods, for effects 
 ($\approx 45\%$ and $\approx 38\%$) and costs ( $\approx 50\%$ and $\approx 62\%$). In addition, clinical outcomes are almost invariably the main objective of RCTs and are usually subject to more advanced and standardised analyses. Arguably, costs are often considered as an add-on to the standard trial: for instance, sample size calculations are almost always performed with the effectiveness measure as the only outcome of interest. Consequently, missing data methods are less frequently well thought through for the analysis of the costs. However, this situation is likely to change as cost data from different perspectives (e.g. caregivers, patients, society, etc.) are being increasingly used in trials, leading to the more frequent adoption of self-report cost data which may start to exhibit similar missingness characteristics to effect data.
 
 The review identified only a few articles using more than one alternative method. In addition, these analyses are typically conducted without any clear justification about their underlying missing data assumptions and may therefore not provide a concrete assessment of the impact of missingness uncertainty. This situation indicates a gap in the literature associated with an under-implementation of sensitivity analysis, which may significantly affect the whole decision-making process outcome, under the perspective of a body who is responsible for providing recommendations about the implementation of alternative interventions for health care matters.
