@@ -30,6 +30,42 @@
     </item>
     
     <item>
+      <title>STAN</title>
+      <link>/tags/stan/</link>
+      <pubDate>Wed, 03 Jul 2019 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/stan/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>introduction</title>
+      <link>/tags/introduction/</link>
+      <pubDate>Wed, 03 Jul 2019 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/introduction/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>linear regression</title>
+      <link>/tags/linear-regression/</link>
+      <pubDate>Wed, 03 Jul 2019 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/linear-regression/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>OpenBUGS</title>
+      <link>/tags/openbugs/</link>
+      <pubDate>Tue, 02 Jul 2019 21:11:14 -0500</pubDate>
+      
+      <guid>/tags/openbugs/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Academic</title>
       <link>/tags/academic/</link>
       <pubDate>Wed, 03 Jul 2019 00:00:00 +0000</pubDate>
@@ -66,56 +102,20 @@
     </item>
     
     <item>
-      <title>introduction</title>
-      <link>/tags/introduction/</link>
-      <pubDate>Wed, 03 Jul 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/introduction/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Bayesian statistics</title>
-      <link>/tags/bayesian-statistics/</link>
-      <pubDate>Tue, 11 Jun 2019 10:00:00 +0000</pubDate>
-      
-      <guid>/tags/bayesian-statistics/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>JAGS</title>
       <link>/tags/jags/</link>
-      <pubDate>Thu, 23 Aug 2018 21:13:14 -0500</pubDate>
+      <pubDate>Mon, 01 Jul 2019 21:13:14 -0500</pubDate>
       
       <guid>/tags/jags/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>linear regression</title>
-      <link>/tags/linear-regression/</link>
-      <pubDate>Thu, 23 Aug 2018 21:13:14 -0500</pubDate>
+      <title>Bayesian Statistics</title>
+      <link>/tags/bayesian-statistics/</link>
+      <pubDate>Tue, 11 Jun 2019 10:00:00 +0000</pubDate>
       
-      <guid>/tags/linear-regression/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>STAN</title>
-      <link>/tags/stan/</link>
-      <pubDate>Mon, 23 Jul 2018 21:13:14 -0500</pubDate>
-      
-      <guid>/tags/stan/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>OpenBUGS</title>
-      <link>/tags/openbugs/</link>
-      <pubDate>Mon, 23 Jul 2018 21:11:14 -0500</pubDate>
-      
-      <guid>/tags/openbugs/</guid>
+      <guid>/tags/bayesian-statistics/</guid>
       <description></description>
     </item>
     

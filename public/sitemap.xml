@@ -37,12 +37,6 @@
   </url>
   
   <url>
-    <loc>/tags/academic/</loc>
-    <lastmod>2019-07-05T12:34:03+01:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>/authors/andrea-gabrio/</loc>
     <lastmod>2019-07-05T12:34:03+01:00</lastmod>
     <priority>0</priority>
@@ -55,7 +49,63 @@
   </url>
   
   <url>
+    <loc>/stan/</loc>
+    <lastmod>2019-07-03T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/categories/</loc>
+    <lastmod>2019-07-05T12:34:03+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/r/</loc>
+    <lastmod>2019-07-03T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/stan/</loc>
+    <lastmod>2019-07-03T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/stan/basic-introduction-to-stan/super-basic-introduction-to-stan/</loc>
+    <lastmod>2019-07-03T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/introduction/</loc>
+    <lastmod>2019-07-03T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/linear-regression/</loc>
+    <lastmod>2019-07-03T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/openbugs/</loc>
+    <lastmod>2019-07-02T21:11:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/openbugs/</loc>
+    <lastmod>2019-07-02T21:11:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/openbugs/basic-introduction-to-openbugs/super-basic-introduction-to-openbugs/</loc>
+    <lastmod>2019-07-02T21:11:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/academic/</loc>
     <lastmod>2019-07-05T12:34:03+01:00</lastmod>
     <priority>0</priority>
   </url>
@@ -106,25 +156,35 @@
   </url>
   
   <url>
-    <loc>/tags/introduction/</loc>
-    <lastmod>2019-07-03T12:34:03+01:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>/talk/heartcourse2019/</loc>
     <lastmod>2019-07-02T09:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/talk/albacete2019/</loc>
-    <lastmod>2019-06-11T10:00:00+00:00</lastmod>
+    <loc>/jags/</loc>
+    <lastmod>2019-07-01T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/jags/</loc>
+    <lastmod>2019-07-01T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/jags/basic-introduction-to-jags/super-basic-introduction-to-jags/</loc>
+    <lastmod>2019-07-01T21:13:14-05:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/bayesian-statistics/</loc>
     <lastmod>2019-06-11T10:00:00+00:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/talk/albacete2019/</loc>
+    <lastmod>2019-06-11T10:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -204,66 +264,6 @@
   <url>
     <loc>/publication/gabrio2019a/</loc>
     <lastmod>2019-04-01T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/jags/</loc>
-    <lastmod>2018-08-23T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/jags/</loc>
-    <lastmod>2018-08-23T21:13:14-05:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/r/</loc>
-    <lastmod>2018-08-23T21:13:14-05:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/jags/basic-introduction-to-jags/super-basic-introduction-to-jags/</loc>
-    <lastmod>2018-08-23T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/linear-regression/</loc>
-    <lastmod>2018-08-23T21:13:14-05:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/stan/</loc>
-    <lastmod>2018-07-23T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/stan/</loc>
-    <lastmod>2018-07-23T21:13:14-05:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/stan/basic-introduction-to-stan/super-basic-introduction-to-stan/</loc>
-    <lastmod>2018-07-23T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/openbugs/</loc>
-    <lastmod>2018-07-23T21:11:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/openbugs/</loc>
-    <lastmod>2018-07-23T21:11:14-05:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/openbugs/basic-introduction-to-openbugs/super-basic-introduction-to-openbugs/</loc>
-    <lastmod>2018-07-23T21:11:14-05:00</lastmod>
   </url>
   
   <url>

@@ -1,8 +1,8 @@
 
 data {
-int<lower=0> N;
-vector[N] y;
-vector[N] x;
+int<lower=0> n_sim;
+vector[n_sim] y;
+vector[n_sim] x;
 }
 parameters {
 real beta0;
@@ -10,7 +10,7 @@ real beta1;
 real<lower=0> sigma;
 }
 transformed parameters {
-vector[N] mu;
+vector[n_sim] mu;
 mu=beta0 + beta1*x;
 } 
 model {
