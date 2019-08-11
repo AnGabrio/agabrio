@@ -1,0 +1,94 @@
+---
+title: The P value fallacy
+author: Andrea Gabrio
+date: '2019-08-03'
+slug: p-value-fallacy
+categories: ["discussion"]
+tags:
+  - Academic
+  - Frequentist statistics
+subtitle: ''
+summary: ''
+authors: ["Andrea Gabrio"]
+lastmod: '2019-08-05T12:34:03+01:00'
+featured: false
+draft: false
+header:
+  caption: ""
+  image: ""
+image:
+  caption: "The P value fallacy"
+  focal_point: "Center"
+projects: []
+# Options: Smart, Center, TopLeft, Top, TopRight, Left, Right, #BottomLeft, Bottom, BottomRight
+---
+
+Today, I would like to briefly comment an interesting research article written by [Goodman](https://jhu.pure.elsevier.com/en/publications/toward-evidence-based-medical-statistics-1-the-p-value-fallacy-4), who provided a clear and exemplary discussion about the typical incorrect interpretation of a standard frequentist analysis in the field of medical research. I will now briefly summarise the main argument of the paper and then add some personal comments.
+
+Essentially, the article describes the characteristics of the dominant school of medical statistics and highlights the logical fallacy at the heart of the typical frequentist analysis in clinical studies. This is based on a *deductive* inferential approach, which starts with a given hypothesis and makes conclusions under the assumption that the hypothesis is true. This is in contrast with a *inductive* approach, which uses the observed evidence to evaluate what hypothesis is most tenable. The two most popular methods of the frequentist paradigm are the *P value* proposed by [Fisher](https://link.springer.com/chapter/10.1007/978-1-4612-4380-9_6) and the *hypothesis testing* developed by [Neyman and Pearson](https://royalsocietypublishing.org/doi/abs/10.1098/rsta.1933.0009?casa_token=sbSkualIaPYAAAAA%3ACxPsFTFEUK7vaxMPi5dJwUr4HoUWjrkxNh7Hl2q0owjtcU2wJHnakG-Xug7y95v1Tyqbbc8Mymaq_Q&). 
+
+The P value is defined as the probability, under the assumption of no effect (null hypothesis), of obtaining a result equal to or more extreme than what was actually observed. The main criticism to the P value is that it does not take into account the size of the observed effect, i.e. a small effect in a study with a large sample size can have the same P value as a large effect in a small study. Hypothesis testing was proposed as an alternative approach to the P value, which assumes the existence of a null hypothesis (e.g. no effect) and an alternative hypothesis (e.g. nonzero effect). The outcome of the test is then simply to reject one hypothesis in favour of the other, solely based on the data, exposing the researcher to two types of errors: type I error or false-positive ($\alpha$) and type II error or false-negative ($\beta$) result. Rather than focus on single experiments, hypothesis testing is effectively based on a deductive approach to minimise the errors over a large number of experiments. However, the price to pay to obtain this *objectivity* is the impossibility to make any inferential statement about a single experiment. The procedure only guarantees that in the long run, i.e. after considering many experiments, we shall not often be wrong. 
+
+Over time a combination between the P value and hypothesis testing was developed under the assumption that the two approaches can be complementary. The idea was that the P value could be used to measure evidence in a single experiment while not violating the long run logic of hypothesis testing, i.e. the P value can be considered as a false-positive error specific to the data and a measure of eivdence against the null hypothesis. The P value fallacy is born from this statement, which assumes that an event can be seen simultaneously from a long run perspective (where the observed results are put together with other results that might have occurred in hypothetical repetitions of the experiment) and from a short run perspective (where the observed results are interpreted only with respect to the single experiment). However, these views are not reconcilable since a result cannot be at the same time an interchangeable (long-run)and unique (short-run) member of a group of results.
+
+![](https://media.giphy.com/media/JszzkKOlV6gTK/giphy.gif)
+
+I personally find this discussion fascinating and I believe that it is important to recognise the inconsistencies between the two alternative approaches to inference. The original authors of the two paradigms were well aware the implications of their methods and never supported the combination of these. However, the combined approach has somehow become widely accepted in practice while its internal inconsistencies and conceptual limitations are hardly recognised. I feel that, since the two methods are perceived as "objective", it is generally accepted that they can produce reliable conclusions.
+
+This approach has led to a much stronger emphasis towards the quantitative results alone (without any external input that is required). In contrast, I believe that such a perspective has the serious drawback of ignoring potentially useful information which is effectively available (e.g. the medical knowledge embedded in the people or in the historical data) and which should be included in the analysis. Of course, I am aware of the potential inconsistencies that may arise from the incorporation of this evidence and it is therefore important that an agreement is reached about the minimal requirements necessary to select the type of evidence and methods to be used to achieve this task.
+
+
+
+ 
+
+
+
+
+
+
+
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+
+
+
+
+
+
+
+
+
+

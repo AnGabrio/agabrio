@@ -3,14 +3,66 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>/talk/hesg2019/</loc>
-    <lastmod>2019-07-04T16:00:00+00:00</lastmod>
+    <loc>/tags/academic/</loc>
+    <lastmod>2019-08-05T12:34:03+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/authors/andrea-gabrio/</loc>
+    <lastmod>2019-08-05T12:34:03+01:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
     <loc>/</loc>
-    <lastmod>2019-07-05T12:34:03+01:00</lastmod>
+    <lastmod>2019-08-05T12:34:03+01:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/authors/</loc>
+    <lastmod>2019-08-05T12:34:03+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/</loc>
+    <lastmod>2019-08-05T12:34:03+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/frequentist-statistics/</loc>
+    <lastmod>2019-08-05T12:34:03+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/post/</loc>
+    <lastmod>2019-08-05T12:34:03+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/</loc>
+    <lastmod>2019-08-05T12:34:03+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/post/p-value-fallacy/p-value-fallacy/</loc>
+    <lastmod>2019-08-05T12:34:03+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/discussion/</loc>
+    <lastmod>2019-08-05T12:34:03+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/talk/hesg2019/</loc>
+    <lastmod>2019-07-04T16:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -31,32 +83,8 @@
   </url>
   
   <url>
-    <loc>/tags/</loc>
-    <lastmod>2019-07-05T12:34:03+01:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/authors/andrea-gabrio/</loc>
-    <lastmod>2019-07-05T12:34:03+01:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/authors/</loc>
-    <lastmod>2019-07-05T12:34:03+01:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>/stan/</loc>
     <lastmod>2019-07-03T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/</loc>
-    <lastmod>2019-07-05T12:34:03+01:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
@@ -105,12 +133,6 @@
   </url>
   
   <url>
-    <loc>/tags/academic/</loc>
-    <lastmod>2019-07-05T12:34:03+01:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>/tags/clinical-trials/</loc>
     <lastmod>2019-07-03T12:34:03+01:00</lastmod>
     <priority>0</priority>
@@ -131,11 +153,6 @@
     <loc>/tags/industry/</loc>
     <lastmod>2019-07-05T12:34:03+01:00</lastmod>
     <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/post/</loc>
-    <lastmod>2019-07-05T12:34:03+01:00</lastmod>
   </url>
   
   <url>
@@ -177,14 +194,14 @@
   </url>
   
   <url>
-    <loc>/tags/bayesian-statistics/</loc>
+    <loc>/talk/albacete2019/</loc>
     <lastmod>2019-06-11T10:00:00+00:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
-    <loc>/talk/albacete2019/</loc>
+    <loc>/tags/bayesian-statistics/</loc>
     <lastmod>2019-06-11T10:00:00+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
