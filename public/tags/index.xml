@@ -32,9 +32,27 @@
     <item>
       <title>Academic</title>
       <link>/tags/academic/</link>
-      <pubDate>Sun, 01 Sep 2019 00:00:00 +0000</pubDate>
+      <pubDate>Sun, 15 Sep 2019 00:00:00 +0000</pubDate>
       
       <guid>/tags/academic/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Health economics</title>
+      <link>/tags/health-economics/</link>
+      <pubDate>Sun, 15 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/health-economics/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Interview</title>
+      <link>/tags/interview/</link>
+      <pubDate>Sun, 15 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/interview/</guid>
       <description></description>
     </item>
     
@@ -98,15 +116,6 @@
       <pubDate>Wed, 03 Jul 2019 00:00:00 +0000</pubDate>
       
       <guid>/tags/clinical-trials/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Health economics</title>
-      <link>/tags/health-economics/</link>
-      <pubDate>Wed, 03 Jul 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/health-economics/</guid>
       <description></description>
     </item>
     
