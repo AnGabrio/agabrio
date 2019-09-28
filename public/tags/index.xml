@@ -32,7 +32,11 @@
     <item>
       <title>Academic</title>
       <link>/tags/academic/</link>
+<<<<<<< HEAD
       <pubDate>Wed, 25 Sep 2019 00:00:00 +0000</pubDate>
+=======
+      <pubDate>Sun, 15 Sep 2019 00:00:00 +0000</pubDate>
+>>>>>>> b9d59ebcd66fd6edc52e711056f6feea48d13b1c
       
       <guid>/tags/academic/</guid>
       <description></description>
@@ -41,13 +45,29 @@
     <item>
       <title>Health economics</title>
       <link>/tags/health-economics/</link>
+<<<<<<< HEAD
       <pubDate>Wed, 25 Sep 2019 00:00:00 +0000</pubDate>
+=======
+      <pubDate>Sun, 15 Sep 2019 00:00:00 +0000</pubDate>
+>>>>>>> b9d59ebcd66fd6edc52e711056f6feea48d13b1c
       
       <guid>/tags/health-economics/</guid>
       <description></description>
     </item>
     
     <item>
+<<<<<<< HEAD
+=======
+      <title>Interview</title>
+      <link>/tags/interview/</link>
+      <pubDate>Sun, 15 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/interview/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+>>>>>>> b9d59ebcd66fd6edc52e711056f6feea48d13b1c
       <title>Publication</title>
       <link>/tags/publication/</link>
       <pubDate>Sun, 01 Sep 2019 00:00:00 +0000</pubDate>

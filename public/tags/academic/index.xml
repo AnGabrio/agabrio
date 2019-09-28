@@ -6,12 +6,17 @@
     <description>Recent content in Academic on Andrea Gabrio</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
+<<<<<<< HEAD
     <lastBuildDate>Wed, 25 Sep 2019 00:00:00 +0000</lastBuildDate>
+=======
+    <lastBuildDate>Sun, 15 Sep 2019 00:00:00 +0000</lastBuildDate>
+>>>>>>> b9d59ebcd66fd6edc52e711056f6feea48d13b1c
     
 	    <atom:link href="/tags/academic/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
+<<<<<<< HEAD
       <title>MissingHE 1.2.1</title>
       <link>/post/missinghe-121/missinghe-version121/</link>
       <pubDate>Wed, 25 Sep 2019 00:00:00 +0000</pubDate>
@@ -59,6 +64,25 @@ these checks can be performed for each type of missingness model and parametric 
 &lt;p&gt;Of course, it is important to remember that, when dealing with missing data the fit of the model can only be checked with respect to the observed values and therefore this
 check is only partial since the fit to the unibserved values can never be checked. This is also why it is not meaningful to assess the fit of a model fitted under a missing not at random assumption
 because this is based on information which is not directly available from the data at hand and thus impossible to check.&lt;/p&gt;
+=======
+      <title>Discussing my thesis</title>
+      <link>/post/update-interview/update-interview/</link>
+      <pubDate>Sun, 15 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/update-interview/update-interview/</guid>
+      <description>&lt;p&gt;I have been kindly invited by the amazing person &lt;a href=&#34;https://www.ohe.org/about-us/meet-team/chris-sampson&#34; target=&#34;_blank&#34;&gt;Chris Sampson&lt;/a&gt; to talk about the work I inlcuded in my PhD thesis for his monthly rubric entitled  &amp;ldquo;Thesis Thursday&amp;rdquo; on the &lt;a href=&#34;https://aheblog.com/&#34; target=&#34;_blank&#34;&gt;The Academic Health Economists blog&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;I happily accepted Chris&amp;rsquo;s invitation as I beleive this initiative is really interesting and represents a nice way for newly graduated PhD students to advertise their work while also giving the chance to people interested in health economics to read about some academic work which is typically freely available to everyone.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://aheblog.com/2019/09/19/thesis-thursday-andrea-gabrio/&#34; target=&#34;_blank&#34;&gt;Here&lt;/a&gt; you can find the full interview, which is not very long and resolves around 5 questions that Chris asked me about my work. I already new this blog but I have never had a proper chance to read through its posts carefully, which is a shame.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/13lTgtSUmqMrlu/giphy.gif&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;I shall promise myself to try to check it more often from now on, using this interview as a nice motivation to do so.
+In fact, there are not many blogs around health economics matters (here a &lt;a href=&#34;https://blog.feedspot.com/health_economics_blogs/&#34; target=&#34;_blank&#34;&gt;non-comprehensive list&lt;/a&gt;), among which The Academic Health Economists and &lt;a href=&#34;http://www.statistica.it/gianluca/blog/&#34; target=&#34;_blank&#34;&gt;Gianluca&amp;rsquo;s blog&lt;/a&gt; are my favourites.&lt;/p&gt;
+
+&lt;p&gt;I hope I will be able to find some time to write some nice posts about some health economic applications of my work in the next future as this is still the most interesting field for me at the moment. I am also the maintainer of another small blog called the &lt;a href=&#34;https://hearteam.blogspot.com/&#34; target=&#34;_blank&#34;&gt;Health Economics Analysis and Research Methods Team (HEART) blog&lt;/a&gt;, where I occasionally write some posts on health economics together with my colleagues from the UCL department of &lt;a href=&#34;https://www.ucl.ac.uk/epidemiology-health-care/research/pcph&#34; target=&#34;_blank&#34;&gt;Primary Care and Population Health&lt;/a&gt;. The blog is still new but I hope it can become more active in the next months.&lt;/p&gt;
+>>>>>>> b9d59ebcd66fd6edc52e711056f6feea48d13b1c
 </description>
     </item>
     
