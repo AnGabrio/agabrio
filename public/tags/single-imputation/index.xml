@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Single Imputation on Andrea Gabrio</title>
+    <link>/tags/single-imputation/</link>
+    <description>Recent content in Single Imputation on Andrea Gabrio</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 27 Apr 2016 00:00:00 +0000</lastBuildDate>
+    
+	    <atom:link href="/tags/single-imputation/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Last Value Carried Forward</title>
+      <link>/missmethods/last-value-carried-forward/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/missmethods/last-value-carried-forward/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Mean Imputation</title>
+      <link>/missmethods/mean-imputation/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/missmethods/mean-imputation/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

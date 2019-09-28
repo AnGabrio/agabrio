@@ -43,63 +43,31 @@
   
   <url>
     <loc>/tags/academic/</loc>
-<<<<<<< HEAD
     <lastmod>2019-09-25T12:34:03+01:00</lastmod>
-=======
-    <lastmod>2019-09-15T12:34:03+01:00</lastmod>
->>>>>>> b9d59ebcd66fd6edc52e711056f6feea48d13b1c
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/authors/andrea-gabrio/</loc>
-<<<<<<< HEAD
     <lastmod>2019-09-25T12:34:03+01:00</lastmod>
-=======
-    <lastmod>2019-09-15T12:34:03+01:00</lastmod>
->>>>>>> b9d59ebcd66fd6edc52e711056f6feea48d13b1c
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/authors/</loc>
-<<<<<<< HEAD
     <lastmod>2019-09-25T12:34:03+01:00</lastmod>
-=======
-    <lastmod>2019-09-15T12:34:03+01:00</lastmod>
->>>>>>> b9d59ebcd66fd6edc52e711056f6feea48d13b1c
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/categories/</loc>
-<<<<<<< HEAD
     <lastmod>2019-09-25T12:34:03+01:00</lastmod>
-=======
-    <lastmod>2019-09-15T12:34:03+01:00</lastmod>
->>>>>>> b9d59ebcd66fd6edc52e711056f6feea48d13b1c
     <priority>0</priority>
   </url>
   
   <url>
-<<<<<<< HEAD
     <loc>/tags/health-economics/</loc>
     <lastmod>2019-09-25T12:34:03+01:00</lastmod>
-=======
-    <loc>/post/update-interview/update-interview/</loc>
-    <lastmod>2019-09-15T12:34:03+01:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/health-economics/</loc>
-    <lastmod>2019-09-15T12:34:03+01:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/tags/interview/</loc>
-    <lastmod>2019-09-15T12:34:03+01:00</lastmod>
->>>>>>> b9d59ebcd66fd6edc52e711056f6feea48d13b1c
     <priority>0</priority>
   </url>
   
@@ -110,7 +78,6 @@
   
   <url>
     <loc>/post/</loc>
-<<<<<<< HEAD
     <lastmod>2019-09-25T12:34:03+01:00</lastmod>
   </url>
   
@@ -123,14 +90,23 @@
   <url>
     <loc>/categories/package/</loc>
     <lastmod>2019-09-25T12:34:03+01:00</lastmod>
-=======
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/post/update-interview/update-interview/</loc>
     <lastmod>2019-09-15T12:34:03+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/interview/</loc>
+    <lastmod>2019-09-15T12:34:03+01:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
     <loc>/categories/thesis/</loc>
     <lastmod>2019-09-15T12:34:03+01:00</lastmod>
->>>>>>> b9d59ebcd66fd6edc52e711056f6feea48d13b1c
     <priority>0</priority>
   </url>
   
@@ -415,6 +391,17 @@
   </url>
   
   <url>
+    <loc>/missmethods/available-case-analysis/</loc>
+    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/bayesian-methods/</loc>
+    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>/project/health-economics/</loc>
     <lastmod>2016-04-27T00:00:00+00:00</lastmod>
   </url>
@@ -431,8 +418,66 @@
   </url>
   
   <url>
+    <loc>/missmethods/complete-case-analysis/</loc>
+    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/missmethods/data-augmentation-mcmc/</loc>
+    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/delete-case-methods/</loc>
+    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/missmethods/joint-multiple-imputation/</loc>
+    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/missmethods/last-value-carried-forward/</loc>
+    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/missmethods/mean-imputation/</loc>
+    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/missmethods/</loc>
+    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/multiple-imputation/</loc>
+    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/missmethods/multiple-imputation-by-chained-equations/</loc>
+    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/project/missing-data/</loc>
     <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/single-imputation/</loc>
+    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/missingdata/</loc>
   </url>
   
   <url>

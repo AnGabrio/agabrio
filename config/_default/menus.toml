@@ -39,6 +39,12 @@
   url = "tutorials/"
   identifier = "tutorials"
   weight = 70
+  
+[[main]]
+  name = "Missing Data"
+  url = "missingdata/"
+  identifier = "missingdata"
+  weight = 80
 
 [[main]]
   name = "missingHE"

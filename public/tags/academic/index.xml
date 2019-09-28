@@ -6,17 +6,12 @@
     <description>Recent content in Academic on Andrea Gabrio</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
-<<<<<<< HEAD
     <lastBuildDate>Wed, 25 Sep 2019 00:00:00 +0000</lastBuildDate>
-=======
-    <lastBuildDate>Sun, 15 Sep 2019 00:00:00 +0000</lastBuildDate>
->>>>>>> b9d59ebcd66fd6edc52e711056f6feea48d13b1c
     
 	    <atom:link href="/tags/academic/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-<<<<<<< HEAD
       <title>MissingHE 1.2.1</title>
       <link>/post/missinghe-121/missinghe-version121/</link>
       <pubDate>Wed, 25 Sep 2019 00:00:00 +0000</pubDate>
@@ -64,7 +59,10 @@ these checks can be performed for each type of missingness model and parametric 
 &lt;p&gt;Of course, it is important to remember that, when dealing with missing data the fit of the model can only be checked with respect to the observed values and therefore this
 check is only partial since the fit to the unibserved values can never be checked. This is also why it is not meaningful to assess the fit of a model fitted under a missing not at random assumption
 because this is based on information which is not directly available from the data at hand and thus impossible to check.&lt;/p&gt;
-=======
+</description>
+    </item>
+    
+    <item>
       <title>Discussing my thesis</title>
       <link>/post/update-interview/update-interview/</link>
       <pubDate>Sun, 15 Sep 2019 00:00:00 +0000</pubDate>
@@ -82,7 +80,6 @@ because this is based on information which is not directly available from the da
 In fact, there are not many blogs around health economics matters (here a &lt;a href=&#34;https://blog.feedspot.com/health_economics_blogs/&#34; target=&#34;_blank&#34;&gt;non-comprehensive list&lt;/a&gt;), among which The Academic Health Economists and &lt;a href=&#34;http://www.statistica.it/gianluca/blog/&#34; target=&#34;_blank&#34;&gt;Gianluca&amp;rsquo;s blog&lt;/a&gt; are my favourites.&lt;/p&gt;
 
 &lt;p&gt;I hope I will be able to find some time to write some nice posts about some health economic applications of my work in the next future as this is still the most interesting field for me at the moment. I am also the maintainer of another small blog called the &lt;a href=&#34;https://hearteam.blogspot.com/&#34; target=&#34;_blank&#34;&gt;Health Economics Analysis and Research Methods Team (HEART) blog&lt;/a&gt;, where I occasionally write some posts on health economics together with my colleagues from the UCL department of &lt;a href=&#34;https://www.ucl.ac.uk/epidemiology-health-care/research/pcph&#34; target=&#34;_blank&#34;&gt;Primary Care and Population Health&lt;/a&gt;. The blog is still new but I hope it can become more active in the next months.&lt;/p&gt;
->>>>>>> b9d59ebcd66fd6edc52e711056f6feea48d13b1c
 </description>
     </item>
     

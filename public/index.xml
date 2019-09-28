@@ -30,7 +30,6 @@
     </item>
     
     <item>
-<<<<<<< HEAD
       <title>MissingHE 1.2.1</title>
       <link>/post/missinghe-121/missinghe-version121/</link>
       <pubDate>Wed, 25 Sep 2019 00:00:00 +0000</pubDate>
@@ -78,7 +77,10 @@ these checks can be performed for each type of missingness model and parametric 
 &lt;p&gt;Of course, it is important to remember that, when dealing with missing data the fit of the model can only be checked with respect to the observed values and therefore this
 check is only partial since the fit to the unibserved values can never be checked. This is also why it is not meaningful to assess the fit of a model fitted under a missing not at random assumption
 because this is based on information which is not directly available from the data at hand and thus impossible to check.&lt;/p&gt;
-=======
+</description>
+    </item>
+    
+    <item>
       <title>Discussing my thesis</title>
       <link>/post/update-interview/update-interview/</link>
       <pubDate>Sun, 15 Sep 2019 00:00:00 +0000</pubDate>
@@ -96,7 +98,6 @@ because this is based on information which is not directly available from the da
 In fact, there are not many blogs around health economics matters (here a &lt;a href=&#34;https://blog.feedspot.com/health_economics_blogs/&#34; target=&#34;_blank&#34;&gt;non-comprehensive list&lt;/a&gt;), among which The Academic Health Economists and &lt;a href=&#34;http://www.statistica.it/gianluca/blog/&#34; target=&#34;_blank&#34;&gt;Gianluca&amp;rsquo;s blog&lt;/a&gt; are my favourites.&lt;/p&gt;
 
 &lt;p&gt;I hope I will be able to find some time to write some nice posts about some health economic applications of my work in the next future as this is still the most interesting field for me at the moment. I am also the maintainer of another small blog called the &lt;a href=&#34;https://hearteam.blogspot.com/&#34; target=&#34;_blank&#34;&gt;Health Economics Analysis and Research Methods Team (HEART) blog&lt;/a&gt;, where I occasionally write some posts on health economics together with my colleagues from the UCL department of &lt;a href=&#34;https://www.ucl.ac.uk/epidemiology-health-care/research/pcph&#34; target=&#34;_blank&#34;&gt;Primary Care and Population Health&lt;/a&gt;. The blog is still new but I hope it can become more active in the next months.&lt;/p&gt;
->>>>>>> b9d59ebcd66fd6edc52e711056f6feea48d13b1c
 </description>
     </item>
     
@@ -910,6 +911,15 @@ The opportunity of reaching such a target might be precluded by the choice of th
     </item>
     
     <item>
+      <title>Available Case Analysis</title>
+      <link>/missmethods/available-case-analysis/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/missmethods/available-case-analysis/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Bayesian Methods for Health Technology Assessment</title>
       <link>/project/health-economics/</link>
       <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
@@ -1087,6 +1097,61 @@ g_c(\phi_{ic}) = \beta_{0} + \beta_{1}(e_{i}-\mu_{e})\,\,[+\ldots]
     </item>
     
     <item>
+      <title>Complete Case Analysis</title>
+      <link>/missmethods/complete-case-analysis/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/missmethods/complete-case-analysis/</guid>
+      <description>&lt;p&gt;Complete case analysis is the term used to describe a statistical analysis that only includes participants for which we have no missing data on the variables of interest. Participants with any missing data are excluded.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Data Augmentation via MCMC</title>
+      <link>/missmethods/data-augmentation-mcmc/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/missmethods/data-augmentation-mcmc/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Joint Multiple Imputation</title>
+      <link>/missmethods/joint-multiple-imputation/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/missmethods/joint-multiple-imputation/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Last Value Carried Forward</title>
+      <link>/missmethods/last-value-carried-forward/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/missmethods/last-value-carried-forward/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Mean Imputation</title>
+      <link>/missmethods/mean-imputation/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/missmethods/mean-imputation/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Multiple Imputation by Chained Equations</title>
+      <link>/missmethods/multiple-imputation-by-chained-equations/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/missmethods/multiple-imputation-by-chained-equations/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Nonignorable Missingness Models in HTA</title>
       <link>/project/missing-data/</link>
       <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
@@ -1183,6 +1248,15 @@ p(\boldsymbol y^{\boldsymbol r}_{obs}, \boldsymbol r \mid \boldsymbol \omega) = 
 
 &lt;p&gt;Our framework represents a considerable step forward for the handling of missingness in economic evaluations compared with the current practice, which typically relies on methods that assume an ignorable MAR and rarely conducts sensitivity analysis to MNAR departures. Nevertheless, further improvements are certainly possible. For example, a potential area for future work is to increase the flexibility of our approach through a semi-parametric or nonparametric specification for the observed data distribution, which would allow a weakening of the model assumptions and likely further improve the fit of the model to the observed data and address sparse patterns in an automated way. As for the extrapolation distribution, alternative identifying restrictions that introduce the sensitivity parameters via the conditional mean (rather than the marginal mean) could be considered, and their impact on the conclusions assessed in a sensitivity analysis.&lt;/p&gt;
 </description>
+    </item>
+    
+    <item>
+      <title>Missing Data</title>
+      <link>/missingdata/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/missingdata/</guid>
+      <description></description>
     </item>
     
     <item>

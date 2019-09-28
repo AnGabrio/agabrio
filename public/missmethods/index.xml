@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Missmethods on Andrea Gabrio</title>
+    <link>/missmethods/</link>
+    <description>Recent content in Missmethods on Andrea Gabrio</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 27 Apr 2016 00:00:00 +0000</lastBuildDate>
+    
+	    <atom:link href="/missmethods/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Available Case Analysis</title>
+      <link>/missmethods/available-case-analysis/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/missmethods/available-case-analysis/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Complete Case Analysis</title>
+      <link>/missmethods/complete-case-analysis/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/missmethods/complete-case-analysis/</guid>
+      <description>&lt;p&gt;Complete case analysis is the term used to describe a statistical analysis that only includes participants for which we have no missing data on the variables of interest. Participants with any missing data are excluded.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Data Augmentation via MCMC</title>
+      <link>/missmethods/data-augmentation-mcmc/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/missmethods/data-augmentation-mcmc/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Joint Multiple Imputation</title>
+      <link>/missmethods/joint-multiple-imputation/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/missmethods/joint-multiple-imputation/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Last Value Carried Forward</title>
+      <link>/missmethods/last-value-carried-forward/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/missmethods/last-value-carried-forward/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Mean Imputation</title>
+      <link>/missmethods/mean-imputation/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/missmethods/mean-imputation/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Multiple Imputation by Chained Equations</title>
+      <link>/missmethods/multiple-imputation-by-chained-equations/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/missmethods/multiple-imputation-by-chained-equations/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

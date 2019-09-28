@@ -1,0 +1,48 @@
+---
+title: Complete Case Analysis
+summary: 
+tags:
+- Delete Case Methods
+date: "2016-04-27T00:00:00Z"
+
+# Optional external URL for project (replaces project detail page).
+external_link: ""
+
+image:
+  caption: Photo by rawpixel on Unsplash
+  focal_point: Smart
+  preview_only: true
+
+links:
+#- icon: 
+#  icon_pack: 
+#  name: 
+#  url: 
+url_code: ""
+url_pdf: ""
+url_slides: ""
+url_video: ""
+url_poster: ""
+
+# Slides (optional).
+#   Associate this project with Markdown slides.
+#   Simply enter your slide deck's filename without extension.
+#   E.g. `slides = "example-slides"` references `content/slides/example-slides.md`.
+#   Otherwise, set `slides = ""`.
+slides: example
+---
+
+Complete case analysis is the term used to describe a statistical analysis that only includes participants for which we have no missing data on the variables of interest. Participants with any missing data are excluded.
+
+
+
+
+
+
+
+
+
+
+
+
+
