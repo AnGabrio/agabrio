@@ -1,0 +1,112 @@
+---
+title: Complete Case Analysis
+summary: 
+tags:
+- Delete Case Methods
+- Complete Case Analysis
+- Listwise Deletion
+date: "2016-04-27T00:00:00Z"
+
+# Optional external URL for project (replaces project detail page).
+external_link: ""
+
+categories: ["rubric"]
+bibliography: [cca.bib]
+
+reading_time: false  # Show estimated reading time?
+share: false  # Show social sharing links?
+profile: false  # Show author profile?
+commentable: false  # Allow visitors to comment? Supported by the Page, Post, and Docs content types.
+editable: true  # Allow visitors to edit the page? Supported by the Page, Post, and Docs content types.
+
+image:
+  caption: Photo by rawpixel on Unsplash
+  focal_point: Smart
+  preview_only: true
+
+links:
+#- icon: 
+#  icon_pack: 
+#  name: 
+#  url: 
+url_code: ""
+url_pdf: ""
+url_slides: ""
+url_video: ""
+url_poster: ""
+
+# Slides (optional).
+#   Associate this project with Markdown slides.
+#   Simply enter your slide deck's filename without extension.
+#   E.g. `slides = "example-slides"` references `content/slides/example-slides.md`.
+#   Otherwise, set `slides = ""`.
+# slides: example
+---
+
+
+
+<p><em>Complete case analysis</em> (CCA), also known as <em>case</em> or <em>listwise deletion</em> (LD), is one of the oldest methods to handle missing data and consists in discarding any unit or case whose information is incomplete. Only the cases with observed values for all the variables under consideration are used in the analysis. For example, suppose we have a data set formed by <span class="math inline">\(i=1,\ldots,n\)</span> individuals and that we want to fit a linear regression on some outcome variable <span class="math inline">\(y_i\)</span> using some other variables <span class="math inline">\(x_{i1},\ldots,x_{ik}\)</span> as covariates. CCA uses only the subset of cases with observed values on all the variables included in the analysis (<em>completers</em>).</p>
+<p>CCA has been a quite popular approach to deal with missingness, mainly because it is very easy to implement (used by default in many statistical programs) and it allows the comparison of different univariate statistics in a straightforward way (calculated on a common set of cases). However, there are a number of potential disadvantages which threatens the validity of this method:</p>
+<ol style="list-style-type: decimal">
+<li><p>Bias, when the missing data mechanism is not <em>missing completely at random</em> (MCAR) and the completers are not a random samples of all the cases</p></li>
+<li><p>Loss of efficiency, due to the potential loss of information in discarding the incomplete cases.</p></li>
+</ol>
+<p>CCA may be justified when the loss of precision and bias are minimal, which is more likley to occur when the proportion of completers is high, although it is difficult to formulate rules that apply in general circumstances. Indeed, both the degree of loss of precision and bias depend not only on the fraction of completers and missingness patterns, but also on the extent to which complete and incomplete cases differ and the parameters of interest.</p>
+<p>Let <span class="math inline">\(\hat{\theta}_{cc}\)</span> be an estimate of a parameter of interest from the completers. One might measure the increase in variance of <span class="math inline">\(\hat{\theta}_{cc}\)</span> with respect to the estimate <span class="math inline">\(\hat{\theta}\)</span> that would be obtained in the absence of missing values. Using the notation of <span class="citation">Little and Rubin (2019)</span>:</p>
+<p>\[
+\text{Var}(\hat{\theta}_{cc}) = \text{Var}(\hat{\theta})(1 + \Delta^{\star}_{cc}),
+\]</p>
+<p>where <span class="math inline">\(\Delta^{\star}_{cc}\)</span> is the proportional increase in variance from the loss of information. A more practical measure of the loss of inofrmation is <span class="math inline">\(\Delta_{cc}\)</span>, where</p>
+<p>\[
+\text{Var}(\hat{\theta}_{cc}) = \text{Var}(\hat{\theta}_{eff})(1 + \Delta_{cc}),
+\]</p>
+<p>and <span class="math inline">\(\hat{\theta}_{eff}\)</span> is an efficient estimate based on all the available data.</p>
+<div id="example-1" class="section level2">
+<h2>Example 1</h2>
+<p>Consider bivariate normal monotone data <span class="math inline">\(\bf y = (y_1,y_2)\)</span>, where <span class="math inline">\(n_{cc}\)</span> out of <span class="math inline">\(n\)</span> cases are complete and <span class="math inline">\(n - n_{cc}\)</span> cases have observed values only on <span class="math inline">\(y_1\)</span>. Assume for simplicity that the missingness mechanism is MCAR and that the mean of <span class="math inline">\(y_j\)</span> is estimated by the empirical mean from the complete cases <span class="math inline">\(\bar{y}^{cc}_j\)</span>. Then, the loss in sample size for estimating the mean of <span class="math inline">\(y_1\)</span> is:</p>
+<p>\[
+\Delta^{\star}_{cc} = \Delta_{cc} = \frac{n - n_{cc}}{n_{cc}},
+\]</p>
+<p>so that if half the cases are missing, the variance is doubled. For the mean of <span class="math inline">\(y_2\)</span>, the loss of information alos depends on the squared correlation <span class="math inline">\(\rho^{2}\)</span> between the variables (<span class="citation">Little and Rubin (2019)</span>)</p>
+<p>\[
+\Delta_{cc} \approx \frac{n - n_{cc}\rho^{2}}{n_{cc}(1 - \rho^{2}) + n_{cc}\rho^{2}}.
+\]</p>
+<p><span class="math inline">\(\Delta_{cc}\)</span> varies from zero (when <span class="math inline">\(\rho=0\)</span>) to <span class="math inline">\(\Delta^{\star}_{cc}\)</span> as <span class="math inline">\(\rho^{2} \rightarrow 1\)</span>. However, for the regression coefficient of <span class="math inline">\(y_2\)</span> on <span class="math inline">\(y_1\)</span> we have that <span class="math inline">\(\Delta\_{cc}=0\)</span> since the incomplete observations of <span class="math inline">\(y_1\)</span> provide no information for the regression of <span class="math inline">\(y_2\)</span> on <span class="math inline">\(y_1\)</span>.</p>
+</div>
+<div id="example-2" class="section level2">
+<h2>Example 2</h2>
+<p>For inference about the population mean <span class="math inline">\(\mu\)</span>, the bias of CCA depends on the proportion of the completers <span class="math inline">\(\pi_{cc}\)</span> and the extent to which complete and incomplete cases differ on the variables of interest. Suppose a variable <span class="math inline">\(y\)</span> is partially-observed and that we partition the data into the subset of the completers <span class="math inline">\(y_{cc}\)</span> and incompleters <span class="math inline">\(y_{ic}\)</span>, with associated population means <span class="math inline">\(\mu_{cc}\)</span> and <span class="math inline">\(\mu_{ic}\)</span>, respectively. The overall mean can be written as a weighted average of the means of the two subsets</p>
+<p>\[
+\mu = \pi_{cc}\mu_{cc} + (1 - \pi_{cc}\mu_{ic}).
+\]</p>
+<p>The bias of CCA is then equal to the expected fraction of incomplete cases multiplied by the differences in the means for complete and incomplete cases</p>
+<p>\[
+\mu_{cc} - \mu = (1 - \pi_{cc})(\mu_{cc} - \mu_{ic}).<br />
+\]</p>
+<p>Under MCAR, we have that <span class="math inline">\(\mu_{cc} = \mu_{ic}\)</span> and therefore the bias is zero.</p>
+</div>
+<div id="example-3" class="section level2">
+<h2>Example 3</h2>
+<p>Consider the estimation of the regression of <span class="math inline">\(y\)</span> on <span class="math inline">\(x_1,\ldots,x_k\)</span> from data with potential missing values on all variables and with the regression function correctly specified. The bias of CCA for estimating the regression coefficients <span class="math inline">\(\beta_1,\ldots,\beta_k\)</span> associated with the covariates is null if the probbaility of being a completer depends on the <span class="math inline">\(x\)</span>s but not <span class="math inline">\(y\)</span>, since the analysis conditions on the values of the covariates (<span class="citation">Glynn and Laird (1986)</span>, <span class="citation">White and Carlin (2010)</span>). This class of missing data mechanisms includes <em>missing not at random</em> (MNAR), where the probability that a covariate is missing depends on the value of that covariate. However, CCA is biased if the probability of being a completer depends on <span class="math inline">\(y\)</span> after conditioning on the covariates. A nice example of this particular topic and its implications for the analysis has been provided by professor <a href="https://thestatsgeek.com/about-thestatsgeek-com/">Bartlett</a> using some nice <a href="http://thestatsgeek.com/wp-content/uploads/2016/08/Jonathan-Bartlett-28-06-2013.pdf">slides</a></p>
+</div>
+<div id="conclusions" class="section level2">
+<h2>Conclusions</h2>
+<p>The main virtue of case deletion is simplicity. If a missing data problem can be resolved by discarding only a small part of the sample, then the method can be quite effective. However, even in that situation, one should explore the data (<span class="citation">Schafer and Graham (2002)</span>). The discarded information from incomplete cases can be used to study whether the complete cases are plausibly a random subsample of the original sample, that is, whether MCAR is a reasonable assumption. A simple procedure is to compare the distribution of a particular variable <span class="math inline">\(y\)</span> based on complete cases with the distribution of <span class="math inline">\(y\)</span> based on incomplete cases for which <span class="math inline">\(y\)</span> is recorded. Significant differences indicate that the MCAR assumption is invalid, and the complete-case analysis yields potentially biased estimates. Such tests are useful but have limited power when the sample of incomplete cases is small. Also the tests can offer no direct evidence on the validity of the <em>missing at random</em> (MAR) assumption.</p>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references">
+<div id="ref-glynn1986regression">
+<p>Glynn, RJ, and NM Laird. 1986. “Regression Estimates and Missing Data: Complete Case Analysis.” <em>Cambridge MA: Harvard School of Public Health, Department of Biostatistics</em>.</p>
+</div>
+<div id="ref-little2019statistical">
+<p>Little, Roderick JA, and Donald B Rubin. 2019. <em>Statistical Analysis with Missing Data</em>. Vol. 793. John Wiley &amp; Sons.</p>
+</div>
+<div id="ref-schafer2002missing">
+<p>Schafer, Joseph L, and John W Graham. 2002. “Missing Data: Our View of the State of the Art.” <em>Psychological Methods</em> 7 (2): 147.</p>
+</div>
+<div id="ref-white2010bias">
+<p>White, Ian R, and John B Carlin. 2010. “Bias and Efficiency of Multiple Imputation Compared with Complete-Case Analysis for Missing Covariate Values.” <em>Statistics in Medicine</em> 29 (28): 2920–31.</p>
+</div>
+</div>
+</div>
