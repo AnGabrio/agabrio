@@ -17,7 +17,62 @@
       <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
       
       <guid>/missmethods/available-case-analysis/</guid>
-      <description></description>
+      <description>
+
+
+&lt;p&gt;Complete case analysis (CCA) can be particularly inefficient for data sets with a large number of variables which are partially observed. An alternative approach that can be used to conduct univariate analyses in known as &lt;em&gt;Available Case Analysis&lt;/em&gt; (ACA), which uses all the available cases, separately for each variable under examination, to estimate the quantities of interest.&lt;/p&gt;
+&lt;p&gt;The main drawback of ACA is that the sample used to perform the analysis varies from variable to variable according to the patterns of missing data, which generates problems of comparability across variables if the missingness mechanism is not &lt;em&gt;missing completely at random&lt;/em&gt; (MCAR), i.e. the missing data probabilities depend on the variables under study. While estimates of means and variances can be easily computed, measures of covariation need to be adjusted. In particular, for estimating sample covariances, this approach is known as &lt;em&gt;pairwise deletion&lt;/em&gt; or &lt;em&gt;pairwise inclusion&lt;/em&gt;&lt;/p&gt;
+&lt;div id=&#34;pairwise-measures-of-covariation&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Pairwise measures of covariation&lt;/h2&gt;
+&lt;p&gt;One possible approach to estimate pairwise measures of covariation for &lt;span class=&#34;math inline&#34;&gt;\(y_j\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(y_k\)&lt;/span&gt; is to use only those units &lt;span class=&#34;math inline&#34;&gt;\(i=1,\ldots,n_{ac}\)&lt;/span&gt; for which both variables are observed (&lt;span class=&#34;citation&#34;&gt;Little and Rubin (2019)&lt;/span&gt;). For example, one can compute pairwise sample covariances as:&lt;/p&gt;
+&lt;p&gt;\[
+s^{ac}_{jk} = \frac{\sum_{i \in I_{ac}}(y_{ij}-\bar{y}_{j}^{ac})(y_{ik}-\bar{y}_{k}^{ac})}{(n_{ac}-1)},
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(I_{ac}\)&lt;/span&gt; is the set of &lt;span class=&#34;math inline&#34;&gt;\(n_{ac}\)&lt;/span&gt; with both &lt;span class=&#34;math inline&#34;&gt;\(y_j\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(y_k\)&lt;/span&gt; observed, while the sample means &lt;span class=&#34;math inline&#34;&gt;\(\bar{y}^{ac}_{j}\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\bar{y}^{ac}_{k}\)&lt;/span&gt; are calculated over this set of units. We can also estimate the sample correlation&lt;/p&gt;
+&lt;p&gt;\[
+r^{\star}_{jk} = \frac{s^{ac}_{jk}}{\sqrt{s^2_{j}s^{2}_{k}}},
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(s^2_{j}\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(s^2_{k}\)&lt;/span&gt; are the sample variances computed over the sets of observed units &lt;span class=&#34;math inline&#34;&gt;\(I_{j}\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(I_{k}\)&lt;/span&gt;, respectively. A problem of this type of correlation estimate is that it can lie outside the range &lt;span class=&#34;math inline&#34;&gt;\((-1,1)\)&lt;/span&gt;, which is typically addressed by computing &lt;em&gt;pairwise correlations&lt;/em&gt; (&lt;span class=&#34;citation&#34;&gt;Wilks (1932)&lt;/span&gt;), where variances are estimated from the set of units with both variables observed &lt;span class=&#34;math inline&#34;&gt;\(I_{jk}\)&lt;/span&gt;, i.e. &lt;/p&gt;
+&lt;p&gt;\[
+r^{ac}_{jk} = \frac{s^{ac}_{jk}}{\sqrt{s^{2,ac}_{j}s^{2,ac}_{k}}}.
+\]&lt;/p&gt;
+&lt;p&gt;In addition, we could also replace the sample means &lt;span class=&#34;math inline&#34;&gt;\(\bar{y}^{ac}_{j}\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\bar{y}^{ac}_{k}\)&lt;/span&gt;, evaluated on the common set of units &lt;span class=&#34;math inline&#34;&gt;\(I_{jk}\)&lt;/span&gt;, with &lt;span class=&#34;math inline&#34;&gt;\(\bar{y}_{j}\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\bar{y}_{k}\)&lt;/span&gt;, which are evaluated on the sets of units &lt;span class=&#34;math inline&#34;&gt;\(I_{j}\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(I_{k}\)&lt;/span&gt;, respectively. This leads to the following estimates for the sample covariances (&lt;span class=&#34;citation&#34;&gt;Matthai (1951)&lt;/span&gt;):&lt;/p&gt;
+&lt;p&gt;\[
+s^{\star}_{jk} = \frac{\sum_{i \in I_{ac}}(y_{ij}-\bar{y}_{j})(y_{ik}-\bar{y}_{k})}{(n_{ac}-1)},
+\]&lt;/p&gt;
+&lt;p&gt;Pairwise AC estimates aim at recovering information from partially-observed units that are lost by CCA. However, when considered together, the estimates suffer from inconsistencies that undermine the validity of these methods. For example, pairwise correlation matrices may be not positive definite. Because parameters are estimated from different sets of units, different approaches can be used to obtain estimate of the measures of uncertainty (&lt;span class=&#34;citation&#34;&gt;Schafer and Graham (2002)&lt;/span&gt;).&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;conclusions&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Conclusions&lt;/h2&gt;
+&lt;p&gt;AC estimates allow to make use of all the available evidence in the data and may be more efficient that CCA when the missingness mechanism is MCAR and correlations are modest (&lt;span class=&#34;citation&#34;&gt;Kim and Curry (1977)&lt;/span&gt;). However, when correlations are more substantial, ACA may become even less efficient than CCA (&lt;span class=&#34;citation&#34;&gt;Haitovsky (1968)&lt;/span&gt;, &lt;span class=&#34;citation&#34;&gt;Azen and Van Guilder (1981)&lt;/span&gt;).&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
+&lt;h1&gt;References&lt;/h1&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references&#34;&gt;
+&lt;div id=&#34;ref-azen1981conclusions&#34;&gt;
+&lt;p&gt;Azen, S, and M Van Guilder. 1981. “Conclusions Regarding Algorithms for Handling Incomplete Data.” &lt;em&gt;1981 Proceedings of the Statistical Computing Section&lt;/em&gt;, 53–56.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-haitovsky1968missing&#34;&gt;
+&lt;p&gt;Haitovsky, Yoel. 1968. “Missing Data in Regression Analysis.” &lt;em&gt;Journal of the Royal Statistical Society: Series B (Methodological)&lt;/em&gt; 30 (1): 67–82.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-kim1977treatment&#34;&gt;
+&lt;p&gt;Kim, Jae-On, and James Curry. 1977. “The Treatment of Missing Data in Multivariate Analysis.” &lt;em&gt;Sociological Methods &amp;amp; Research&lt;/em&gt; 6 (2): 215–40.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-little2019statistical&#34;&gt;
+&lt;p&gt;Little, Roderick JA, and Donald B Rubin. 2019. &lt;em&gt;Statistical Analysis with Missing Data&lt;/em&gt;. Vol. 793. John Wiley &amp;amp; Sons.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-matthai1951estimation&#34;&gt;
+&lt;p&gt;Matthai, Abraham. 1951. “Estimation of Parameters from Incomplete Data with Application to Design of Sample Surveys.” &lt;em&gt;Sankhyā: The Indian Journal of Statistics&lt;/em&gt;, 145–52.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-schafer2002missing&#34;&gt;
+&lt;p&gt;Schafer, Joseph L, and John W Graham. 2002. “Missing Data: Our View of the State of the Art.” &lt;em&gt;Psychological Methods&lt;/em&gt; 7 (2): 147.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-wilks1932moments&#34;&gt;
+&lt;p&gt;Wilks, Samuel S. 1932. “Moments and Distributions of Estimates of Population Parameters from Fragmentary Samples.” &lt;em&gt;The Annals of Mathematical Statistics&lt;/em&gt; 3 (3): 163–95.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
     </item>
     
     <item>
@@ -49,19 +104,19 @@
 &lt;h2&gt;Example 1&lt;/h2&gt;
 &lt;p&gt;Consider bivariate normal monotone data &lt;span class=&#34;math inline&#34;&gt;\(\bf y = (y_1,y_2)\)&lt;/span&gt;, where &lt;span class=&#34;math inline&#34;&gt;\(n_{cc}\)&lt;/span&gt; out of &lt;span class=&#34;math inline&#34;&gt;\(n\)&lt;/span&gt; cases are complete and &lt;span class=&#34;math inline&#34;&gt;\(n - n_{cc}\)&lt;/span&gt; cases have observed values only on &lt;span class=&#34;math inline&#34;&gt;\(y_1\)&lt;/span&gt;. Assume for simplicity that the missingness mechanism is MCAR and that the mean of &lt;span class=&#34;math inline&#34;&gt;\(y_j\)&lt;/span&gt; is estimated by the empirical mean from the complete cases &lt;span class=&#34;math inline&#34;&gt;\(\bar{y}^{cc}_j\)&lt;/span&gt;. Then, the loss in sample size for estimating the mean of &lt;span class=&#34;math inline&#34;&gt;\(y_1\)&lt;/span&gt; is:&lt;/p&gt;
 &lt;p&gt;\[
-\Delta^{\star}_{cc} = \Delta_{cc} = \frac{n - n_{cc}}{n_{cc}},
+\Delta_{cc}(\bar{y}_1) = \frac{n - n_{cc}}{n_{cc}},
 \]&lt;/p&gt;
-&lt;p&gt;so that if half the cases are missing, the variance is doubled. For the mean of &lt;span class=&#34;math inline&#34;&gt;\(y_2\)&lt;/span&gt;, the loss of information alos depends on the squared correlation &lt;span class=&#34;math inline&#34;&gt;\(\rho^{2}\)&lt;/span&gt; between the variables (&lt;span class=&#34;citation&#34;&gt;Little and Rubin (2019)&lt;/span&gt;)&lt;/p&gt;
+&lt;p&gt;so that if half the cases are missing, the variance is doubled. For the mean of &lt;span class=&#34;math inline&#34;&gt;\(y_2\)&lt;/span&gt;, the loss of information alos depends on the squared correlation &lt;span class=&#34;math inline&#34;&gt;\(\rho^{2}\)&lt;/span&gt; between the variables: (&lt;span class=&#34;citation&#34;&gt;Little and Rubin (2019)&lt;/span&gt;)&lt;/p&gt;
 &lt;p&gt;\[
-\Delta_{cc} \approx \frac{n - n_{cc}\rho^{2}}{n_{cc}(1 - \rho^{2}) + n_{cc}\rho^{2}}.
+\Delta_{cc}(\bar{y}_2) \approx \frac{(n - n_{cc})\rho^{2}}{n_{cc}(1 - \rho^{2}) + n_{cc}\rho^{2}}.
 \]&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math inline&#34;&gt;\(\Delta_{cc}\)&lt;/span&gt; varies from zero (when &lt;span class=&#34;math inline&#34;&gt;\(\rho=0\)&lt;/span&gt;) to &lt;span class=&#34;math inline&#34;&gt;\(\Delta^{\star}_{cc}\)&lt;/span&gt; as &lt;span class=&#34;math inline&#34;&gt;\(\rho^{2} \rightarrow 1\)&lt;/span&gt;. However, for the regression coefficient of &lt;span class=&#34;math inline&#34;&gt;\(y_2\)&lt;/span&gt; on &lt;span class=&#34;math inline&#34;&gt;\(y_1\)&lt;/span&gt; we have that &lt;span class=&#34;math inline&#34;&gt;\(\Delta\_{cc}=0\)&lt;/span&gt; since the incomplete observations of &lt;span class=&#34;math inline&#34;&gt;\(y_1\)&lt;/span&gt; provide no information for the regression of &lt;span class=&#34;math inline&#34;&gt;\(y_2\)&lt;/span&gt; on &lt;span class=&#34;math inline&#34;&gt;\(y_1\)&lt;/span&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math inline&#34;&gt;\(\Delta_{cc}(\bar{y}_2)\)&lt;/span&gt; varies from zero (when &lt;span class=&#34;math inline&#34;&gt;\(\rho=0\)&lt;/span&gt;) to &lt;span class=&#34;math inline&#34;&gt;\(\Delta_{cc}(\bar{y}_1)\)&lt;/span&gt; as &lt;span class=&#34;math inline&#34;&gt;\(\rho^{2} \rightarrow 1\)&lt;/span&gt;. However, for the regression coefficients of &lt;span class=&#34;math inline&#34;&gt;\(y_2\)&lt;/span&gt; on &lt;span class=&#34;math inline&#34;&gt;\(y_1\)&lt;/span&gt; we have that &lt;span class=&#34;math inline&#34;&gt;\(\Delta_{cc}=0\)&lt;/span&gt; since the incomplete observations of &lt;span class=&#34;math inline&#34;&gt;\(y_1\)&lt;/span&gt; provide no information for estimating the parameters of the regression of &lt;span class=&#34;math inline&#34;&gt;\(y_2\)&lt;/span&gt; on &lt;span class=&#34;math inline&#34;&gt;\(y_1\)&lt;/span&gt;.&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;example-2&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Example 2&lt;/h2&gt;
 &lt;p&gt;For inference about the population mean &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt;, the bias of CCA depends on the proportion of the completers &lt;span class=&#34;math inline&#34;&gt;\(\pi_{cc}\)&lt;/span&gt; and the extent to which complete and incomplete cases differ on the variables of interest. Suppose a variable &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; is partially-observed and that we partition the data into the subset of the completers &lt;span class=&#34;math inline&#34;&gt;\(y_{cc}\)&lt;/span&gt; and incompleters &lt;span class=&#34;math inline&#34;&gt;\(y_{ic}\)&lt;/span&gt;, with associated population means &lt;span class=&#34;math inline&#34;&gt;\(\mu_{cc}\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\mu_{ic}\)&lt;/span&gt;, respectively. The overall mean can be written as a weighted average of the means of the two subsets&lt;/p&gt;
 &lt;p&gt;\[
-\mu = \pi_{cc}\mu_{cc} + (1 - \pi_{cc}\mu_{ic}).
+\mu = \pi_{cc}\mu_{cc} + (1 - \pi_{cc})\mu_{ic}.
 \]&lt;/p&gt;
 &lt;p&gt;The bias of CCA is then equal to the expected fraction of incomplete cases multiplied by the differences in the means for complete and incomplete cases&lt;/p&gt;
 &lt;p&gt;\[
@@ -71,7 +126,7 @@
 &lt;/div&gt;
 &lt;div id=&#34;example-3&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Example 3&lt;/h2&gt;
-&lt;p&gt;Consider the estimation of the regression of &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; on &lt;span class=&#34;math inline&#34;&gt;\(x_1,\ldots,x_k\)&lt;/span&gt; from data with potential missing values on all variables and with the regression function correctly specified. The bias of CCA for estimating the regression coefficients &lt;span class=&#34;math inline&#34;&gt;\(\beta_1,\ldots,\beta_k\)&lt;/span&gt; associated with the covariates is null if the probbaility of being a completer depends on the &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt;s but not &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;, since the analysis conditions on the values of the covariates (&lt;span class=&#34;citation&#34;&gt;Glynn and Laird (1986)&lt;/span&gt;, &lt;span class=&#34;citation&#34;&gt;White and Carlin (2010)&lt;/span&gt;). This class of missing data mechanisms includes &lt;em&gt;missing not at random&lt;/em&gt; (MNAR), where the probability that a covariate is missing depends on the value of that covariate. However, CCA is biased if the probability of being a completer depends on &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; after conditioning on the covariates. A nice example of this particular topic and its implications for the analysis has been provided by professor &lt;a href=&#34;https://thestatsgeek.com/about-thestatsgeek-com/&#34;&gt;Bartlett&lt;/a&gt; using some nice &lt;a href=&#34;http://thestatsgeek.com/wp-content/uploads/2016/08/Jonathan-Bartlett-28-06-2013.pdf&#34;&gt;slides&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Consider the estimation of the regression of &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; on &lt;span class=&#34;math inline&#34;&gt;\(x_1,\ldots,x_K\)&lt;/span&gt; from data with potential missing values on all variables and with the regression function correctly specified. The bias of CCA for estimating the regression coefficients &lt;span class=&#34;math inline&#34;&gt;\(\beta_1,\ldots,\beta_K\)&lt;/span&gt; associated with the covariates is null if the probbaility of being a completer depends on the &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt;s but not &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;, since the analysis conditions on the values of the covariates (&lt;span class=&#34;citation&#34;&gt;Glynn and Laird (1986)&lt;/span&gt;, &lt;span class=&#34;citation&#34;&gt;White and Carlin (2010)&lt;/span&gt;). This class of missing data mechanisms includes &lt;em&gt;missing not at random&lt;/em&gt; (MNAR), where the probability that a covariate is missing depends on the value of that covariate. However, CCA is biased if the probability of being a completer depends on &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; after conditioning on the covariates. A nice example of this particular topic and its implications for the analysis has been provided by professor &lt;a href=&#34;https://thestatsgeek.com/about-thestatsgeek-com/&#34;&gt;Bartlett&lt;/a&gt; using some nice &lt;a href=&#34;http://thestatsgeek.com/wp-content/uploads/2016/08/Jonathan-Bartlett-28-06-2013.pdf&#34;&gt;slides&lt;/a&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;conclusions&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Conclusions&lt;/h2&gt;

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>News on Andrea Gabrio</title>
+    <link>/tags/news/</link>
+    <description>Recent content in News on Andrea Gabrio</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 01 Oct 2019 00:00:00 +0000</lastBuildDate>
+    
+	    <atom:link href="/tags/news/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>More good news...</title>
+      <link>/post/update-october/update-october/</link>
+      <pubDate>Tue, 01 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/update-october/update-october/</guid>
+      <description>&lt;p&gt;I have got two news coming up. First, the paper I wrote with Michael and Gianluca on Bayesian methdos for longitudinal data in trial-based economic evaluations has finally been published as early view on &lt;a href=&#34;https://rss.onlinelibrary.wiley.com/doi/abs/10.1111/rssa.12522&#34; target=&#34;_blank&#34;&gt;JRSSA&lt;/a&gt;. As I said in some earlier posts, I am super happy about this collaboration and I hope I can continue working on similar projects in the future.&lt;/p&gt;
+
+&lt;p&gt;Second, I will soon give a talk about this work at the &lt;a href=&#34;https://ictmc2019.com/&#34; target=&#34;_blank&#34;&gt;ICTMC&lt;/a&gt; conference in Brighton, next Monday. This will be the first time at this conference and unfortunately I will only be able to remain around for one day as I need to go back to London pretty soon. I hope I will be able to enjoy my day at the conference, even though I will miss the talks of &lt;a href=&#34;https://www.lshtm.ac.uk/aboutus/people/leurent.baptiste&#34; target=&#34;_blank&#34;&gt;Baptiste&lt;/a&gt; and &lt;a href=&#34;https://www.lshtm.ac.uk/aboutus/people/mason.alexina&#34; target=&#34;_blank&#34;&gt;Alexina&lt;/a&gt; which are scheduled for the last day of the conference. I hope I can at least have a quick chat with them the day I am around.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/efDT7dqlF5N2LVHG8C/giphy.gif&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;I am also excited to visit &lt;a href=&#34;https://en.wikipedia.org/wiki/Brighton&#34; target=&#34;_blank&#34;&gt;Brighton&lt;/a&gt;, since many people keep telling me that I should go and visit this sort of british version of &amp;ldquo;Rimini&amp;rdquo;. To be honest, I do not expect to find a nice wheather, given that in this period it is raining a lot in London, but I hope I will be lucky and get the only sunny day of the week.&lt;/p&gt;
+
+&lt;p&gt;Finally, I have started a rubric called &lt;a href=&#34;https://agabrioblog.onrender.com/missingdata/&#34; target=&#34;_blank&#34;&gt;missing data&lt;/a&gt; on my website, where I try to describe some of the most popular methods to handle missing data and to provide some references for anyone who could be interested in this field. I am really fascinated by statistical methods for dealing with missingness, perhaps because it was the main focus of my PhD, but I am eager to review different methods and see if I can find something really interesting. Of course, to complete this it will take more time, which I hope I will be able to find in the next months.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
