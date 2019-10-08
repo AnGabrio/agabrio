@@ -16,14 +16,12 @@ url_code: "https://github.com/AnGabrio/missingHE"
 
 `missingHE` is a `R` package aimed at providing some useful tools to analysts in order to handle missing outcome data under a Full Bayesian framework in economic evaluations. The package relies on the `R` package `R2jags` to implement Bayesian methods via the statistical software `JAGS`. The package allows to obtain inferences using Markov Chain Monte Carlo (MCMC) methods under a range of modelling approaches and missing data assumptions. The package also contains functions specifically defined to assess model fit and possible issues in model convergence as well as to summarise the main results from the economic analysis.
 
-
 Missing data are iteratively imputed using data augmentation methods according to the type of model, distribution and missingness assumptions specified by the user using different arguments in the functions of the package. The posterior distribution of the main quantities of interest (e.g. some suitable measures of costs and clinical benefits) is then summarised to assess the cost-effectiveness of a new intervention ($t=2$) against a standard intervention ($t=1$).
-
 
 `missingHE` produces plots which compares the observed and imputed values for both cost and benefit measures in each treatment intervention considered to detect possible concerns about the plausibility of the imputation methods. In addition, the output of `missingHE` cab be analysed using different funtions in the `R` package `BCEA` which produces a synthesis of the decision process given the current evidence and uncertainty, as well as several indicators that can be used to perform Probabilistic Sensitivity Analysis to parameter and model uncertainty. 
 
 
-On 25/09/2019 an updated version (1.2.1) of missingHE has become available on CRAN which allows to perform posterior predictive checks for each type of model as a further way to assess the fit of the model to the observed data. 
+On 25/09/2019 an updated version (1.2.1) of `missingHE` has become available on [CRAN](https://cran.r-project.org/web/packages/missingHE/), which allows to perform posterior predictive checks for each type of model as a further way to assess the fit of the model to the observed data. 
 
 
 
@@ -68,7 +66,7 @@ ICER          -1198.431
 # Installation
 
 
-There are two ways of installing `missingHE`. A *stable* version (currently 1.1.1) is packaged and available from [CRAN](https://cran.r-project.org/web/packages/missingHE/). You can simply type on your `R` terminal
+There are two ways of installing `missingHE`. A *stable* version (currently 1.2.1) is packaged and available from [CRAN](https://cran.r-project.org/web/packages/missingHE/). You can simply type on your `R` terminal
 
 
 ```r

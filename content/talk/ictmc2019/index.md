@@ -10,6 +10,11 @@ featured: false
 image:
   caption: 
   focal_point: 
+links:
+- icon: 
+  icon_pack: 
+  name: Slides
+  url: https://www.luminpdf.com/viewer/5d9c51ab8a3e9900136a4b67
 location: Hilton Brighton Metropole, Brighton, UK
 math: true
 projects:

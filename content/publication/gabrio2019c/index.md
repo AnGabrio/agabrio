@@ -13,7 +13,7 @@ image:
   preview_only: false
 projects: 
 - missing-data
-publication: 'arxiv'
+publication: '*Journal of the Royal Statistical Society: Series A,* early view'
 publication_short: ""
 publication_types:
 - "2"
@@ -27,7 +27,7 @@ tags:
 title: "A Bayesian Parametric Approach to Handle Missing Longitudinal Outcome Data in Trial-Based Health Economic Evaluations"
 url_code: ""
 url_dataset: ""
-url_pdf: https://arxiv.org/abs/1805.07147
+url_pdf: https://rss.onlinelibrary.wiley.com/doi/pdf/10.1111/rssa.12522
 url_project: ""
 url_slides: ""
 url_source: ""
