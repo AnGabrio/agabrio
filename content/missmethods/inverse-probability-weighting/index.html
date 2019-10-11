@@ -1,0 +1,99 @@
+---
+title: Inverse Probability Weighting
+summary: 
+tags:
+- Weighting Methods
+- Semiparametric Methods
+- Weighting Adjustments
+- Inverse Probability Weighting
+- Augmented Inverse Probability Weighting
+date: "2016-04-27T00:00:00Z"
+
+# Optional external URL for project (replaces project detail page).
+external_link: ""
+
+categories: ["rubric"]
+bibliography: [ipw.bib]
+
+reading_time: false  # Show estimated reading time?
+share: false  # Show social sharing links?
+profile: false  # Show author profile?
+commentable: false  # Allow visitors to comment? Supported by the Page, Post, and Docs content types.
+editable: true  # Allow visitors to edit the page? Supported by the Page, Post, and Docs content types.
+
+image:
+  caption: Photo by rawpixel on Unsplash
+  focal_point: Smart
+  preview_only: true
+
+links:
+#- icon: 
+#  icon_pack: 
+#  name: 
+#  url: 
+url_code: ""
+url_pdf: ""
+url_slides: ""
+url_video: ""
+url_poster: ""
+
+# Slides (optional).
+#   Associate this project with Markdown slides.
+#   Simply enter your slide deck's filename without extension.
+#   E.g. `slides = "example-slides"` references `content/slides/example-slides.md`.
+#   Otherwise, set `slides = ""`.
+# slides: example
+---
+
+
+
+<p>In certain cases, it is possible to reduce biases from case deletion by the application of weights. After incomplete cases are removed, the remaining complete cases can be weighted so that their distribution more closely resembles that of the full sample with respect to auxiliary variables. <em>Weighting methods</em> can eliminate bias due to differential response related to the variables used to model the response probabilities, but it cannot correct for biases related to variables that are unused or unmeasured (<span class="citation">Little and Rubin (2019)</span>). <span class="citation">Robins, Rotnitzky, and Zhao (1994)</span> introduced <em>Inverse Probability Weighting</em> (IPW) as a weighted regression approach that require an explicit model for the missingness but relaxes some of the parametric assumptions in the data model. Their method is an extension of <em>Generalized Estimating Equations</em> (GEE), a popular technique for modeling marginal or populationaveraged relationships between a response variable and predictors (<span class="citation">Zeger, Liang, and Albert (1988)</span>).</p>
+<p>Let <span class="math inline">\(y_i=(y_{i1},\ldots,y_{iK})\)</span> denote a vector of variables for unit <span class="math inline">\(i\)</span> subject to missing values with <span class="math inline">\(y_i\)</span> being fully observed for <span class="math inline">\(i=1\ldots,n_r\)</span> units and partially-observed for <span class="math inline">\(i=n_r+1,\ldots,n\)</span> units. Define <span class="math inline">\(m_i=1\)</span> if <span class="math inline">\(y_i\)</span> is incomplete and <span class="math inline">\(m_i=0\)</span> if complete. Let <span class="math inline">\(x_i=(x_{i1},\ldots,x_{ip})\)</span> denote a vector of fully observed covariates and suppose the interest is in estimating the mean of the distribution of <span class="math inline">\(y_i\)</span> given <span class="math inline">\(x_i\)</span>, having the form <span class="math inline">\(g(x_i,\beta)\)</span>, where <span class="math inline">\(g()\)</span> is a possibly non-linear regression function indexed by a parameter <span class="math inline">\(\beta\)</span> of dimension <span class="math inline">\(d\)</span>. Let also <span class="math inline">\(z_i=(z_{i1},\ldots,z_{iq})\)</span> be a vector of fully observed auxiliary variables that potentially predictive of missingness but are not included in the model for <span class="math inline">\(y_i \mid x_i\)</span>. When there are no missing data, a consistent estimate of <span class="math inline">\(\beta\)</span> is given by the solution to the following GEE, under mild regularity conditions (<span class="citation">Liang and Zeger (1986)</span>),</p>
+<p>\[
+\sum_{i=1}^n = D_i(x_i,\beta)(y_i-g(x_i,\beta))=0,
+\]</p>
+<p>where <span class="math inline">\(D_i(x_i,\beta)\)</span> is a suitably chosen <span class="math inline">\((d\times k)\)</span> matrix of known functions of <span class="math inline">\(x_i\)</span>. With missing data, the equation is applied only to the complete cases (<span class="math inline">\(n_{r}\)</span>), which yields consistent estimates provided that</p>
+<p>\[
+p(m_i=1 \mid x_i,y_i,z_i,\phi)=p(m_i=1\mid x_i,\phi),
+\]</p>
+<p>that is, missingness does not depend on <span class="math inline">\(y_i\)</span> or <span class="math inline">\(z_i\)</span> after conditioning on <span class="math inline">\(x_i\)</span>. IPW GEE methods (<span class="citation">Robins and Rotnitzky (1995)</span>) replace the equation with</p>
+<p>\[
+\sum_{i=1}^{n_r} = w_i(\hat{\alpha})D_i(x_i,\beta)(y_i-g(x_i,\beta))=0,
+\]</p>
+<p>where <span class="math inline">\(w_i(\hat{\alpha})=\frac{1}{p(x_i,z_i \mid \hat{\alpha})}\)</span>, with <span class="math inline">\(p(x_i,z_i \mid \hat{\alpha})\)</span> being an estimate of the probability of being a complete unit, obtained for example via logistic regressions on <span class="math inline">\(m_i\)</span> on <span class="math inline">\(x_i\)</span> and <span class="math inline">\(z_i\)</span>. If the logistic regression is correctly specified, IPW GEE yields a consistent estimator of <span class="math inline">\(\beta\)</span> provided that</p>
+<p>\[
+p(m_i=1 \mid x_i,y_i,z_i,\phi)=p(m_i=1\mid x_i,z_i\phi).
+\]</p>
+<p>Thus, IPW GEE can correct for the bias of unweighted GEE due to the dependence of the missingness mechanism on <span class="math inline">\(z_i\)</span> (<span class="citation">Schafer and Graham (2002)</span>). The basic intuition of IPW methods is that each subject’s contribution to the weighted <em>Complete Case Analysis</em> is replicated <span class="math inline">\(w_i\)</span> times in order to account once for herself and <span class="math inline">\((1-w_i)\)</span> times for those subjects with the same responses and covariates who are missing. These models are called <em>semiparametric</em> because they apart from requiring the regression equation to have a specific form, they do not specify any probability distribution for the response variable (<span class="citation">Molenberghs et al. (2014)</span>). Older GEE methods can accommodate missing values only if they are <em>Missing Completely At Random</em> (MCAR), while more recent methods allow them to be <em>Missing At Random</em> (MAR) or even <em>Missing Not At Random</em> (MNAR), provided that a model for the missingness is correctly specified (<span class="citation">Robins, Rotnitzky, and Zhao (1995)</span>,<span class="citation">Rotnitzky, Robins, and Scharfstein (1998)</span>).</p>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references">
+<div id="ref-liang1986longitudinal">
+<p>Liang, Kung-Yee, and Scott L Zeger. 1986. “Longitudinal Data Analysis Using Generalized Linear Models.” <em>Biometrika</em> 73 (1): 13–22.</p>
+</div>
+<div id="ref-little2019statistical">
+<p>Little, Roderick JA, and Donald B Rubin. 2019. <em>Statistical Analysis with Missing Data</em>. Vol. 793. John Wiley &amp; Sons.</p>
+</div>
+<div id="ref-molenberghs2014handbook">
+<p>Molenberghs, Geert, Garrett Fitzmaurice, Michael G Kenward, Anastasios Tsiatis, and Geert Verbeke. 2014. <em>Handbook of Missing Data Methodology</em>. Chapman; Hall/CRC.</p>
+</div>
+<div id="ref-robins1995semiparametric">
+<p>Robins, James M, and Andrea Rotnitzky. 1995. “Semiparametric Efficiency in Multivariate Regression Models with Missing Data.” <em>Journal of the American Statistical Association</em> 90 (429): 122–29.</p>
+</div>
+<div id="ref-robins1994estimation">
+<p>Robins, James M, Andrea Rotnitzky, and Lue Ping Zhao. 1994. “Estimation of Regression Coefficients When Some Regressors Are Not Always Observed.” <em>Journal of the American Statistical Association</em> 89 (427): 846–66.</p>
+</div>
+<div id="ref-robins1995analysis">
+<p>———. 1995. “Analysis of Semiparametric Regression Models for Repeated Outcomes in the Presence of Missing Data.” <em>Journal of the American Statistical Association</em> 90 (429): 106–21.</p>
+</div>
+<div id="ref-rotnitzky1998semiparametric">
+<p>Rotnitzky, Andrea, James M Robins, and Daniel O Scharfstein. 1998. “Semiparametric Regression for Repeated Outcomes with Nonignorable Nonresponse.” <em>Journal of the American Statistical Association</em> 93 (444): 1321–39.</p>
+</div>
+<div id="ref-schafer2002missing">
+<p>Schafer, Joseph L, and John W Graham. 2002. “Missing Data: Our View of the State of the Art.” <em>Psychological Methods</em> 7 (2): 147.</p>
+</div>
+<div id="ref-zeger1988models">
+<p>Zeger, Scott L, Kung-Yee Liang, and Paul S Albert. 1988. “Models for Longitudinal Data: A Generalized Estimating Equation Approach.” <em>Biometrics</em>, 1049–60.</p>
+</div>
+</div>
+</div>

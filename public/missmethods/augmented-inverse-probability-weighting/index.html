@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.3.1">
+
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+  
+  
+
+  <meta name="author" content="Andrea Gabrio">
+
+  
+  
+  
+    
+  
+  <meta name="description" content="A general problem associated with the implementatio of Inverse Probability Weighting (IPW) methods is that information in some available data is ignored by focussing only on the complete cases (Schafer and Graham (2002)). This has provided room to extend these methods to make a more efficient use of the available information through the incorporation of an “augmentation” term, which lead to the development of the so called Augmented Inverse Probability Weighting (AIPW) methods.">
+
+  
+  <link rel="alternate" hreflang="en-us" href="/missmethods/augmented-inverse-probability-weighting/">
+
+  
+
+
+  
+
+  
+  
+  
+  <meta name="theme-color" content="#2962ff">
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.0/css/all.css" integrity="sha384-aOkxzJ5uQz7WBObEZcHvV5JvRW3TUc2rNPA7pe3AwnsUohiw1Vj2Rgx2KSOkF5+h" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" integrity="sha256-ygkqlh3CYSUri3LhQxzdcm0n1EQvH2Y+U5S2idbLtxs=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+        
+      
+    
+
+    
+
+    
+
+  
+
+  
+  
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:450,700|Oswald+Sans:600,700|Roboto+Mono:550,700">
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.min.548c5488bf2acb3767aba941aacbd58f.css">
+
+  
+    
+    
+    
+    
+      
+    
+    
+    
+    <link rel="stylesheet" href="/css/academic.3f1befffb0882d6c3372ec9dda375740.css">
+  
+
+  
+  
+  
+
+  
+
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="/missmethods/augmented-inverse-probability-weighting/">
+
+  
+  
+  
+  
+    
+    
+  
+  <meta property="twitter:card" content="summary">
+  
+  <meta property="og:site_name" content="Andrea Gabrio">
+  <meta property="og:url" content="/missmethods/augmented-inverse-probability-weighting/">
+  <meta property="og:title" content="Augmented Inverse Probability Weighting | Andrea Gabrio">
+  <meta property="og:description" content="A general problem associated with the implementatio of Inverse Probability Weighting (IPW) methods is that information in some available data is ignored by focussing only on the complete cases (Schafer and Graham (2002)). This has provided room to extend these methods to make a more efficient use of the available information through the incorporation of an “augmentation” term, which lead to the development of the so called Augmented Inverse Probability Weighting (AIPW) methods."><meta property="og:image" content="/img/icon-192.png">
+  <meta property="og:locale" content="en-us">
+  
+  <meta property="article:published_time" content="2016-04-27T00:00:00&#43;00:00">
+  
+  <meta property="article:modified_time" content="2016-04-27T00:00:00&#43;00:00">
+  
+
+  
+
+
+  
+
+
+
+
+
+  <title>Augmented Inverse Probability Weighting | Andrea Gabrio</title>
+
+</head>
+
+
+<body id="top" data-spy="scroll" data-target="#TableOfContents" data-offset="71" >
+
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" role="textbox" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+  
+<nav class="navbar navbar-light fixed-top navbar-expand-lg py-0" id="navbar-main">
+  <div class="container">
+
+    
+      <a class="navbar-brand" href="/">Andrea Gabrio</a>
+      
+      <button type="button" class="navbar-toggler" data-toggle="collapse"
+              data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span><i class="fas fa-bars"></i></span>
+      </button>
+      
+
+    
+    <div class="collapse navbar-collapse" id="navbar">
+
+      
+      
+      <ul class="navbar-nav ml-auto">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#about"><span>Home</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/post/"><span>Blog</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/research/"><span>Research</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/publication/"><span>Publications</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/talk/"><span>Talks</span></a>
+        </li>
+
+        
+        
+
+        
+        <li class="nav-item dropdown">
+          <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"><span>Software</span><span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            
+            <li class="dropdown-item my-0 py-0 mx-0 px-0">
+              <a href="/missingHE/"><span>missingHE</span></a>
+            </li>
+            
+          </ul>
+        </li>
+
+        
+        
+
+        
+        <li class="nav-item dropdown">
+          <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"><span>Tutorials</span><span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            
+            <li class="dropdown-item my-0 py-0 mx-0 px-0">
+              <a href="/JAGS/"><span>JAGS</span></a>
+            </li>
+            
+            <li class="dropdown-item my-0 py-0 mx-0 px-0">
+              <a href="/OpenBUGS/"><span>OpenBUGS</span></a>
+            </li>
+            
+            <li class="dropdown-item my-0 py-0 mx-0 px-0">
+              <a href="/STAN/"><span>STAN</span></a>
+            </li>
+            
+          </ul>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/missingdata/"><span>Missing Data</span></a>
+        </li>
+
+        
+        
+
+      
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+        </li>
+        
+
+        
+
+        
+
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+  <article class="article" itemscope itemtype="http://schema.org/Article">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  
+  
+<div class="article-container pt-3">
+  <h1 itemprop="name">Augmented Inverse Probability Weighting</h1>
+
+  
+
+  
+    
+
+
+
+<meta content="2016-04-27 00:00:00 &#43;0000 UTC" itemprop="datePublished">
+<meta content="2016-04-27 00:00:00 &#43;0000 UTC" itemprop="dateModified">
+
+<div class="article-metadata">
+
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+    
+    <time>Apr 27, 2016</time>
+  </span>
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+  <span class="middot-divider"></span>
+  <span class="article-categories">
+    <i class="fas fa-folder"></i>
+    <a href="/categories/rubric/">rubric</a></span>
+  
+
+  
+    
+
+  
+
+</div>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+<div class="btn-links mb-3">
+  
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+<button type="button" class="btn btn-outline-primary my-1 mr-1 js-cite-modal"
+        data-filename="/missmethods/augmented-inverse-probability-weighting/aipw.bib">
+  Cite
+</button>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+
+  
+</div>
+
+
+
+  <div class="article-container">
+
+    <div class="article-style" itemprop="articleBody">
+      
+
+
+<p>A general problem associated with the implementatio of <em>Inverse Probability Weighting</em> (IPW) methods is that information in some available data is ignored by focussing only on the complete cases (<span class="citation">Schafer and Graham (2002)</span>). This has provided room to extend these methods to make a more efficient use of the available information through the incorporation of an “augmentation” term, which lead to the development of the so called <em>Augmented Inverse Probability Weighting</em> (AIPW) methods. These approaches extend IPW methods by creating predictions from a model to recove the information in the incomplete units and applying IPW to the residuals from the model (<span class="citation">Little and Rubin (2019)</span>).</p>
+<p>Considering the IPW <em>Generalised Estimating Equation</em> (GEE)</p>
+<p>\[
+\sum_{i=1}^{n_r} = w_i(\hat{\alpha})D_i(x_i,\beta)(y_i-g(x_i,\beta))=0,
+\]</p>
+<p>where <span class="math inline">\(w_i(\hat{\alpha})=\frac{1}{p(x_i,z_i \mid \hat{\alpha})}\)</span>, with <span class="math inline">\(p(x_i,z_i \mid \hat{\alpha})\)</span> an estimate of the probability of being a complete unit estimated for example using logistic regressions of the missingness indicator <span class="math inline">\(m_i\)</span> on the vectors of the covariate and auxiliary variables <span class="math inline">\(x_i\)</span> and <span class="math inline">\(z_i\)</span>, respectively. A problem of this IPW estimator is that it has poor small sample properties when the propensity score gets close to zero or one for some observations, which will lead to high variance in the estimator. AIPW methods can provide estimators of <span class="math inline">\(\beta\)</span> which are more efficient than their nonaugmented IPW versions. In general, AIPW estimating functions provide a method for constructing estimators of <span class="math inline">\(\beta\)</span> based on two terms:</p>
+<ol style="list-style-type: decimal">
+<li><p>The usual IPW term <span class="math inline">\(p(x_i,z_i \mid \hat{\alpha})\)</span></p></li>
+<li><p>An augmentation term <span class="math inline">\(g^\star(x_i,\beta)\)</span></p></li>
+</ol>
+<p>The basis for the first term is a complete data unbiased estimating function for <span class="math inline">\(\beta\)</span>, whereas the basis for the second term is some function of the observed data chosen so it has conditional mean of zero given the complete data (<span class="citation">Molenberghs et al. (2014)</span>).</p>
+<div id="doubly-robust-estimators" class="section level2">
+<h2>Doubly Robust Estimators</h2>
+<p>An important class of AIPW methods is known as <em>doubly robust</em> estimators, which have desirable robustness properties (<span class="citation">Robins, Rotnitzky, and Laan (2000)</span>,<span class="citation">Robins and Rotnitzky (2001)</span>). The key feature of these estimators is that they relax the assumption that the model of the missingness probabilities is correctly specified, although requiring additional assumptions on the model for <span class="math inline">\(y_i \mid x_i\)</span>. For example, doubly robust estimators for a population mean parameter <span class="math inline">\(\mu\)</span> could be obtained as follows:</p>
+<ol style="list-style-type: decimal">
+<li><p>Fit a logistic regression model for the probability of observing <span class="math inline">\(y_i\)</span> as a function of <span class="math inline">\(x_i\)</span> and <span class="math inline">\(z_i\)</span> to derive the individual weights <span class="math inline">\(w_i(\hat{\alpha})\)</span>.</p></li>
+<li><p>Fit a generalized linear model for the outcome of responders in function of <span class="math inline">\(x_i\)</span> using weights <span class="math inline">\(w_i(\hat{\alpha})\)</span> and let <span class="math inline">\(g^\star(x_i,\beta)\)</span> denote the fitted values for subject <span class="math inline">\(i\)</span>.</p></li>
+<li><p>Take the sample average of the fitted values <span class="math inline">\(g^\star(x_i,\beta)\)</span> of both respondents and nonrespondents as an estimate of the population mean <span class="math inline">\(\hat{\mu}\)</span></p></li>
+</ol>
+<p>Doubly robust estimators require the specification of two models: one for the missingness probability and another for the distribution of the incomplete data. When the augmentation term <span class="math inline">\(g^\star(x_i,\beta)\)</span> is selected and modelled correctly according to the distribution of the complete data, the resulting estimator of <span class="math inline">\(\beta\)</span> is consistent even if the model of missingness is misspecified. On the other hand, if the model of missingness is correctly specified, the augmentation term no longer needs to be correctly specified to yield consistent estimators of <span class="math inline">\(\beta\)</span> (<span class="citation">Scharfstein, Daniels, and Robins (2003)</span>,<span class="citation">Bang and Robins (2005)</span>). Doubly robust estimators therefore allow to obtain an unbiased estimating function for <span class="math inline">\(\beta\)</span> if either the model for the incomplete data or the model for the missingness mechanism has been correctly specified.</p>
+</div>
+<div id="conlcusions" class="section level2">
+<h2>Conlcusions</h2>
+<p>As all weighting methods, such as IPW, AIPW methods are <em>semiparametric</em> methods that aim to achieve robustness and good performance over more general classes of population distributions. However, semiparametric estimators can be less efficient and less powerful than <em>Maximum Likelihood</em> or <em>Bayesian</em> estimators under a well specified parametric model. With missing data, <span class="citation">Rubin (1976)</span> results show that likelihood-based methods perform uniformly well over any <em>Missing At Random</em> (MAR) missingness distribution, and the user does not need to specify that distribution. However, semiparametric methods that relax assumptions about the data must in turn assume a specific form for the distribution of missingness. It has been argued that, for these semiparametric methods to gain a substantial advantage over well-specified likelihood methods, the parametric model has to be grossly misspecified (<span class="citation">Meng (2000)</span>).</p>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references">
+<div id="ref-bang2005doubly">
+<p>Bang, Heejung, and James M Robins. 2005. “Doubly Robust Estimation in Missing Data and Causal Inference Models.” <em>Biometrics</em> 61 (4): 962–73.</p>
+</div>
+<div id="ref-little2019statistical">
+<p>Little, Roderick JA, and Donald B Rubin. 2019. <em>Statistical Analysis with Missing Data</em>. Vol. 793. John Wiley &amp; Sons.</p>
+</div>
+<div id="ref-meng2000missing">
+<p>Meng, Xiao-Li. 2000. “Missing Data: Dial M for???” <em>Journal of the American Statistical Association</em> 95 (452): 1325–30.</p>
+</div>
+<div id="ref-molenberghs2014handbook">
+<p>Molenberghs, Geert, Garrett Fitzmaurice, Michael G Kenward, Anastasios Tsiatis, and Geert Verbeke. 2014. <em>Handbook of Missing Data Methodology</em>. Chapman; Hall/CRC.</p>
+</div>
+<div id="ref-robins2001comment">
+<p>Robins, James M, and Andrea Rotnitzky. 2001. “Comment on the Bickel and Kwon Article,‘Inference for Semiparametric Models: Some Questions and an Answer’.” <em>Statistica Sinica</em> 11 (4): 920–36.</p>
+</div>
+<div id="ref-robins2000profile">
+<p>Robins, James M, Andrea Rotnitzky, and Mark van der Laan. 2000. “On Profile Likelihood: Comment.” <em>Journal of the American Statistical Association</em> 95 (450): 477–82.</p>
+</div>
+<div id="ref-rubin1976inference">
+<p>Rubin, Donald B. 1976. “Inference and Missing Data.” <em>Biometrika</em> 63 (3): 581–92.</p>
+</div>
+<div id="ref-schafer2002missing">
+<p>Schafer, Joseph L, and John W Graham. 2002. “Missing Data: Our View of the State of the Art.” <em>Psychological Methods</em> 7 (2): 147.</p>
+</div>
+<div id="ref-scharfstein2003incorporating">
+<p>Scharfstein, Daniel O, Michael J Daniels, and James M Robins. 2003. “Incorporating Prior Beliefs About Selection Bias into the Analysis of Randomized Trials with Missing Outcomes.” <em>Biostatistics</em> 4 (4): 495–512.</p>
+</div>
+</div>
+</div>
+
+    </div>
+
+    
+
+<div class="article-tags">
+  
+  <a class="badge badge-light" href="/tags/weighting-methods/">Weighting Methods</a>
+  
+  <a class="badge badge-light" href="/tags/semiparametric-methods/">Semiparametric Methods</a>
+  
+  <a class="badge badge-light" href="/tags/weighting-adjustments/">Weighting Adjustments</a>
+  
+  <a class="badge badge-light" href="/tags/inverse-probability-weighting/">Inverse Probability Weighting</a>
+  
+  <a class="badge badge-light" href="/tags/augmented-inverse-probability-weighting/">Augmented Inverse Probability Weighting</a>
+  
+</div>
+
+
+
+    
+      
+
+
+
+      
+      
+      <div class="article-widget">
+        <div class="hr-light"></div>
+        <h3>Related</h3>
+        <ul>
+          
+          <li><a href="/missmethods/inverse-probability-weighting/">Inverse Probability Weighting</a></li>
+          
+          <li><a href="/missmethods/weighting-adjustments/">Weighting Adjustments</a></li>
+          
+        </ul>
+      </div>
+      
+    
+
+    
+
+    
+
+
+  </div>
+</article>
+
+      
+
+    
+    
+    
+    <script src="/js/mathjax-config.js"></script>
+    
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
+
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js" integrity="sha256-aYTdUrn6Ow1DDgh5JTc3aDGnnju48y/1c8s1dgkYPQ8=" crossorigin="anonymous"></script>
+        
+        <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/r.min.js"></script>
+        
+      
+
+      
+      
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_CHTML-full" integrity="sha256-GhM+5JHb6QUzOQPXSJLEWP7R73CbkisjzK5Eyij4U9w=" crossorigin="anonymous" async></script>
+      
+    
+
+    
+    
+      <script async defer src="//maps.googleapis.com/maps/api/js?key=AIzaSyAYShZdrjjE_TojzlN30gOZCZjvTBD3b3c"></script>
+      
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/gmaps.js/0.4.25/gmaps.min.js" integrity="sha256-7vjlAeb8OaTrCXZkCNun9djzuB2owUsaO72kXaFDBJs=" crossorigin="anonymous"></script>
+      
+    
+
+    
+    
+    
+
+    
+    
+    <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script>
+      const search_index_filename = "/index.json";
+      const i18n = {
+        'placeholder': "Search...",
+        'results': "results found",
+        'no_results': "No results found"
+      };
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/js/academic.min.9ef1b53ee2bde6c7f33b150c6ba4d452.js"></script>
+
+    
+
+
+
+
+
+
+  
+  <div class="container">
+    <footer class="site-footer">
+
+  <p class="powered-by">
+    
+
+    &#169; Andrea Gabrio 2019. Based on the 
+    <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+    <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+    
+    <span class="float-right" aria-hidden="true">
+      <a href="#" id="back_to_top">
+        <span class="button_icon">
+          <i class="fas fa-chevron-up fa-2x"></i>
+        </span>
+      </a>
+    </span>
+    
+  </p>
+</footer>
+
+  </div>
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

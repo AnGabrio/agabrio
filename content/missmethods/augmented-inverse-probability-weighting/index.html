@@ -1,0 +1,106 @@
+---
+title: Augmented Inverse Probability Weighting
+summary: 
+tags:
+- Weighting Methods
+- Semiparametric Methods
+- Weighting Adjustments
+- Inverse Probability Weighting
+- Augmented Inverse Probability Weighting
+date: "2016-04-27T00:00:00Z"
+
+# Optional external URL for project (replaces project detail page).
+external_link: ""
+
+categories: ["rubric"]
+bibliography: [aipw.bib]
+
+reading_time: false  # Show estimated reading time?
+share: false  # Show social sharing links?
+profile: false  # Show author profile?
+commentable: false  # Allow visitors to comment? Supported by the Page, Post, and Docs content types.
+editable: true  # Allow visitors to edit the page? Supported by the Page, Post, and Docs content types.
+
+image:
+  caption: Photo by rawpixel on Unsplash
+  focal_point: Smart
+  preview_only: true
+
+links:
+#- icon: 
+#  icon_pack: 
+#  name: 
+#  url: 
+url_code: ""
+url_pdf: ""
+url_slides: ""
+url_video: ""
+url_poster: ""
+
+# Slides (optional).
+#   Associate this project with Markdown slides.
+#   Simply enter your slide deck's filename without extension.
+#   E.g. `slides = "example-slides"` references `content/slides/example-slides.md`.
+#   Otherwise, set `slides = ""`.
+# slides: example
+---
+
+
+
+<p>A general problem associated with the implementatio of <em>Inverse Probability Weighting</em> (IPW) methods is that information in some available data is ignored by focussing only on the complete cases (<span class="citation">Schafer and Graham (2002)</span>). This has provided room to extend these methods to make a more efficient use of the available information through the incorporation of an “augmentation” term, which lead to the development of the so called <em>Augmented Inverse Probability Weighting</em> (AIPW) methods. These approaches extend IPW methods by creating predictions from a model to recove the information in the incomplete units and applying IPW to the residuals from the model (<span class="citation">Little and Rubin (2019)</span>).</p>
+<p>Considering the IPW <em>Generalised Estimating Equation</em> (GEE)</p>
+<p>\[
+\sum_{i=1}^{n_r} = w_i(\hat{\alpha})D_i(x_i,\beta)(y_i-g(x_i,\beta))=0,
+\]</p>
+<p>where <span class="math inline">\(w_i(\hat{\alpha})=\frac{1}{p(x_i,z_i \mid \hat{\alpha})}\)</span>, with <span class="math inline">\(p(x_i,z_i \mid \hat{\alpha})\)</span> an estimate of the probability of being a complete unit estimated for example using logistic regressions of the missingness indicator <span class="math inline">\(m_i\)</span> on the vectors of the covariate and auxiliary variables <span class="math inline">\(x_i\)</span> and <span class="math inline">\(z_i\)</span>, respectively. A problem of this IPW estimator is that it has poor small sample properties when the propensity score gets close to zero or one for some observations, which will lead to high variance in the estimator. AIPW methods can provide estimators of <span class="math inline">\(\beta\)</span> which are more efficient than their nonaugmented IPW versions. In general, AIPW estimating functions provide a method for constructing estimators of <span class="math inline">\(\beta\)</span> based on two terms:</p>
+<ol style="list-style-type: decimal">
+<li><p>The usual IPW term <span class="math inline">\(p(x_i,z_i \mid \hat{\alpha})\)</span></p></li>
+<li><p>An augmentation term <span class="math inline">\(g^\star(x_i,\beta)\)</span></p></li>
+</ol>
+<p>The basis for the first term is a complete data unbiased estimating function for <span class="math inline">\(\beta\)</span>, whereas the basis for the second term is some function of the observed data chosen so it has conditional mean of zero given the complete data (<span class="citation">Molenberghs et al. (2014)</span>).</p>
+<div id="doubly-robust-estimators" class="section level2">
+<h2>Doubly Robust Estimators</h2>
+<p>An important class of AIPW methods is known as <em>doubly robust</em> estimators, which have desirable robustness properties (<span class="citation">Robins, Rotnitzky, and Laan (2000)</span>,<span class="citation">Robins and Rotnitzky (2001)</span>). The key feature of these estimators is that they relax the assumption that the model of the missingness probabilities is correctly specified, although requiring additional assumptions on the model for <span class="math inline">\(y_i \mid x_i\)</span>. For example, doubly robust estimators for a population mean parameter <span class="math inline">\(\mu\)</span> could be obtained as follows:</p>
+<ol style="list-style-type: decimal">
+<li><p>Fit a logistic regression model for the probability of observing <span class="math inline">\(y_i\)</span> as a function of <span class="math inline">\(x_i\)</span> and <span class="math inline">\(z_i\)</span> to derive the individual weights <span class="math inline">\(w_i(\hat{\alpha})\)</span>.</p></li>
+<li><p>Fit a generalized linear model for the outcome of responders in function of <span class="math inline">\(x_i\)</span> using weights <span class="math inline">\(w_i(\hat{\alpha})\)</span> and let <span class="math inline">\(g^\star(x_i,\beta)\)</span> denote the fitted values for subject <span class="math inline">\(i\)</span>.</p></li>
+<li><p>Take the sample average of the fitted values <span class="math inline">\(g^\star(x_i,\beta)\)</span> of both respondents and nonrespondents as an estimate of the population mean <span class="math inline">\(\hat{\mu}\)</span></p></li>
+</ol>
+<p>Doubly robust estimators require the specification of two models: one for the missingness probability and another for the distribution of the incomplete data. When the augmentation term <span class="math inline">\(g^\star(x_i,\beta)\)</span> is selected and modelled correctly according to the distribution of the complete data, the resulting estimator of <span class="math inline">\(\beta\)</span> is consistent even if the model of missingness is misspecified. On the other hand, if the model of missingness is correctly specified, the augmentation term no longer needs to be correctly specified to yield consistent estimators of <span class="math inline">\(\beta\)</span> (<span class="citation">Scharfstein, Daniels, and Robins (2003)</span>,<span class="citation">Bang and Robins (2005)</span>). Doubly robust estimators therefore allow to obtain an unbiased estimating function for <span class="math inline">\(\beta\)</span> if either the model for the incomplete data or the model for the missingness mechanism has been correctly specified.</p>
+</div>
+<div id="conlcusions" class="section level2">
+<h2>Conlcusions</h2>
+<p>As all weighting methods, such as IPW, AIPW methods are <em>semiparametric</em> methods that aim to achieve robustness and good performance over more general classes of population distributions. However, semiparametric estimators can be less efficient and less powerful than <em>Maximum Likelihood</em> or <em>Bayesian</em> estimators under a well specified parametric model. With missing data, <span class="citation">Rubin (1976)</span> results show that likelihood-based methods perform uniformly well over any <em>Missing At Random</em> (MAR) missingness distribution, and the user does not need to specify that distribution. However, semiparametric methods that relax assumptions about the data must in turn assume a specific form for the distribution of missingness. It has been argued that, for these semiparametric methods to gain a substantial advantage over well-specified likelihood methods, the parametric model has to be grossly misspecified (<span class="citation">Meng (2000)</span>).</p>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references">
+<div id="ref-bang2005doubly">
+<p>Bang, Heejung, and James M Robins. 2005. “Doubly Robust Estimation in Missing Data and Causal Inference Models.” <em>Biometrics</em> 61 (4): 962–73.</p>
+</div>
+<div id="ref-little2019statistical">
+<p>Little, Roderick JA, and Donald B Rubin. 2019. <em>Statistical Analysis with Missing Data</em>. Vol. 793. John Wiley &amp; Sons.</p>
+</div>
+<div id="ref-meng2000missing">
+<p>Meng, Xiao-Li. 2000. “Missing Data: Dial M for???” <em>Journal of the American Statistical Association</em> 95 (452): 1325–30.</p>
+</div>
+<div id="ref-molenberghs2014handbook">
+<p>Molenberghs, Geert, Garrett Fitzmaurice, Michael G Kenward, Anastasios Tsiatis, and Geert Verbeke. 2014. <em>Handbook of Missing Data Methodology</em>. Chapman; Hall/CRC.</p>
+</div>
+<div id="ref-robins2001comment">
+<p>Robins, James M, and Andrea Rotnitzky. 2001. “Comment on the Bickel and Kwon Article,‘Inference for Semiparametric Models: Some Questions and an Answer’.” <em>Statistica Sinica</em> 11 (4): 920–36.</p>
+</div>
+<div id="ref-robins2000profile">
+<p>Robins, James M, Andrea Rotnitzky, and Mark van der Laan. 2000. “On Profile Likelihood: Comment.” <em>Journal of the American Statistical Association</em> 95 (450): 477–82.</p>
+</div>
+<div id="ref-rubin1976inference">
+<p>Rubin, Donald B. 1976. “Inference and Missing Data.” <em>Biometrika</em> 63 (3): 581–92.</p>
+</div>
+<div id="ref-schafer2002missing">
+<p>Schafer, Joseph L, and John W Graham. 2002. “Missing Data: Our View of the State of the Art.” <em>Psychological Methods</em> 7 (2): 147.</p>
+</div>
+<div id="ref-scharfstein2003incorporating">
+<p>Scharfstein, Daniel O, Michael J Daniels, and James M Robins. 2003. “Incorporating Prior Beliefs About Selection Bias into the Analysis of Randomized Trials with Missing Outcomes.” <em>Biostatistics</em> 4 (4): 495–512.</p>
+</div>
+</div>
+</div>

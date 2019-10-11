@@ -1,0 +1,78 @@
+---
+title: Inverse Probability Weighting
+summary: 
+tags:
+- Weighting Methods
+- Semiparametric Methods
+- Weighting Adjustments
+- Inverse Probability Weighting
+- Augmented Inverse Probability Weighting
+date: "2016-04-27T00:00:00Z"
+
+# Optional external URL for project (replaces project detail page).
+external_link: ""
+
+categories: ["rubric"]
+bibliography: [ipw.bib]
+
+reading_time: false  # Show estimated reading time?
+share: false  # Show social sharing links?
+profile: false  # Show author profile?
+commentable: false  # Allow visitors to comment? Supported by the Page, Post, and Docs content types.
+editable: true  # Allow visitors to edit the page? Supported by the Page, Post, and Docs content types.
+
+image:
+  caption: Photo by rawpixel on Unsplash
+  focal_point: Smart
+  preview_only: true
+
+links:
+#- icon: 
+#  icon_pack: 
+#  name: 
+#  url: 
+url_code: ""
+url_pdf: ""
+url_slides: ""
+url_video: ""
+url_poster: ""
+
+# Slides (optional).
+#   Associate this project with Markdown slides.
+#   Simply enter your slide deck's filename without extension.
+#   E.g. `slides = "example-slides"` references `content/slides/example-slides.md`.
+#   Otherwise, set `slides = ""`.
+# slides: example
+---
+
+In certain cases, it is possible to reduce biases from case deletion by the application of weights. After incomplete cases are removed, the remaining complete cases can be weighted so that their distribution more closely resembles that of the full sample with respect to auxiliary variables. *Weighting methods* can eliminate bias due to differential response related to the variables used to model the response probabilities, but it cannot correct for biases related to variables that are unused or unmeasured (@little2019statistical). @robins1994estimation introduced *Inverse Probability Weighting* (IPW) as a weighted regression approach that require an explicit model for the missingness but relaxes some of the parametric assumptions in the data model. Their method is an extension of *Generalized Estimating Equations* (GEE), a popular technique for modeling marginal or populationaveraged relationships between a response variable and predictors (@zeger1988models). 
+
+Let $y_i=(y_{i1},\ldots,y_{iK})$ denote a vector of variables for unit $i$ subject to missing values with $y_i$ being fully observed for $i=1\ldots,n_r$ units and partially-observed for $i=n_r+1,\ldots,n$ units. Define $m_i=1$ if $y_i$ is incomplete and $m_i=0$ if complete. Let $x_i=(x_{i1},\ldots,x_{ip})$ denote a vector of fully observed covariates and suppose the interest is in estimating the mean of the distribution of $y_i$ given $x_i$, having the form $g(x_i,\beta)$, where $g()$ is a possibly non-linear regression function indexed by a parameter $\beta$ of dimension $d$. Let also $z_i=(z_{i1},\ldots,z_{iq})$ be a vector of fully observed auxiliary variables that potentially predictive of missingness but are not included in the model for $y_i \mid x_i$. When there are no missing data, a consistent estimate of $\beta$ is given by the solution to the following GEE, under mild regularity conditions (@liang1986longitudinal),  
+
+\\[
+\\sum\_{i=1}\^n = D\_i(x\_i,\\beta)(y\_i-g(x\_i,\\beta))=0,
+\\]
+
+where $D_i(x_i,\beta)$ is a suitably chosen $(d\times k)$ matrix of known functions of $x_i$. With missing data, the equation is applied only to the complete cases ($n_{r}$), which yields consistent estimates provided that
+
+\\[
+p(m_i=1 \\mid x\_i,y\_i,z\_i,\\phi)=p(m\_i=1\\mid x\_i,\\phi),
+\\]
+
+that is, missingness does not depend on $y_i$ or $z_i$ after conditioning on $x_i$. IPW GEE methods (@robins1995semiparametric) replace the equation with
+
+\\[
+\\sum\_{i=1}\^{n\_r} = w\_i(\\hat{\\alpha})D\_i(x\_i,\\beta)(y\_i-g(x\_i,\\beta))=0,
+\\]
+
+where $w_i(\hat{\alpha})=\frac{1}{p(x_i,z_i \mid \hat{\alpha})}$, with $p(x_i,z_i \mid \hat{\alpha})$ being an estimate of the probability of being a complete unit, obtained for example via logistic regressions on $m_i$ on $x_i$ and $z_i$. If the logistic regression is correctly specified, IPW GEE yields a consistent estimator of $\beta$ provided that 
+
+\\[
+p(m_i=1 \\mid x\_i,y\_i,z\_i,\\phi)=p(m\_i=1\\mid x\_i,z\_i\\phi).
+\\]
+
+Thus, IPW GEE can correct for the bias of unweighted GEE due to the dependence of the missingness mechanism on $z_i$ (@schafer2002missing). The basic intuition of IPW methods is that each subject's contribution to the weighted *Complete Case Analysis* is replicated $w_i$ times in order to account once for herself and $(1-w_i)$ times for those subjects with the same responses and covariates who are missing. These models are called *semiparametric* because they apart from requiring the regression equation to have a specific form, they do not specify any probability distribution for the response variable (@molenberghs2014handbook). Older GEE methods can accommodate missing values only if they are *Missing Completely At Random* (MCAR), while more recent methods allow them to be *Missing At Random* (MAR) or even *Missing Not At Random* (MNAR), provided that a model for the missingness is correctly specified (@robins1995analysis,@rotnitzky1998semiparametric).
+
+
+
+# References

@@ -434,6 +434,15 @@
   
   
   <div>
+    <h2><a href="/missmethods/augmented-inverse-probability-weighting/">Augmented Inverse Probability Weighting</a></h2>
+    <div class="article-style">
+      
+      A general problem associated with the implementatio of Inverse Probability Weighting (IPW) methods is that information in some available data is ignored by focussing only on the complete cases (Schafer and Graham (2002)). This has provided room to extend these methods to make a more efficient use of the available information through the incorporation of an “augmentation” term, which lead to the development of the so called Augmented Inverse Probability Weighting (AIPW) methods.
+      
+    </div>
+  </div>
+  
+  <div>
     <h2><a href="/missmethods/available-case-analysis/">Available Case Analysis</a></h2>
     <div class="article-style">
       
@@ -448,6 +457,24 @@ The main drawback of ACA is that the sample used to perform the analysis varies 
     <div class="article-style">
       
       Complete case analysis (CCA), also known as case or listwise deletion (LD), is one of the oldest methods to handle missing data and consists in discarding any unit or case whose information is incomplete. Only the cases with observed values for all the variables under consideration are used in the analysis. For example, suppose we have a data set formed by \(i=1,\ldots,n\) individuals and that we want to fit a linear regression on some outcome variable \(y_i\) using some other variables \(x_{i1},\ldots,x_{ik}\) as covariates.
+      
+    </div>
+  </div>
+  
+  <div>
+    <h2><a href="/missmethods/inverse-probability-weighting/">Inverse Probability Weighting</a></h2>
+    <div class="article-style">
+      
+      In certain cases, it is possible to reduce biases from case deletion by the application of weights. After incomplete cases are removed, the remaining complete cases can be weighted so that their distribution more closely resembles that of the full sample with respect to auxiliary variables. Weighting methods can eliminate bias due to differential response related to the variables used to model the response probabilities, but it cannot correct for biases related to variables that are unused or unmeasured (Little and Rubin (2019)).
+      
+    </div>
+  </div>
+  
+  <div>
+    <h2><a href="/missmethods/weighting-adjustments/">Weighting Adjustments</a></h2>
+    <div class="article-style">
+      
+      The notion of reducing bias due to missingness through reweighting methods has its root in the survey literature and the basic idea is closely related to weighting in randomisation inference for finite population surveys (Little and Rubin (2019)). In particular, in probability sampling, a unit selected from a target population with probability \(\pi_i\) can be thought as “representing” \(\pi^{-1}_i\) units in the population and hence should be given weight \(\pi^{-1}_i\) when estimating population quantities.
       
     </div>
   </div>

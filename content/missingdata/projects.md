@@ -29,6 +29,10 @@ subtitle = "In this rubric I attempt to give  an overview on the research for ha
     tag = "Delete Case Methods"
 
   [[content.filter_button]]
+    name = "Weighting Methods"
+    tag = "Weighting Methods"
+
+  [[content.filter_button]]
     name = "Single Imputation"
     tag = "Single Imputation"
   
