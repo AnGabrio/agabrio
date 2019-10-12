@@ -554,6 +554,35 @@
 </ol>
 <p>Doubly robust estimators require the specification of two models: one for the missingness probability and another for the distribution of the incomplete data. When the augmentation term <span class="math inline">\(g^\star(x_i,\beta)\)</span> is selected and modelled correctly according to the distribution of the complete data, the resulting estimator of <span class="math inline">\(\beta\)</span> is consistent even if the model of missingness is misspecified. On the other hand, if the model of missingness is correctly specified, the augmentation term no longer needs to be correctly specified to yield consistent estimators of <span class="math inline">\(\beta\)</span> (<span class="citation">Scharfstein, Daniels, and Robins (2003)</span>,<span class="citation">Bang and Robins (2005)</span>). Doubly robust estimators therefore allow to obtain an unbiased estimating function for <span class="math inline">\(\beta\)</span> if either the model for the incomplete data or the model for the missingness mechanism has been correctly specified.</p>
 </div>
+<div id="example" class="section level2">
+<h2>Example</h2>
+<p>Suppose the full data consists of a single outcome variable <span class="math inline">\(y\)</span> and an additional variable <span class="math inline">\(z\)</span> and that the objective is to estimate the population outcome mean <span class="math inline">\(\mu=\text{E}[y]\)</span>. When <span class="math inline">\(y\)</span> is partially observed (while <span class="math inline">\(Z\)</span> is always fully observed), individuals may fall into one of two missingness patterns <span class="math inline">\(r=(r_{y},r_{z})\)</span>, namely <span class="math inline">\(r=(1,1)\)</span> if both variables are observed or <span class="math inline">\(r=(1,0)\)</span> if <span class="math inline">\(y\)</span> is missing. Let <span class="math inline">\(c=1\)</span> if <span class="math inline">\(r=(1,1)\)</span> and <span class="math inline">\(c=0\)</span> otherwise, so that the observed data can be summarised as <span class="math inline">\((c,cy,z)\)</span>. Assuming that missingness only depends on <span class="math inline">\(z\)</span>, that is</p>
+<p>\[
+p(c=1 \mid y,z)=p(c=1 \mid z)=\pi(z),
+\]</p>
+<p>then the missing data mechanism is <em>Missing At Random</em> (MAR). Under these conditions, consider the consistent IPW complete case estimating equation</p>
+<p>\[
+\sum_{i=1}^n\frac{c_i}{\pi(z_i \mid \hat{\alpha})}(y_i-\mu)=0,
+\]</p>
+<p>which can be used to weight the contribution of each complete case by the inverse of <span class="math inline">\(\pi(z_i \mid \hat{\alpha})\)</span>, typically estimated via logistic regressions. A general problem of this type of estimators is that they discard all the available data among the non-completers and are therefore inefficient. However, it is possible to augment the simple IPW complete case estimating equation to improve efficiency. The optimal estimator for <span class="math inline">\(\mu\)</span> within this class is the solution to the estimating equation</p>
+<p>\[
+\sum_{i=1}^n \left(\frac{c_i}{\pi(z_i \mid \hat{\alpha})}(y_i-\mu) - \frac{c_i-\pi(z_i \mid \hat{\alpha})}{\pi(z_i \mid \hat{\alpha})}\text{E}[(y_i-\mu)\mid z_i] \right),
+\]</p>
+<p>which leads to the estimator</p>
+<p>\[
+\mu_{aipw}=\frac{1}{n}\sum_{i=1}^n \left(\frac{c_iy_i}{\pi(z_i\mid \hat{\alpha})} - \frac{c_i - \pi(z_i\mid \hat{\alpha})}{\pi(z_i\mid \hat{\alpha})} \text{E}[y_i \mid z_i] \right).
+\]</p>
+<p>The conditional expectation <span class="math inline">\(\text{E}[y_i \mid z_i]\)</span> is not known and must be estimated from the data. Under a <em>Missing At Random</em> (MAR) assumption we have that <span class="math inline">\(\text{E}[y \mid z]=\text{E}[y \mid z, c=1]\)</span>, that is the conditional expecation of <span class="math inline">\(y\)</span> given <span class="math inline">\(z\)</span> is the same as that among the completers. Thus, we can specify a model <span class="math inline">\(m(z,\xi)\)</span> for <span class="math inline">\(\text{E}[y \mid z]\)</span>, indexed by the parameter <span class="math inline">\(\xi\)</span>, that can be estimated from the completers. If <span class="math inline">\(y\)</span> is continuous, a simple choice is to estimate <span class="math inline">\(\hat{\xi}\)</span> by OLS from the completers. The AIPW estimator for <span class="math inline">\(\mu\)</span> then becomes</p>
+<p>\[
+\mu_{aipw}=\frac{1}{n}\sum_{i=1}^n \left(\frac{c_iy_i}{\pi(z_i\mid \hat{\alpha})} - \frac{c_i - \pi(z_i\mid \hat{\alpha})}{\pi(z_i\mid \hat{\alpha})} m(z_i\mid \hat{\xi}) \right).
+\]</p>
+<p>It can be shown that this estimator is more efficient that the simple IPW complete case estimator for <span class="math inline">\(\mu\)</span> and that it has a double robustness property. This ensures that <span class="math inline">\(\mu_{aipw}\)</span> is a consitent estimator of <span class="math inline">\(\mu\)</span> if <strong>either</strong></p>
+<ul>
+<li><p>the model <span class="math inline">\(\pi(z\mid\alpha)\)</span> is correctly specified, <strong>or</strong></p></li>
+<li><p>the model <span class="math inline">\(m(z\mid \xi)\)</span> is correctly specified.</p></li>
+</ul>
+<p>To see a derivation of the double robustness property I put here a link to some nice <a href="https://www4.stat.ncsu.edu/~davidian/st790/notes/chap5.pdf">paper</a>.</p>
+</div>
 <div id="conlcusions" class="section level2">
 <h2>Conlcusions</h2>
 <p>As all weighting methods, such as IPW, AIPW methods are <em>semiparametric</em> methods that aim to achieve robustness and good performance over more general classes of population distributions. However, semiparametric estimators can be less efficient and less powerful than <em>Maximum Likelihood</em> or <em>Bayesian</em> estimators under a well specified parametric model. With missing data, <span class="citation">Rubin (1976)</span> results show that likelihood-based methods perform uniformly well over any <em>Missing At Random</em> (MAR) missingness distribution, and the user does not need to specify that distribution. However, semiparametric methods that relax assumptions about the data must in turn assume a specific form for the distribution of missingness. It has been argued that, for these semiparametric methods to gain a substantial advantage over well-specified likelihood methods, the parametric model has to be grossly misspecified (<span class="citation">Meng (2000)</span>).</p>
