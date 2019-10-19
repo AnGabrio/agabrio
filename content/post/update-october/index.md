@@ -3,7 +3,7 @@ title: More good news...
 author: Andrea Gabrio
 date: '2019-10-01'
 slug: update-october
-categories: ["news"]
+categories: ["news", "conferences"]
 tags:
   - News
   - Academic

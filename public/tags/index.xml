@@ -32,7 +32,7 @@
     <item>
       <title>Academic</title>
       <link>/tags/academic/</link>
-      <pubDate>Tue, 01 Oct 2019 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 15 Oct 2019 00:00:00 +0000</pubDate>
       
       <guid>/tags/academic/</guid>
       <description></description>
@@ -41,7 +41,7 @@
     <item>
       <title>News</title>
       <link>/tags/news/</link>
-      <pubDate>Tue, 01 Oct 2019 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 15 Oct 2019 00:00:00 +0000</pubDate>
       
       <guid>/tags/news/</guid>
       <description></description>
@@ -50,7 +50,7 @@
     <item>
       <title>Publication</title>
       <link>/tags/publication/</link>
-      <pubDate>Tue, 01 Oct 2019 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 15 Oct 2019 00:00:00 +0000</pubDate>
       
       <guid>/tags/publication/</guid>
       <description></description>
@@ -219,11 +219,47 @@
     </item>
     
     <item>
+      <title>Explicit Single Imputation</title>
+      <link>/tags/explicit-single-imputation/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/explicit-single-imputation/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Hot Deck Methods</title>
+      <link>/tags/hot-deck-methods/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/hot-deck-methods/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Implicit Single Imputation</title>
+      <link>/tags/implicit-single-imputation/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/implicit-single-imputation/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Inverse Probability Weighting</title>
       <link>/tags/inverse-probability-weighting/</link>
       <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
       
       <guid>/tags/inverse-probability-weighting/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Last Value Carried Forward</title>
+      <link>/tags/last-value-carried-forward/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/last-value-carried-forward/</guid>
       <description></description>
     </item>
     
@@ -237,11 +273,38 @@
     </item>
     
     <item>
+      <title>Mean Imputation</title>
+      <link>/tags/mean-imputation/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/mean-imputation/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Multiple Imputation</title>
       <link>/tags/multiple-imputation/</link>
       <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
       
       <guid>/tags/multiple-imputation/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Predictive Mean Matching</title>
+      <link>/tags/predictive-mean-matching/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/predictive-mean-matching/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Regression Imputation</title>
+      <link>/tags/regression-imputation/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/regression-imputation/</guid>
       <description></description>
     </item>
     
@@ -260,6 +323,15 @@
       <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
       
       <guid>/tags/single-imputation/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Stochastic Regression Imputation</title>
+      <link>/tags/stochastic-regression-imputation/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/stochastic-regression-imputation/</guid>
       <description></description>
     </item>
     

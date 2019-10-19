@@ -12,21 +12,252 @@
     
     
     <item>
-      <title>Last Value Carried Forward</title>
-      <link>/missmethods/last-value-carried-forward/</link>
-      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/missmethods/last-value-carried-forward/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Mean Imputation</title>
+      <title>Explicit Single Imputation</title>
       <link>/missmethods/mean-imputation/</link>
       <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
       
       <guid>/missmethods/mean-imputation/</guid>
-      <description></description>
+      <description>
+&lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;p&gt;All case deletion methods, such as &lt;em&gt;Complete Case Analysis&lt;/em&gt;(CCA) or &lt;em&gt;Available Case Analysis&lt;/em&gt;(ACA) make no use of units with partially observed data, when estimating the marginal distribution of the variables under study or the covariation between variables. Clearly, this is inefficient and a tempting alternative would be to &lt;em&gt;impute&lt;/em&gt; or “fill in” the unobserved data with some plausible values. When a single value is used to replace each missing data, we talk about &lt;em&gt;Single Imputation&lt;/em&gt;(SI) methods and, according to the precedure used to generate these imputations, different SI methods can be used. In general, the idea of imputing the missing values is really appealing as it allows to recover the full sample on which standard complete data methods can be applied to derive the estimates of interest.&lt;/p&gt;
+&lt;p&gt;However, it is important to be aware of the potential problems of imputing missing data without a clear understanding about the process underlying the values we want to impute, which is the key factor to determine whether the selected approach would be plausible in the context considered. Indeed, imputation should be conceptualised as draws from a predictive distribution of the missing values and require methods for creating a predictive distribution for the imputation based on the observed data. According to &lt;span class=&#34;citation&#34;&gt;Little and Rubin (2019)&lt;/span&gt;, these predictive distributions can be created using&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;Explicit modelling&lt;/em&gt;, when the distribution is based on formal statistical models which make the underlying assumptions explicit.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;Implicit modelling&lt;/em&gt;, when the distribution is based on an algorithm which implicitly relies on some underlying model assumptions.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;In this part, we focus on some of the most popular &lt;em&gt;Explicit Single Imputation&lt;/em&gt; methods. These include: &lt;em&gt;Mean Imputation&lt;/em&gt;(SI-M), where means from the observed data are used as imputed values; &lt;em&gt;Regression Imputation&lt;/em&gt;(SI-R), where missing values are replaced with values predicited from a regression of the missing variable on some other observed variables; and &lt;em&gt;Stochastic Regression Imputation&lt;/em&gt;(SI-SR), where unobserved data are substituted with the predicted values from a regression imputation plus a randomly selected residual drawn to reflect uncertainty in the predicted values.&lt;/p&gt;
+&lt;div id=&#34;mean-imputation&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Mean Imputation&lt;/h2&gt;
+&lt;p&gt;The simplest type of SI-M consists in replacing the missing values in a variable with the mean of the observed units from the same variable, a method known as &lt;em&gt;Unconditional Mean Imputation&lt;/em&gt; (&lt;span class=&#34;citation&#34;&gt;Little and Rubin (2019)&lt;/span&gt;,&lt;span class=&#34;citation&#34;&gt;Schafer and Graham (2002)&lt;/span&gt;). Let &lt;span class=&#34;math inline&#34;&gt;\(y_{ij}\)&lt;/span&gt; be the value of variable &lt;span class=&#34;math inline&#34;&gt;\(j\)&lt;/span&gt; for unit &lt;span class=&#34;math inline&#34;&gt;\(i\)&lt;/span&gt;, such that the unconditional mean based on the observed values of &lt;span class=&#34;math inline&#34;&gt;\(y_j\)&lt;/span&gt; is given by &lt;span class=&#34;math inline&#34;&gt;\(\bar{y}_j\)&lt;/span&gt;. The sample mean of the observed and imputed values is then &lt;span class=&#34;math inline&#34;&gt;\(\bar{y}^{m}_j=\bar{y}^{ac}_j\)&lt;/span&gt;, i.e. the estimate from ACA, while the sample variance is given by&lt;/p&gt;
+&lt;p&gt;\[
+s^{m}_{j}=s^{ac}_{j}\frac{(n^{ac}-1)}{(n-1)},
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(s^{ac}_j\)&lt;/span&gt; is the sample variance estimated from the &lt;span class=&#34;math inline&#34;&gt;\(n^{ac}\)&lt;/span&gt; available units. Under a &lt;em&gt;Missing Completely At Random&lt;/em&gt;(MCAR) assumption, &lt;span class=&#34;math inline&#34;&gt;\(s^{ac}_j\)&lt;/span&gt; is a consistent estimator of the tru variance so that the sample variance from the imputed data &lt;span class=&#34;math inline&#34;&gt;\(s^m_j\)&lt;/span&gt; systematically underestimates the true variance by a factor of &lt;span class=&#34;math inline&#34;&gt;\(\frac{(n^{ac}-1)}{(n-1)}\)&lt;/span&gt;, which clearly comes from the fact that missing data are imputed using values at the centre of the distribution. The imputation distorts theempirical distribution of the observed values as well as any quantities that are not linear in the data (e.g. variances, percentiles, measures of shape). The sampel covariance of &lt;span class=&#34;math inline&#34;&gt;\(y_j\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(y_k\)&lt;/span&gt; from the imputed data is&lt;/p&gt;
+&lt;p&gt;\[
+s^{m}_{jk}=s^{ac}_{jk}\frac{(n^{as}_{jk}-1)}{(n-1)},
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(n^{ac}_{jk}\)&lt;/span&gt; is the number of units with both variables observed and &lt;span class=&#34;math inline&#34;&gt;\(s^{ac}_{jk}\)&lt;/span&gt; is the corresponding covariance estimate from ACA. Under MCAR &lt;span class=&#34;math inline&#34;&gt;\(s^{ac}_{jk}\)&lt;/span&gt; is a consistent estimator of the true covariance, so that &lt;span class=&#34;math inline&#34;&gt;\(s^{m}_{jk}\)&lt;/span&gt; underestimates the magnitude of the covariance by a factor of &lt;span class=&#34;math inline&#34;&gt;\(\frac{(n^{ac}_{jk}-1)}{(n-1)}\)&lt;/span&gt;. Obvious adjustments for the variance (&lt;span class=&#34;math inline&#34;&gt;\(\frac{(n-1)}{(n^{ac}_j-1)}\)&lt;/span&gt;) and the covariance (&lt;span class=&#34;math inline&#34;&gt;\(\frac{(n-1)}{(n^{ac}_{jk}-1)}\)&lt;/span&gt;) yield ACA estimates, which could lead to covariance matrices that are not positive definite.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;regression-imputation&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Regression Imputation&lt;/h2&gt;
+&lt;p&gt;An improvement over SI-M is to impute each missing data using the conditional means given the observed values, a method known SI-R or &lt;em&gt;Conditional Mean Imputation&lt;/em&gt;. To be precise, it would also be possible to impute conditional means without using a regression approach, for example by grouping individuals into adjustment classes (analogous to weighting methods) based on the observed data and then impute the missing values using the observed means in each adjustment class (&lt;span class=&#34;citation&#34;&gt;Little and Rubin (2019)&lt;/span&gt;). However, for the sake of simplicity, here we will assume that SI-R and conditional mean imputation are the same.&lt;/p&gt;
+&lt;p&gt;To generate imputations under SI-R, consider a set of &lt;span class=&#34;math inline&#34;&gt;\(J-1\)&lt;/span&gt; fully observed response variables &lt;span class=&#34;math inline&#34;&gt;\(y_1,\ldots,y_{J-1}\)&lt;/span&gt; and a partially observed response variable &lt;span class=&#34;math inline&#34;&gt;\(y_J\)&lt;/span&gt; which has the first &lt;span class=&#34;math inline&#34;&gt;\(n_{cc}\)&lt;/span&gt; units observed and the remaiing &lt;span class=&#34;math inline&#34;&gt;\(n-n_{cc}\)&lt;/span&gt; units missing. SI-R computes the regression of &lt;span class=&#34;math inline&#34;&gt;\(y_J\)&lt;/span&gt; on &lt;span class=&#34;math inline&#34;&gt;\(y_1,\ldots,y_{J-1}\)&lt;/span&gt; based on the &lt;span class=&#34;math inline&#34;&gt;\(n_{cc}\)&lt;/span&gt; complete units and then fills in the missing values as predictions from the regression. For example, for unit &lt;span class=&#34;math inline&#34;&gt;\(i\)&lt;/span&gt;, the missing value &lt;span class=&#34;math inline&#34;&gt;\(y_{iJ}\)&lt;/span&gt; is imputed using&lt;/p&gt;
+&lt;p&gt;\[
+\hat{y}_{iJ}=\hat{\beta}_{J0}+\sum_{j=1}^{J-1}\hat{\beta}_{Jj}y_{ij},
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\hat{\beta}_{J0}\)&lt;/span&gt; is the intercept and &lt;span class=&#34;math inline&#34;&gt;\(\hat{\beta}_{Jj}\)&lt;/span&gt; is the &lt;span class=&#34;math inline&#34;&gt;\(j\)&lt;/span&gt; coefficient of of the regression of &lt;span class=&#34;math inline&#34;&gt;\(y_J\)&lt;/span&gt; on &lt;span class=&#34;math inline&#34;&gt;\(y_1,\ldots,y_{J-1}\)&lt;/span&gt; based on the &lt;span class=&#34;math inline&#34;&gt;\(n_{cc}\)&lt;/span&gt; units.&lt;/p&gt;
+&lt;p&gt;An extension of regression imputation to a general pattern of missing data is known as &lt;em&gt;Buck’s method&lt;/em&gt; (&lt;span class=&#34;citation&#34;&gt;Buck (1960)&lt;/span&gt;). This approach first estimates the population mean &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; and covariance matrix &lt;span class=&#34;math inline&#34;&gt;\(\Sigma\)&lt;/span&gt; from the sample mean and covariance matrix of the complete units and then uses these estimates to calculate the OLS regressions of the missing variables on the observed variables for each missing data pattern. Predictions of the missing data for each observation are obtained by replacing the values of the present variables in the regressions. The average of the observed and imputed values from this method are consistent estimates of the means and MCAR and mild assumptions about the moments of the distribution (&lt;span class=&#34;citation&#34;&gt;Buck (1960)&lt;/span&gt;). They are also consistent when the missingness mechanism depends on observed variables, i.e. under a &lt;em&gt;Missing At Random&lt;/em&gt;(MAR) assumption, although addtional assumptions are required in this case (e.g. using linear regressions it assumes that the “true” regression of the missing varables on the observed variables is linear).&lt;/p&gt;
+&lt;p&gt;The filled in data from Buck’s method typically yield reasonable estimates of means, while the sample variances and covariances are biased, although the bias is less than the one associated with unconditional mean imputation. Specifically, the sample variance &lt;span class=&#34;math inline&#34;&gt;\(\sigma^{2,SI-R}_j\)&lt;/span&gt; from the imputed data underestimates the true variance &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2_j\)&lt;/span&gt; by a factor of &lt;span class=&#34;math inline&#34;&gt;\(\frac{1}{n-1}\sum_{i=1}^n\sigma^{2}_{ji}\)&lt;/span&gt;, where &lt;span class=&#34;math inline&#34;&gt;\(\sigma^{2}_{ji}\)&lt;/span&gt; is the residual variance from regressing &lt;span class=&#34;math inline&#34;&gt;\(y_j\)&lt;/span&gt; on the variables observed in unit &lt;span class=&#34;math inline&#34;&gt;\(i\)&lt;/span&gt; if &lt;span class=&#34;math inline&#34;&gt;\(y_{ij}\)&lt;/span&gt; is missing and zero if &lt;span class=&#34;math inline&#34;&gt;\(y_{ij}\)&lt;/span&gt; is observed. The sample covariance of &lt;span class=&#34;math inline&#34;&gt;\(y_j\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(y_k\)&lt;/span&gt; has a bias of &lt;span class=&#34;math inline&#34;&gt;\(\frac{1}{n-1}\sum_{i=1}^n\sigma_{jki}\)&lt;/span&gt;, where &lt;span class=&#34;math inline&#34;&gt;\(\sigma_{jki}\)&lt;/span&gt; is the residual covariance from the multivariate regression of &lt;span class=&#34;math inline&#34;&gt;\((y_{ij},y_{ik})\)&lt;/span&gt; on the variables observed in unit &lt;span class=&#34;math inline&#34;&gt;\(i\)&lt;/span&gt; if both variables are missing and zero otherwise. A consistent estimator of &lt;span class=&#34;math inline&#34;&gt;\(\Sigma\)&lt;/span&gt; can be constructed under MCAR by replacing consistent estimates of &lt;span class=&#34;math inline&#34;&gt;\(\sigma^{2}_{ji}\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\sigma_{jki}\)&lt;/span&gt; in the expressions for bias and then adding the resulting quantities to the sample covariance matrix of the filled-in data.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;stochastic-regression-imputation&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Stochastic Regression Imputation&lt;/h2&gt;
+&lt;p&gt;Any type of mean or regression imputation will lead to bias when the interest is in the tails of the distributions because “best prediction” imputation systematically underestimates variability and standard errors calculated from the imputed data are typically too small. These considerations suggest an alternative imputation strategy, where imputed values are drawn from a predictive distribution of a plausible set of values rather than from the centre of the distribution. This is the idea behind SI-SR, which imputes a conditional draw&lt;/p&gt;
+&lt;p&gt;\[
+\hat{y}_{iJ}=\hat{\beta}_{J0}+\sum_{j=1}^{J-1}\hat{\beta}_{Jj}y_{ij}+z_{iJ},
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(z_{iJ}\)&lt;/span&gt; is a random normal deviate with mean 0 and variance &lt;span class=&#34;math inline&#34;&gt;\(\hat{\sigma}^2_J\)&lt;/span&gt;, the residual variance from the regression of &lt;span class=&#34;math inline&#34;&gt;\(y_J\)&lt;/span&gt; on &lt;span class=&#34;math inline&#34;&gt;\(y_1,\ldots,y_{J-1}\)&lt;/span&gt; based on the complete units. The addition of the random deviate makes the imputation a random draw from the predictive distribution of the missing values, rather than the mean, which is likely to ameliorate the distortion of the predictive distributions (&lt;span class=&#34;citation&#34;&gt;Little and Rubin (2019)&lt;/span&gt;).&lt;/p&gt;
+&lt;div id=&#34;example&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Example&lt;/h3&gt;
+&lt;p&gt;Consider a bivariate normal monotone missing data with &lt;span class=&#34;math inline&#34;&gt;\(y_1\)&lt;/span&gt; fully observed and &lt;span class=&#34;math inline&#34;&gt;\(y_2\)&lt;/span&gt; missing for a fraction &lt;span class=&#34;math inline&#34;&gt;\(\lambda=\frac{(n-n_{cc})}{n}\)&lt;/span&gt; and a MCAR mechanism. The following table shows the large sample bias of standard OLS estimates obtained from the filled-in data about the mean, the variance of &lt;span class=&#34;math inline&#34;&gt;\(y_2\)&lt;/span&gt;, the regression coefficient of &lt;span class=&#34;math inline&#34;&gt;\(y_2\)&lt;/span&gt; on &lt;span class=&#34;math inline&#34;&gt;\(y_1\)&lt;/span&gt;, and the regression coefficient of &lt;span class=&#34;math inline&#34;&gt;\(y_1\)&lt;/span&gt; on &lt;span class=&#34;math inline&#34;&gt;\(y_2\)&lt;/span&gt;, using four different single imputation methods: uncondtional mean (UM), unconditional draw (UD), conditional mean (CM), and conditional draw (CD).&lt;/p&gt;
+&lt;table class=&#34;table&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;caption&gt;
+&lt;span id=&#34;tab:unnamed-chunk-1&#34;&gt;Table 1: &lt;/span&gt;Bivariate normal monotone MCAR data; large sample bias of four imputation methods.
+&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+mu_2
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+sigma_2
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+beta_21
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+beta_12
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+UM
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-lambda * sigma_2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-lambda * beta_21
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+UD
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-lambda * beta_21
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-lambda * beta_21
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+CM
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-lambda * (1-rho^2) * sigma_2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+((lambda * (1-rho^2)) / (1-lambda * (1-rho^2)) ) * beta_12
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+CD
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Under MCAR, all four methods yield consistent estimates of &lt;span class=&#34;math inline&#34;&gt;\(\mu_2\)&lt;/span&gt; but both UM and CM underestimate the variance &lt;span class=&#34;math inline&#34;&gt;\(\sigma_2\)&lt;/span&gt;, UD leads to attenuation of the regression coefficients, while CD yields consistent estimates of all four parameters. However, CD has some important drawbacks. First, adding random draws to the conditional mean imputations is inefficient as the large sample variance of the CD estimates of &lt;span class=&#34;math inline&#34;&gt;\(\mu_2\)&lt;/span&gt; can be shown (&lt;span class=&#34;citation&#34;&gt;Little and Rubin (2019)&lt;/span&gt;) to be&lt;/p&gt;
+&lt;p&gt;\[
+\frac{[1-\lambda\rho^2+(1-\rho^2)\lambda(1-\lambda)]\sigma_2}{n_{cc}},
+\]&lt;/p&gt;
+&lt;p&gt;which is larger than the large sample sampling variance of the CM estimate of &lt;span class=&#34;math inline&#34;&gt;\(\mu_2\)&lt;/span&gt;, namely &lt;span class=&#34;math inline&#34;&gt;\(\frac{[1-\lambda\rho^2]\sigma_2}{n_{cc}}\)&lt;/span&gt;. Second, the standard errors of the CD estimates from the imputed data are too small because they do not incorporate imputation uncertainty.&lt;/p&gt;
+&lt;p&gt;When the analysis involves units with some covariates missing and other observed, it is common practice to condition on the observed covariates when generating the imputations for the missing covariates. It is also possible to condition on the outcome &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; to impute missing covariates, even if the final objective is to regress &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; on the full set of covariates and conditioning on &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; will lead to bias when conditional means are imputed. However, if predictive draws are imputed, this approach will yield consistent estimates of the regression coefficients. Imputing missing covariates using the means by conditioning only the observed covariates (and not also on &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;) also yields consistent estimates of the regression coefficients under certain conditions, although these are typically less efficient then those from CCA, but yields inconsistent estimates of other parameters such as variances and correlations (&lt;span class=&#34;citation&#34;&gt;Little (1992)&lt;/span&gt;).&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;conclusions&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Conclusions&lt;/h2&gt;
+&lt;p&gt;According to &lt;span class=&#34;citation&#34;&gt;Little and Rubin (2019)&lt;/span&gt;, imputation should generally be&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;Conditional&lt;/strong&gt; on observed variables, to reduce bias, improve precision and preserve association between variables.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;Multivariate&lt;/strong&gt;, to preserve association between missing variables.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;Draws&lt;/strong&gt; from the predictive distributions rather than means, to provide valid estimates of a wide range of estimands.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Nevertheless, a main problem of SI methods is that inferences based on the imputed data do not account for imputation uncertainty and standard errors are therefore systematically underestimated, p-values of tests are too significant and confidence intervals are too narrow.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
+&lt;h1&gt;References&lt;/h1&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references&#34;&gt;
+&lt;div id=&#34;ref-buck1960method&#34;&gt;
+&lt;p&gt;Buck, Samuel F. 1960. “A Method of Estimation of Missing Values in Multivariate Data Suitable for Use with an Electronic Computer.” &lt;em&gt;Journal of the Royal Statistical Society: Series B (Methodological)&lt;/em&gt; 22 (2): 302–6.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-little1992regression&#34;&gt;
+&lt;p&gt;Little, Roderick JA. 1992. “Regression with Missing X’s: A Review.” &lt;em&gt;Journal of the American Statistical Association&lt;/em&gt; 87 (420): 1227–37.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-little2019statistical&#34;&gt;
+&lt;p&gt;Little, Roderick JA, and Donald B Rubin. 2019. &lt;em&gt;Statistical Analysis with Missing Data&lt;/em&gt;. Vol. 793. John Wiley &amp;amp; Sons.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-schafer2002missing&#34;&gt;
+&lt;p&gt;Schafer, Joseph L, and John W Graham. 2002. “Missing Data: Our View of the State of the Art.” &lt;em&gt;Psychological Methods&lt;/em&gt; 7 (2): 147.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Implicit Single Imputation</title>
+      <link>/missmethods/last-value-carried-forward/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/missmethods/last-value-carried-forward/</guid>
+      <description>
+
+
+&lt;p&gt;All case deletion methods, such as &lt;em&gt;Complete Case Analysis&lt;/em&gt;(CCA) or &lt;em&gt;Available Case Analysis&lt;/em&gt;(ACA) make no use of units with partially observed data, when estimating the marginal distribution of the variables under study or the covariation between variables. Clearly, this is inefficient and a tempting alternative would be to &lt;em&gt;impute&lt;/em&gt; or “fill in” the unobserved data with some plausible values. When a single value is used to replace each missing data, we talk about &lt;em&gt;Single Imputation&lt;/em&gt;(SI) methods and, according to the precedure used to generate these imputations, different SI methods can be used. In general, the idea of imputing the missing values is really appealing as it allows to recover the full sample on which standard complete data methods can be applied to derive the estimates of interest.&lt;/p&gt;
+&lt;p&gt;However, it is important to be aware of the potential problems of imputing missing data without a clear understanding about the process underlying the values we want to impute, which is the key factor to determine whether the selected approach would be plausible in the context considered. Indeed, imputation should be conceptualised as draws from a predictive distribution of the missing values and require methods for creating a predictive distribution for the imputation based on the observed data. According to &lt;span class=&#34;citation&#34;&gt;Little and Rubin (2019)&lt;/span&gt;, these predictive distributions can be created using&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;Explicit modelling&lt;/em&gt;, when the distribution is based on formal statistical models which make the underlying assumptions explicit.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;Implicit modelling&lt;/em&gt;, when the distribution is based on an algorithm which implicitly relies on some underlying model assumptions.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;In this part, we focus on some of the most popular &lt;em&gt;Implicit Single Imputation&lt;/em&gt; methods. These include: &lt;em&gt;Hot Deck Imputation&lt;/em&gt;(SI-HD), where missing values are imputed using observed values from similar responding units in the sample; &lt;em&gt;Substitution&lt;/em&gt;(SI-S), where nonresponding units are replaced with alternative units not yet selected into the sample; &lt;em&gt;Cold Deck Imputation&lt;/em&gt;(SI-CD), where missing values are replaced with a constant value from an external source; &lt;em&gt;Composite Methods&lt;/em&gt;, which combine procedures from the previous approaches. We will specifically focus on SI-HD methods, which are the most popular among these.&lt;/p&gt;
+&lt;div id=&#34;hot-deck-imputation&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Hot Deck Imputation&lt;/h2&gt;
+&lt;p&gt;SI-HD procedures refer to the deck of match &lt;a href=&#34;https://en.wikipedia.org/wiki/Punched_card#Hollerith&amp;#39;s_early_punched_card_formats&#34;&gt;Hollerith cards&lt;/a&gt; for the donors available for a nonrespondent. Suppose that a sample of &lt;span class=&#34;math inline&#34;&gt;\(n\)&lt;/span&gt; out of &lt;span class=&#34;math inline&#34;&gt;\(N\)&lt;/span&gt; units is selected and that &lt;span class=&#34;math inline&#34;&gt;\(n_{cc}\)&lt;/span&gt; out of &lt;span class=&#34;math inline&#34;&gt;\(n\)&lt;/span&gt; are recorded. Given an equal probability sampling scheme, the mean of &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; can be estimated from the filled-in data as the mean of the responding and the imputed units&lt;/p&gt;
+&lt;p&gt;\[
+\bar{y}_{HD}=\frac{(n_{cc}\bar{y}_{cc}+(n-n_{cc})\bar{y}^{\star})}{n},
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\bar{y}_{cc}\)&lt;/span&gt; is the mean of the responding units, and &lt;span class=&#34;math inline&#34;&gt;\(\bar{y}^\star=\sum_{i=1}^{n_{cc}}\frac{H_iy_i}{n-n_{cc}}\)&lt;/span&gt;. &lt;span class=&#34;math inline&#34;&gt;\(H_i\)&lt;/span&gt; is the number of times &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; is used as substitute for a missing value of &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;, with &lt;span class=&#34;math inline&#34;&gt;\(\sum_{i=1}^{n_{cc}}H_i=n-n_{cc}\)&lt;/span&gt; being the number of missing units. The proprties of &lt;span class=&#34;math inline&#34;&gt;\(bar{y}_{HD}\)&lt;/span&gt; depend on the procedure used to generate the numbers &lt;span class=&#34;math inline&#34;&gt;\(H_i\)&lt;/span&gt; and in general the mean and sampling variance of this estimator can be written as&lt;/p&gt;
+&lt;p&gt;\[
+E[\bar{y}_{HD}]=E[E[\bar{y}_{HD}\mid y_{obs}]] ;;; \text{and} ;;; Var(\bar{y}_{HD})=Var(E[\bar{y}_{HD} \mid y_{obs}]) + E[Var(\bar{y}_{HD} \mid y_{obs})],
+\]&lt;/p&gt;
+&lt;p&gt;where the inner expectations and variances are taken over the distribution of &lt;span class=&#34;math inline&#34;&gt;\(H_i\)&lt;/span&gt; given the observed data &lt;span class=&#34;math inline&#34;&gt;\(y_{obs}\)&lt;/span&gt;, and the outer expectations and variances are taken over the model distribution of &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;. The term &lt;span class=&#34;math inline&#34;&gt;\(E[Var(\bar{y}_{HD} \mid y_{obs})]\)&lt;/span&gt; represents the additional sampling variance from the stochastic imputation procedure. Examples of these procedures include &lt;em&gt;predictive mean matching&lt;/em&gt; or PMM(&lt;span class=&#34;citation&#34;&gt;Little and Rubin (2019)&lt;/span&gt;) and &lt;em&gt;last value carried forward&lt;/em&gt; or LVCF(&lt;span class=&#34;citation&#34;&gt;Little and Rubin (2019)&lt;/span&gt;).&lt;/p&gt;
+&lt;div id=&#34;predictive-mean-matching&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Predictive Mean Matching&lt;/h3&gt;
+&lt;p&gt;A general approach to hot-deck imputation is to define a metric &lt;span class=&#34;math inline&#34;&gt;\(d(i,j)\)&lt;/span&gt; measuring the distance between units based on observed variables &lt;span class=&#34;math inline&#34;&gt;\(x_{i1},\ldots,x_{iJ}\)&lt;/span&gt; and then choose the imputed values that come from responding units close to the unit with the missing value, i.e. we choose the imputed value for &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; from a &lt;em&gt;donor pool&lt;/em&gt; of units &lt;span class=&#34;math inline&#34;&gt;\(j\)&lt;/span&gt; that are such that &lt;span class=&#34;math inline&#34;&gt;\(y_j,x_1,\ldots,x_J\)&lt;/span&gt; are observed and &lt;span class=&#34;math inline&#34;&gt;\(d(i,j)\)&lt;/span&gt; is less than some value &lt;span class=&#34;math inline&#34;&gt;\(d_0\)&lt;/span&gt;. Varying the value for &lt;span class=&#34;math inline&#34;&gt;\(d_0\)&lt;/span&gt; can control the number of available donors &lt;span class=&#34;math inline&#34;&gt;\(j\)&lt;/span&gt;. When the choice of the metric has the form&lt;/p&gt;
+&lt;p&gt;\[
+d(i,j)=(\hat{y}(x_i)-\hat{y}(x_j))^2,
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\hat{y}(x_i)\)&lt;/span&gt; is the predicted value of &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; from the regression of &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; on &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt; from the complete units, then the procedure is known as PMM. A powerful aspect of this metric is that it weights predictors according to their ability to predict the missing variable, which allows to have some protection against misspecification of the regression of &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; on &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt;, even though better approaches are available when good matches to donor units cannot be found or the sample size is small.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;last-value-carried-forward&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Last Value Carried Forward&lt;/h3&gt;
+&lt;p&gt;Longitudinal data are often subject to attrition when units leave the study prematurely. Let &lt;span class=&#34;math inline&#34;&gt;\(y_i=(y_{i1},\ldots,y_{iJ})\)&lt;/span&gt; be a &lt;span class=&#34;math inline&#34;&gt;\((J\times1)\)&lt;/span&gt; vector of partially-observed outcomes for subject &lt;span class=&#34;math inline&#34;&gt;\(i\)&lt;/span&gt;, and denote with &lt;span class=&#34;math inline&#34;&gt;\(y_{i,obs}\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(y_{i,mis}\)&lt;/span&gt; the observed and missing components of &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt;, i.e. &lt;span class=&#34;math inline&#34;&gt;\(y=(y_{i,obs},y_{i,mis})\)&lt;/span&gt;. Define the indicator variable &lt;span class=&#34;math inline&#34;&gt;\(m_i\)&lt;/span&gt; taking value 0 for complete units and &lt;span class=&#34;math inline&#34;&gt;\(j\)&lt;/span&gt; if subject &lt;span class=&#34;math inline&#34;&gt;\(i\)&lt;/span&gt; drops out between &lt;span class=&#34;math inline&#34;&gt;\(j-1\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(j\)&lt;/span&gt; time points. LVCF, also called &lt;em&gt;last observation carried forward&lt;/em&gt;(&lt;span class=&#34;citation&#34;&gt;Pocock (2013)&lt;/span&gt;), imputes all missing values for individual &lt;span class=&#34;math inline&#34;&gt;\(i\)&lt;/span&gt; (for whom &lt;span class=&#34;math inline&#34;&gt;\(m_i=j\)&lt;/span&gt;) using the last recorded value for that unit, that is&lt;/p&gt;
+&lt;p&gt;\[
+\hat{y}_{it}=y_{i,j-1},
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(t=j,\ldots,J\)&lt;/span&gt;. Although simple, this approach makes the often unrealistic assumption that the value of the outcome remains unchanged after dropout.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;conclusions&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Conclusions&lt;/h2&gt;
+&lt;p&gt;According to &lt;span class=&#34;citation&#34;&gt;Little and Rubin (2019)&lt;/span&gt;, imputation should generally be&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;Conditional&lt;/strong&gt; on observed variables, to reduce bias, improve precision and preserve association between variables.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;Multivariate&lt;/strong&gt;, to preserve association between missing variables.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;Draws&lt;/strong&gt; from the predictive distributions rather than means, to provide valid estimates of a wide range of estimands.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Nevertheless, a main problem of SI methods is that inferences based on the imputed data do not account for imputation uncertainty and standard errors are therefore systematically underestimated, p-values of tests are too significant and confidence intervals are too narrow.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
+&lt;h1&gt;References&lt;/h1&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references&#34;&gt;
+&lt;div id=&#34;ref-little2019statistical&#34;&gt;
+&lt;p&gt;Little, Roderick JA, and Donald B Rubin. 2019. &lt;em&gt;Statistical Analysis with Missing Data&lt;/em&gt;. Vol. 793. John Wiley &amp;amp; Sons.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-pocock2013clinical&#34;&gt;
+&lt;p&gt;Pocock, Stuart J. 2013. &lt;em&gt;Clinical Trials: A Practical Approach&lt;/em&gt;. John Wiley &amp;amp; Sons.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
     </item>
     
   </channel>

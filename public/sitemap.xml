@@ -37,60 +37,71 @@
   </url>
   
   <url>
-    <loc>/talk/ictmc2019/</loc>
-    <lastmod>2019-10-07T11:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/tags/academic/</loc>
-    <lastmod>2019-10-01T12:34:03+01:00</lastmod>
+    <lastmod>2019-10-15T12:34:03+01:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/authors/andrea-gabrio/</loc>
-    <lastmod>2019-10-01T12:34:03+01:00</lastmod>
+    <lastmod>2019-10-15T12:34:03+01:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/authors/</loc>
-    <lastmod>2019-10-01T12:34:03+01:00</lastmod>
+    <lastmod>2019-10-15T12:34:03+01:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/categories/</loc>
-    <lastmod>2019-10-01T12:34:03+01:00</lastmod>
+    <lastmod>2019-10-15T12:34:03+01:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>/post/update-october/update-october/</loc>
-    <lastmod>2019-10-01T12:34:03+01:00</lastmod>
+    <loc>/post/update2-october/update2-october/</loc>
+    <lastmod>2019-10-15T12:34:03+01:00</lastmod>
   </url>
   
   <url>
     <loc>/post/</loc>
-    <lastmod>2019-10-01T12:34:03+01:00</lastmod>
+    <lastmod>2019-10-15T12:34:03+01:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/news/</loc>
-    <lastmod>2019-10-01T12:34:03+01:00</lastmod>
+    <lastmod>2019-10-15T12:34:03+01:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/tags/publication/</loc>
-    <lastmod>2019-10-01T12:34:03+01:00</lastmod>
+    <lastmod>2019-10-15T12:34:03+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/conferences/</loc>
+    <lastmod>2019-10-15T12:34:03+01:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/categories/news/</loc>
-    <lastmod>2019-10-01T12:34:03+01:00</lastmod>
+    <lastmod>2019-10-15T12:34:03+01:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/talk/ictmc2019/</loc>
+    <lastmod>2019-10-07T11:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/post/update-october/update-october/</loc>
+    <lastmod>2019-10-01T12:34:03+01:00</lastmod>
   </url>
   
   <url>
@@ -474,6 +485,34 @@
   </url>
   
   <url>
+    <loc>/tags/explicit-single-imputation/</loc>
+    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/missmethods/mean-imputation/</loc>
+    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/hot-deck-methods/</loc>
+    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/implicit-single-imputation/</loc>
+    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/missmethods/last-value-carried-forward/</loc>
+    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/tags/inverse-probability-weighting/</loc>
     <lastmod>2016-04-27T00:00:00+00:00</lastmod>
     <priority>0</priority>
@@ -490,8 +529,9 @@
   </url>
   
   <url>
-    <loc>/missmethods/last-value-carried-forward/</loc>
+    <loc>/tags/last-value-carried-forward/</loc>
     <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
@@ -501,8 +541,9 @@
   </url>
   
   <url>
-    <loc>/missmethods/mean-imputation/</loc>
+    <loc>/tags/mean-imputation/</loc>
     <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
@@ -528,6 +569,18 @@
   </url>
   
   <url>
+    <loc>/tags/predictive-mean-matching/</loc>
+    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/regression-imputation/</loc>
+    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>/tags/semiparametric-methods/</loc>
     <lastmod>2016-04-27T00:00:00+00:00</lastmod>
     <priority>0</priority>
@@ -535,6 +588,12 @@
   
   <url>
     <loc>/tags/single-imputation/</loc>
+    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/stochastic-regression-imputation/</loc>
     <lastmod>2016-04-27T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>

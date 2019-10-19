@@ -28,7 +28,7 @@
   
     
   
-  <meta name="description" content="">
+  <meta name="description" content="All case deletion methods, such as Complete Case Analysis(CCA) or Available Case Analysis(ACA) make no use of units with partially observed data, when estimating the marginal distribution of the variables under study or the covariation between variables. Clearly, this is inefficient and a tempting alternative would be to impute or “fill in” the unobserved data with some plausible values. When a single value is used to replace each missing data, we talk about Single Imputation(SI) methods and, according to the precedure used to generate these imputations, different SI methods can be used.">
 
   
   <link rel="alternate" hreflang="en-us" href="/missmethods/mean-imputation/">
@@ -119,8 +119,8 @@
   
   <meta property="og:site_name" content="Andrea Gabrio">
   <meta property="og:url" content="/missmethods/mean-imputation/">
-  <meta property="og:title" content="Mean Imputation | Andrea Gabrio">
-  <meta property="og:description" content=""><meta property="og:image" content="/img/icon-192.png">
+  <meta property="og:title" content="Explicit Single Imputation | Andrea Gabrio">
+  <meta property="og:description" content="All case deletion methods, such as Complete Case Analysis(CCA) or Available Case Analysis(ACA) make no use of units with partially observed data, when estimating the marginal distribution of the variables under study or the covariation between variables. Clearly, this is inefficient and a tempting alternative would be to impute or “fill in” the unobserved data with some plausible values. When a single value is used to replace each missing data, we talk about Single Imputation(SI) methods and, according to the precedure used to generate these imputations, different SI methods can be used."><meta property="og:image" content="/img/icon-192.png">
   <meta property="og:locale" content="en-us">
   
   <meta property="article:published_time" content="2016-04-27T00:00:00&#43;00:00">
@@ -137,7 +137,7 @@
 
 
 
-  <title>Mean Imputation | Andrea Gabrio</title>
+  <title>Explicit Single Imputation | Andrea Gabrio</title>
 
 </head>
 
@@ -418,7 +418,7 @@
   
   
 <div class="article-container pt-3">
-  <h1 itemprop="name">Mean Imputation</h1>
+  <h1 itemprop="name">Explicit Single Imputation</h1>
 
   
 
@@ -454,6 +454,11 @@
 
   
   
+  <span class="middot-divider"></span>
+  <span class="article-categories">
+    <i class="fas fa-folder"></i>
+    <a href="/categories/rubric/">rubric</a></span>
+  
 
   
     
@@ -473,6 +478,8 @@
 
 
 
+
+  
 
 
 
@@ -493,6 +500,10 @@
 
 
 
+<button type="button" class="btn btn-outline-primary my-1 mr-1 js-cite-modal"
+        data-filename="/missmethods/mean-imputation/meani.bib">
+  Cite
+</button>
 
 
 
@@ -500,7 +511,8 @@
 
 
 
-  
+
+
 
 
 
@@ -519,13 +531,195 @@
 
     <div class="article-style" itemprop="articleBody">
       
+<script src="/rmarkdown-libs/kePrint/kePrint.js"></script>
+
+
+<p>All case deletion methods, such as <em>Complete Case Analysis</em>(CCA) or <em>Available Case Analysis</em>(ACA) make no use of units with partially observed data, when estimating the marginal distribution of the variables under study or the covariation between variables. Clearly, this is inefficient and a tempting alternative would be to <em>impute</em> or “fill in” the unobserved data with some plausible values. When a single value is used to replace each missing data, we talk about <em>Single Imputation</em>(SI) methods and, according to the precedure used to generate these imputations, different SI methods can be used. In general, the idea of imputing the missing values is really appealing as it allows to recover the full sample on which standard complete data methods can be applied to derive the estimates of interest.</p>
+<p>However, it is important to be aware of the potential problems of imputing missing data without a clear understanding about the process underlying the values we want to impute, which is the key factor to determine whether the selected approach would be plausible in the context considered. Indeed, imputation should be conceptualised as draws from a predictive distribution of the missing values and require methods for creating a predictive distribution for the imputation based on the observed data. According to <span class="citation">Little and Rubin (2019)</span>, these predictive distributions can be created using</p>
+<ol style="list-style-type: decimal">
+<li><p><em>Explicit modelling</em>, when the distribution is based on formal statistical models which make the underlying assumptions explicit.</p></li>
+<li><p><em>Implicit modelling</em>, when the distribution is based on an algorithm which implicitly relies on some underlying model assumptions.</p></li>
+</ol>
+<p>In this part, we focus on some of the most popular <em>Explicit Single Imputation</em> methods. These include: <em>Mean Imputation</em>(SI-M), where means from the observed data are used as imputed values; <em>Regression Imputation</em>(SI-R), where missing values are replaced with values predicited from a regression of the missing variable on some other observed variables; and <em>Stochastic Regression Imputation</em>(SI-SR), where unobserved data are substituted with the predicted values from a regression imputation plus a randomly selected residual drawn to reflect uncertainty in the predicted values.</p>
+<div id="mean-imputation" class="section level2">
+<h2>Mean Imputation</h2>
+<p>The simplest type of SI-M consists in replacing the missing values in a variable with the mean of the observed units from the same variable, a method known as <em>Unconditional Mean Imputation</em> (<span class="citation">Little and Rubin (2019)</span>,<span class="citation">Schafer and Graham (2002)</span>). Let <span class="math inline">\(y_{ij}\)</span> be the value of variable <span class="math inline">\(j\)</span> for unit <span class="math inline">\(i\)</span>, such that the unconditional mean based on the observed values of <span class="math inline">\(y_j\)</span> is given by <span class="math inline">\(\bar{y}_j\)</span>. The sample mean of the observed and imputed values is then <span class="math inline">\(\bar{y}^{m}_j=\bar{y}^{ac}_j\)</span>, i.e. the estimate from ACA, while the sample variance is given by</p>
+<p>\[
+s^{m}_{j}=s^{ac}_{j}\frac{(n^{ac}-1)}{(n-1)},
+\]</p>
+<p>where <span class="math inline">\(s^{ac}_j\)</span> is the sample variance estimated from the <span class="math inline">\(n^{ac}\)</span> available units. Under a <em>Missing Completely At Random</em>(MCAR) assumption, <span class="math inline">\(s^{ac}_j\)</span> is a consistent estimator of the tru variance so that the sample variance from the imputed data <span class="math inline">\(s^m_j\)</span> systematically underestimates the true variance by a factor of <span class="math inline">\(\frac{(n^{ac}-1)}{(n-1)}\)</span>, which clearly comes from the fact that missing data are imputed using values at the centre of the distribution. The imputation distorts theempirical distribution of the observed values as well as any quantities that are not linear in the data (e.g. variances, percentiles, measures of shape). The sampel covariance of <span class="math inline">\(y_j\)</span> and <span class="math inline">\(y_k\)</span> from the imputed data is</p>
+<p>\[
+s^{m}_{jk}=s^{ac}_{jk}\frac{(n^{as}_{jk}-1)}{(n-1)},
+\]</p>
+<p>where <span class="math inline">\(n^{ac}_{jk}\)</span> is the number of units with both variables observed and <span class="math inline">\(s^{ac}_{jk}\)</span> is the corresponding covariance estimate from ACA. Under MCAR <span class="math inline">\(s^{ac}_{jk}\)</span> is a consistent estimator of the true covariance, so that <span class="math inline">\(s^{m}_{jk}\)</span> underestimates the magnitude of the covariance by a factor of <span class="math inline">\(\frac{(n^{ac}_{jk}-1)}{(n-1)}\)</span>. Obvious adjustments for the variance (<span class="math inline">\(\frac{(n-1)}{(n^{ac}_j-1)}\)</span>) and the covariance (<span class="math inline">\(\frac{(n-1)}{(n^{ac}_{jk}-1)}\)</span>) yield ACA estimates, which could lead to covariance matrices that are not positive definite.</p>
+</div>
+<div id="regression-imputation" class="section level2">
+<h2>Regression Imputation</h2>
+<p>An improvement over SI-M is to impute each missing data using the conditional means given the observed values, a method known SI-R or <em>Conditional Mean Imputation</em>. To be precise, it would also be possible to impute conditional means without using a regression approach, for example by grouping individuals into adjustment classes (analogous to weighting methods) based on the observed data and then impute the missing values using the observed means in each adjustment class (<span class="citation">Little and Rubin (2019)</span>). However, for the sake of simplicity, here we will assume that SI-R and conditional mean imputation are the same.</p>
+<p>To generate imputations under SI-R, consider a set of <span class="math inline">\(J-1\)</span> fully observed response variables <span class="math inline">\(y_1,\ldots,y_{J-1}\)</span> and a partially observed response variable <span class="math inline">\(y_J\)</span> which has the first <span class="math inline">\(n_{cc}\)</span> units observed and the remaiing <span class="math inline">\(n-n_{cc}\)</span> units missing. SI-R computes the regression of <span class="math inline">\(y_J\)</span> on <span class="math inline">\(y_1,\ldots,y_{J-1}\)</span> based on the <span class="math inline">\(n_{cc}\)</span> complete units and then fills in the missing values as predictions from the regression. For example, for unit <span class="math inline">\(i\)</span>, the missing value <span class="math inline">\(y_{iJ}\)</span> is imputed using</p>
+<p>\[
+\hat{y}_{iJ}=\hat{\beta}_{J0}+\sum_{j=1}^{J-1}\hat{\beta}_{Jj}y_{ij},
+\]</p>
+<p>where <span class="math inline">\(\hat{\beta}_{J0}\)</span> is the intercept and <span class="math inline">\(\hat{\beta}_{Jj}\)</span> is the <span class="math inline">\(j\)</span> coefficient of of the regression of <span class="math inline">\(y_J\)</span> on <span class="math inline">\(y_1,\ldots,y_{J-1}\)</span> based on the <span class="math inline">\(n_{cc}\)</span> units.</p>
+<p>An extension of regression imputation to a general pattern of missing data is known as <em>Buck’s method</em> (<span class="citation">Buck (1960)</span>). This approach first estimates the population mean <span class="math inline">\(\mu\)</span> and covariance matrix <span class="math inline">\(\Sigma\)</span> from the sample mean and covariance matrix of the complete units and then uses these estimates to calculate the OLS regressions of the missing variables on the observed variables for each missing data pattern. Predictions of the missing data for each observation are obtained by replacing the values of the present variables in the regressions. The average of the observed and imputed values from this method are consistent estimates of the means and MCAR and mild assumptions about the moments of the distribution (<span class="citation">Buck (1960)</span>). They are also consistent when the missingness mechanism depends on observed variables, i.e. under a <em>Missing At Random</em>(MAR) assumption, although addtional assumptions are required in this case (e.g. using linear regressions it assumes that the “true” regression of the missing varables on the observed variables is linear).</p>
+<p>The filled in data from Buck’s method typically yield reasonable estimates of means, while the sample variances and covariances are biased, although the bias is less than the one associated with unconditional mean imputation. Specifically, the sample variance <span class="math inline">\(\sigma^{2,SI-R}_j\)</span> from the imputed data underestimates the true variance <span class="math inline">\(\sigma^2_j\)</span> by a factor of <span class="math inline">\(\frac{1}{n-1}\sum_{i=1}^n\sigma^{2}_{ji}\)</span>, where <span class="math inline">\(\sigma^{2}_{ji}\)</span> is the residual variance from regressing <span class="math inline">\(y_j\)</span> on the variables observed in unit <span class="math inline">\(i\)</span> if <span class="math inline">\(y_{ij}\)</span> is missing and zero if <span class="math inline">\(y_{ij}\)</span> is observed. The sample covariance of <span class="math inline">\(y_j\)</span> and <span class="math inline">\(y_k\)</span> has a bias of <span class="math inline">\(\frac{1}{n-1}\sum_{i=1}^n\sigma_{jki}\)</span>, where <span class="math inline">\(\sigma_{jki}\)</span> is the residual covariance from the multivariate regression of <span class="math inline">\((y_{ij},y_{ik})\)</span> on the variables observed in unit <span class="math inline">\(i\)</span> if both variables are missing and zero otherwise. A consistent estimator of <span class="math inline">\(\Sigma\)</span> can be constructed under MCAR by replacing consistent estimates of <span class="math inline">\(\sigma^{2}_{ji}\)</span> and <span class="math inline">\(\sigma_{jki}\)</span> in the expressions for bias and then adding the resulting quantities to the sample covariance matrix of the filled-in data.</p>
+</div>
+<div id="stochastic-regression-imputation" class="section level2">
+<h2>Stochastic Regression Imputation</h2>
+<p>Any type of mean or regression imputation will lead to bias when the interest is in the tails of the distributions because “best prediction” imputation systematically underestimates variability and standard errors calculated from the imputed data are typically too small. These considerations suggest an alternative imputation strategy, where imputed values are drawn from a predictive distribution of a plausible set of values rather than from the centre of the distribution. This is the idea behind SI-SR, which imputes a conditional draw</p>
+<p>\[
+\hat{y}_{iJ}=\hat{\beta}_{J0}+\sum_{j=1}^{J-1}\hat{\beta}_{Jj}y_{ij}+z_{iJ},
+\]</p>
+<p>where <span class="math inline">\(z_{iJ}\)</span> is a random normal deviate with mean 0 and variance <span class="math inline">\(\hat{\sigma}^2_J\)</span>, the residual variance from the regression of <span class="math inline">\(y_J\)</span> on <span class="math inline">\(y_1,\ldots,y_{J-1}\)</span> based on the complete units. The addition of the random deviate makes the imputation a random draw from the predictive distribution of the missing values, rather than the mean, which is likely to ameliorate the distortion of the predictive distributions (<span class="citation">Little and Rubin (2019)</span>).</p>
+<div id="example" class="section level3">
+<h3>Example</h3>
+<p>Consider a bivariate normal monotone missing data with <span class="math inline">\(y_1\)</span> fully observed and <span class="math inline">\(y_2\)</span> missing for a fraction <span class="math inline">\(\lambda=\frac{(n-n_{cc})}{n}\)</span> and a MCAR mechanism. The following table shows the large sample bias of standard OLS estimates obtained from the filled-in data about the mean, the variance of <span class="math inline">\(y_2\)</span>, the regression coefficient of <span class="math inline">\(y_2\)</span> on <span class="math inline">\(y_1\)</span>, and the regression coefficient of <span class="math inline">\(y_1\)</span> on <span class="math inline">\(y_2\)</span>, using four different single imputation methods: uncondtional mean (UM), unconditional draw (UD), conditional mean (CM), and conditional draw (CD).</p>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:unnamed-chunk-1">Table 1: </span>Bivariate normal monotone MCAR data; large sample bias of four imputation methods.
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:left;">
+mu_2
+</th>
+<th style="text-align:left;">
+sigma_2
+</th>
+<th style="text-align:left;">
+beta_21
+</th>
+<th style="text-align:left;">
+beta_12
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+UM
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+-lambda * sigma_2
+</td>
+<td style="text-align:left;">
+-lambda * beta_21
+</td>
+<td style="text-align:left;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+UD
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+-lambda * beta_21
+</td>
+<td style="text-align:left;">
+-lambda * beta_21
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CM
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+-lambda * (1-rho^2) * sigma_2
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+((lambda * (1-rho^2)) / (1-lambda * (1-rho^2)) ) * beta_12
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CD
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+<p>Under MCAR, all four methods yield consistent estimates of <span class="math inline">\(\mu_2\)</span> but both UM and CM underestimate the variance <span class="math inline">\(\sigma_2\)</span>, UD leads to attenuation of the regression coefficients, while CD yields consistent estimates of all four parameters. However, CD has some important drawbacks. First, adding random draws to the conditional mean imputations is inefficient as the large sample variance of the CD estimates of <span class="math inline">\(\mu_2\)</span> can be shown (<span class="citation">Little and Rubin (2019)</span>) to be</p>
+<p>\[
+\frac{[1-\lambda\rho^2+(1-\rho^2)\lambda(1-\lambda)]\sigma_2}{n_{cc}},
+\]</p>
+<p>which is larger than the large sample sampling variance of the CM estimate of <span class="math inline">\(\mu_2\)</span>, namely <span class="math inline">\(\frac{[1-\lambda\rho^2]\sigma_2}{n_{cc}}\)</span>. Second, the standard errors of the CD estimates from the imputed data are too small because they do not incorporate imputation uncertainty.</p>
+<p>When the analysis involves units with some covariates missing and other observed, it is common practice to condition on the observed covariates when generating the imputations for the missing covariates. It is also possible to condition on the outcome <span class="math inline">\(y\)</span> to impute missing covariates, even if the final objective is to regress <span class="math inline">\(y\)</span> on the full set of covariates and conditioning on <span class="math inline">\(y\)</span> will lead to bias when conditional means are imputed. However, if predictive draws are imputed, this approach will yield consistent estimates of the regression coefficients. Imputing missing covariates using the means by conditioning only the observed covariates (and not also on <span class="math inline">\(y\)</span>) also yields consistent estimates of the regression coefficients under certain conditions, although these are typically less efficient then those from CCA, but yields inconsistent estimates of other parameters such as variances and correlations (<span class="citation">Little (1992)</span>).</p>
+</div>
+</div>
+<div id="conclusions" class="section level2">
+<h2>Conclusions</h2>
+<p>According to <span class="citation">Little and Rubin (2019)</span>, imputation should generally be</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>Conditional</strong> on observed variables, to reduce bias, improve precision and preserve association between variables.</p></li>
+<li><p><strong>Multivariate</strong>, to preserve association between missing variables.</p></li>
+<li><p><strong>Draws</strong> from the predictive distributions rather than means, to provide valid estimates of a wide range of estimands.</p></li>
+</ol>
+<p>Nevertheless, a main problem of SI methods is that inferences based on the imputed data do not account for imputation uncertainty and standard errors are therefore systematically underestimated, p-values of tests are too significant and confidence intervals are too narrow.</p>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references">
+<div id="ref-buck1960method">
+<p>Buck, Samuel F. 1960. “A Method of Estimation of Missing Values in Multivariate Data Suitable for Use with an Electronic Computer.” <em>Journal of the Royal Statistical Society: Series B (Methodological)</em> 22 (2): 302–6.</p>
+</div>
+<div id="ref-little1992regression">
+<p>Little, Roderick JA. 1992. “Regression with Missing X’s: A Review.” <em>Journal of the American Statistical Association</em> 87 (420): 1227–37.</p>
+</div>
+<div id="ref-little2019statistical">
+<p>Little, Roderick JA, and Donald B Rubin. 2019. <em>Statistical Analysis with Missing Data</em>. Vol. 793. John Wiley &amp; Sons.</p>
+</div>
+<div id="ref-schafer2002missing">
+<p>Schafer, Joseph L, and John W Graham. 2002. “Missing Data: Our View of the State of the Art.” <em>Psychological Methods</em> 7 (2): 147.</p>
+</div>
+</div>
+</div>
+
     </div>
 
     
 
 <div class="article-tags">
   
+  <a class="badge badge-light" href="/tags/explicit-single-imputation/">Explicit Single Imputation</a>
+  
+  <a class="badge badge-light" href="/tags/implicit-single-imputation/">Implicit Single Imputation</a>
+  
   <a class="badge badge-light" href="/tags/single-imputation/">Single Imputation</a>
+  
+  <a class="badge badge-light" href="/tags/mean-imputation/">Mean Imputation</a>
+  
+  <a class="badge badge-light" href="/tags/regression-imputation/">Regression Imputation</a>
+  
+  <a class="badge badge-light" href="/tags/stochastic-regression-imputation/">Stochastic Regression Imputation</a>
   
 </div>
 
@@ -536,137 +730,6 @@
 
 
 
-
-
-
-
-
-  
-
-
-
-
-
-  
-  
-  
-    
-  
-  
-  <div class="media author-card" itemscope itemtype="http://schema.org/Person">
-    
-      
-      <img class="portrait mr-3" src="/authors/agabrio/avatar_hu9c828a54915a0f62652d6e2936b8d3a3_36967_250x250_fill_q90_lanczos_center.jpg" itemprop="image" alt="Avatar">
-    
-
-    <div class="media-body">
-      <h5 class="card-title" itemprop="name"><a href="/">Andrea Gabrio</a></h5>
-      <h6 class="card-subtitle">Research Fellow in Statistics and Health Economics</h6>
-      
-      <ul class="network-icon" aria-hidden="true">
-        
-          
-          
-          
-            
-          
-          
-          
-          
-          
-            
-          
-          <li>
-            <a itemprop="sameAs" href="https://twitter.com/andreagabrio" target="_blank" rel="noopener">
-              <i class="fab fa-twitter"></i>
-            </a>
-          </li>
-        
-          
-          
-          
-          
-          
-          
-          
-            
-          
-          <li>
-            <a itemprop="sameAs" href="https://scholar.google.co.uk/citations?user=2fPE3iAAAAAJ&amp;hl" target="_blank" rel="noopener">
-              <i class="ai ai-google-scholar"></i>
-            </a>
-          </li>
-        
-          
-          
-          
-            
-          
-          
-          
-          
-          
-            
-          
-          <li>
-            <a itemprop="sameAs" href="https://github.com/AnGabrio" target="_blank" rel="noopener">
-              <i class="fab fa-github"></i>
-            </a>
-          </li>
-        
-          
-          
-          
-            
-          
-          
-          
-          
-          
-            
-          
-          <li>
-            <a itemprop="sameAs" href="https://uk.linkedin.com/in/andrea-gabrio-730514bb/" target="_blank" rel="noopener">
-              <i class="fab fa-linkedin"></i>
-            </a>
-          </li>
-        
-          
-          
-          
-          
-          
-          
-          
-            
-          
-          <li>
-            <a itemprop="sameAs" href="https://arxiv.org/a/gabrio_a_1.html" target="_blank" rel="noopener">
-              <i class="ai ai-arxiv"></i>
-            </a>
-          </li>
-        
-          
-          
-          
-          
-          
-          
-          
-            
-          
-          <li>
-            <a itemprop="sameAs" href="https://orcid.org/0000-0002-7650-4534" target="_blank" rel="noopener">
-              <i class="ai ai-orcid"></i>
-            </a>
-          </li>
-        
-      </ul>
-    </div>
-  </div>
-
-
-
       
       
       <div class="article-widget">
@@ -674,7 +737,7 @@
         <h3>Related</h3>
         <ul>
           
-          <li><a href="/missmethods/last-value-carried-forward/">Last Value Carried Forward</a></li>
+          <li><a href="/missmethods/last-value-carried-forward/">Implicit Single Imputation</a></li>
           
         </ul>
       </div>
