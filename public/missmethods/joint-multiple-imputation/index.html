@@ -28,7 +28,7 @@
   
     
   
-  <meta name="description" content="">
+  <meta name="description" content="Multiple Imputation(MI) refers to the procedure of replacing each missing value by a set of \(H\geq 2\) imputed values. These are ordered in the sense that \(H\) completed data sets can be created from the sets of imputations, where the first imputed value replaces the missing value in the first completed data set, the second imputed value in the second completed data set, and so on. Next, standard complete data methods are used to analyse each completed data set.">
 
   
   <link rel="alternate" hreflang="en-us" href="/missmethods/joint-multiple-imputation/">
@@ -120,7 +120,7 @@
   <meta property="og:site_name" content="Andrea Gabrio">
   <meta property="og:url" content="/missmethods/joint-multiple-imputation/">
   <meta property="og:title" content="Joint Multiple Imputation | Andrea Gabrio">
-  <meta property="og:description" content=""><meta property="og:image" content="/img/icon-192.png">
+  <meta property="og:description" content="Multiple Imputation(MI) refers to the procedure of replacing each missing value by a set of \(H\geq 2\) imputed values. These are ordered in the sense that \(H\) completed data sets can be created from the sets of imputations, where the first imputed value replaces the missing value in the first completed data set, the second imputed value in the second completed data set, and so on. Next, standard complete data methods are used to analyse each completed data set."><meta property="og:image" content="/img/icon-192.png">
   <meta property="og:locale" content="en-us">
   
   <meta property="article:published_time" content="2016-04-27T00:00:00&#43;00:00">
@@ -454,6 +454,11 @@
 
   
   
+  <span class="middot-divider"></span>
+  <span class="article-categories">
+    <i class="fas fa-folder"></i>
+    <a href="/categories/rubric/">rubric</a></span>
+  
 
   
     
@@ -473,6 +478,8 @@
 
 
 
+
+  
 
 
 
@@ -493,6 +500,10 @@
 
 
 
+<button type="button" class="btn btn-outline-primary my-1 mr-1 js-cite-modal"
+        data-filename="/missmethods/joint-multiple-imputation/mi.bib">
+  Cite
+</button>
 
 
 
@@ -500,7 +511,8 @@
 
 
 
-  
+
+
 
 
 
@@ -519,11 +531,99 @@
 
     <div class="article-style" itemprop="articleBody">
       
+
+
+<p><em>Multiple Imputation</em>(MI) refers to the procedure of replacing each missing value by a set of <span class="math inline">\(H\geq 2\)</span> imputed values. These are ordered in the sense that <span class="math inline">\(H\)</span> completed data sets can be created from the sets of imputations, where the first imputed value replaces the missing value in the first completed data set, the second imputed value in the second completed data set, and so on. Next, standard complete data methods are used to analyse each completed data set. When the <span class="math inline">\(H\)</span> sets of imputations are repeated random draws from the predictive distribution of the missing data under a particular model of missingness, the <span class="math inline">\(H\)</span> completed data inferences can be combined to form one inference that properly reflects uncertainty due to missing values under that model. In general, MI procedures can be summarised in three main steps:</p>
+<ol style="list-style-type: decimal">
+<li><p>Specify an <strong>imputation model</strong> to generate <span class="math inline">\(H\)</span> imputed values, typically taken as random draws from the predictive distribution of the missing values given the observed values, and create <span class="math inline">\(H\)</span> completed data sets using these imputations and the observed data.</p></li>
+<li><p>Analyse each completed data sets using standard complete data methods based on an <strong>analysis model</strong>, and derive <span class="math inline">\(H\)</span> completed data inferences</p></li>
+<li><p>Pool together the <span class="math inline">\(H\)</span> completed data inferences into a single inference using standard MI formulas, which ensure that missing data uncertainty is taken into account</p></li>
+</ol>
+<p>Mi was first proposed by Rubin (<span class="citation">Rubin (1978)</span>) and has become more popular over time (<span class="citation">Rubin (1996)</span>, <span class="citation">Schafer and Graham (2002)</span>, <span class="citation">Little and Rubin (2019)</span>), as well as the focus of research for methodological and practical applications in a variety of fields (<span class="citation">Herzog and Rubin (1983)</span>, <span class="citation">Rubin and Schenker (1987)</span>, <span class="citation">Schafer (1999)</span>, <span class="citation">Carpenter and Kenward (2012)</span>, <span class="citation">Molenberghs et al. (2014)</span>, <span class="citation">Van Buuren (2018)</span>). MI shares both advantages of <em>Single Imputaiton</em> (SI) methods and solves both disadvantages. Indeed, like SI, MI methods allow the analyst to use familiar complete data methods when analysing the completed data sets. The only disadvantage of MI compared with SI methods is that it takes more time to generate the imputations and analyse the completed data sets. However, <span class="citation">Rubin (2004)</span> showed that in order to obtain sufficiently precise estimates, a relatively small number of imputations (typically <span class="math inline">\(10\)</span>) is required. For example, considering a situation with <span class="math inline">\(\lambda=50\%\)</span> missing information and <span class="math inline">\(H=10\)</span> imputations, the efficiency of MI can be shown to be equal to <span class="math inline">\((1+\frac{\lambda}{H})^{-1}=95\%\)</span>. In addition, in today’s computing environments, the work of analysing the completed data sets is quite modest since it involves performing the same task <span class="math inline">\(H\)</span> times. Thus, once a precedure to combine multiple completed data sets is established, the additonal time and effort to handle <span class="math inline">\(50\)</span>, <span class="math inline">\(20\)</span>, or <span class="math inline">\(10\)</span> imputations if often of little consequence.</p>
+<p>In the first step of MI, imputations should ideally be created as repeated draws from the <em>posterior predictive distribution</em> of the missing values <span class="math inline">\(y_{mis}\)</span> given the observed values <span class="math inline">\(y_{obs}\)</span>, each repetition being an independent drawing of the parameters and missing values. In practice, implicit imputation models can also be used in place of explicit imputation models (<span class="citation">Herzog and Rubin (1983)</span>). In the second step, each completed data set is analysed using the same complete data method that would be used in the absence of missingness. Finally, in the last step, standard procedures should be used to combine the compelted data inferences into a single one. The simplest and most popular method for combining the reuslts of <span class="math inline">\(H\)</span> completed data sets is known as <em>Rubin’s rules</em> (<span class="citation">Rubin (2004)</span>), which can be explained with a simple example.</p>
+<div id="rubins-rules" class="section level2">
+<h2>Rubin’s rules</h2>
+<p>Let <span class="math inline">\(\hat{\theta}_h\)</span> and <span class="math inline">\(V_h\)</span>, for <span class="math inline">\(h=1,\ldots,H\)</span>, be the completed data estimates and sampling variances for a scalar estimand <span class="math inline">\(\theta\)</span>, calculated from <span class="math inline">\(H\)</span> repeated imputations under a given imputation model. Then, according to Rubin’s rules, the combined estimate is simply the average of the <span class="math inline">\(H\)</span> completed data estimates, that is</p>
+<p>\[
+\bar{\theta}_{H}=\frac{1}{H}\sum_{h=1}^{H}\hat{\theta}_{h}.
+\]</p>
+<p>Because the imputations under MI are conditional draws, under a good imputaton model, they provide valid estimates for a wide range of estimands. In addition, the averaging over <span class="math inline">\(H\)</span> imputed data sets increases the efficiency of estimation over that obtained from a single completed data set. The variability associated with the pooled estimate has two components: the <em>average within-imputation variance</em> <span class="math inline">\(\bar{V}_H\)</span> and the <em>between-imputation variance</em> <span class="math inline">\(B_H\)</span>, defined as</p>
+<p>\[
+\bar{V}_{H}=\frac{1}{H}\sum_{h=1}^{H}V_{h} \;\;\; \text{and} \;\;\; B_{H}=\frac{1}{H-1}\sum_{h=1}^{H}(\hat{\theta}_{h}-\bar{\theta}_{H})^2.
+\]</p>
+<p>The total variability associated with <span class="math inline">\(\bar{\theta}_H\)</span> is the computed as</p>
+<p>\[
+T_{H}=\bar{V}_H + \frac{H+1}{H}B_{H},
+\]</p>
+<p>where <span class="math inline">\((1+\frac{1}{H})\)</span> is an adjustment factor for finite due to estimating <span class="math inline">\(\theta\)</span> by <span class="math inline">\(\bar{\theta}_H\)</span>. Thus, <span class="math inline">\(\hat{\lambda}_H=(1+\frac{1}{H})\frac{B_H}{T_H}\)</span> is known as the <em>fraction of missing information</em> and is an estimate of the fraction of information about <span class="math inline">\(\theta\)</span> that is missing due to nonresponse. For large sample sizes and scalar quantities like <span class="math inline">\(\theta\)</span>, the reference distribution for interval estimates and significance tests is a <span class="math inline">\(t\)</span> distribution</p>
+<p>\[
+(\theta - \bar{\theta}_H)\frac{1}{\sqrt{T^2_H}} \sim t_v,
+\]</p>
+<p>where the degrees of freedom <span class="math inline">\(v\)</span> can be approximated with the quantity <span class="math inline">\(v=(H-1)\left(1+\frac{1}{H+1}\frac{\bar{V}_H}{B_H} \right)^2\)</span> (<span class="citation">Rubin and Schenker (1987)</span>). In small data sets, an improved version of <span class="math inline">\(v\)</span> can be obtained as <span class="math inline">\(v^\star=(\frac{1}{v}+\frac{1}{\hat{v}_{obs}})^{-1}\)</span>, where</p>
+<p>\[
+\hat{v}_{obs}=(1-\hat{\lambda}_{H})\left(\frac{v_{com}+1}{v_{com}+3}\right)v_{com},
+\]</p>
+<p>with <span class="math inline">\(v_{com}\)</span> being the degrees of freedom for appropriate or exact <span class="math inline">\(t\)</span> inferences about <span class="math inline">\(\theta\)</span> when there are no missing values (<span class="citation">Barnard and Rubin (1999)</span>).</p>
+<p>The validity of MI rests on how the imputations are created and how that procedure relates to the model used to subsequently analyze the data. Creating MIs often requires special algorithms (<span class="citation">Schafer (1997)</span>). In general, they should be drawn from a distribution for the missing data that reflects uncertainty about the parameters of the data model. Recall that with SI methods, it is desirable to impute from the conditional distribution <span class="math inline">\(p(y_{mis}\mid y_{obs},\hat{\theta})\)</span>, where <span class="math inline">\(\hat{\theta}\)</span> is an estimate derived from the observed data. MI extends this approach by first simulating <span class="math inline">\(H\)</span> independent plausible values for the parameters <span class="math inline">\(\theta_1,\ldots,\theta_H\)</span> and then drawing the missing values <span class="math inline">\(y_{mis}^h\)</span> from <span class="math inline">\(p(y_{mis}\mid y_{obs}, \theta_h)\)</span>. Treating parameters as random rather than fixed is
+an essential part of MI. For this reason, it is natural (but not essential) to motivate MI from the Bayesian perspective, in which the state of knowledge about parameters is represented through a posterior distribution.</p>
+</div>
+<div id="joint-multiple-imputation" class="section level2">
+<h2>Joint Multiple Imputation</h2>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references">
+<div id="ref-barnard1999miscellanea">
+<p>Barnard, John, and Donald B Rubin. 1999. “Miscellanea. Small-Sample Degrees of Freedom with Multiple Imputation.” <em>Biometrika</em> 86 (4): 948–55.</p>
+</div>
+<div id="ref-carpenter2012multiple">
+<p>Carpenter, James, and Michael Kenward. 2012. <em>Multiple Imputation and Its Application</em>. John Wiley &amp; Sons.</p>
+</div>
+<div id="ref-herzog1983using">
+<p>Herzog, Thomas N, and Donald B Rubin. 1983. “Using Multiple Imputations to Handle Nonresponse in Sample Surveys.” <em>Incomplete Data in Sample Surveys</em> 2: 209–45.</p>
+</div>
+<div id="ref-little2019statistical">
+<p>Little, Roderick JA, and Donald B Rubin. 2019. <em>Statistical Analysis with Missing Data</em>. Vol. 793. John Wiley &amp; Sons.</p>
+</div>
+<div id="ref-molenberghs2014handbook">
+<p>Molenberghs, Geert, Garrett Fitzmaurice, Michael G Kenward, Anastasios Tsiatis, and Geert Verbeke. 2014. <em>Handbook of Missing Data Methodology</em>. Chapman; Hall/CRC.</p>
+</div>
+<div id="ref-rubin1978multiple">
+<p>Rubin, Donald B. 1978. “Multiple Imputations in Sample Surveys a Phenomenological Bayesian Approach to Nonresponse.” <em>Proceedings of the Survey Research Methods Section of the American Statistical Association</em> 1: 20–34.</p>
+</div>
+<div id="ref-rubin1996multiple">
+<p>———. 1996. “Multiple Imputation After 18 Years.” <em>Journal of the American Statistical Association</em> 91 (434): 473–89.</p>
+</div>
+<div id="ref-rubin2004multiple">
+<p>———. 2004. <em>Multiple Imputation for Nonresponse in Surveys</em>. John Wiley &amp; Sons.</p>
+</div>
+<div id="ref-rubin1987interval">
+<p>Rubin, Donald B, and Nathaniel Schenker. 1987. “Interval Estimation from Multiply Imputed Data: A Case Study Using Census Agriculture Industry Codes.” <em>Journal of Official Statistics</em> 3 (4): 375.</p>
+</div>
+<div id="ref-schafer1997analysis">
+<p>Schafer, Joseph L. 1997. <em>Analysis of Incomplete Multivariate Data</em>. Chapman; Hall/CRC.</p>
+</div>
+<div id="ref-schafer1999multiple">
+<p>———. 1999. “Multiple Imputation: A Primer.” <em>Statistical Methods in Medical Research</em> 8 (1): 3–15.</p>
+</div>
+<div id="ref-schafer2002missing">
+<p>Schafer, Joseph L, and John W Graham. 2002. “Missing Data: Our View of the State of the Art.” <em>Psychological Methods</em> 7 (2): 147.</p>
+</div>
+<div id="ref-van2018flexible">
+<p>Van Buuren, Stef. 2018. <em>Flexible Imputation of Missing Data</em>. Chapman; Hall/CRC.</p>
+</div>
+</div>
+</div>
+
     </div>
 
     
 
 <div class="article-tags">
+  
+  <a class="badge badge-light" href="/tags/joint-multiple-imputation/">Joint Multiple Imputation</a>
+  
+  <a class="badge badge-light" href="/tags/multiple-imputation-by-chained-equations/">Multiple Imputation by Chained Equations</a>
   
   <a class="badge badge-light" href="/tags/multiple-imputation/">Multiple Imputation</a>
   
@@ -533,137 +633,6 @@
 
     
       
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
-  
-  
-  
-    
-  
-  
-  <div class="media author-card" itemscope itemtype="http://schema.org/Person">
-    
-      
-      <img class="portrait mr-3" src="/authors/agabrio/avatar_hu9c828a54915a0f62652d6e2936b8d3a3_36967_250x250_fill_q90_lanczos_center.jpg" itemprop="image" alt="Avatar">
-    
-
-    <div class="media-body">
-      <h5 class="card-title" itemprop="name"><a href="/">Andrea Gabrio</a></h5>
-      <h6 class="card-subtitle">Research Fellow in Statistics and Health Economics</h6>
-      
-      <ul class="network-icon" aria-hidden="true">
-        
-          
-          
-          
-            
-          
-          
-          
-          
-          
-            
-          
-          <li>
-            <a itemprop="sameAs" href="https://twitter.com/andreagabrio" target="_blank" rel="noopener">
-              <i class="fab fa-twitter"></i>
-            </a>
-          </li>
-        
-          
-          
-          
-          
-          
-          
-          
-            
-          
-          <li>
-            <a itemprop="sameAs" href="https://scholar.google.co.uk/citations?user=2fPE3iAAAAAJ&amp;hl" target="_blank" rel="noopener">
-              <i class="ai ai-google-scholar"></i>
-            </a>
-          </li>
-        
-          
-          
-          
-            
-          
-          
-          
-          
-          
-            
-          
-          <li>
-            <a itemprop="sameAs" href="https://github.com/AnGabrio" target="_blank" rel="noopener">
-              <i class="fab fa-github"></i>
-            </a>
-          </li>
-        
-          
-          
-          
-            
-          
-          
-          
-          
-          
-            
-          
-          <li>
-            <a itemprop="sameAs" href="https://uk.linkedin.com/in/andrea-gabrio-730514bb/" target="_blank" rel="noopener">
-              <i class="fab fa-linkedin"></i>
-            </a>
-          </li>
-        
-          
-          
-          
-          
-          
-          
-          
-            
-          
-          <li>
-            <a itemprop="sameAs" href="https://arxiv.org/a/gabrio_a_1.html" target="_blank" rel="noopener">
-              <i class="ai ai-arxiv"></i>
-            </a>
-          </li>
-        
-          
-          
-          
-          
-          
-          
-          
-            
-          
-          <li>
-            <a itemprop="sameAs" href="https://orcid.org/0000-0002-7650-4534" target="_blank" rel="noopener">
-              <i class="ai ai-orcid"></i>
-            </a>
-          </li>
-        
-      </ul>
-    </div>
-  </div>
 
 
 
