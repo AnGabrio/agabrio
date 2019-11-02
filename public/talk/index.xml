@@ -6,10 +6,28 @@
     <description>Recent content in Recent &amp; Upcoming Talks on Andrea Gabrio</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 04 Nov 2019 13:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 28 Jan 2020 11:15:00 +0000</lastBuildDate>
     
 	    <atom:link href="/talk/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>A Bayesian Approach to Handle Missingness in Trial Based Economic Evaluations</title>
+      <link>/talk/priment2020/</link>
+      <pubDate>Tue, 28 Jan 2020 11:15:00 +0000</pubDate>
+      
+      <guid>/talk/priment2020/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>MissingHE An R package to deal with missing data in trial based health economic evaluations</title>
+      <link>/talk/priment2019/</link>
+      <pubDate>Wed, 04 Dec 2019 13:00:00 +0000</pubDate>
+      
+      <guid>/talk/priment2019/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>A Bayesian Parametric Approach to Handle Missing Longitudinal Outcome Data in Trial-Based Health Economic Evaluations</title>

@@ -6,7 +6,7 @@
     <description>Recent content in Tags on Andrea Gabrio</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 04 Nov 2019 13:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 28 Jan 2020 11:15:00 +0000</lastBuildDate>
     
 	    <atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     
@@ -14,7 +14,7 @@
     <item>
       <title>Economic Evaluations</title>
       <link>/tags/economic-evaluations/</link>
-      <pubDate>Mon, 04 Nov 2019 13:00:00 +0000</pubDate>
+      <pubDate>Tue, 28 Jan 2020 11:15:00 +0000</pubDate>
       
       <guid>/tags/economic-evaluations/</guid>
       <description></description>
@@ -23,7 +23,7 @@
     <item>
       <title>Missing Data</title>
       <link>/tags/missing-data/</link>
-      <pubDate>Mon, 04 Nov 2019 13:00:00 +0000</pubDate>
+      <pubDate>Tue, 28 Jan 2020 11:15:00 +0000</pubDate>
       
       <guid>/tags/missing-data/</guid>
       <description></description>
@@ -32,16 +32,25 @@
     <item>
       <title>Academic</title>
       <link>/tags/academic/</link>
-      <pubDate>Tue, 15 Oct 2019 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 28 Oct 2019 00:00:00 +0000</pubDate>
       
       <guid>/tags/academic/</guid>
       <description></description>
     </item>
     
     <item>
+      <title>Conferences</title>
+      <link>/tags/conferences/</link>
+      <pubDate>Mon, 28 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/conferences/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>News</title>
       <link>/tags/news/</link>
-      <pubDate>Tue, 15 Oct 2019 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 28 Oct 2019 00:00:00 +0000</pubDate>
       
       <guid>/tags/news/</guid>
       <description></description>
@@ -156,6 +165,15 @@
     </item>
     
     <item>
+      <title>Bayesian Modelling</title>
+      <link>/tags/bayesian-modelling/</link>
+      <pubDate>Mon, 05 Feb 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/bayesian-modelling/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Literature Review</title>
       <link>/tags/literature-review/</link>
       <pubDate>Thu, 01 Jun 2017 00:00:00 +0000</pubDate>
@@ -179,24 +197,6 @@
       <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
       
       <guid>/tags/available-case-analysis/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Bayesian Methods</title>
-      <link>/tags/bayesian-methods/</link>
-      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/bayesian-methods/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Bayesian Modelling</title>
-      <link>/tags/bayesian-modelling/</link>
-      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/bayesian-modelling/</guid>
       <description></description>
     </item>
     
@@ -269,6 +269,15 @@
       <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
       
       <guid>/tags/last-value-carried-forward/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Likelihood Based Methods Ignorable</title>
+      <link>/tags/likelihood-based-methods-ignorable/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/likelihood-based-methods-ignorable/</guid>
       <description></description>
     </item>
     

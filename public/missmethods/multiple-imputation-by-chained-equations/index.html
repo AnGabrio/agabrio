@@ -569,6 +569,35 @@ an essential part of MI. For this reason, it is natural (but not essential) to m
 </div>
 <div id="multiple-imputation-by-chained-equations" class="section level2">
 <h2>Multiple Imputation by Chained Equations</h2>
+<p>MI by Chained Equations, also known as <em>Fully Conditional Specification</em>(FCS), imputes multivariate missing data on a variable-by-variable basis, and therefore requires the specification of an imputation model for each incomplete variable to create imputations per variable in an iterative fashion (<span class="citation">Van Buuren (2007)</span>). In contrast to Joint MI, MICE specifies the multivariate distribution for the outcome and missingness pattern <span class="math inline">\(p(y,r\mid \theta, \phi)\)</span>, indexed by the parameter vectors of the outcome (<span class="math inline">\(\theta\)</span>) and missingness models (<span class="math inline">\(\phi\)</span>), through a set of conditional densities <span class="math inline">\(p(y_j \mid y_{-j},r,\theta_j, \phi_j)\)</span>, which is used to impute <span class="math inline">\(y_j\)</span> given the other variables. Starting from a random draw from the marginal distribution of <span class="math inline">\(y_1\)</span>, imputation is then carried out by iterating over the conditionally specified imputation models for each <span class="math inline">\(y_j=(y_2,\ldots,y_J)\)</span> separately given the set of all the other variables <span class="math inline">\(y_{-j}\)</span>.</p>
+<p>Tha main idea of MICE is to directly draw the missing data from the predictive distribution of conditional densities, therefore avoiding the need to specify a joint multivariate model for all the data. Different approaches can be used to implement MICE. For example, a possible strategy is the following:</p>
+<ol style="list-style-type: decimal">
+<li>Start at iteration <span class="math inline">\(t=0\)</span> by drawing randomly from the the distribution of the missing data given the observed data and all other variables, according to some probability model for each variable <span class="math inline">\(y_j\)</span>, that is</li>
+</ol>
+<p>\[
+\hat{y}^{mis}_{j,0} \sim p(y^{mis}_{j} \mid y^{obs}_{j}, y_{-j}, r)
+\]</p>
+<ol start="2" style="list-style-type: decimal">
+<li>At each iteration <span class="math inline">\(t=1,\ldots,T\)</span> and for each variable <span class="math inline">\(j=\ldots,J\)</span>, set</li>
+</ol>
+<p>\[
+\hat{y}^{mis}_{-j,t}=\left(\hat{y}_{1,t},\ldots, \hat{y}_{j-1,t}, \hat{y}_{j+1,t}, \ldots, \hat{y}_{J,t} \right)
+\]</p>
+<p>as the currently completed data except <span class="math inline">\(y_j\)</span></p>
+<ol start="3" style="list-style-type: decimal">
+<li>Draw <span class="math inline">\(h=1,\ldots,H\)</span> imputations for each variable <span class="math inline">\(y_j\)</span> from the predictive distribution of the missing data given the observed data and the currently imputed data at <span class="math inline">\(t\)</span>, that is</li>
+</ol>
+<p>\[
+\hat{y}^{mis}_{j,t} \sim p(y^{mis}_{j} \mid y^{obs}_{j}, \hat{y}_{-j,t}, r)
+\]</p>
+<p>and repeat the steps 2 and 3 until convergence. It is important to stress out that MICE is essentially a <em>Markov Chain Monte Carlo</em>(MCMC) algorithm (<span class="citation">Brooks et al. (2011)</span>), where the state space is the collection of all imputed values. More specifically, when the conditional distributions of all variables are compatible with a joint multivariate distribution, the algorithm corresponds to a Gibbs sampler, a Bayesian simulation method that samples from the conditional distributions in order to obtain samples from the joint multivariate distribution of all variables via some conditional factorisation of the latter (<span class="citation">Casella and George (1992)</span>, <span class="citation">Gilks, Richardson, and Spiegelhalter (1996)</span>). A potential issue of MICE is that, since the conditional distributions are specified freely by the user, these may not be compatible with a joint distribution and therefore it is not clear from which distribution the algorithm is sampling from. However, a general advatage of MICE is that it gives freedom to the user for the specification of the univariate models for the variables, which can be tailored to handle different types of variabes (e.g. continuous and categorical) and different statistical issues for each variable (e.g. skewness and non-liner associations).</p>
+<p>Regardless of the theoretical implications of MICE, as a MCMC method, the algorithm converges to a stationary distribution when three conditions are satisfied (<span class="citation">Roberts (1996)</span>,<span class="citation">Brooks et al. (2011)</span>):</p>
+<ul>
+<li><p>The chain is <em>irreducible</em>, i.e. must be able to reach any state from any state in the state space</p></li>
+<li><p>The chain is <em>aperiodic</em>, i.e. must be able to return to each state after some unknown number of steps or transitions</p></li>
+<li><p>The chain is <em>recurrent</em>, i.e. there is probability of one of eventually returning to each state after some number of steps</p></li>
+</ul>
+<p>Typically periodicity and non-recurrence can be a problem in MICE when the imputation models are not compatible, possibly leading to different inferences based on the stopping point of the chain or to non-stationary behaviours of the chain.</p>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1>References</h1>
@@ -576,8 +605,17 @@ an essential part of MI. For this reason, it is natural (but not essential) to m
 <div id="ref-barnard1999miscellanea">
 <p>Barnard, John, and Donald B Rubin. 1999. “Miscellanea. Small-Sample Degrees of Freedom with Multiple Imputation.” <em>Biometrika</em> 86 (4): 948–55.</p>
 </div>
+<div id="ref-brooks2011handbook">
+<p>Brooks, Steve, Andrew Gelman, Galin Jones, and Xiao-Li Meng. 2011. <em>Handbook of Markov Chain Monte Carlo</em>. CRC press.</p>
+</div>
 <div id="ref-carpenter2012multiple">
 <p>Carpenter, James, and Michael Kenward. 2012. <em>Multiple Imputation and Its Application</em>. John Wiley &amp; Sons.</p>
+</div>
+<div id="ref-casella1992explaining">
+<p>Casella, George, and Edward I George. 1992. “Explaining the Gibbs Sampler.” <em>The American Statistician</em> 46 (3): 167–74.</p>
+</div>
+<div id="ref-gilks1996introducing">
+<p>Gilks, Walter R, Sylvia Richardson, and David J Spiegelhalter. 1996. “Introducing Markov Chain Monte Carlo.” <em>Markov Chain Monte Carlo in Practice</em> 1: 19.</p>
 </div>
 <div id="ref-herzog1983using">
 <p>Herzog, Thomas N, and Donald B Rubin. 1983. “Using Multiple Imputations to Handle Nonresponse in Sample Surveys.” <em>Incomplete Data in Sample Surveys</em> 2: 209–45.</p>
@@ -587,6 +625,9 @@ an essential part of MI. For this reason, it is natural (but not essential) to m
 </div>
 <div id="ref-molenberghs2014handbook">
 <p>Molenberghs, Geert, Garrett Fitzmaurice, Michael G Kenward, Anastasios Tsiatis, and Geert Verbeke. 2014. <em>Handbook of Missing Data Methodology</em>. Chapman; Hall/CRC.</p>
+</div>
+<div id="ref-roberts1996markov">
+<p>Roberts, Gareth O. 1996. “Markov Chain Concepts Related to Sampling Algorithms.” <em>Markov Chain Monte Carlo in Practice</em> 57.</p>
 </div>
 <div id="ref-rubin1978multiple">
 <p>Rubin, Donald B. 1978. “Multiple Imputations in Sample Surveys a Phenomenological Bayesian Approach to Nonresponse.” <em>Proceedings of the Survey Research Methods Section of the American Statistical Association</em> 1: 20–34.</p>
@@ -609,8 +650,11 @@ an essential part of MI. For this reason, it is natural (but not essential) to m
 <div id="ref-schafer2002missing">
 <p>Schafer, Joseph L, and John W Graham. 2002. “Missing Data: Our View of the State of the Art.” <em>Psychological Methods</em> 7 (2): 147.</p>
 </div>
+<div id="ref-van2007multiple">
+<p>Van Buuren, Stef. 2007. “Multiple Imputation of Discrete and Continuous Data by Fully Conditional Specification.” <em>Statistical Methods in Medical Research</em> 16 (3): 219–42.</p>
+</div>
 <div id="ref-van2018flexible">
-<p>Van Buuren, Stef. 2018. <em>Flexible Imputation of Missing Data</em>. Chapman; Hall/CRC.</p>
+<p>———. 2018. <em>Flexible Imputation of Missing Data</em>. Chapman; Hall/CRC.</p>
 </div>
 </div>
 </div>

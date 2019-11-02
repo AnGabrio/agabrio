@@ -3,60 +3,104 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>/talk/isporeu2019/</loc>
-    <lastmod>2019-11-04T13:00:00+00:00</lastmod>
+    <loc>/talk/priment2020/</loc>
+    <lastmod>2020-01-28T11:15:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>/</loc>
-    <lastmod>2019-11-04T13:00:00+00:00</lastmod>
+    <lastmod>2020-01-28T11:15:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/tags/economic-evaluations/</loc>
-    <lastmod>2019-11-04T13:00:00+00:00</lastmod>
+    <lastmod>2020-01-28T11:15:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/tags/missing-data/</loc>
-    <lastmod>2019-11-04T13:00:00+00:00</lastmod>
+    <lastmod>2020-01-28T11:15:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/talk/</loc>
-    <lastmod>2019-11-04T13:00:00+00:00</lastmod>
+    <lastmod>2020-01-28T11:15:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/</loc>
-    <lastmod>2019-11-04T13:00:00+00:00</lastmod>
+    <lastmod>2020-01-28T11:15:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
+    <loc>/talk/priment2019/</loc>
+    <lastmod>2019-12-04T13:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/talk/isporeu2019/</loc>
+    <lastmod>2019-11-04T13:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/tags/academic/</loc>
-    <lastmod>2019-10-15T12:34:03+01:00</lastmod>
+    <lastmod>2019-10-28T12:34:03+01:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/authors/andrea-gabrio/</loc>
-    <lastmod>2019-10-15T12:34:03+01:00</lastmod>
+    <lastmod>2019-10-28T12:34:03+01:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/authors/</loc>
-    <lastmod>2019-10-15T12:34:03+01:00</lastmod>
+    <lastmod>2019-10-28T12:34:03+01:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/categories/</loc>
-    <lastmod>2019-10-15T12:34:03+01:00</lastmod>
+    <lastmod>2019-10-28T12:34:03+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/conferences/</loc>
+    <lastmod>2019-10-28T12:34:03+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/post/update3-october/update3-october/</loc>
+    <lastmod>2019-10-28T12:34:03+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/post/</loc>
+    <lastmod>2019-10-28T12:34:03+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/news/</loc>
+    <lastmod>2019-10-28T12:34:03+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/conferences/</loc>
+    <lastmod>2019-10-28T12:34:03+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/news/</loc>
+    <lastmod>2019-10-28T12:34:03+01:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -66,30 +110,7 @@
   </url>
   
   <url>
-    <loc>/post/</loc>
-    <lastmod>2019-10-15T12:34:03+01:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/news/</loc>
-    <lastmod>2019-10-15T12:34:03+01:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>/tags/publication/</loc>
-    <lastmod>2019-10-15T12:34:03+01:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/conferences/</loc>
-    <lastmod>2019-10-15T12:34:03+01:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/news/</loc>
     <lastmod>2019-10-15T12:34:03+01:00</lastmod>
     <priority>0</priority>
   </url>
@@ -387,7 +408,24 @@
   </url>
   
   <url>
+    <loc>/tags/bayesian-modelling/</loc>
+    <lastmod>2018-02-05T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/project/</loc>
+    <lastmod>2018-02-05T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>/missinghe/</loc>
+    <lastmod>2018-02-05T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/project/missinghe/</loc>
     <lastmod>2018-02-05T00:00:00+00:00</lastmod>
   </url>
   
@@ -405,12 +443,6 @@
   <url>
     <loc>/project/missing-data-review/</loc>
     <lastmod>2017-06-01T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/project/</loc>
-    <lastmod>2017-06-01T00:00:00+00:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
@@ -441,20 +473,8 @@
   </url>
   
   <url>
-    <loc>/tags/bayesian-methods/</loc>
-    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>/project/health-economics/</loc>
     <lastmod>2016-04-27T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/bayesian-modelling/</loc>
-    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
@@ -470,11 +490,6 @@
   
   <url>
     <loc>/missmethods/complete-case-analysis/</loc>
-    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/missmethods/data-augmentation-mcmc/</loc>
     <lastmod>2016-04-27T00:00:00+00:00</lastmod>
   </url>
   
@@ -541,9 +556,20 @@
   </url>
   
   <url>
+    <loc>/tags/likelihood-based-methods-ignorable/</loc>
+    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>/tags/listwise-deletion/</loc>
     <lastmod>2016-04-27T00:00:00+00:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/missmethods/likelihood-based-methods-ignorable/</loc>
+    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
   </url>
   
   <url>

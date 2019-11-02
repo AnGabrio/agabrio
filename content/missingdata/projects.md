@@ -41,8 +41,12 @@ subtitle = "In this rubric I attempt to give  an overview on the research for ha
     tag = "Multiple Imputation"
 
   [[content.filter_button]]
-    name = "Bayesian Methods"
-    tag = "Bayesian Methods"
+    name = "Likelihood Based Methods Ignorable"
+    tag = "Likelihood Based Methods Ignorable"
+
+  [[content.filter_button]]
+    name = "Likelihood Based Methods Nonignorable"
+    tag = "Likelihood Based Methods Nonignorable"
 
 
 [design]

@@ -441,8 +441,6 @@
 
 <p><code>missingHE</code> produces plots which compares the observed and imputed values for both cost and benefit measures in each treatment intervention considered to detect possible concerns about the plausibility of the imputation methods. In addition, the output of <code>missingHE</code> cab be analysed using different funtions in the <code>R</code> package <code>BCEA</code> which produces a synthesis of the decision process given the current evidence and uncertainty, as well as several indicators that can be used to perform Probabilistic Sensitivity Analysis to parameter and model uncertainty.</p>
 
-<p>On 25/09/2019 an updated version (1.2.1) of <code>missingHE</code> has become available on <a href="https://cran.r-project.org/web/packages/missingHE/" target="_blank">CRAN</a>, which allows to perform posterior predictive checks for each type of model as a further way to assess the fit of the model to the observed data.</p>
-
 <p><img src="imputed.jpg" alt="png" /></p>
 
 <h1 id="example">Example</h1>
@@ -476,6 +474,30 @@ delta.effects     0.043  0.028   -0.003  0.089
 delta.costs     -51.514 67.025 -162.862 58.327
 ICER          -1198.431
 </code></pre>
+
+<p>I note that, from 25/09/2019, an updated version (1.2.1) of <code>missingHE</code> has become available on <a href="https://cran.r-project.org/web/packages/missingHE/" target="_blank">CRAN</a>, which allows to perform posterior predictive checks for each type of model as a further way to assess the fit of the model to the observed data.</p>
+
+
+
+
+  
+
+
+
+
+<figure>
+
+<img src="/img/plotpred.png" >
+
+
+
+<figcaption data-pre="Figure " data-post=":" >
+  <h4>Example of posterior predictive checks in missingHE</h4>
+  
+</figcaption>
+
+</figure>
+
 
 <h1 id="installation">Installation</h1>
 

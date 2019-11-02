@@ -96,10 +96,41 @@ an essential part of MI. For this reason, it is natural (but not essential) to m
 
 ## Multiple Imputation by Chained Equations
 
+MI by Chained Equations, also known as *Fully Conditional Specification*(FCS), imputes multivariate missing data on a variable-by-variable basis, and therefore requires the specification of an imputation model for each incomplete variable to create imputations per variable in an iterative fashion (@van2007multiple). In contrast to Joint MI, MICE specifies the multivariate distribution for the outcome and missingness pattern $p(y,r\mid \theta, \phi)$, indexed by the parameter vectors of the outcome ($\theta$) and missingness models ($\phi$), through a set of conditional densities $p(y_j \mid y_{-j},r,\theta_j, \phi_j)$, which is used to impute $y_j$ given the other variables. Starting from a random draw from the marginal distribution of $y_1$, imputation is then carried out by iterating over the conditionally  specified imputation models for each $y_j=(y_2,\ldots,y_J)$ separately given the set of all the other variables $y_{-j}$.
 
+Tha main idea of MICE is to directly draw the missing data from the predictive distribution of conditional densities, therefore avoiding the need to specify a joint multivariate model for all the data. Different approaches can be used to implement MICE. For example, a possible strategy is the following:
 
+1. Start at iteration $t=0$ by drawing randomly from the the distribution of the missing data given the observed data and all other variables, according to some probability model for each variable $y_j$, that is 
 
+\\[
+\\hat{y}\^{mis}\_{j,0} \\sim p(y\^{mis}\_{j} \\mid y\^{obs}_{j}, y\_{-j}, r)
+\\]
 
+2. At each iteration $t=1,\ldots,T$ and for each variable $j=\ldots,J$, set 
+
+\\[
+\\hat{y}\^{mis}\_{-j,t}=\\left(\\hat{y}\_{1,t},\\ldots, \\hat{y}\_{j-1,t}, \\hat{y}\_{j+1,t}, \\ldots, \\hat{y}\_{J,t} \\right)
+\\]
+
+as the currently completed data except $y_j$
+
+3. Draw $h=1,\ldots,H$ imputations for each variable $y_j$ from the predictive distribution of the missing data given the observed data and the currently imputed data at $t$, that is 
+
+\\[
+\\hat{y}\^{mis}\_{j,t} \\sim p(y\^{mis}\_{j} \\mid y\^{obs}_{j}, \\hat{y}\_{-j,t}, r)
+\\]
+
+and repeat the steps 2 and 3 until convergence. It is important to stress out that MICE is essentially a *Markov Chain Monte Carlo*(MCMC) algorithm (@brooks2011handbook), where the state space is the collection of all imputed values. More specifically, when the conditional distributions of all variables are compatible with a joint multivariate distribution, the algorithm corresponds to a Gibbs sampler, a Bayesian simulation method that samples from the conditional distributions in order to obtain samples from the joint multivariate distribution of all variables via some conditional factorisation of the latter (@casella1992explaining, @gilks1996introducing). A potential issue of MICE is that, since the conditional distributions are specified freely by the user, these may not be compatible with a joint distribution and therefore it is not clear from which distribution the algorithm is sampling from. However, a general advatage of MICE is that it gives freedom to the user for the specification of the univariate models for the variables, which can be tailored to handle different types of variabes (e.g. continuous and categorical) and different statistical issues for each variable (e.g. skewness and non-liner associations). 
+
+Regardless of the theoretical implications of MICE, as a MCMC method, the algorithm converges to a stationary distribution when three conditions are satisfied (@roberts1996markov,@brooks2011handbook):
+
+* The chain is *irreducible*, i.e. must be able to reach any state from any state in the state space
+
+* The chain is *aperiodic*, i.e. must be able to return to each state after some unknown number of steps or transitions
+
+* The chain is *recurrent*, i.e. there is probability of one of eventually returning to each state after some number of steps
+
+Typically periodicity and non-recurrence can be a problem in MICE when the imputation models are not compatible, possibly leading to different inferences based on the stopping point of the chain or to non-stationary behaviours of the chain.
 
 
 

@@ -21,10 +21,6 @@ Missing data are iteratively imputed using data augmentation methods according t
 `missingHE` produces plots which compares the observed and imputed values for both cost and benefit measures in each treatment intervention considered to detect possible concerns about the plausibility of the imputation methods. In addition, the output of `missingHE` cab be analysed using different funtions in the `R` package `BCEA` which produces a synthesis of the decision process given the current evidence and uncertainty, as well as several indicators that can be used to perform Probabilistic Sensitivity Analysis to parameter and model uncertainty. 
 
 
-On 25/09/2019 an updated version (1.2.1) of `missingHE` has become available on [CRAN](https://cran.r-project.org/web/packages/missingHE/), which allows to perform posterior predictive checks for each type of model as a further way to assess the fit of the model to the observed data. 
-
-
-
 ![png](imputed.jpg)
 
 
@@ -61,6 +57,10 @@ delta.effects     0.043  0.028   -0.003  0.089
 delta.costs     -51.514 67.025 -162.862 58.327
 ICER          -1198.431
 ```
+I note that, from 25/09/2019, an updated version (1.2.1) of `missingHE` has become available on [CRAN](https://cran.r-project.org/web/packages/missingHE/), which allows to perform posterior predictive checks for each type of model as a further way to assess the fit of the model to the observed data. 
+
+{{< figure library="1" src="plotpred.png" title="Example of posterior predictive checks in missingHE" >}}
+
 
 
 # Installation

@@ -96,10 +96,29 @@ an essential part of MI. For this reason, it is natural (but not essential) to m
 
 ## Joint Multiple Imputation
 
+Joint MI starts from the assumption that the data can be described by a multivariate distribution which in many cases, mostly for practical reasons, corresponds to assuming a multivariate Normal distribution. The general idea is that, for a general missing data pattern $ r$, missingness may occur anywhere in the multivariate outcome vector $ y=(y_1,\ldots,y_J)$, so that the distribution from which imputations should be drawn varies based on the observed variables in each pattern. For example, given $ r=(0,0,1,1)$, then imputations should be drawn from the bivariate distribution of the missing variables given the observed variables in that pattern, that is from $f(y^{mis}_1,y^{mis}_2 \mid y^{obs}_3, y^{obs}_4, \phi_{12})$, where $\phi_{12}$ is the probability of being in pattern $ r$ where the first two variables are missing.   
 
 
+Consider the multivariate Normal distribution $y \sim N(\mu,\Sigma)$, where $\theta=(\mu,\Sigma)$ represent the vector of the parameters of interest which need to be identified. Indeed, for non-monotone missing data, $ \theta$ cannot be generally identified based on the observed data directly $ y^{obs}$, and the typical solution is to iterate imputation and parameter estimation using a general algorithm known as *data augmentation*(@tanner1987calculation). Following @van2018flexible, the general procedure of the algorithm can be summarised as follows:
+
+1. Define some plausible starting values for all parameters $\theta_0=(\mu_0,\Sigma_0)$ 
+
+2. At each iteration $t=1,\ldots,T$, draw $h=1,\ldots,H$ imputations for each missing value from the predictive distribution of the missing data given the observed data and the current value of the parameters at $t-1$, that is  
+
+\\[
+\\hat{y}\^{mis}\_{t} \\sim p(y\^{mis} \\mid y\^{obs},\\theta\_{t-1})
+\\]
+
+3. Re-estimate the parameters $\theta$ using the observed and imputed data at $t$ based on the multivariate Normal model, that is 
+
+\\[
+\\hat{\\theta}\_{t} \\sim p(\\theta \\mid y\^{obs}, \\hat{y}\^{mis}\_{t})
+\\]
+
+And reiterate the steps 2 and 3 until convergence, where the stopping rule typically consists in imposing that the change in the parameters between iterations $t-1$ and $t$ should be smaller than a predefined "small" threshold $\epsilon$. @schafer1997analysis showed that imputations generated under the multivariate Normal model can be robust to non-normal data, even though it is generally more efficient to transform the data towards normality, especially when the parameters of interest are difficult to estimate, such as quantiles and variances.
 
 
+The multivariate Normal model is also often applied to categorical data, with different types of specifications that have been proposed in the literature (@schafer1997analysis,@horton2003potential,@allison2005imputation,@bernaards2007robustness,@yucel2008using,@demirtas2009rounding). For examples, missing data in contingency tables can be imputed using log-linear models (@schafer1997analysis); mixed continuous-categorical data can be imputed under the general location model which combines a log-linear and multivariate Normal model (@olkin1961multivariate); two-way imputation can be applied to missing test item responses by imputing missing categorical data by conditioning on the row and column sum scores of the multivariate data (@van2007two).
 
 
 

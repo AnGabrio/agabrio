@@ -6,10 +6,19 @@
     <description>Recent content in Missing Data on Andrea Gabrio</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 04 Nov 2019 13:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 28 Jan 2020 11:15:00 +0000</lastBuildDate>
     
 	    <atom:link href="/tags/missing-data/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>A Bayesian Approach to Handle Missingness in Trial Based Economic Evaluations</title>
+      <link>/talk/priment2020/</link>
+      <pubDate>Tue, 28 Jan 2020 11:15:00 +0000</pubDate>
+      
+      <guid>/talk/priment2020/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>A Bayesian Parametric Approach to Handle Missing Longitudinal Outcome Data in Trial-Based Health Economic Evaluations</title>
@@ -157,8 +166,6 @@ because this is based on information which is not directly available from the da
 
 &lt;p&gt;&lt;code&gt;missingHE&lt;/code&gt; produces plots which compares the observed and imputed values for both cost and benefit measures in each treatment intervention considered to detect possible concerns about the plausibility of the imputation methods. In addition, the output of &lt;code&gt;missingHE&lt;/code&gt; cab be analysed using different funtions in the &lt;code&gt;R&lt;/code&gt; package &lt;code&gt;BCEA&lt;/code&gt; which produces a synthesis of the decision process given the current evidence and uncertainty, as well as several indicators that can be used to perform Probabilistic Sensitivity Analysis to parameter and model uncertainty.&lt;/p&gt;
 
-&lt;p&gt;On 25/09/2019 an updated version (1.2.1) of &lt;code&gt;missingHE&lt;/code&gt; has become available on &lt;a href=&#34;https://cran.r-project.org/web/packages/missingHE/&#34; target=&#34;_blank&#34;&gt;CRAN&lt;/a&gt;, which allows to perform posterior predictive checks for each type of model as a further way to assess the fit of the model to the observed data.&lt;/p&gt;
-
 &lt;p&gt;&lt;img src=&#34;imputed.jpg&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
 
 &lt;h1 id=&#34;example&#34;&gt;Example&lt;/h1&gt;
@@ -193,6 +200,30 @@ delta.costs     -51.514 67.025 -162.862 58.327
 ICER          -1198.431
 &lt;/code&gt;&lt;/pre&gt;
 
+&lt;p&gt;I note that, from 25/09/2019, an updated version (1.2.1) of &lt;code&gt;missingHE&lt;/code&gt; has become available on &lt;a href=&#34;https://cran.r-project.org/web/packages/missingHE/&#34; target=&#34;_blank&#34;&gt;CRAN&lt;/a&gt;, which allows to perform posterior predictive checks for each type of model as a further way to assess the fit of the model to the observed data.&lt;/p&gt;
+
+
+
+
+  
+
+
+
+
+&lt;figure&gt;
+
+&lt;img src=&#34;/img/plotpred.png&#34; &gt;
+
+
+
+&lt;figcaption data-pre=&#34;Figure &#34; data-post=&#34;:&#34; &gt;
+  &lt;h4&gt;Example of posterior predictive checks in missingHE&lt;/h4&gt;
+  
+&lt;/figcaption&gt;
+
+&lt;/figure&gt;
+
+
 &lt;h1 id=&#34;installation&#34;&gt;Installation&lt;/h1&gt;
 
 &lt;p&gt;There are two ways of installing &lt;code&gt;missingHE&lt;/code&gt;. A &lt;em&gt;stable&lt;/em&gt; version (currently 1.2.1) is packaged and available from &lt;a href=&#34;https://cran.r-project.org/web/packages/missingHE/&#34; target=&#34;_blank&#34;&gt;CRAN&lt;/a&gt;. You can simply type on your &lt;code&gt;R&lt;/code&gt; terminal&lt;/p&gt;
@@ -209,6 +240,30 @@ ICER          -1198.431
 
 &lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;devtools::install_github(&amp;quot;AnGabrio/missingHE&amp;quot;)
 &lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>missingHE</title>
+      <link>/project/missinghe/</link>
+      <pubDate>Mon, 05 Feb 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/project/missinghe/</guid>
+      <description>&lt;p&gt;&lt;code&gt;missingHE&lt;/code&gt; is a &lt;code&gt;R&lt;/code&gt; package, available on &lt;a href=&#34;https://cran.r-project.org/web/packages/missingHE/&#34; target=&#34;_blank&#34;&gt;CRAN&lt;/a&gt; which is aimed at providing some useful tools to analysts in order to handle missing outcome data under a full Bayesian framework in economic evaluations.
+The package relies on the &lt;code&gt;R&lt;/code&gt; package &lt;code&gt;R2jags&lt;/code&gt; to implement Bayesian methods via the statistical software &lt;code&gt;JAGS&lt;/code&gt; to obtain inferences using Markov Chain Monte Carlo (MCMC) methods.
+Different types of missing data models are implemented in the package, including selection models, pattern mixture models and hurdle models. A range of parametric distributions can be specified when modelling the typical
+outcomes in an trial-based economic evaluations, namely the effectiveness and cost variabels, while simultaneously incorporating different assumptions about the missingness mechanism, which allows to easily perform
+sensitvity analysis to a range of alternative missing data assumptions according to the modelling choices selected by the user.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;missingHE&lt;/code&gt; also provides functions, taken and adapted from other &lt;code&gt;R&lt;/code&gt; packages, to assess the results of each type of model, including summaries of the posterior distributions of each model parameter,
+range and imputations of the missing values, different types of model diagnostics to assess convergence of the algorithm, posterior predictive checks, model assessment measures based on the fit to the observed data,
+and a general summary of the economic evaluations, including the results from probabilistic sensitivity analyses which are automatically performed within a Bayesian modelling framework.&lt;/p&gt;
+
+&lt;p&gt;For example, the function &lt;code&gt;plot&lt;/code&gt;, when applied to the output of a model fitted using &lt;code&gt;missingHE&lt;/code&gt;, produces graphs which compare the observed and imputed values for both cost and benefit measures in each treatment group to detect possible concerns about the plausibility of the imputations.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;imputed.jpg&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;More information, including new updates, about &amp;lsquo;missingHE&amp;rsquo; can be found at this &lt;a href=&#34;http://127.0.0.1:4321/missingHE/&#34; target=&#34;_blank&#34;&gt;dedicated page&lt;/a&gt;&lt;/p&gt;
 </description>
     </item>
     

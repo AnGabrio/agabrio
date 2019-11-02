@@ -569,24 +569,56 @@ an essential part of MI. For this reason, it is natural (but not essential) to m
 </div>
 <div id="joint-multiple-imputation" class="section level2">
 <h2>Joint Multiple Imputation</h2>
+<p>Joint MI starts from the assumption that the data can be described by a multivariate distribution which in many cases, mostly for practical reasons, corresponds to assuming a multivariate Normal distribution. The general idea is that, for a general missing data pattern $ r$, missingness may occur anywhere in the multivariate outcome vector $ y=(y_1,,y_J)$, so that the distribution from which imputations should be drawn varies based on the observed variables in each pattern. For example, given $ r=(0,0,1,1)$, then imputations should be drawn from the bivariate distribution of the missing variables given the observed variables in that pattern, that is from <span class="math inline">\(f(y^{mis}_1,y^{mis}_2 \mid y^{obs}_3, y^{obs}_4, \phi_{12})\)</span>, where <span class="math inline">\(\phi_{12}\)</span> is the probability of being in pattern $ r$ where the first two variables are missing.</p>
+<p>Consider the multivariate Normal distribution <span class="math inline">\(y \sim N(\mu,\Sigma)\)</span>, where <span class="math inline">\(\theta=(\mu,\Sigma)\)</span> represent the vector of the parameters of interest which need to be identified. Indeed, for non-monotone missing data, $ $ cannot be generally identified based on the observed data directly $ y^{obs}$, and the typical solution is to iterate imputation and parameter estimation using a general algorithm known as <em>data augmentation</em>(<span class="citation">Tanner and Wong (1987)</span>). Following <span class="citation">Van Buuren (2018)</span>, the general procedure of the algorithm can be summarised as follows:</p>
+<ol style="list-style-type: decimal">
+<li><p>Define some plausible starting values for all parameters <span class="math inline">\(\theta_0=(\mu_0,\Sigma_0)\)</span></p></li>
+<li><p>At each iteration <span class="math inline">\(t=1,\ldots,T\)</span>, draw <span class="math inline">\(h=1,\ldots,H\)</span> imputations for each missing value from the predictive distribution of the missing data given the observed data and the current value of the parameters at <span class="math inline">\(t-1\)</span>, that is</p></li>
+</ol>
+<p>\[
+\hat{y}^{mis}_{t} \sim p(y^{mis} \mid y^{obs},\theta_{t-1})
+\]</p>
+<ol start="3" style="list-style-type: decimal">
+<li>Re-estimate the parameters <span class="math inline">\(\theta\)</span> using the observed and imputed data at <span class="math inline">\(t\)</span> based on the multivariate Normal model, that is</li>
+</ol>
+<p>\[
+\hat{\theta}_{t} \sim p(\theta \mid y^{obs}, \hat{y}^{mis}_{t})
+\]</p>
+<p>And reiterate the steps 2 and 3 until convergence, where the stopping rule typically consists in imposing that the change in the parameters between iterations <span class="math inline">\(t-1\)</span> and <span class="math inline">\(t\)</span> should be smaller than a predefined “small” threshold <span class="math inline">\(\epsilon\)</span>. <span class="citation">Schafer (1997)</span> showed that imputations generated under the multivariate Normal model can be robust to non-normal data, even though it is generally more efficient to transform the data towards normality, especially when the parameters of interest are difficult to estimate, such as quantiles and variances.</p>
+<p>The multivariate Normal model is also often applied to categorical data, with different types of specifications that have been proposed in the literature (<span class="citation">Schafer (1997)</span>,<span class="citation">Horton, Lipsitz, and Parzen (2003)</span>,<span class="citation">Allison (2005)</span>,<span class="citation">Bernaards, Belin, and Schafer (2007)</span>,<span class="citation">Yucel, He, and Zaslavsky (2008)</span>,<span class="citation">Demirtas (2009)</span>). For examples, missing data in contingency tables can be imputed using log-linear models (<span class="citation">Schafer (1997)</span>); mixed continuous-categorical data can be imputed under the general location model which combines a log-linear and multivariate Normal model (<span class="citation">Olkin, Tate, and others (1961)</span>); two-way imputation can be applied to missing test item responses by imputing missing categorical data by conditioning on the row and column sum scores of the multivariate data (<span class="citation">Van Ginkel et al. (2007)</span>).</p>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1>References</h1>
 <div id="refs" class="references">
+<div id="ref-allison2005imputation">
+<p>Allison, Paul D. 2005. “Imputation of Categorical Variables with Proc Mi.” <em>SUGI 30 Proceedings</em> 113 (30): 1–14.</p>
+</div>
 <div id="ref-barnard1999miscellanea">
 <p>Barnard, John, and Donald B Rubin. 1999. “Miscellanea. Small-Sample Degrees of Freedom with Multiple Imputation.” <em>Biometrika</em> 86 (4): 948–55.</p>
+</div>
+<div id="ref-bernaards2007robustness">
+<p>Bernaards, Coen A, Thomas R Belin, and Joseph L Schafer. 2007. “Robustness of a Multivariate Normal Approximation for Imputation of Incomplete Binary Data.” <em>Statistics in Medicine</em> 26 (6): 1368–82.</p>
 </div>
 <div id="ref-carpenter2012multiple">
 <p>Carpenter, James, and Michael Kenward. 2012. <em>Multiple Imputation and Its Application</em>. John Wiley &amp; Sons.</p>
 </div>
+<div id="ref-demirtas2009rounding">
+<p>Demirtas, Hakan. 2009. “Rounding Strategies for Multiply Imputed Binary Data.” <em>Biometrical Journal: Journal of Mathematical Methods in Biosciences</em> 51 (4): 677–88.</p>
+</div>
 <div id="ref-herzog1983using">
 <p>Herzog, Thomas N, and Donald B Rubin. 1983. “Using Multiple Imputations to Handle Nonresponse in Sample Surveys.” <em>Incomplete Data in Sample Surveys</em> 2: 209–45.</p>
+</div>
+<div id="ref-horton2003potential">
+<p>Horton, Nicholas J, Stuart R Lipsitz, and Michael Parzen. 2003. “A Potential for Bias When Rounding in Multiple Imputation.” <em>The American Statistician</em> 57 (4): 229–32.</p>
 </div>
 <div id="ref-little2019statistical">
 <p>Little, Roderick JA, and Donald B Rubin. 2019. <em>Statistical Analysis with Missing Data</em>. Vol. 793. John Wiley &amp; Sons.</p>
 </div>
 <div id="ref-molenberghs2014handbook">
 <p>Molenberghs, Geert, Garrett Fitzmaurice, Michael G Kenward, Anastasios Tsiatis, and Geert Verbeke. 2014. <em>Handbook of Missing Data Methodology</em>. Chapman; Hall/CRC.</p>
+</div>
+<div id="ref-olkin1961multivariate">
+<p>Olkin, Ingram, Robert Fleming Tate, and others. 1961. “Multivariate Correlation Models with Mixed Discrete and Continuous Variables.” <em>The Annals of Mathematical Statistics</em> 32 (2): 448–65.</p>
 </div>
 <div id="ref-rubin1978multiple">
 <p>Rubin, Donald B. 1978. “Multiple Imputations in Sample Surveys a Phenomenological Bayesian Approach to Nonresponse.” <em>Proceedings of the Survey Research Methods Section of the American Statistical Association</em> 1: 20–34.</p>
@@ -609,8 +641,17 @@ an essential part of MI. For this reason, it is natural (but not essential) to m
 <div id="ref-schafer2002missing">
 <p>Schafer, Joseph L, and John W Graham. 2002. “Missing Data: Our View of the State of the Art.” <em>Psychological Methods</em> 7 (2): 147.</p>
 </div>
+<div id="ref-tanner1987calculation">
+<p>Tanner, Martin A, and Wing Hung Wong. 1987. “The Calculation of Posterior Distributions by Data Augmentation.” <em>Journal of the American Statistical Association</em> 82 (398): 528–40.</p>
+</div>
 <div id="ref-van2018flexible">
 <p>Van Buuren, Stef. 2018. <em>Flexible Imputation of Missing Data</em>. Chapman; Hall/CRC.</p>
+</div>
+<div id="ref-van2007two">
+<p>Van Ginkel, Joost R, L Andries Van der Ark, Klaas Sijtsma, and Jeroen K Vermunt. 2007. “Two-Way Imputation: A Bayesian Method for Estimating Missing Scores in Tests and Questionnaires, and an Accurate Approximation.” <em>Computational Statistics &amp; Data Analysis</em> 51 (8): 4013–27.</p>
+</div>
+<div id="ref-yucel2008using">
+<p>Yucel, Recai M, Yulei He, and Alan M Zaslavsky. 2008. “Using Calibration to Improve Rounding in Imputation.” <em>The American Statistician</em> 62 (2): 125–29.</p>
 </div>
 </div>
 </div>
