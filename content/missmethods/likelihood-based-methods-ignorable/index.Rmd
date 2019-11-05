@@ -66,7 +66,7 @@ which is considered as a function of $\theta=(\mu,\sigma^2)$ for fixed data $y$.
 
 ### Multivariate Normal Example
 
-If the sample considered has dimension $L>1$, e.g. we have a set of idependent and identically distributed variables $y=(y_{ij})$, for $i=1,\ldots,n$ units and $j=1,\ldots,J$ variables, which comes from a Multivariate Normal distribution with mean vector $\mu=(\mu_1,\ldots\mu_J)$ and covariance matrix $\Sigma=(\sigma_{jk})$ for $ j=1,\ldots,J, k=1,\ldots,K$ and $J=K$, then its density function is
+If the sample considered has dimension $J>1$, e.g. we have a set of idependent and identically distributed variables $y=(y_{ij})$, for $i=1,\ldots,n$ units and $j=1,\ldots,J$ variables, which comes from a Multivariate Normal distribution with mean vector $\mu=(\mu_1,\ldots\mu_J)$ and covariance matrix $\Sigma=(\sigma_{jk})$ for $ j=1,\ldots,J, k=1,\ldots,K$ and $J=K$, then its density function is
 
 \\[
 f(y \\mid \\mu, \\Sigma)=\\frac{1}{\\sqrt{\\left(2\\pi \\right)\^{nK}\\left(\\mid \\Sigma \\mid \\right)\^n}} \\text{exp}\\left(-\\frac{1}{2}\\sum_{i=1}\^{n}(y\_i-\\mu)\\Sigma\^{-1}(y\_i-\\mu)\^{T}  \\right),
@@ -183,7 +183,7 @@ where $\beta=\rho\frac{\sigma_2}{\sigma_1}$ is the parameter that quantifies the
 Suppose the data consist in $n$ units measured on an outcome variable $y$ and a set of $J$ covariates $x=(x_{1},\ldots,x_{J})$ and assume that the distribution of $y$ given $x$ is Normal with mean $\beta_0+\sum_{j=1}^J\beta_jx_{ij}$ and variance $\sigma^2$. The loglikelihood of $\theta=(\beta,\sigma^2)$ given the observed data $(y,x)$ is given by
 
 \\[
-l(\\theta \\mid y) = -\\frac{n}{2}\\text{ln}(\\sigma\^2) - \\frac{\\sum\_{i=1}\^n \\left(y\_i - \\beta\_0 - \\sum_{j=1}^J\\beta_jx_{ij} \\right)\^2}{2\\sigma\^2}.
+l(\\theta \\mid y) = -\\frac{n}{2}\\text{ln}(2\\pi) -\\frac{n}{2}\\text{ln}(\\sigma\^2) - \\frac{\\sum\_{i=1}\^n \\left(y\_i - \\beta\_0 - \\sum_{j=1}^J\\beta_jx_{ij} \\right)\^2}{2\\sigma\^2}.
 \\]
 
 Maximising this expression with respect to $\theta$, the MLEs are found to be equal to the least squares estimates of the intercept and rgeression coefficients. Using a matrix notation for the $n$-th vector of the outcome values $Y$ and the $n\times (J+1)$ matrix of the covariate values (including the constant term), then the MLEs are:

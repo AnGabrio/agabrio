@@ -553,7 +553,7 @@ l(\mu, \sigma^2 \mid y)= -\frac{n}{2}\text{ln}(2\pi)-\frac{n}{2}\text{ln}(\sigma
 </div>
 <div id="multivariate-normal-example" class="section level3">
 <h3>Multivariate Normal Example</h3>
-<p>If the sample considered has dimension <span class="math inline">\(L&gt;1\)</span>, e.g. we have a set of idependent and identically distributed variables <span class="math inline">\(y=(y_{ij})\)</span>, for <span class="math inline">\(i=1,\ldots,n\)</span> units and <span class="math inline">\(j=1,\ldots,J\)</span> variables, which comes from a Multivariate Normal distribution with mean vector <span class="math inline">\(\mu=(\mu_1,\ldots\mu_J)\)</span> and covariance matrix <span class="math inline">\(\Sigma=(\sigma_{jk})\)</span> for $ j=1,,J, k=1,,K$ and <span class="math inline">\(J=K\)</span>, then its density function is</p>
+<p>If the sample considered has dimension <span class="math inline">\(J&gt;1\)</span>, e.g. we have a set of idependent and identically distributed variables <span class="math inline">\(y=(y_{ij})\)</span>, for <span class="math inline">\(i=1,\ldots,n\)</span> units and <span class="math inline">\(j=1,\ldots,J\)</span> variables, which comes from a Multivariate Normal distribution with mean vector <span class="math inline">\(\mu=(\mu_1,\ldots\mu_J)\)</span> and covariance matrix <span class="math inline">\(\Sigma=(\sigma_{jk})\)</span> for $ j=1,,J, k=1,,K$ and <span class="math inline">\(J=K\)</span>, then its density function is</p>
 <p>\[
 f(y \mid \mu, \Sigma)=\frac{1}{\sqrt{\left(2\pi \right)^{nK}\left(\mid \Sigma \mid \right)^n}} \text{exp}\left(-\frac{1}{2}\sum_{i=1}^{n}(y_i-\mu)\Sigma^{-1}(y_i-\mu)^{T} \right),
 \]</p>
@@ -639,7 +639,7 @@ y_1 \sim \text{Normal}\left(\mu_1,\sigma^2_1 \right) \;\;\; \text{and} \;\;\; y_
 <h2>Multiple Linear Regression</h2>
 <p>Suppose the data consist in <span class="math inline">\(n\)</span> units measured on an outcome variable <span class="math inline">\(y\)</span> and a set of <span class="math inline">\(J\)</span> covariates <span class="math inline">\(x=(x_{1},\ldots,x_{J})\)</span> and assume that the distribution of <span class="math inline">\(y\)</span> given <span class="math inline">\(x\)</span> is Normal with mean <span class="math inline">\(\beta_0+\sum_{j=1}^J\beta_jx_{ij}\)</span> and variance <span class="math inline">\(\sigma^2\)</span>. The loglikelihood of <span class="math inline">\(\theta=(\beta,\sigma^2)\)</span> given the observed data <span class="math inline">\((y,x)\)</span> is given by</p>
 <p>\[
-l(\theta \mid y) = -\frac{n}{2}\text{ln}(\sigma^2) - \frac{\sum_{i=1}^n \left(y_i - \beta_0 - \sum_{j=1}^J\beta_jx_{ij} \right)^2}{2\sigma^2}.
+l(\theta \mid y) = -\frac{n}{2}\text{ln}(2\pi) -\frac{n}{2}\text{ln}(\sigma^2) - \frac{\sum_{i=1}^n \left(y_i - \beta_0 - \sum_{j=1}^J\beta_jx_{ij} \right)^2}{2\sigma^2}.
 \]</p>
 <p>Maximising this expression with respect to <span class="math inline">\(\theta\)</span>, the MLEs are found to be equal to the least squares estimates of the intercept and rgeression coefficients. Using a matrix notation for the <span class="math inline">\(n\)</span>-th vector of the outcome values <span class="math inline">\(Y\)</span> and the <span class="math inline">\(n\times (J+1)\)</span> matrix of the covariate values (including the constant term), then the MLEs are:</p>
 <p>\[
