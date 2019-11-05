@@ -1681,6 +1681,181 @@ d(i,j)=(\hat{y}(x_i)-\hat{y}(x_j))^2,
     </item>
     
     <item>
+      <title>Introduction to Maximum Likelihood Estimation</title>
+      <link>/missmethods/likelihood-based-methods-ignorable/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/missmethods/likelihood-based-methods-ignorable/</guid>
+      <description>
+
+
+&lt;p&gt;A possible approach to analyse missing data is to use methods based on the likelihood function under specific modelling assumptions. In this section, I initially review maximum likelihood methods based on fully observed data alone.&lt;/p&gt;
+&lt;div id=&#34;maximum-likelihood-methods-for-complete-data&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Maximum Likelihood Methods for Complete Data&lt;/h2&gt;
+&lt;p&gt;Let &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; denote the set of data, which are assumed to be generated according to a certain probability density function &lt;span class=&#34;math inline&#34;&gt;\(f(Y= y,\mid \theta)=f(y \mid \theta)\)&lt;/span&gt; indexed by the set of parameters &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt;, which lies on the parameter space &lt;span class=&#34;math inline&#34;&gt;\(\Theta\)&lt;/span&gt; (i.e. set of values of &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; for which &lt;span class=&#34;math inline&#34;&gt;\(f(y\mid \theta)\)&lt;/span&gt; is a proper density function). The &lt;em&gt;Likelihood&lt;/em&gt; function, indicated with &lt;span class=&#34;math inline&#34;&gt;\(L(\theta \mid y)\)&lt;/span&gt;, is defined as any function of &lt;span class=&#34;math inline&#34;&gt;\(\theta \in \Theta\)&lt;/span&gt; proportional that is to &lt;span class=&#34;math inline&#34;&gt;\(f(y \mid \theta)\)&lt;/span&gt;. Note that, in contrast to the density function which is defined as a function of the data &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; given the values of the parameters &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt;, instead the likelihood is defined as a function of the parameters &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; for fixed data &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;. In addition, the &lt;em&gt;loglikelihood&lt;/em&gt; function, indicated with &lt;span class=&#34;math inline&#34;&gt;\(l(\theta\mid y)\)&lt;/span&gt; is defined as the natural logarithm of &lt;span class=&#34;math inline&#34;&gt;\(L(\theta \mid y)\)&lt;/span&gt;.&lt;/p&gt;
+&lt;div id=&#34;univariate-normal-example&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Univariate Normal Example&lt;/h3&gt;
+&lt;p&gt;The joint density function of &lt;span class=&#34;math inline&#34;&gt;\(n\)&lt;/span&gt; independent and identially distributed units &lt;span class=&#34;math inline&#34;&gt;\(y=(y_1,\ldots,y_n)\)&lt;/span&gt; from a Normal distribution with mean &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; and variance &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt;, is&lt;/p&gt;
+&lt;p&gt;\[
+f(y \mid \mu, \sigma^2)=\frac{1}{\sqrt{\left(2\pi\sigma^2\right)^n}}\text{exp}\left(-\frac{1}{2}\sum_{i=1}^n \frac{(y_i-\mu)^2}{\sigma^2} \right),
+\]&lt;/p&gt;
+&lt;p&gt;and therefore the loglikelihood is&lt;/p&gt;
+&lt;p&gt;\[
+l(\mu, \sigma^2 \mid y)= -\frac{n}{2}\text{ln}(2\pi)-\frac{n}{2}\text{ln}(\sigma^2)-\frac{1}{2}\sum_{i=1}^n \frac{(y_i-\mu)^2}{\sigma^2},
+\]&lt;/p&gt;
+&lt;p&gt;which is considered as a function of &lt;span class=&#34;math inline&#34;&gt;\(\theta=(\mu,\sigma^2)\)&lt;/span&gt; for fixed data &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;multivariate-normal-example&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Multivariate Normal Example&lt;/h3&gt;
+&lt;p&gt;If the sample considered has dimension &lt;span class=&#34;math inline&#34;&gt;\(L&amp;gt;1\)&lt;/span&gt;, e.g. we have a set of idependent and identically distributed variables &lt;span class=&#34;math inline&#34;&gt;\(y=(y_{ij})\)&lt;/span&gt;, for &lt;span class=&#34;math inline&#34;&gt;\(i=1,\ldots,n\)&lt;/span&gt; units and &lt;span class=&#34;math inline&#34;&gt;\(j=1,\ldots,J\)&lt;/span&gt; variables, which comes from a Multivariate Normal distribution with mean vector &lt;span class=&#34;math inline&#34;&gt;\(\mu=(\mu_1,\ldots\mu_J)\)&lt;/span&gt; and covariance matrix &lt;span class=&#34;math inline&#34;&gt;\(\Sigma=(\sigma_{jk})\)&lt;/span&gt; for $ j=1,,J, k=1,,K$ and &lt;span class=&#34;math inline&#34;&gt;\(J=K\)&lt;/span&gt;, then its density function is&lt;/p&gt;
+&lt;p&gt;\[
+f(y \mid \mu, \Sigma)=\frac{1}{\sqrt{\left(2\pi \right)^{nK}\left(\mid \Sigma \mid \right)^n}} \text{exp}\left(-\frac{1}{2}\sum_{i=1}^{n}(y_i-\mu)\Sigma^{-1}(y_i-\mu)^{T} \right),
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(|\Sigma|\)&lt;/span&gt; denotes the determinant of the matrix &lt;span class=&#34;math inline&#34;&gt;\(\Sigma\)&lt;/span&gt; and the superscript &lt;span class=&#34;math inline&#34;&gt;\(T\)&lt;/span&gt; denotes the transpose of a matrix or vector, while &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; denotes the row vector of observed values for unit &lt;span class=&#34;math inline&#34;&gt;\(i\)&lt;/span&gt;. The loglikelihood of &lt;span class=&#34;math inline&#34;&gt;\(\theta=(\mu,\Sigma)\)&lt;/span&gt; is&lt;/p&gt;
+&lt;p&gt;\[
+l(\mu,\Sigma \mid y)= - \frac{n}{2}\text{ln}(2\pi) - \frac{n}{2}\text{ln}(|\Sigma|)-\frac{1}{2}\sum_{i=1}^{n}(y_i-\mu)\Sigma^{-1}(y_i-\mu)^T.
+\]&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;mle-estimation&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;MLE estimation&lt;/h2&gt;
+&lt;p&gt;Finding the maximum value of &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; that is most likely to have generated the data &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;, corresponding to maximising the likelihood or &lt;em&gt;Maximum Likelihood Estimation&lt;/em&gt;(MLE), is a standard approach to make inference about &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt;. Suppose a specific value for the parameter &lt;span class=&#34;math inline&#34;&gt;\(\hat{\theta}\)&lt;/span&gt; such that &lt;span class=&#34;math inline&#34;&gt;\(L(\hat{\theta}\mid y)\geq L(\theta \mid y)\)&lt;/span&gt; for any other value of &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt;. This implies that the observed data &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; is at least as likely under &lt;span class=&#34;math inline&#34;&gt;\(\hat{\theta}\)&lt;/span&gt; as under any other value of &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt;, i.e. &lt;span class=&#34;math inline&#34;&gt;\(\hat{\theta}\)&lt;/span&gt; is the value best supported by the data. More specifically, a maximum likelihood estimate of &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; is a value of &lt;span class=&#34;math inline&#34;&gt;\(\theta \in \Theta\)&lt;/span&gt; that maximises the likelihood &lt;span class=&#34;math inline&#34;&gt;\(L(\theta \mid y)\)&lt;/span&gt; or, equivalently, that maximises the loglikelihood &lt;span class=&#34;math inline&#34;&gt;\(l(\theta \mid y)\)&lt;/span&gt;. In general, when the likelihood is differentiable and bounded from above, typically the MLE can be found by differentiating &lt;span class=&#34;math inline&#34;&gt;\(L(\theta \mid y)\)&lt;/span&gt; or &lt;span class=&#34;math inline&#34;&gt;\(l(\theta \mid y)\)&lt;/span&gt; with respect to &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt;, setting the result equal to zero, and solving for &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt;. The resulting equation, &lt;span class=&#34;math inline&#34;&gt;\(D_l(\theta)=\frac{\partial l(\theta \mid y)}{\partial \theta}=0\)&lt;/span&gt;, is known as the &lt;em&gt;likelihood equation&lt;/em&gt; and the derivative of the loglikelihood as the &lt;em&gt;score function&lt;/em&gt;. When &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; consists in a set of &lt;span class=&#34;math inline&#34;&gt;\(j=1,\ldots,J\)&lt;/span&gt; components, then the likelihood equation corresponds to a set of &lt;span class=&#34;math inline&#34;&gt;\(J\)&lt;/span&gt; simultaneous equations, obtained by differentiating &lt;span class=&#34;math inline&#34;&gt;\(l(\theta \mid y)\)&lt;/span&gt; with respect to each component of &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt;.&lt;/p&gt;
+&lt;div id=&#34;univariate-normal-example-1&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Univariate Normal Example&lt;/h3&gt;
+&lt;p&gt;Recall that, for a Normal sample with &lt;span class=&#34;math inline&#34;&gt;\(n\)&lt;/span&gt; units, the loglikelihood is indexed by the set of parameters &lt;span class=&#34;math inline&#34;&gt;\(\theta=(\mu,\sigma^2)\)&lt;/span&gt; and has the form&lt;/p&gt;
+&lt;p&gt;\[
+l(\mu, \sigma^2 \mid y)= -\frac{n}{2}\text{ln}(2\pi)-\frac{n}{2}\text{ln}(\sigma^2)-\frac{1}{2}\sum_{i=1}^n \frac{(y_i-\mu)^2}{\sigma^2}.
+\]&lt;/p&gt;
+&lt;p&gt;Next, the MLE can be derived by first differentiating &lt;span class=&#34;math inline&#34;&gt;\(l(\theta \mid y)\)&lt;/span&gt; with respect to &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; and set the result equal to zero, that is&lt;/p&gt;
+&lt;p&gt;\[
+\frac{\partial l(\theta \mid y)}{\partial \mu}= -\frac{2}{2\sigma^2}\sum_{i=1}^n(y_i-\mu)(-1)=\frac{\sum_{i=1}^n y_i - n\mu}{\sigma^2}=0,
+\]&lt;/p&gt;
+&lt;p&gt;Next, after simplifying a bit, we can retrieve the solution&lt;/p&gt;
+&lt;p&gt;\[
+\hat{\mu}=\frac{1}{n}\sum_{i=1}^n y_i=\bar{y},
+\]&lt;/p&gt;
+&lt;p&gt;which corresponds to the sample mean of the observations. Next, we differentiate &lt;span class=&#34;math inline&#34;&gt;\(l(\theta \mid y)\)&lt;/span&gt; with respect to &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt;, that is we set&lt;/p&gt;
+&lt;p&gt;\[
+\frac{\partial l(\theta \mid y)}{\partial \sigma^2}= -\frac{n}{2\sigma^2}+\frac{1}{2(\sigma^2)^2}\sum_{i=1}^n (y_i-\mu)^2=0.
+\]&lt;/p&gt;
+&lt;p&gt;We then simplify and move things around to get&lt;/p&gt;
+&lt;p&gt;\[
+\frac{1}{\sigma^3}\sum_{i=1}^n(y_i-\mu)^2=\frac{n}{\sigma} \;\;\; \rightarrow \;\;\; \sigma^2=\frac{1}{n}\sum_{i=1}^n(y_i-\mu)^2.
+\]&lt;/p&gt;
+&lt;p&gt;Finally, we replace &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; in the expression above with the value &lt;span class=&#34;math inline&#34;&gt;\(\hat{\mu}=\bar{y}\)&lt;/span&gt; found before and obtain the solution&lt;/p&gt;
+&lt;p&gt;\[
+\hat{\sigma}^2=\frac{1}{n}\sum_{i=1}^n(y_i-\bar{y})^2=s^2,
+\]&lt;/p&gt;
+&lt;p&gt;which, however, is a biased estimator of &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt; and therefore is often replaced with the unbiased estimator &lt;span class=&#34;math inline&#34;&gt;\(\frac{s^2}{(n-1)}\)&lt;/span&gt;. In particular, given a population parameter &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt;, the estimator &lt;span class=&#34;math inline&#34;&gt;\(\hat{\theta}\)&lt;/span&gt; for &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; is said to be unbiased when &lt;span class=&#34;math inline&#34;&gt;\(E[\hat{\theta}]=\theta\)&lt;/span&gt;. This is the case, for example, of the sample mean &lt;span class=&#34;math inline&#34;&gt;\(\hat{\mu}=\bar{y}\)&lt;/span&gt; which is an unbiased estimator of the population mean &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt;:&lt;/p&gt;
+&lt;p&gt;\[
+E\left[\hat{\mu} \right]=E\left[\frac{1}{n}\sum_{i=1}^n y_i \right]=\frac{1}{n}\sum_{i=1}^n E\left[y_i \right]=\frac{1}{n} (n\mu)=\mu.
+\]&lt;/p&gt;
+&lt;p&gt;However, this is not true for the sample variance &lt;span class=&#34;math inline&#34;&gt;\(s^2\)&lt;/span&gt;. This can be seen by first rewriting the expression of the estimator as&lt;/p&gt;
+&lt;p&gt;\[
+\hat{\sigma}^2=\frac{1}{n}\sum_{i=1}^n (y_i^2 -2y_i\bar{y}+\bar{y}^2)=\frac{1}{n}\sum_{i=1}^n y_i^2 -2\bar{y}\sum_{i=1}^n y_i + \frac{1}{n}n\bar{y}^2=\frac{1}{n}\sum_{i=1}^n y_i^2 - \bar{y}^2,
+\]&lt;/p&gt;
+&lt;p&gt;and then by computing the expectation of this quantity:&lt;/p&gt;
+&lt;p&gt;\[
+E\left[\hat{\sigma}^2 \right]=E\left[\frac{1}{n}\sum_{i=1}^n y_i^2 - \bar{y}^2 \right]=\frac{1}{n}\sum_{i=1}^n E\left[y_i^2 \right] - E\left[\bar{y}^2 \right]=\frac{1}{n}\sum_{i=1}^n (\sigma^2 + \mu^2) - (\frac{\sigma^2}{n}+\mu^2)=\frac{1}{n}\left(n\sigma^2+n\mu^2\right) - \frac{\sigma^2}{n}-\mu^2=\frac{(n-1)\sigma^2}{n}.
+\]&lt;/p&gt;
+&lt;p&gt;The above result is obtained by pluggin in the expression for the variance of a general variable &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; and retrieving the expression for &lt;span class=&#34;math inline&#34;&gt;\(E[y^2]\)&lt;/span&gt; as a function of the variance and &lt;span class=&#34;math inline&#34;&gt;\(E[y]^2\)&lt;/span&gt;. More specifically, given that&lt;/p&gt;
+&lt;p&gt;\[
+Var(y)=\sigma^2=E\left[y^2 \right]-E\left[y \right]^2,
+\]&lt;/p&gt;
+&lt;p&gt;then we know that for &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;, &lt;span class=&#34;math inline&#34;&gt;\(E\left[y^2 \right]=\sigma^2+E[y]^2\)&lt;/span&gt;, and similarly we can derive the same expression for &lt;span class=&#34;math inline&#34;&gt;\(\bar{y}\)&lt;/span&gt;. However, we can see that &lt;span class=&#34;math inline&#34;&gt;\(\hat{\sigma}^2\)&lt;/span&gt; is biased by a factor of &lt;span class=&#34;math inline&#34;&gt;\((n-1)/n\)&lt;/span&gt;. Thus, an unbiased estimator for &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt; is given by multiplying &lt;span class=&#34;math inline&#34;&gt;\(\hat{\sigma}^2\)&lt;/span&gt; by &lt;span class=&#34;math inline&#34;&gt;\(\frac{n}{(n-1)}\)&lt;/span&gt;, which gives the unbiased estimator &lt;span class=&#34;math inline&#34;&gt;\(\hat{\sigma}^{2\star}=\frac{s^2}{n-1}\)&lt;/span&gt;, where &lt;span class=&#34;math inline&#34;&gt;\(E\left[\hat{\sigma}^{2\star}\right]=\sigma^2\)&lt;/span&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;multivariate-normal-example-1&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Multivariate Normal Example&lt;/h3&gt;
+&lt;p&gt;The same procedure can be applied to an independent and identically distributed multivariate sample &lt;span class=&#34;math inline&#34;&gt;\(y=(y_{ij})\)&lt;/span&gt;, for &lt;span class=&#34;math inline&#34;&gt;\(i=1,\ldots,n\)&lt;/span&gt; units and &lt;span class=&#34;math inline&#34;&gt;\(j=1,\ldots,J\)&lt;/span&gt; variables (&lt;span class=&#34;citation&#34;&gt;Anderson (1962)&lt;/span&gt;,&lt;span class=&#34;citation&#34;&gt;Rao et al. (1973)&lt;/span&gt;,&lt;span class=&#34;citation&#34;&gt;Gelman et al. (2013)&lt;/span&gt;). It can be shown that, maximising the loglikelihood with respect to &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\Sigma\)&lt;/span&gt; yields the MLEs&lt;/p&gt;
+&lt;p&gt;\[
+\hat{\mu}=\bar{y} \;\;\; \text{and} \;\;\; \Sigma=\frac{(n-1)\hat{\sigma}^{2\star}}{n},
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\bar{y}=(\bar{y}_1,\ldots,\bar{y}_{J})\)&lt;/span&gt; is the row vectors of sample means and &lt;span class=&#34;math inline&#34;&gt;\(\hat{\sigma}^{2\star}=(s^{\star_{jk}})\)&lt;/span&gt; is the sample covariance matrix with &lt;span class=&#34;math inline&#34;&gt;\(jk\)&lt;/span&gt;-th element &lt;span class=&#34;math inline&#34;&gt;\(s^\star_{jk}=\frac{\Sigma_{i=1}^n(y_{ij} - \bar{y}_j)}{(n-1)}\)&lt;/span&gt;. In addition, in general, given a function &lt;span class=&#34;math inline&#34;&gt;\(g(\theta)\)&lt;/span&gt; of the parameter &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt;, if &lt;span class=&#34;math inline&#34;&gt;\(\hat{\theta}\)&lt;/span&gt; is a MLE of &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt;, then &lt;span class=&#34;math inline&#34;&gt;\(g(\hat{\theta})\)&lt;/span&gt; is a MLE of &lt;span class=&#34;math inline&#34;&gt;\(g(\theta)\)&lt;/span&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;conditional-distribution-of-a-bivariate-normal&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Conditional Distribution of a Bivariate Normal&lt;/h2&gt;
+&lt;p&gt;Consider an indpendent and identically distributed sample formed by two variables &lt;span class=&#34;math inline&#34;&gt;\(y=(y_1,y_2)\)&lt;/span&gt;, each measured on &lt;span class=&#34;math inline&#34;&gt;\(i=1\ldots,n\)&lt;/span&gt; units, which come from a Bivariate Normal distribution with mean vector and covariance matrix&lt;/p&gt;
+&lt;p&gt;\[
+\mu=(\mu_1,\mu_2) \;\;\; \text{and} \;\;\; \Sigma = \begin{pmatrix} \sigma^2_1 &amp;amp; \rho\sigma_1\sigma_2 \\ \rho\sigma_2\sigma_1 &amp;amp; \sigma_2^2 \ \end{pmatrix},
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\rho\)&lt;/span&gt; is a correlation parameter between the two variables. Thus, intuitive MLEs for these parameters are&lt;/p&gt;
+&lt;p&gt;\[
+\hat{\mu}_j=\bar{y}_j \;\;\; \text{and} \;\;\; \hat{\sigma}_{jk}=\frac{(n-1)s_{jk}}{n},
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2_j=\sigma_{jj}\)&lt;/span&gt;, &lt;span class=&#34;math inline&#34;&gt;\(\rho\sigma_{j}\sigma_{k}=\sigma_{jk}\)&lt;/span&gt;, for &lt;span class=&#34;math inline&#34;&gt;\(j,k=1,2\)&lt;/span&gt;. By properites of the Bivariate Normal distribution (&lt;span class=&#34;citation&#34;&gt;Ord and Stuart (1994)&lt;/span&gt;), the marginal distribution of &lt;span class=&#34;math inline&#34;&gt;\(y_1\)&lt;/span&gt; and the conditional distribution of &lt;span class=&#34;math inline&#34;&gt;\(y_2 \mid y_1\)&lt;/span&gt; are&lt;/p&gt;
+&lt;p&gt;\[
+y_1 \sim \text{Normal}\left(\mu_1,\sigma^2_1 \right) \;\;\; \text{and} \;\;\; y_2 \mid y_1 \sim \text{Normal}\left(\mu_2 + \beta(y_1-\mu_1 \right), \sigma^2_2 - \sigma^2_1\beta^2),
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\beta=\rho\frac{\sigma_2}{\sigma_1}\)&lt;/span&gt; is the parameter that quantifies the linear dependence between the two variables. The MLEs of &lt;span class=&#34;math inline&#34;&gt;\(\beta\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2_2\)&lt;/span&gt; can also be derived from the likelihood based on the conditional distribution of &lt;span class=&#34;math inline&#34;&gt;\(y_2 \mid y_1\)&lt;/span&gt;, which have strong connections with the least squares estimates derived in a multiple linear regression framework.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;multiple-linear-regression&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Multiple Linear Regression&lt;/h2&gt;
+&lt;p&gt;Suppose the data consist in &lt;span class=&#34;math inline&#34;&gt;\(n\)&lt;/span&gt; units measured on an outcome variable &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; and a set of &lt;span class=&#34;math inline&#34;&gt;\(J\)&lt;/span&gt; covariates &lt;span class=&#34;math inline&#34;&gt;\(x=(x_{1},\ldots,x_{J})\)&lt;/span&gt; and assume that the distribution of &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; given &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt; is Normal with mean &lt;span class=&#34;math inline&#34;&gt;\(\beta_0+\sum_{j=1}^J\beta_jx_{ij}\)&lt;/span&gt; and variance &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt;. The loglikelihood of &lt;span class=&#34;math inline&#34;&gt;\(\theta=(\beta,\sigma^2)\)&lt;/span&gt; given the observed data &lt;span class=&#34;math inline&#34;&gt;\((y,x)\)&lt;/span&gt; is given by&lt;/p&gt;
+&lt;p&gt;\[
+l(\theta \mid y) = -\frac{n}{2}\text{ln}(\sigma^2) - \frac{\sum_{i=1}^n \left(y_i - \beta_0 - \sum_{j=1}^J\beta_jx_{ij} \right)^2}{2\sigma^2}.
+\]&lt;/p&gt;
+&lt;p&gt;Maximising this expression with respect to &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt;, the MLEs are found to be equal to the least squares estimates of the intercept and rgeression coefficients. Using a matrix notation for the &lt;span class=&#34;math inline&#34;&gt;\(n\)&lt;/span&gt;-th vector of the outcome values &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; and the &lt;span class=&#34;math inline&#34;&gt;\(n\times (J+1)\)&lt;/span&gt; matrix of the covariate values (including the constant term), then the MLEs are:&lt;/p&gt;
+&lt;p&gt;\[
+\hat{\beta}(X^{T}X)^{-1}X^{T}Y \;\;\; \text{and} \;\;\; \hat{\sigma}^{2}=\frac{(Y-X\hat{\beta})(Y-X\hat{\beta})}{n},
+\]&lt;/p&gt;
+&lt;p&gt;where the numerator of the fraction is known as the &lt;em&gt;Residual Sum of Squares&lt;/em&gt;(RSS). Because the denominator of is equal to &lt;span class=&#34;math inline&#34;&gt;\(n\)&lt;/span&gt;, the MLE of &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt; does not correct for the loss of degrees of freedom when estimating the &lt;span class=&#34;math inline&#34;&gt;\(J+1\)&lt;/span&gt; location parameters. Thus, the MLE should instead divide the RSS by &lt;span class=&#34;math inline&#34;&gt;\(n-(J+1)\)&lt;/span&gt; to obtain an unbiased estimator. An extension of standard multiple linear regression is the so called &lt;em&gt;weighted&lt;/em&gt; multiple linear regression, in which the regression variance is assumed to be equal to&lt;span class=&#34;math inline&#34;&gt;\(\frac{\sigma^2}{w_i}\)&lt;/span&gt;, for &lt;span class=&#34;math inline&#34;&gt;\((w_i) &amp;gt; 0\)&lt;/span&gt;. Thus, the variable &lt;span class=&#34;math inline&#34;&gt;\((y_i-\mu)\sqrt{w_i}\)&lt;/span&gt; is Normally distributed with mean &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt; and variance &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt;, and the loglikelihood is&lt;/p&gt;
+&lt;p&gt;\[
+l(\theta \mid y)= - \frac{n}{2}\text{ln}(2\pi) - \frac{n}{2}\text{ln}(\sigma^2) - \frac{\sum_{i=1}^n w_i(y_i - \mu_i)^2}{2\sigma^2}.
+\]&lt;/p&gt;
+&lt;p&gt;Maximising this function yields MLEs given by the weighted least squares estimates&lt;/p&gt;
+&lt;p&gt;\[
+\hat{\beta}=\left(X^{T}WX\right)^{-1}\left(X^{T}WY \right) \;\;\; \text{and} \;\;\; \sigma^{2}=\frac{\left(Y-X\hat{\beta}\right)^{T}W\left(Y-X\hat{\beta}\right)}{n},
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(W=\text{Diag}(w_1,\ldots,w_n)\)&lt;/span&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;generalised-linear-models&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Generalised Linear Models&lt;/h2&gt;
+&lt;p&gt;Consider the previous example where we had an outcome variable &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; and a set of &lt;span class=&#34;math inline&#34;&gt;\(J\)&lt;/span&gt; covariates, each measured on &lt;span class=&#34;math inline&#34;&gt;\(n\)&lt;/span&gt; units. A more general class of models, compare with the Normal model, assumes that, given &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt;, the values of &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; are an independent sample from a regular exponential family distribution&lt;/p&gt;
+&lt;p&gt;\[
+f(y \mid x,\beta,\phi)=\text{exp}\left(\frac{\left(y\delta(x,\beta) - b(\delta(x,\beta))\right)}{\phi} + c(y,\phi)\right),
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\delta()\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(b()\)&lt;/span&gt; are known functions that determine the distribution of &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;, and &lt;span class=&#34;math inline&#34;&gt;\(c()\)&lt;/span&gt; is a known function indexed by a scale parameter &lt;span class=&#34;math inline&#34;&gt;\(\phi\)&lt;/span&gt;. The mean of &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; is assumed to linearly relate to the covariates via&lt;/p&gt;
+&lt;p&gt;\[
+E\left[y \mid x,\beta,\phi \right]=g^{-1}\left(\beta_0 + \sum_{j=1}^J\beta_jx_{j} \right),
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(E\left[y \mid x,\beta,\phi \right]=\mu_i\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(g()\)&lt;/span&gt; is a known one to one function which is called &lt;em&gt;link function&lt;/em&gt; because it “links” the expectation of &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; to a linear combination of the covariates. The canonical link function&lt;/p&gt;
+&lt;p&gt;\[
+g_c(\mu_i)=\delta(x_{i},\beta)=\beta_0+\sum_{j=1}^J\beta_jx_{ij},
+\]&lt;/p&gt;
+&lt;p&gt;which is obtained by setting &lt;span class=&#34;math inline&#34;&gt;\(g()\)&lt;/span&gt; equal to the inverse of the derivative of &lt;span class=&#34;math inline&#34;&gt;\(b()\)&lt;/span&gt; with respect to its argument. Examples of canonical links include&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Normal linear regression: &lt;span class=&#34;math inline&#34;&gt;\(g_c=\text{identity}\)&lt;/span&gt;, &lt;span class=&#34;math inline&#34;&gt;\(b(\delta)=\frac{\delta^2}{2},\phi=\sigma^2\)&lt;/span&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Poisson regression: &lt;span class=&#34;math inline&#34;&gt;\(g_c=\log\)&lt;/span&gt;, &lt;span class=&#34;math inline&#34;&gt;\(b(\delta)=\text{exp}(\delta),\phi=1\)&lt;/span&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Logistic regression: &lt;span class=&#34;math inline&#34;&gt;\(g_c=\text{logit}\)&lt;/span&gt;, &lt;span class=&#34;math inline&#34;&gt;\(b(\delta)=\log(1+\text{exp}(\delta)),\phi=1\)&lt;/span&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The loglikelihood of &lt;span class=&#34;math inline&#34;&gt;\(\theta=(\beta,\phi)\)&lt;/span&gt; given the observed data &lt;span class=&#34;math inline&#34;&gt;\((y,x)\)&lt;/span&gt;, is&lt;/p&gt;
+&lt;p&gt;\[
+l(\theta \mid y,x)=\sum_{i=1}^n \left[\frac{\left(y_i\delta(x_i,\beta)-b(\delta(x_i,\beta)) \right)}{\phi}+c(y_i,\phi)\right],
+\]&lt;/p&gt;
+&lt;p&gt;which for non-normal cases does not have explicit maxima and numerical maximisation can be achieved using iterative algorithms.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
+&lt;h1&gt;References&lt;/h1&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references&#34;&gt;
+&lt;div id=&#34;ref-anderson1962introduction&#34;&gt;
+&lt;p&gt;Anderson, Theodore Wilbur. 1962. “An Introduction to Multivariate Statistical Analysis.” Wiley New York.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-gelman2013bayesian&#34;&gt;
+&lt;p&gt;Gelman, Andrew, John B Carlin, Hal S Stern, David B Dunson, Aki Vehtari, and Donald B Rubin. 2013. &lt;em&gt;Bayesian Data Analysis&lt;/em&gt;. Chapman; Hall/CRC.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-ord1994kendall&#34;&gt;
+&lt;p&gt;Ord, Keith, and Alan Stuart. 1994. “Kendall’s Advanced Theory of Statistics: Distribution Theory.” Edward Arnold.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-rao1973linear&#34;&gt;
+&lt;p&gt;Rao, Calyampudi Radhakrishna, Calyampudi Radhakrishna Rao, Mathematischer Statistiker, Calyampudi Radhakrishna Rao, and Calyampudi Radhakrishna Rao. 1973. &lt;em&gt;Linear Statistical Inference and Its Applications&lt;/em&gt;. Vol. 2. Wiley New York.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Inverse Probability Weighting</title>
       <link>/missmethods/inverse-probability-weighting/</link>
       <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
@@ -1901,15 +2076,6 @@ an essential part of MI. For this reason, it is natural (but not essential) to m
 &lt;/div&gt;
 &lt;/div&gt;
 </description>
-    </item>
-    
-    <item>
-      <title>Maximum Likelihood Estimation</title>
-      <link>/missmethods/likelihood-based-methods-ignorable/</link>
-      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/missmethods/likelihood-based-methods-ignorable/</guid>
-      <description></description>
     </item>
     
     <item>

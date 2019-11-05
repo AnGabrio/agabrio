@@ -528,6 +528,11 @@
   </url>
   
   <url>
+    <loc>/missmethods/likelihood-based-methods-ignorable/</loc>
+    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/tags/inverse-probability-weighting/</loc>
     <lastmod>2016-04-27T00:00:00+00:00</lastmod>
     <priority>0</priority>
@@ -568,8 +573,9 @@
   </url>
   
   <url>
-    <loc>/missmethods/likelihood-based-methods-ignorable/</loc>
+    <loc>/tags/maximum-likelihood-estimation/</loc>
     <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
