@@ -180,16 +180,16 @@ where $\beta=\rho\frac{\sigma_2}{\sigma_1}$ is the parameter that quantifies the
 
 ## Multiple Linear Regression
 
-Suppose the data consist in $n$ units measured on an outcome variable $y$ and a set of $J$ covariates $x=(x_{1},\ldots,x_{J})$ and assume that the distribution of $y$ given $x$ is Normal with mean $\beta_0+\sum_{j=1}^J\beta_jx_{ij}$ and variance $\sigma^2$. The loglikelihood of $\theta=(\beta,\sigma^2)$ given the observed data $(y,x)$ is given by
+Suppose the data consist in $n$ units measured on an outcome variable $y$ and a set of $J$ covariates $x=(x_{1},\ldots,x_{J})$ and assume that the distribution of $y$ given $x$ is Normal with mean $\mu_i=\beta_0+\sum_{j=1}^J\beta_jx_{ij}$ and variance $\sigma^2$. The loglikelihood of $\theta=(\beta,\sigma^2)$ given the observed data $(y,x)$ is given by
 
 \\[
-l(\\theta \\mid y) = -\\frac{n}{2}\\text{ln}(2\\pi) -\\frac{n}{2}\\text{ln}(\\sigma\^2) - \\frac{\\sum\_{i=1}\^n \\left(y\_i - \\beta\_0 - \\sum_{j=1}^J\\beta_jx_{ij} \\right)\^2}{2\\sigma\^2}.
+l(\\theta \\mid y) = -\\frac{n}{2}\\text{ln}(2\\pi) -\\frac{n}{2}\\text{ln}(\\sigma\^2) - \\frac{\\sum\_{i=1}\^n \\left(y\_i - \\mu\_i \\right)\^2}{2\\sigma\^2}.
 \\]
 
-Maximising this expression with respect to $\theta$, the MLEs are found to be equal to the least squares estimates of the intercept and rgeression coefficients. Using a matrix notation for the $n$-th vector of the outcome values $Y$ and the $n\times (J+1)$ matrix of the covariate values (including the constant term), then the MLEs are:
+Maximising this expression with respect to $\theta$, the MLEs are found to be equal to the least squares estimates of the intercept and regression coefficients. Using a matrix notation for the $n$-th vector of the outcome values $Y$ and the $n\times (J+1)$ matrix of the covariate values (including the constant term), then the MLEs are:
 
 \\[
-\\hat{\\beta}(X\^{T}X)^{-1}X\^{T}Y \\;\\;\\; \\text{and} \\;\\;\\; \\hat{\\sigma}\^{2}=\\frac{(Y-X\\hat{\\beta})(Y-X\\hat{\\beta})}{n},
+\\hat{\\beta}=(X\^{T}X)^{-1}X\^{T}Y \\;\\;\\; \\text{and} \\;\\;\\; \\hat{\\sigma}\^{2}=\\frac{(Y-X\\hat{\\beta})(Y-X\\hat{\\beta})}{n},
 \\]
 
 where the numerator of the fraction is known as the *Residual Sum of Squares*(RSS). Because the denominator of is equal to $n$, the MLE of $\sigma^2$ does not correct for the loss of degrees of freedom when estimating the $J+1$ location parameters. Thus, the MLE should instead divide the RSS by $n-(J+1)$ to obtain an unbiased estimator. An extension of standard multiple linear regression is the so called *weighted* multiple linear regression, in which the regression variance is assumed to be equal to$\frac{\sigma^2}{w_i}$, for $(w_i) > 0$. Thus, the variable $(y_i-\mu)\sqrt{w_i}$ is Normally distributed with mean $0$ and variance $\sigma^2$, and the loglikelihood is
@@ -211,7 +211,7 @@ where $W=\text{Diag}(w_1,\ldots,w_n)$.
 Consider the previous example where we had an outcome variable $y$ and a set of $J$ covariates, each measured on $n$ units. A more general class of models, compare with the Normal model, assumes that, given $x$, the values of $y$ are an independent sample from a regular exponential family distribution 
 
 \\[
-f(y \\mid x,\\beta,\\phi)=\\text{exp}\\left(\\frac{\\left(y\\delta(x,\\beta) - b(\\delta(x,\\beta))\\right)}{\\phi} + c(y,\\phi)\\right),
+f(y \\mid x,\\beta,\\phi)=\\text{exp}\\left(\\frac{\\left(y\\delta\\left(x,\\beta \\right) - b\\left(\\delta\\left(x,\\beta\\right)\\right)\\right)}{\\phi} + c\\left(y,\\phi\\right)\\right),
 \\]
 
 where $\delta()$ and $b()$ are known functions that determine the distribution of $y$, and $c()$ is a known function indexed by a scale parameter $\phi$. The mean of $y$ is assumed to linearly relate to the covariates via
@@ -237,7 +237,7 @@ which is obtained by setting $g()$ equal to the inverse of the derivative of $b(
 The loglikelihood of $\theta=(\beta,\phi)$ given the observed data $(y,x)$, is 
 
 \\[
-l(\\theta \\mid y,x)=\\sum\_{i=1}\^n \\left[\\frac{\\left(y\_i\\delta(x\_i,\\beta)-b(\\delta(x\_i,\\beta)) \\right)}{\\phi}+c(y\_i,\\phi)\\right],
+l(\\theta \\mid y,x)=\\sum\_{i=1}\^n \\left[\\frac{\\left(y\_i\\delta\\left(x\_i,\\beta\\right)-b\\left(\\delta\\left(x\_i,\\beta\\right)\\right) \\right)}{\\phi}+c\\left(y\_i,\\phi\\right)\\right],
 \\]
 
 which for non-normal cases does not have explicit maxima and numerical maximisation can be achieved using iterative algorithms.

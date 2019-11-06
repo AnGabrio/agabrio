@@ -146,13 +146,13 @@ y_1 \sim \text{Normal}\left(\mu_1,\sigma^2_1 \right) \;\;\; \text{and} \;\;\; y_
 </div>
 <div id="multiple-linear-regression" class="section level2">
 <h2>Multiple Linear Regression</h2>
-<p>Suppose the data consist in <span class="math inline">\(n\)</span> units measured on an outcome variable <span class="math inline">\(y\)</span> and a set of <span class="math inline">\(J\)</span> covariates <span class="math inline">\(x=(x_{1},\ldots,x_{J})\)</span> and assume that the distribution of <span class="math inline">\(y\)</span> given <span class="math inline">\(x\)</span> is Normal with mean <span class="math inline">\(\beta_0+\sum_{j=1}^J\beta_jx_{ij}\)</span> and variance <span class="math inline">\(\sigma^2\)</span>. The loglikelihood of <span class="math inline">\(\theta=(\beta,\sigma^2)\)</span> given the observed data <span class="math inline">\((y,x)\)</span> is given by</p>
+<p>Suppose the data consist in <span class="math inline">\(n\)</span> units measured on an outcome variable <span class="math inline">\(y\)</span> and a set of <span class="math inline">\(J\)</span> covariates <span class="math inline">\(x=(x_{1},\ldots,x_{J})\)</span> and assume that the distribution of <span class="math inline">\(y\)</span> given <span class="math inline">\(x\)</span> is Normal with mean <span class="math inline">\(\mu_i=\beta_0+\sum_{j=1}^J\beta_jx_{ij}\)</span> and variance <span class="math inline">\(\sigma^2\)</span>. The loglikelihood of <span class="math inline">\(\theta=(\beta,\sigma^2)\)</span> given the observed data <span class="math inline">\((y,x)\)</span> is given by</p>
 <p>\[
-l(\theta \mid y) = -\frac{n}{2}\text{ln}(2\pi) -\frac{n}{2}\text{ln}(\sigma^2) - \frac{\sum_{i=1}^n \left(y_i - \beta_0 - \sum_{j=1}^J\beta_jx_{ij} \right)^2}{2\sigma^2}.
+l(\theta \mid y) = -\frac{n}{2}\text{ln}(2\pi) -\frac{n}{2}\text{ln}(\sigma^2) - \frac{\sum_{i=1}^n \left(y_i - \mu_i \right)^2}{2\sigma^2}.
 \]</p>
-<p>Maximising this expression with respect to <span class="math inline">\(\theta\)</span>, the MLEs are found to be equal to the least squares estimates of the intercept and rgeression coefficients. Using a matrix notation for the <span class="math inline">\(n\)</span>-th vector of the outcome values <span class="math inline">\(Y\)</span> and the <span class="math inline">\(n\times (J+1)\)</span> matrix of the covariate values (including the constant term), then the MLEs are:</p>
+<p>Maximising this expression with respect to <span class="math inline">\(\theta\)</span>, the MLEs are found to be equal to the least squares estimates of the intercept and regression coefficients. Using a matrix notation for the <span class="math inline">\(n\)</span>-th vector of the outcome values <span class="math inline">\(Y\)</span> and the <span class="math inline">\(n\times (J+1)\)</span> matrix of the covariate values (including the constant term), then the MLEs are:</p>
 <p>\[
-\hat{\beta}(X^{T}X)^{-1}X^{T}Y \;\;\; \text{and} \;\;\; \hat{\sigma}^{2}=\frac{(Y-X\hat{\beta})(Y-X\hat{\beta})}{n},
+\hat{\beta}=(X^{T}X)^{-1}X^{T}Y \;\;\; \text{and} \;\;\; \hat{\sigma}^{2}=\frac{(Y-X\hat{\beta})(Y-X\hat{\beta})}{n},
 \]</p>
 <p>where the numerator of the fraction is known as the <em>Residual Sum of Squares</em>(RSS). Because the denominator of is equal to <span class="math inline">\(n\)</span>, the MLE of <span class="math inline">\(\sigma^2\)</span> does not correct for the loss of degrees of freedom when estimating the <span class="math inline">\(J+1\)</span> location parameters. Thus, the MLE should instead divide the RSS by <span class="math inline">\(n-(J+1)\)</span> to obtain an unbiased estimator. An extension of standard multiple linear regression is the so called <em>weighted</em> multiple linear regression, in which the regression variance is assumed to be equal to<span class="math inline">\(\frac{\sigma^2}{w_i}\)</span>, for <span class="math inline">\((w_i) &gt; 0\)</span>. Thus, the variable <span class="math inline">\((y_i-\mu)\sqrt{w_i}\)</span> is Normally distributed with mean <span class="math inline">\(0\)</span> and variance <span class="math inline">\(\sigma^2\)</span>, and the loglikelihood is</p>
 <p>\[
@@ -168,7 +168,7 @@ l(\theta \mid y)= - \frac{n}{2}\text{ln}(2\pi) - \frac{n}{2}\text{ln}(\sigma^2) 
 <h2>Generalised Linear Models</h2>
 <p>Consider the previous example where we had an outcome variable <span class="math inline">\(y\)</span> and a set of <span class="math inline">\(J\)</span> covariates, each measured on <span class="math inline">\(n\)</span> units. A more general class of models, compare with the Normal model, assumes that, given <span class="math inline">\(x\)</span>, the values of <span class="math inline">\(y\)</span> are an independent sample from a regular exponential family distribution</p>
 <p>\[
-f(y \mid x,\beta,\phi)=\text{exp}\left(\frac{\left(y\delta(x,\beta) - b(\delta(x,\beta))\right)}{\phi} + c(y,\phi)\right),
+f(y \mid x,\beta,\phi)=\text{exp}\left(\frac{\left(y\delta\left(x,\beta \right) - b\left(\delta\left(x,\beta\right)\right)\right)}{\phi} + c\left(y,\phi\right)\right),
 \]</p>
 <p>where <span class="math inline">\(\delta()\)</span> and <span class="math inline">\(b()\)</span> are known functions that determine the distribution of <span class="math inline">\(y\)</span>, and <span class="math inline">\(c()\)</span> is a known function indexed by a scale parameter <span class="math inline">\(\phi\)</span>. The mean of <span class="math inline">\(y\)</span> is assumed to linearly relate to the covariates via</p>
 <p>\[
@@ -186,7 +186,7 @@ g_c(\mu_i)=\delta(x_{i},\beta)=\beta_0+\sum_{j=1}^J\beta_jx_{ij},
 </ul>
 <p>The loglikelihood of <span class="math inline">\(\theta=(\beta,\phi)\)</span> given the observed data <span class="math inline">\((y,x)\)</span>, is</p>
 <p>\[
-l(\theta \mid y,x)=\sum_{i=1}^n \left[\frac{\left(y_i\delta(x_i,\beta)-b(\delta(x_i,\beta)) \right)}{\phi}+c(y_i,\phi)\right],
+l(\theta \mid y,x)=\sum_{i=1}^n \left[\frac{\left(y_i\delta\left(x_i,\beta\right)-b\left(\delta\left(x_i,\beta\right)\right) \right)}{\phi}+c\left(y_i,\phi\right)\right],
 \]</p>
 <p>which for non-normal cases does not have explicit maxima and numerical maximisation can be achieved using iterative algorithms.</p>
 </div>
