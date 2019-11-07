@@ -11,10 +11,10 @@ image:
   caption: 
   focal_point: 
 links:
-- icon: 
-  icon_pack: 
-  name: Slides
-  url: https://github.com/AnGabrio/short-course/tree/master/slides
+#- icon: 
+#  icon_pack: 
+#  name: 
+#  url:
 location: "University of Castilla-La Mancha (UCLM), Albacete, ES"
 math: true
 projects:
@@ -24,9 +24,10 @@ slides:
 summary: 
 tags: ["Bayesian Statistics", "Economic Evaluations", "Missing Data"]
 title: "Bayesian methods for addressing missing data in health economic evaluations"
-url_code: "https://github.com/AnGabrio/short-course"
+url_code: "https://github.com/AnGabrio/missingHE"
 url_pdf: ""
-url_slides: ""
+url_source: "https://github.com/AnGabrio/short-course"
+url_slides: "https://github.com/AnGabrio/short-course/blob/master/slides/workshop-knitr.pdf"
 url_video: ""
 ---
 

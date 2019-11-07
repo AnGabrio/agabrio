@@ -28,8 +28,9 @@ title: "A Bayesian Parametric Approach to Handle Missing Longitudinal Outcome Da
 url_code: ""
 url_dataset: ""
 url_pdf: https://rss.onlinelibrary.wiley.com/doi/pdf/10.1111/rssa.12522
+url_poster: "https://github.com/AnGabrio/Talks/blob/master/Longitudinal%20Model/poster_v2.pdf"
 url_project: ""
-url_slides: ""
+url_slides: "https://github.com/AnGabrio/Talks/blob/master/Longitudinal%20Model/pres_ictmc_v2.pdf"
 url_source: ""
 url_video: ""
 ---

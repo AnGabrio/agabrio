@@ -14,7 +14,7 @@ links:
 - icon: 
   icon_pack: 
   name: Slides
-  url: https://www.luminpdf.com/viewer/5d9c51ab8a3e9900136a4b67
+  url: https://github.com/AnGabrio/Talks/blob/master/Longitudinal%20Model/pres_ictmc_v2.pdf
 location: Hilton Brighton Metropole, Brighton, UK
 math: true
 projects:
@@ -26,7 +26,7 @@ tags: ["Economic Evaluations", "Missing Data"]
 title: "A Bayesian Parametric Approach to Handle Missing Longitudinal Outcome Data in Trial-Based Health Economic Evaluations"
 url_code: ""
 url_pdf: ""
-url_slides: ""
+url_slides: "https://github.com/AnGabrio/Talks/blob/master/Longitudinal%20Model/pres_ictmc_v2.pdf"
 url_video: ""
 ---
 

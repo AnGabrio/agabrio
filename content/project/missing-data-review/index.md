@@ -19,12 +19,11 @@ links:
 #  name: Slides
 #  url:
 url_code: ""
-url_pdf: "link.springer.com/article/10.1007/s41669-017-0015-6
-"
-url_slides: ""
+url_pdf: "link.springer.com/article/10.1007/s41669-017-0015-6"
+url_slides: "https://github.com/AnGabrio/Talks/blob/master/Literature%20Review/Presentation_upgrade.pdf"
 url_video: ""
-url_source: ""
-url_poster: "https://www.ucl.ac.uk/drupal/site_statistics/sites/statistics/files/migrated-files/poster.pdf"
+url_source: "https://github.com/AnGabrio/short-course"
+url_poster: "https://github.com/AnGabrio/Talks/blob/master/Literature%20Review/poster.pdf"
 
 # Slides (optional).
 #   Associate this project with Markdown slides.

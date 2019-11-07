@@ -28,7 +28,7 @@ url_code: ""
 url_pdf: ""
 url_slides: ""
 url_video: ""
-url_poster: "https://www.ucl.ac.uk/drupal/site_statistics/sites/statistics/files/poster_ag_hurdle.pdf"
+url_poster: "https://github.com/AnGabrio/Talks/blob/master/Hurdle%20Model/poster.pdf"
 ---
 
 

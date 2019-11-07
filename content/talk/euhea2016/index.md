@@ -23,7 +23,7 @@ url_code: ""
 url_pdf: ""
 url_slides: ""
 url_video: ""
-url_poster: "https://www.ucl.ac.uk/drupal/site_statistics/sites/statistics/files/migrated-files/poster.pdf"
+url_poster: "https://github.com/AnGabrio/Talks/blob/master/Literature%20Review/poster.pdf"
 ---
 
 

@@ -19,10 +19,11 @@ links:
 #  icon_pack: 
 #  name: 
 #  url: 
-url_code: ""
+url_code: "https://github.com/AnGabrio/missingHE"
 url_pdf: "https://onlinelibrary.wiley.com/doi/full/10.1002/sim.8045"
 url_slides: "https://www.ucl.ac.uk/drupal/site_statistics/sites/statistics/files/baio_ucl_5feb.pdf"
 url_video: ""
+url_source: "https://github.com/AnGabrio/short-course"
 url_poster: "https://www.ucl.ac.uk/drupal/site_statistics/sites/statistics/files/poster_ag_hurdle.pdf"
 
 # Slides (optional).

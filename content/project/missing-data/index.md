@@ -14,15 +14,16 @@ image:
   preview_only: true
 
 links:
-- icon: 
-  icon_pack: 
-  name: Slides
-  url: https://www.ucl.ac.uk/statistics/sites/statistics/files/presentation_priment_1.pdf
+#- icon: 
+#  icon_pack: 
+#  name: 
+#  url:
 url_code: ""
-url_pdf: "https://arxiv.org/abs/1805.07147"
-url_slides: ""
+url_pdf: "https://rss.onlinelibrary.wiley.com/doi/full/10.1111/rssa.12522"
+url_slides: "https://github.com/AnGabrio/Talks/blob/master/Longitudinal%20Model/pres_ictmc_v2.pdf"
 url_video: ""
 url_source: "https://github.com/AnGabrio/short-course"
+url_poster: "https://github.com/AnGabrio/Talks/blob/master/Longitudinal%20Model/poster_v2.pdf"
 
 # Slides (optional).
 #   Associate this project with Markdown slides.

@@ -15,7 +15,7 @@ math: true
 projects:
 - health-economics
 publishDate: "2019-08-02T00:00:00Z"
-slides: 
+slides:
 summary: 
 tags: ["Economic Evaluations", "Missing Data"]
 title: "A Bayesian Parametric Approach to Handle Missing Longitudinal Outcome Data in Trial-Based Health Economic Evaluations"
@@ -23,6 +23,7 @@ url_code: ""
 url_pdf: ""
 url_slides: ""
 url_video: ""
+url_poster: "https://github.com/AnGabrio/Talks/blob/master/Longitudinal%20Model/poster_v2.pdf"
 ---
 
 
