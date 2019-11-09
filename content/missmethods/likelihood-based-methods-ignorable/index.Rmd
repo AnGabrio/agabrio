@@ -42,7 +42,7 @@ url_poster: ""
 # slides: example
 ---
 
-A possible approach to analyse missing data is to use methods based on the likelihood function under specific modelling assumptions. In this section, I initially review maximum likelihood methods based on fully observed data alone.
+A possible approach to analyse missing data is to use methods based on the likelihood function under specific modelling assumptions. In this section, I review maximum likelihood methods based on fully observed data alone.
 
 ## Maximum Likelihood Methods for Complete Data
 

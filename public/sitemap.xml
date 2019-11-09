@@ -473,6 +473,12 @@
   </url>
   
   <url>
+    <loc>/tags/bayesian-inference/</loc>
+    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>/project/health-economics/</loc>
     <lastmod>2016-04-27T00:00:00+00:00</lastmod>
   </url>
@@ -524,6 +530,11 @@
   
   <url>
     <loc>/missmethods/last-value-carried-forward/</loc>
+    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/missmethods/likelihood-based-methods-ignorable2/</loc>
     <lastmod>2016-04-27T00:00:00+00:00</lastmod>
   </url>
   

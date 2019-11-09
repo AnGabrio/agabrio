@@ -1681,6 +1681,197 @@ d(i,j)=(\hat{y}(x_i)-\hat{y}(x_j))^2,
     </item>
     
     <item>
+      <title>Introduction to Bayesian Inference</title>
+      <link>/missmethods/likelihood-based-methods-ignorable2/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/missmethods/likelihood-based-methods-ignorable2/</guid>
+      <description>
+
+
+&lt;p&gt;Bayesian inference offers a convenient framework to analyse missing data as it draws no distinction between missing values and parameters, both interprted as unobserved quantities who are associated with a joint posterior distribution conditional on the observed data. In this section, I review basic concepts of Bayesian inference based on fully observed data, with notation and structure mostly taken from &lt;span class=&#34;citation&#34;&gt;Gelman et al. (2013)&lt;/span&gt;.&lt;/p&gt;
+&lt;div id=&#34;bayesian-inference-for-complete-data&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Bayesian Inference for Complete Data&lt;/h2&gt;
+&lt;p&gt;Bayesian inference is the process of fitting a probability model to a set of data &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; and summarising the results by a probability distribution on the parameters &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; of the model and on unobserved quantities &lt;span class=&#34;math inline&#34;&gt;\(\tilde{Y}\)&lt;/span&gt; (e.g. predictions). Indeed, Bayesian statistical conclusions about &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; (or &lt;span class=&#34;math inline&#34;&gt;\(\tilde{Y}\)&lt;/span&gt;) are made in terms of probability statements, conditional on the observed data &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt;, typically indicated with the notation &lt;span class=&#34;math inline&#34;&gt;\(p(\theta \mid y)\)&lt;/span&gt; or &lt;span class=&#34;math inline&#34;&gt;\(p(\tilde{y} \mid y)\)&lt;/span&gt;. Conditioning on the observed data is what makes Bayesian inference different from standard statistical approaches which are instead based on the retrospective evaluation of the procedures used to estimate &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; (or &lt;span class=&#34;math inline&#34;&gt;\(\tilde{y}\)&lt;/span&gt;) over the distribution of possible &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; values conditional on the “true” unknown value of &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt;.&lt;/p&gt;
+&lt;div id=&#34;bayes-rule&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Bayes’ Rule&lt;/h3&gt;
+&lt;p&gt;In order to make probability statements about &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; given &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;, we start with a model providing a &lt;em&gt;joint probability distribution&lt;/em&gt; &lt;span class=&#34;math inline&#34;&gt;\(p(\theta,y)\)&lt;/span&gt;. Thus, the joint probability mass or density function can be written as a product of two densities that are often referred to as the &lt;em&gt;prior distribution&lt;/em&gt; &lt;span class=&#34;math inline&#34;&gt;\(p(\theta)\)&lt;/span&gt; and the &lt;em&gt;sampling distribution&lt;/em&gt; &lt;span class=&#34;math inline&#34;&gt;\(p(y \mid \theta)\)&lt;/span&gt;, respectively:&lt;/p&gt;
+&lt;p&gt;\[
+p(\theta,y) = p(\theta)p(y \mid \theta),
+\]&lt;/p&gt;
+&lt;p&gt;and conditioning on the observed values of &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;, using the basic property of conditional probability known as &lt;em&gt;Bayes’ rule&lt;/em&gt;, yields the &lt;em&gt;posterior distribution&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;\[
+p(\theta \mid y) = \frac{p(\theta,y)}{p(y)} = \frac{p(\theta)p(y \mid \theta)}{p(y)},
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(p(y)=\sum_{\theta \in \Theta}p(\theta)p(y\mid \theta)\)&lt;/span&gt; is the sum (or integral in the case of continous &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt;) over all possible values of &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; in the sample space &lt;span class=&#34;math inline&#34;&gt;\(\Theta\)&lt;/span&gt;. We can approximate the above equation by omitting the factor &lt;span class=&#34;math inline&#34;&gt;\(p(y)\)&lt;/span&gt; which does not depend on &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; and, given &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;, can be considered as fixed, yielding the &lt;em&gt;unnormalised posterior density&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;\[
+p(\theta \mid y) \propto p(\theta) p(y \mid \theta),
+\]&lt;/p&gt;
+&lt;p&gt;with the purpose of the analysis being to develop the model &lt;span class=&#34;math inline&#34;&gt;\(p(\theta,y)\)&lt;/span&gt; and adequately summarise &lt;span class=&#34;math inline&#34;&gt;\(p(\theta \mid y)\)&lt;/span&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;univariate-normal-example-known-variance&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Univariate Normal Example (known variance)&lt;/h3&gt;
+&lt;p&gt;Let &lt;span class=&#34;math inline&#34;&gt;\(y=(y_1,\ldots,y_n)\)&lt;/span&gt; denote an independent and identially distributed sample of &lt;span class=&#34;math inline&#34;&gt;\(n\)&lt;/span&gt; units, which are assumed to come from a Normal distribution with mean &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; and variance &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt;, whose sampling density function is&lt;/p&gt;
+&lt;p&gt;\[
+p(y \mid \mu)=\frac{1}{\sqrt{\left(2\pi\sigma^2\right)^n}}\text{exp}\left(-\frac{1}{2}\sum_{i=1}^n \frac{(y_i-\mu)^2}{\sigma^2} \right),
+\]&lt;/p&gt;
+&lt;p&gt;where for the moment we assume the variance &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt; to be known (i.e. constant). Consider now a prior probability distribution for the mean parameter &lt;span class=&#34;math inline&#34;&gt;\(p(\mu)\)&lt;/span&gt;, which belongs to the family of &lt;em&gt;conjugate prior densities&lt;/em&gt;, for example a Normal distribution, and parameterised in terms of a prior mean &lt;span class=&#34;math inline&#34;&gt;\(\mu_0\)&lt;/span&gt; and variance &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2_0\)&lt;/span&gt;. Thus, its prior density function is&lt;/p&gt;
+&lt;p&gt;\[
+p(\mu) = \frac{1}{\sqrt{2\pi\sigma^2_0}}\text{exp}\left(-\frac{1}{2}\frac{(\mu -\mu_0)^2}{\sigma^2} \right),
+\]&lt;/p&gt;
+&lt;p&gt;under the assumption tha the hyperparameters &lt;span class=&#34;math inline&#34;&gt;\(\mu_0\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2_0\)&lt;/span&gt; are known. The conjugate prior density implies that the posterior distribution for &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; (with &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt; assumed constant) belongs to the same family of distributions of the sampling function, that is Normal, but some algebra is required to reveal its specific form. In particular, the posterior density is&lt;/p&gt;
+&lt;p&gt;\[
+p(\mu \mid y) = \frac{p(\mu)p(y\mid \mu)}{p(y)} = \frac{1}{\sqrt{2\pi\sigma^2_0}}\frac{1}{\sqrt{\left(2\pi\sigma^2\right)^n}}\text{exp}\left(-\frac{1}{2} \left[\frac{(\mu - \mu_0)^2}{\sigma^2_0} + \sum_{i=1}^n\frac{(y_i-\mu)^2}{\sigma^2} \right] \right).
+\]&lt;/p&gt;
+&lt;p&gt;Exapanding the components, collecting terms and completing the square in &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; gives&lt;/p&gt;
+&lt;p&gt;\[
+p(\mu \mid y) \propto \text{exp}\left(-\frac{(\mu - \mu_1)}{2\tau^2_1} \right),
+\]&lt;/p&gt;
+&lt;p&gt;that is the posterior distribution of &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; given &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; is Normal with posterior mean &lt;span class=&#34;math inline&#34;&gt;\(\mu_1\)&lt;/span&gt; and variance &lt;span class=&#34;math inline&#34;&gt;\(\tau^2_1\)&lt;/span&gt;, where&lt;/p&gt;
+&lt;p&gt;\[
+\mu_1 = \frac{\frac{1}{\tau^2_0}\mu_0 + \frac{n}{\sigma^2}\bar{y}}{\frac{1}{\tau^2_0} + \frac{n}{\sigma^2}} \;\;\; \text{and} \;\;\; \frac{1}{\tau^2_1}=\frac{1}{\tau^2_0} + \frac{n}{\sigma^2}.
+\]&lt;/p&gt;
+&lt;p&gt;We can see that the posterior distribution depends on &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; only through the sample mean &lt;span class=&#34;math inline&#34;&gt;\(\bar{y}=\sum_{i=1}^ny_i\)&lt;/span&gt;, which is a &lt;em&gt;sufficient statistic&lt;/em&gt; in this model. When working with Normal distributions, the inverse of the variance plays a prominent role and is called the &lt;em&gt;precision&lt;/em&gt; and, from the above expressions, it can be seen that for normal data and prior, the posterior precision &lt;span class=&#34;math inline&#34;&gt;\(\frac{1}{\tau^2_1}\)&lt;/span&gt; equals the sum of the prior precision &lt;span class=&#34;math inline&#34;&gt;\(\frac{1}{\tau^2_0}\)&lt;/span&gt; and the sampling precision &lt;span class=&#34;math inline&#34;&gt;\(\frac{n}{\sigma^2}\)&lt;/span&gt;. Thus, when &lt;span class=&#34;math inline&#34;&gt;\(n\)&lt;/span&gt; is large, the posterior precision is largely dominated by &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt; and the sample mean &lt;span class=&#34;math inline&#34;&gt;\(\bar{y}\)&lt;/span&gt; compared to the corresponding prior parameters. In the specific case where &lt;span class=&#34;math inline&#34;&gt;\(\tau^2_0=\sigma^2\)&lt;/span&gt;, the prior has the same weight as one extra observation with the value of &lt;span class=&#34;math inline&#34;&gt;\(\mu_0\)&lt;/span&gt; and, as &lt;span class=&#34;math inline&#34;&gt;\(n\rightarrow\infty\)&lt;/span&gt;, we have that &lt;span class=&#34;math inline&#34;&gt;\(p(\mu\mid y)\approx N\left(\mu \mid \bar{y},\frac{\sigma^2}{n}\right)\)&lt;/span&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;univariate-normal-example-unknown-variance&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Univariate Normal Example (unknown variance)&lt;/h3&gt;
+&lt;p&gt;For &lt;span class=&#34;math inline&#34;&gt;\(p(y \mid \mu,\sigma^2)=N(y \mid \mu, \sigma^2)\)&lt;/span&gt; with &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; known and &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt; unknown, the sampling distribution for a vector &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; of &lt;span class=&#34;math inline&#34;&gt;\(n\)&lt;/span&gt; units is&lt;/p&gt;
+&lt;p&gt;\[
+p(y \mid \sigma^2)=\frac{1}{\sqrt{\left(2\pi\sigma^2\right)^n}}\text{exp}\left(-\frac{1}{2}\sum_{i=1}^n \frac{(y_i-\mu)^2}{\sigma^2} \right),
+\]&lt;/p&gt;
+&lt;p&gt;with the corresponding conjugate prior for &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt; being the Inverse-Gamma distribution &lt;span class=&#34;math inline&#34;&gt;\(\Gamma^{-1}(\alpha,\beta)\)&lt;/span&gt; with density function&lt;/p&gt;
+&lt;p&gt;\[
+p(\sigma^2) \propto (\sigma^2)^{-(\alpha+1)}\text{exp}\left(-\frac{\beta}{\sigma^2}\right),
+\]&lt;/p&gt;
+&lt;p&gt;indexed by the hyperparameters &lt;span class=&#34;math inline&#34;&gt;\(\alpha\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\beta\)&lt;/span&gt;. A convenient parameterisation is as a Scaled Inverse-Chi Squared distribution &lt;span class=&#34;math inline&#34;&gt;\(\text{Inv-}\chi^2(\sigma^2_0,\nu_0)\)&lt;/span&gt; with scale and degrees of freedom parameters &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2_0\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\nu_0\)&lt;/span&gt;, respectively. This means that the prior on &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt; corresponds to the distribution of &lt;span class=&#34;math inline&#34;&gt;\(\frac{\sigma^2_0 \nu_0}{X}\)&lt;/span&gt;, where &lt;span class=&#34;math inline&#34;&gt;\(X\sim \chi^2_{\nu_0}\)&lt;/span&gt; random variable. After some calculations, the resulting posterior for &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt; is&lt;/p&gt;
+&lt;p&gt;\[
+p(\sigma^2 \mid y) \propto (\sigma^2)^\left(\frac{n+\nu_0}{2}+1\right)\text{exp}\left(-\frac{\nu_0 \sigma^2_0 + n \nu}{2\sigma^2} \right)
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\nu=\frac{1}{n}\sum_{i=1}^n(y_i-\mu)^2\)&lt;/span&gt;. This corresponds to say that&lt;/p&gt;
+&lt;p&gt;\[
+\sigma^2 \mid y \sim \text{Inv-}\chi^2\left(\nu_0 +n, \frac{\nu_0\sigma^2_0+n\nu}{\nu_0 + n} \right),
+\]&lt;/p&gt;
+&lt;p&gt;with scale equal to the degrees of freedom-weighted average of the prior and data scales and degrees of freedom equal to the sum of the prior and data degrees of freedom.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;univariate-normal-example-unknown-mean-and-variance&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Univariate Normal Example (unknown mean and variance)&lt;/h3&gt;
+&lt;p&gt;Suppose now that both the mean and variance parameters are unknown such that&lt;/p&gt;
+&lt;p&gt;\[
+p(y \mid \mu, \sigma^2) \sim N(\mu, \sigma^2),
+\]&lt;/p&gt;
+&lt;p&gt;and that the interest is centred on making inference about &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt;, that is we seek the conditional posterior distribution of the parameters of interest given the observed data &lt;span class=&#34;math inline&#34;&gt;\(p(\mu \mid y)\)&lt;/span&gt;. This can be derived from the joint posterior distribution density &lt;span class=&#34;math inline&#34;&gt;\(p(\mu, \sigma^2 \mid y)\)&lt;/span&gt; by averaging over all possible values of &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt;, that is&lt;/p&gt;
+&lt;p&gt;\[
+p(\mu \mid y)=\int p(\mu, \sigma^2 \mid y)d\sigma^2,
+\]&lt;/p&gt;
+&lt;p&gt;or, alternatively, the joint posterior can be factored as the product of the marginal distribution of one parameter and the conditional distribution of the other given the former and then taking the average over the values of the “nuisance” parameter&lt;/p&gt;
+&lt;p&gt;\[
+p(\mu \mid y)=\int p(\mu \mid \sigma^2, y)p(\sigma^2 \mid y)d\sigma^2.
+\]&lt;/p&gt;
+&lt;p&gt;The integral forms are rarely computed in practice but this expression helps us to understand that posterior distributions can be expressed in terms of the product of marginal and conditional densities, first drawing &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt; from its marginal and then &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; from its conditional given the drawn value of &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt;, so that the integration is indirectly performed. For example, consider the Normal model with both unknown mean and variance and assume a vague prior density &lt;span class=&#34;math inline&#34;&gt;\(p(\mu,\sigma^2)\propto (\sigma^2)^{-1}\)&lt;/span&gt; (corresponding to uniform prior on &lt;span class=&#34;math inline&#34;&gt;\((\mu, \log\sigma)\)&lt;/span&gt;), then the joint posterior distribution is proportional to the sampling distribution multiplied by the factor &lt;span class=&#34;math inline&#34;&gt;\((\sigma^2)^{-1}\)&lt;/span&gt;, that is&lt;/p&gt;
+&lt;p&gt;\[
+p(\mu,\sigma^2 \mid y)\propto \sigma^{-n-2}\text{exp}\left(-\frac{1}{2\sigma^2}\left[(n-1)s^2+n(\bar{y}-\mu)^2 \right] \right),
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(s^2=\frac{1}{n-1}\sum_{i=1}^n(y_i-\bar{y})^2\)&lt;/span&gt; is the sample variance. Next, the conditional posterior density &lt;span class=&#34;math inline&#34;&gt;\(p(\mu \mid \sigma^2)\)&lt;/span&gt; can be shown to be equal to&lt;/p&gt;
+&lt;p&gt;\[
+p(\mu \mid \sigma^2,y) \sim N(\bar{y},\frac{\sigma^2}{n}),
+\]&lt;/p&gt;
+&lt;p&gt;while the marginal posterior &lt;span class=&#34;math inline&#34;&gt;\(p(\sigma^2 \mid y)\)&lt;/span&gt; can be obtained by averaging the joint &lt;span class=&#34;math inline&#34;&gt;\(p(\mu,\sigma^2\mid y)\)&lt;/span&gt; over &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt;, that is&lt;/p&gt;
+&lt;p&gt;\[
+p(\sigma^2 \mid y)\propto \int \left(\sigma^{-n-2}\text{exp}\left(-\frac{1}{2\sigma^2}\left[(n-1)s^2+n(\bar{y}-\mu)^2 \right] \right)\right)d\mu,
+\]&lt;/p&gt;
+&lt;p&gt;which leads to&lt;/p&gt;
+&lt;p&gt;\[
+p(\sigma^2 \mid ,y) \sim \text{Inv-}\chi^2(n-1,s^2).
+\]&lt;/p&gt;
+&lt;p&gt;Typically, &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; represents the estimand of interest and the obejective of the analysis is therefore to make inference about the marginal distribution &lt;span class=&#34;math inline&#34;&gt;\(p(\mu \mid y)\)&lt;/span&gt;, which can be obtained by integrating &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt; out of the joint posterior&lt;/p&gt;
+&lt;p&gt;\[
+p(\mu \mid y)=\int_{0}^{\infty}p(\mu,\sigma^2\mid y)d\sigma^2 \propto \left[1+\frac{n(\mu-\bar{y})}{(n-1)s^2} \right]
+\]&lt;/p&gt;
+&lt;p&gt;which corresponds to a Student-&lt;span class=&#34;math inline&#34;&gt;\(t\)&lt;/span&gt; density with &lt;span class=&#34;math inline&#34;&gt;\(n-1\)&lt;/span&gt; degrees of freedom&lt;/p&gt;
+&lt;p&gt;\[
+p(\mu \mid y)\sim t_{n-1}\left(\bar{y},\frac{s^2}{n}\right)
+\]&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;multivariate-normal-example&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Multivariate Normal Example&lt;/h3&gt;
+&lt;p&gt;Similar considerations to those applied to the univariate case can be extended to the multivariate case when &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; is formed by &lt;span class=&#34;math inline&#34;&gt;\(J\)&lt;/span&gt; components coming from the Multivariate Normal distribution&lt;/p&gt;
+&lt;p&gt;\[
+p(y\mid \mu, \Sigma) \sim N(\mu, \Sigma),
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; is a vector of length &lt;span class=&#34;math inline&#34;&gt;\(J\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\Sigma\)&lt;/span&gt; is a &lt;span class=&#34;math inline&#34;&gt;\(J\times J\)&lt;/span&gt; covariance matrix, which is symmetric and positive definite. The sampling distribution for a sample of &lt;span class=&#34;math inline&#34;&gt;\(n\)&lt;/span&gt; units is&lt;/p&gt;
+&lt;p&gt;\[
+p(y\mid \mu, \Sigma) \propto \mid \Sigma \mid^{-n/2}\text{exp}\left(-\frac{1}{2}\sum_{i=1}^n(y_i-\mu)^{T}\Sigma^{-1}(y_i-\mu) \right),
+\]&lt;/p&gt;
+&lt;p&gt;As with the univariate normal model, we can derive the posterior distribution for &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\Sigma\)&lt;/span&gt; according to the factorisation used of the joint posterior and the prior distributions specified. For example, using the conjugate normal prior for the mean &lt;span class=&#34;math inline&#34;&gt;\(p(\mu)\sim N(\mu_0,\Sigma_0)\)&lt;/span&gt;, given &lt;span class=&#34;math inline&#34;&gt;\(\Sigma\)&lt;/span&gt; known, the posterior can be shown to be&lt;/p&gt;
+&lt;p&gt;\[
+p(\mu \mid y) \sim N(\mu_1,\Sigma_1),
+\]&lt;/p&gt;
+&lt;p&gt;where the posterior mean is a weighted average of the data and prior mean with weights given by the data and prior precision matrices &lt;span class=&#34;math inline&#34;&gt;\(\mu_1=(\Sigma^{-1}_0+n\Sigma^{-1})^{-1} (\Sigma_0^{-1}\mu_0 + n\Sigma^{-1}\bar{y})\)&lt;/span&gt;, and the posterior precision is the sum of the data and prior precisions &lt;span class=&#34;math inline&#34;&gt;\(\Sigma^{-1}_1=\Sigma^{-1}_0+n\Sigma^{-1}\)&lt;/span&gt;.&lt;/p&gt;
+&lt;p&gt;In the situation in which both &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\Sigma\)&lt;/span&gt; are unknown, convenient conjugate prior distributions which generalise those used in the univariate case are the Inverse-Wishart for the covariance matrix &lt;span class=&#34;math inline&#34;&gt;\(\Sigma\sim \text{Inv-Wishart}(\Lambda_0,\nu_0)\)&lt;/span&gt; and the Multivariate Normal for the mean &lt;span class=&#34;math inline&#34;&gt;\(\mu\sim N(\mu_0, \Sigma_0)\)&lt;/span&gt;, where &lt;span class=&#34;math inline&#34;&gt;\(\nu_0\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\Lambda_0\)&lt;/span&gt; represent the degrees of freedom and the scale matrix for the Inverse-Wishart distribution, while &lt;span class=&#34;math inline&#34;&gt;\(\mu_0\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\Sigma_0=\frac{\Sigma}{\kappa_0}\)&lt;/span&gt; are the prior mean and covariance matrix for the Multivariate Normal. Woking out the form of the posterior, it can be shown that the joint posterior distribution has the same form of the sampling distribution with parameters&lt;/p&gt;
+&lt;p&gt;\[
+p(\mu \mid \Sigma, y) \sim N(\mu_1,\Sigma_1) \;\;\; \text{and} \;\;\; p(\Sigma \mid y) \sim \text{Inv-Wishart}(\Lambda_1,\nu_1),
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\Sigma_1=\frac{\Sigma}{\kappa_1}\)&lt;/span&gt;, &lt;span class=&#34;math inline&#34;&gt;\(\mu_1=\frac{1}{\kappa_0+n}\mu_0+\frac{n}{\kappa_0+n}\bar{y}\)&lt;/span&gt;, &lt;span class=&#34;math inline&#34;&gt;\(\kappa_1=\kappa_0+n\)&lt;/span&gt;, &lt;span class=&#34;math inline&#34;&gt;\(\nu_1=\nu_0+n\)&lt;/span&gt;, and &lt;span class=&#34;math inline&#34;&gt;\(\Lambda_1=\Lambda_0+\sum_{i=1}^n(y_i-\bar{y})(y_i-\bar{y})^T+\frac{\kappa_0 n}{\kappa_0+n}(\bar{y}-\mu_0)(\bar{y}-\mu_0)^2\)&lt;/span&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;regression-models&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Regression Models&lt;/h2&gt;
+&lt;p&gt;Suppose the data consist in &lt;span class=&#34;math inline&#34;&gt;\(n\)&lt;/span&gt; units measured on an outcome variable &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; and a set of &lt;span class=&#34;math inline&#34;&gt;\(J\)&lt;/span&gt; covariates &lt;span class=&#34;math inline&#34;&gt;\(X=(x_{1},\ldots,x_{J})\)&lt;/span&gt; and assume that the distribution of &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; given &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt; is Normal with mean &lt;span class=&#34;math inline&#34;&gt;\(\mu_i=\beta_0+\sum_{j=1}^J\beta_jx_{ij}\)&lt;/span&gt; and variance &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;\[
+p(y \mid \beta,\sigma^2,X) \sim N(X\beta,\sigma^2I),
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\beta=(\beta_0,\ldots,\beta_J)\)&lt;/span&gt; is the set of regression coefficients and &lt;span class=&#34;math inline&#34;&gt;\(I\)&lt;/span&gt; is the &lt;span class=&#34;math inline&#34;&gt;\(n\times n\)&lt;/span&gt; identity matrix. Within the normal regression model, a convenient vague prior distribution is uniform on &lt;span class=&#34;math inline&#34;&gt;\((\beta,\log\sigma)\)&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;\[
+p(\beta,\sigma^2)\propto\sigma^{-2}.
+\]&lt;/p&gt;
+&lt;p&gt;As with normal distributions with unknown mean and variance we can first determine the marginal posterior of &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt; and factor the joint posterior as &lt;span class=&#34;math inline&#34;&gt;\(p(\beta,\sigma^2)=p(\beta \mid \sigma^2, y)p(\sigma^2 \mid y)\)&lt;/span&gt; (omit X for simplicity). Then, the conditional distribtuion &lt;span class=&#34;math inline&#34;&gt;\(p(\beta \mid \sigma^2,y)\)&lt;/span&gt; is Normal&lt;/p&gt;
+&lt;p&gt;\[
+p(\beta \mid \sigma^2, y) \sim N(\hat{\beta},V_{\beta}\sigma^2),
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\hat{\beta}=(X^{T}X)^{-1}(X^{T}y)\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(V_{\beta}=(X^{T}X)^{-1}\)&lt;/span&gt;. The marginal posterior &lt;span class=&#34;math inline&#34;&gt;\(p(\sigma^2 \mid y)\)&lt;/span&gt; has a scaled Inverse-&lt;span class=&#34;math inline&#34;&gt;\(\chi^2\)&lt;/span&gt; form&lt;/p&gt;
+&lt;p&gt;\[
+p(\sigma^2\mid y) \sim \text{Inv-}\chi^2(n-J,s^2),
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(s^2=\frac{1}{n-J}(y-X\hat{\beta})^{T}(y-X\hat{\beta})\)&lt;/span&gt;. Finally, the marginal posterior &lt;span class=&#34;math inline&#34;&gt;\(p(\beta \mid y)\)&lt;/span&gt;, averaging over &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt;, is multivariate &lt;span class=&#34;math inline&#34;&gt;\(t\)&lt;/span&gt; with &lt;span class=&#34;math inline&#34;&gt;\(n-J\)&lt;/span&gt; degrees of freedom, even though in practice since we can characterise the joint posterior by drawing from &lt;span class=&#34;math inline&#34;&gt;\(p(\sigma^2)\)&lt;/span&gt; and then from &lt;span class=&#34;math inline&#34;&gt;\(p(\beta \mid \sigma^2)\)&lt;/span&gt;. When the anaysis is based on improper priors (do not have finite integral), it is important to check tha the posterior is proper. In the case of the regression model, the posterior for &lt;span class=&#34;math inline&#34;&gt;\(\beta \mid \sigma^2\)&lt;/span&gt; is proper only if the number of observations is larger than the number of parameters &lt;span class=&#34;math inline&#34;&gt;\(n&amp;gt;J\)&lt;/span&gt;, and that the rank of &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt; equals &lt;span class=&#34;math inline&#34;&gt;\(J\)&lt;/span&gt; (i.e. the columns of &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt; are linearly independent) in order for all &lt;span class=&#34;math inline&#34;&gt;\(J\)&lt;/span&gt; coefficients to be uniquely identified from the data.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;generalised-linear-models&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Generalised Linear Models&lt;/h2&gt;
+&lt;p&gt;The purpose of &lt;em&gt;Generalised Linear Models&lt;/em&gt;(GLM) is to extend the idea of linear modelling to cases for which the linear relationship between &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(E[y\mid X]\)&lt;/span&gt; or the Normal distribution is not appropriate. GLMs are specified in three stages&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;p&gt;Choose the linear predictor &lt;span class=&#34;math inline&#34;&gt;\(\eta=X\beta\)&lt;/span&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Choose the &lt;em&gt;link fuction&lt;/em&gt; &lt;span class=&#34;math inline&#34;&gt;\(g()\)&lt;/span&gt; that relates the linear predictor to the mean of the outcome variable &lt;span class=&#34;math inline&#34;&gt;\(\mu=g^{-1}(\eta)\)&lt;/span&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Choose the random component specifying the distribution of &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; with mean &lt;span class=&#34;math inline&#34;&gt;\(E[y\mid X]\)&lt;/span&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Thus, the mean of the distribution of &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; given &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt; is determined as &lt;span class=&#34;math inline&#34;&gt;\(E[y\mid X]=g^{-1}(X\beta)\)&lt;/span&gt;. The Normal linear model can be thought as a special case of GLMs where the link function is the identity &lt;span class=&#34;math inline&#34;&gt;\(g(\mu)=\mu\)&lt;/span&gt; and the random component is normally distributed. Perhaps, the most commonly used GLMs are those based on Poisson and Binomial distributions to analyse count and binary data, respectively.&lt;/p&gt;
+&lt;div id=&#34;poisson&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Poisson&lt;/h3&gt;
+&lt;p&gt;Counted data are often modelled using Poisson regression models which assume that &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; is distributed according to a Poisson distribution with mean &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt;. The link function is typically chosen to be the logarithm so that &lt;span class=&#34;math inline&#34;&gt;\(\log \mu = X\beta\)&lt;/span&gt; and the distribution of the data has density&lt;/p&gt;
+&lt;p&gt;\[
+p(y\mid \beta)=\prod_{i=1}^n \frac{1}{y_i}\text{exp}\left(-\text{e}^{(\eta_i)}(\text{exp}(\eta_i))^{y_i}\right),
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\eta_i=(X\beta)_i\)&lt;/span&gt; is the linear predictor for the &lt;span class=&#34;math inline&#34;&gt;\(i-\)&lt;/span&gt;th unit.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;binomial&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Binomial&lt;/h3&gt;
+&lt;p&gt;Suppose there are some binomial data &lt;span class=&#34;math inline&#34;&gt;\(y_i \sim \text{Bin}(n_i,\mu_i)\)&lt;/span&gt;, with &lt;span class=&#34;math inline&#34;&gt;\(n_i\)&lt;/span&gt; known. It is common to specify the model in terms of the mean of the proportions &lt;span class=&#34;math inline&#34;&gt;\(\frac{y_i}{n_i}\)&lt;/span&gt; rather than the mean of &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt;. Choosing the logit tranformation of the probability of success &lt;span class=&#34;math inline&#34;&gt;\(g(\mu_i)=\log\left(\frac{\mu_i}{1-\mu_i}\right)\)&lt;/span&gt; as the link function leads to the logistic regression where data have distribution&lt;/p&gt;
+&lt;p&gt;\[
+p(y \mid \beta)=\prod_{i=1}^n {n_i \choose y_i} {e^{\eta_i} \choose 1+e^{\eta_i}}^{y_i} {1 \choose 1+e^{\eta_i}}^{n_i-y_i}.
+\]&lt;/p&gt;
+&lt;p&gt;The link functions used in the previous models are known as the &lt;em&gt;canonical link&lt;/em&gt; functions for each family of distributions, which is the function of the mean parameter that appears in the exponent of the exponential family form of the probability density. However, it is also possible to use link functions which are not canonical.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
+&lt;h1&gt;References&lt;/h1&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references&#34;&gt;
+&lt;div id=&#34;ref-gelman2013bayesian&#34;&gt;
+&lt;p&gt;Gelman, Andrew, John B Carlin, Hal S Stern, David B Dunson, Aki Vehtari, and Donald B Rubin. 2013. &lt;em&gt;Bayesian Data Analysis&lt;/em&gt;. Chapman; Hall/CRC.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Introduction to Maximum Likelihood Estimation</title>
       <link>/missmethods/likelihood-based-methods-ignorable/</link>
       <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
@@ -1689,7 +1880,7 @@ d(i,j)=(\hat{y}(x_i)-\hat{y}(x_j))^2,
       <description>
 
 
-&lt;p&gt;A possible approach to analyse missing data is to use methods based on the likelihood function under specific modelling assumptions. In this section, I initially review maximum likelihood methods based on fully observed data alone.&lt;/p&gt;
+&lt;p&gt;A possible approach to analyse missing data is to use methods based on the likelihood function under specific modelling assumptions. In this section, I review maximum likelihood methods based on fully observed data alone.&lt;/p&gt;
 &lt;div id=&#34;maximum-likelihood-methods-for-complete-data&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Maximum Likelihood Methods for Complete Data&lt;/h2&gt;
 &lt;p&gt;Let &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; denote the set of data, which are assumed to be generated according to a certain probability density function &lt;span class=&#34;math inline&#34;&gt;\(f(Y= y,\mid \theta)=f(y \mid \theta)\)&lt;/span&gt; indexed by the set of parameters &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt;, which lies on the parameter space &lt;span class=&#34;math inline&#34;&gt;\(\Theta\)&lt;/span&gt; (i.e. set of values of &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; for which &lt;span class=&#34;math inline&#34;&gt;\(f(y\mid \theta)\)&lt;/span&gt; is a proper density function). The &lt;em&gt;Likelihood&lt;/em&gt; function, indicated with &lt;span class=&#34;math inline&#34;&gt;\(L(\theta \mid y)\)&lt;/span&gt;, is defined as any function of &lt;span class=&#34;math inline&#34;&gt;\(\theta \in \Theta\)&lt;/span&gt; proportional that is to &lt;span class=&#34;math inline&#34;&gt;\(f(y \mid \theta)\)&lt;/span&gt;. Note that, in contrast to the density function which is defined as a function of the data &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; given the values of the parameters &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt;, instead the likelihood is defined as a function of the parameters &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; for fixed data &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;. In addition, the &lt;em&gt;loglikelihood&lt;/em&gt; function, indicated with &lt;span class=&#34;math inline&#34;&gt;\(l(\theta\mid y)\)&lt;/span&gt; is defined as the natural logarithm of &lt;span class=&#34;math inline&#34;&gt;\(L(\theta \mid y)\)&lt;/span&gt;.&lt;/p&gt;
