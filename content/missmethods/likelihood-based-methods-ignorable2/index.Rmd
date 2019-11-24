@@ -88,7 +88,7 @@ p(\\mu) = \\frac{1}{\\sqrt{2\\pi\\sigma\^2\_0}}\\text{exp}\\left(-\\frac{1}{2}\\
 under the assumption tha the hyperparameters $\mu_0$ and $\sigma^2_0$ are known. The conjugate prior density implies that the posterior distribution for $\mu$ (with $\sigma^2$ assumed constant) belongs to the same family of distributions of the sampling function, that is Normal, but some algebra is required to reveal its specific form. In particular, the posterior density is
 
 \\[
-p(\\mu \\mid y) = \\frac{p(\\mu)p(y\\mid \\mu)}{p(y)} = \\frac{1}{\\sqrt{2\\pi\\sigma\^2\_0}}\\frac{1}{\\sqrt{\\left(2\\pi\\sigma\^2\\right)\^n}}\\text{exp}\\left(-\\frac{1}{2} \\left[\\frac{(\\mu - \\mu\_0)\^2}{\\sigma\^2\_0} + \\sum\_{i=1}\^n\\frac{(y\_i-\\mu)\^2}{\\sigma\^2} \\right] \\right).
+p(\\mu \\mid y) = \\frac{p(\\mu)p(y\\mid \\mu)}{p(y)} \\propto \\frac{1}{\\sqrt{2\\pi\\sigma\^2\_0}}\\frac{1}{\\sqrt{\\left(2\\pi\\sigma\^2\\right)\^n}}\\text{exp}\\left(-\\frac{1}{2} \\left[\\frac{(\\mu - \\mu\_0)\^2}{\\sigma\^2\_0} + \\sum\_{i=1}\^n\\frac{(y\_i-\\mu)\^2}{\\sigma\^2} \\right] \\right).
 \\]
 
 Exapanding the components, collecting terms and completing the square in $\mu$ gives

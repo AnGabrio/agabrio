@@ -76,7 +76,7 @@ p(\mu) = \frac{1}{\sqrt{2\pi\sigma^2_0}}\text{exp}\left(-\frac{1}{2}\frac{(\mu -
 \]</p>
 <p>under the assumption tha the hyperparameters <span class="math inline">\(\mu_0\)</span> and <span class="math inline">\(\sigma^2_0\)</span> are known. The conjugate prior density implies that the posterior distribution for <span class="math inline">\(\mu\)</span> (with <span class="math inline">\(\sigma^2\)</span> assumed constant) belongs to the same family of distributions of the sampling function, that is Normal, but some algebra is required to reveal its specific form. In particular, the posterior density is</p>
 <p>\[
-p(\mu \mid y) = \frac{p(\mu)p(y\mid \mu)}{p(y)} = \frac{1}{\sqrt{2\pi\sigma^2_0}}\frac{1}{\sqrt{\left(2\pi\sigma^2\right)^n}}\text{exp}\left(-\frac{1}{2} \left[\frac{(\mu - \mu_0)^2}{\sigma^2_0} + \sum_{i=1}^n\frac{(y_i-\mu)^2}{\sigma^2} \right] \right).
+p(\mu \mid y) = \frac{p(\mu)p(y\mid \mu)}{p(y)} \propto \frac{1}{\sqrt{2\pi\sigma^2_0}}\frac{1}{\sqrt{\left(2\pi\sigma^2\right)^n}}\text{exp}\left(-\frac{1}{2} \left[\frac{(\mu - \mu_0)^2}{\sigma^2_0} + \sum_{i=1}^n\frac{(y_i-\mu)^2}{\sigma^2} \right] \right).
 \]</p>
 <p>Exapanding the components, collecting terms and completing the square in <span class="math inline">\(\mu\)</span> gives</p>
 <p>\[

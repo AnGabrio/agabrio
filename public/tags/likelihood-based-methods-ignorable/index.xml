@@ -52,7 +52,7 @@ p(\mu) = \frac{1}{\sqrt{2\pi\sigma^2_0}}\text{exp}\left(-\frac{1}{2}\frac{(\mu -
 \]&lt;/p&gt;
 &lt;p&gt;under the assumption tha the hyperparameters &lt;span class=&#34;math inline&#34;&gt;\(\mu_0\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2_0\)&lt;/span&gt; are known. The conjugate prior density implies that the posterior distribution for &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; (with &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt; assumed constant) belongs to the same family of distributions of the sampling function, that is Normal, but some algebra is required to reveal its specific form. In particular, the posterior density is&lt;/p&gt;
 &lt;p&gt;\[
-p(\mu \mid y) = \frac{p(\mu)p(y\mid \mu)}{p(y)} = \frac{1}{\sqrt{2\pi\sigma^2_0}}\frac{1}{\sqrt{\left(2\pi\sigma^2\right)^n}}\text{exp}\left(-\frac{1}{2} \left[\frac{(\mu - \mu_0)^2}{\sigma^2_0} + \sum_{i=1}^n\frac{(y_i-\mu)^2}{\sigma^2} \right] \right).
+p(\mu \mid y) = \frac{p(\mu)p(y\mid \mu)}{p(y)} \propto \frac{1}{\sqrt{2\pi\sigma^2_0}}\frac{1}{\sqrt{\left(2\pi\sigma^2\right)^n}}\text{exp}\left(-\frac{1}{2} \left[\frac{(\mu - \mu_0)^2}{\sigma^2_0} + \sum_{i=1}^n\frac{(y_i-\mu)^2}{\sigma^2} \right] \right).
 \]&lt;/p&gt;
 &lt;p&gt;Exapanding the components, collecting terms and completing the square in &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; gives&lt;/p&gt;
 &lt;p&gt;\[
@@ -371,6 +371,114 @@ l(\theta \mid y,x)=\sum_{i=1}^n \left[\frac{\left(y_i\delta\left(x_i,\beta\right
 &lt;/div&gt;
 &lt;div id=&#34;ref-rao1973linear&#34;&gt;
 &lt;p&gt;Rao, Calyampudi Radhakrishna, Calyampudi Radhakrishna Rao, Mathematischer Statistiker, Calyampudi Radhakrishna Rao, and Calyampudi Radhakrishna Rao. 1973. &lt;em&gt;Linear Statistical Inference and Its Applications&lt;/em&gt;. Vol. 2. Wiley New York.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Likelihood Based Inference with Incomplete Data</title>
+      <link>/missmethods/likelihood-based-methods-ignorable3/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/missmethods/likelihood-based-methods-ignorable3/</guid>
+      <description>
+
+
+&lt;p&gt;As for the inference under complete data, inference under incomplete data consists in deriving the likelihood for the parameters based on the available data, either using a &lt;em&gt;Maximum Likelihood&lt;/em&gt; (ML) approach (solving the likelihood equation) or using the &lt;em&gt;Bayes’ rule&lt;/em&gt; incorporating a prior distribution (performing necessary integrations to obtain the posterior distribution). However, asymptotic standard errors obtained from the information matrix, are more questionable when dealing with missing data since the sample will not be typically iid and results that imply the large sample normality of the likelihood function do not immediately apply. More complications arise when dealing with the process that lead to some of the data to be missing. This can be explained with a simple example.&lt;/p&gt;
+&lt;p&gt;Let &lt;span class=&#34;math inline&#34;&gt;\(Y=(y_{ij})\)&lt;/span&gt;, for &lt;span class=&#34;math inline&#34;&gt;\(i=1,\ldots,n\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(j=1,\ldots,J\)&lt;/span&gt;, denote the complete dataset if there were no missing values, with a total of &lt;span class=&#34;math inline&#34;&gt;\(n\)&lt;/span&gt; units and &lt;span class=&#34;math inline&#34;&gt;\(J\)&lt;/span&gt; variables. Let &lt;span class=&#34;math inline&#34;&gt;\(M=(m_{ij})\)&lt;/span&gt; denote the fully observed matrix of binary missing data indicators with &lt;span class=&#34;math inline&#34;&gt;\(m_{ij}=1\)&lt;/span&gt; if &lt;span class=&#34;math inline&#34;&gt;\(y_{ij}\)&lt;/span&gt; is missing and &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt; otherwise. As an example, we can model the density of the joint distribution of &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(M\)&lt;/span&gt; using the &lt;em&gt;selection model factorisation&lt;/em&gt; (&lt;span class=&#34;citation&#34;&gt;Little and Rubin (2019)&lt;/span&gt;)&lt;/p&gt;
+&lt;p&gt;\[
+p(Y=y,M=m \mid \theta, \psi) = f(y \mid \theta)f(m \mid y, \psi),
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; is the parameter vector indexing the response model and &lt;span class=&#34;math inline&#34;&gt;\(\psi\)&lt;/span&gt; is the parameter vector indexing the missingness mechanism. The observed values &lt;span class=&#34;math inline&#34;&gt;\(m\)&lt;/span&gt; effect a partition &lt;span class=&#34;math inline&#34;&gt;\(y=(y_1,y_0)\)&lt;/span&gt;, where &lt;span class=&#34;math inline&#34;&gt;\(y_0=[y_{ij} : m_{ij}=0]\)&lt;/span&gt; is the observed component and &lt;span class=&#34;math inline&#34;&gt;\(y_1=[y_{ij} : m_{ij}=1]\)&lt;/span&gt; is the missing component of &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;. The full likelihood based on the observed data and the assumed model is&lt;/p&gt;
+&lt;p&gt;\[
+L_{full}(\theta, \psi \mid y_{0},m) = \int f\left(y_{0},y_{1} \mid \theta \right) f\left(m \mid y_{0},y_{1}, \psi \right)dy_{1}
+\]&lt;/p&gt;
+&lt;p&gt;and is a function of the parameters &lt;span class=&#34;math inline&#34;&gt;\((\theta,\psi)\)&lt;/span&gt;. Next, we define the likelihood of ignoring the missingness mechanism or &lt;em&gt;ignorable likelihood&lt;/em&gt; as&lt;/p&gt;
+&lt;p&gt;\[
+L_{ign}\left(\theta \mid y_{0} \right) = \int f(y_{0},y_{1}\mid \theta)dy_{1},
+\]&lt;/p&gt;
+&lt;p&gt;which does not involve the model for &lt;span class=&#34;math inline&#34;&gt;\(M\)&lt;/span&gt;. In practice, modelling the joint distribution of &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(M\)&lt;/span&gt; is often challenging and, in fact, many approaches to missing data do not model &lt;span class=&#34;math inline&#34;&gt;\(M\)&lt;/span&gt; and (explicitly or implicitly) base inference about &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; on the ignorable likelihood. It is therefore important to assess under which conditions inferences about &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; based on &lt;span class=&#34;math inline&#34;&gt;\(L_{ign}\)&lt;/span&gt; can be considered appropriate. More specifically, the missingness mechanism is said to be &lt;em&gt;ignorable&lt;/em&gt; if inferences about &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; based on the ignorable likelihood equation evauluated at some realisations of &lt;span class=&#34;math inline&#34;&gt;\(y_0\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(m\)&lt;/span&gt; are the same as inferences about &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; based on the full likelihood equation, evaluated at the same realisations of &lt;span class=&#34;math inline&#34;&gt;\(y_0\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(m\)&lt;/span&gt;. The conditions for ignoring the missingness mechanism depend on whether the inferences are direct likelihood, Bayesian or frequentist.&lt;/p&gt;
+&lt;div id=&#34;direct-likelihood-inference&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Direct Likelihood Inference&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;Direct Likelihood Inference&lt;/em&gt; refers to inference based solely on likelihood ratios for pair of values of the parameters, with the data fixed at their observed values. The missingness mechanism can be ignored for direct likelihood if the likelihood ratio based on the ignorable likelihood is the same as the ratio based on the full likelihood. More precisely, the missingness mechanism is said to be ignorable for direct likelihood inference at some realisations of &lt;span class=&#34;math inline&#34;&gt;\((y_0,m)\)&lt;/span&gt; if the likelihood ratio for two values &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\theta^\star\)&lt;/span&gt; is the same whether based on the full or ignorable likelihood. That is&lt;/p&gt;
+&lt;p&gt;\[
+\frac{L_{full}\left( \theta, \psi \mid y_{0}, m \right)}{L_{full}\left( \theta^{\star}, \psi \mid y_{0}, m \right)}=\frac{L_{ign}\left( \theta \mid y_{0} \right)}{L_{ign}\left( \theta^{\star} \mid y_{0}\right)},
+\]&lt;/p&gt;
+&lt;p&gt;for all &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt;, &lt;span class=&#34;math inline&#34;&gt;\(\theta^\star\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\psi\)&lt;/span&gt;. In general, the missingnes mechanism is ignorable for direct likelihood inference if the following two conditions hold:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;Parameter distinctness. The parameters &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\psi\)&lt;/span&gt; are distinct, in the sense that the joint parameter space &lt;span class=&#34;math inline&#34;&gt;\(\Omega_{\theta,\psi}\)&lt;/span&gt; is the product of the two parameter spaces &lt;span class=&#34;math inline&#34;&gt;\(\Omega_{\theta}\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\Omega_{\psi}\)&lt;/span&gt;.&lt;/li&gt;
+&lt;li&gt;Factorisation of the full likelihood. The full likelihood factors as&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;\[
+L_{full}\left(\theta, \psi \mid y_{0},m \right) = L_{ign}\left(\theta \mid y_{0} \right) L_{rest}\left(\psi \mid y_{0},m \right)
+\]&lt;/p&gt;
+&lt;p&gt;for all values of &lt;span class=&#34;math inline&#34;&gt;\(\theta,\psi \in \Omega_{\theta,\psi}\)&lt;/span&gt;. The distinctness condition ensures that each value of &lt;span class=&#34;math inline&#34;&gt;\(\psi \in \Omega_{\psi}\)&lt;/span&gt; is compatible with different values of &lt;span class=&#34;math inline&#34;&gt;\(\theta \in \Omega_{\theta}\)&lt;/span&gt;. A sufficient condition for the factorisation of the full likelihood is that the missing data are &lt;em&gt;Missing At Random&lt;/em&gt;(MAR) at the specific realisations of &lt;span class=&#34;math inline&#34;&gt;\(y_{0},m\)&lt;/span&gt;. This means that the distribution function of &lt;span class=&#34;math inline&#34;&gt;\(M\)&lt;/span&gt;, evaluated at the given realisations &lt;span class=&#34;math inline&#34;&gt;\((y_{0},m)\)&lt;/span&gt;, does not depend on the missing values &lt;span class=&#34;math inline&#34;&gt;\(y_1\)&lt;/span&gt;, that is&lt;/p&gt;
+&lt;p&gt;\[
+f\left(m \mid y_{0}, y_{1}, \psi \right)=f\left(m \mid y_{0}, y^{\star}_{1} \psi \right),
+\]&lt;/p&gt;
+&lt;p&gt;for all &lt;span class=&#34;math inline&#34;&gt;\(y_{1},y^\star_{1},\psi\)&lt;/span&gt;. Thus, we have&lt;/p&gt;
+&lt;p&gt;\[
+f\left(y_{0}, m \mid \theta, \psi \right) = f\left(m \mid y_{0}, \psi \right) \int f\left(y_{0},y_{1} \mid \theta \right)dy_{1} = f\left(m \mid y_{0}, \psi \right) f\left( y_{0} \mid \theta \right).
+\]&lt;/p&gt;
+&lt;p&gt;From this it follows that, if the missing data are MAR at the given realisations of &lt;span class=&#34;math inline&#34;&gt;\((y_{0},m)\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\psi\)&lt;/span&gt; are distinct, the missingnes mechanism is ignorable for likelihood inference.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;bayesian-inference&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Bayesian Inference&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;Bayesian Inference&lt;/em&gt; under the full model for &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(M\)&lt;/span&gt; requires that the full likelihood is combined with a prior distribution &lt;span class=&#34;math inline&#34;&gt;\(p(\theta,\psi)\)&lt;/span&gt; for the parameters &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\psi\)&lt;/span&gt;, that is&lt;/p&gt;
+&lt;p&gt;\[
+p\left(\theta, \psi \mid y_{0}, m \right) \propto p(\theta, \psi) L_{full}\left(\theta, \psi \mid y_{0}, m \right).
+\]&lt;/p&gt;
+&lt;p&gt;Bayesian inference ignoring the missingness mechanism combines the ignorable likelihood with a prior distribution for &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; alone, that is&lt;/p&gt;
+&lt;p&gt;\[
+p(\theta \mid y_{0}) \propto p(\theta) L_{ign}\left(\theta \mid y_{0} \right).
+\]&lt;/p&gt;
+&lt;p&gt;More formally, the missingness mechanism is said to be ignorable for Bayesian inference at the given realisations of &lt;span class=&#34;math inline&#34;&gt;\((y_{0},m)\)&lt;/span&gt; if the posterior distribution for &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; based on the posterior distribution for the full likelihood and prior distribution for &lt;span class=&#34;math inline&#34;&gt;\((\theta,\psi)\)&lt;/span&gt; is the same as the posterior distribution for the ignorable likelihood and the prior distribution for &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; alone. This holds when the following conditions are satisfied:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;The parameters &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\psi\)&lt;/span&gt; are &lt;em&gt;a priori&lt;/em&gt; independent, that is the prior distribution has the form&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;\[
+p(\theta , \psi) = p(\theta) p(\psi)
+\]&lt;/p&gt;
+&lt;ol start=&#34;2&#34; style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;The full likelihood evaluated at the realisations of &lt;span class=&#34;math inline&#34;&gt;\((y_{0},m)\)&lt;/span&gt; factors as for direct likelihood inference&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Under these conditions:&lt;/p&gt;
+&lt;p&gt;\[
+p(\theta, \psi \mid y_{0}, m) \propto \left(p(\theta)L_{ign}\left( \theta \mid y_{0} \right) \right) \left(p(\psi)L_{rest}\left(\psi \mid y_{0},m \right) \right).
+\]&lt;/p&gt;
+&lt;p&gt;As for direct likelihood inference, MAR is a sufficient condition for the factorisation of the full likelihood. This means that, if the data are MAR at the given realisations of &lt;span class=&#34;math inline&#34;&gt;\((y_{0},m)\)&lt;/span&gt; and the parameters &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\psi\)&lt;/span&gt; are a prior independent, then the missingness mechanism is ignorable for Bayesian inference. We note that the a priori condition is more stringent than the distinctness condition because paramerers with distinct parameter spaces might have dependent prior distributions.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;frequentist-asymptotic-inference&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Frequentist Asymptotic Inference&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;Frequentist Asymptotic Inference&lt;/em&gt; requires that, in order to ignore the missingness mechanism, the factorisation of the full likelihood needs to be valid for values of the observed data under repeated sampling. This means that we require&lt;/p&gt;
+&lt;p&gt;\[
+L_{full}\left(\theta,\psi \mid y_{0}, m \right) = L_{ign}\left(\theta \mid y_{0} \right) L_{rest}\left(\psi \mid y_{0}, m \right)
+\]&lt;/p&gt;
+&lt;p&gt;for all &lt;span class=&#34;math inline&#34;&gt;\(y_{0},m\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\theta,\psi \in \Omega_{\theta,\psi}\)&lt;/span&gt;. For this form of inference, a sufficient condition for ignoring the missingness mechanism is given by the following conditions:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;p&gt;Parameter distinctness as defined for direct likelihood inference.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Missing data are &lt;em&gt;Missing Always At Random&lt;/em&gt; (MAAR), that is&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;\[
+f\left(m \mid y_{0},y_{1},\psi \right) = f\left(m \mid y_{0}, y^{\star}_{1},\psi \right)
+\]&lt;/p&gt;
+&lt;p&gt;for all &lt;span class=&#34;math inline&#34;&gt;\(m,y_{0},y_{1},y^\star_{1},\psi\)&lt;/span&gt;. In the following example we discuss conditions for ignoring the missingness mechanism for direct likelihood and Bayesian inference, which can be extended to the case of frequentist asymptotic inference by requiring that they hold for for values of &lt;span class=&#34;math inline&#34;&gt;\(y_{0},m\)&lt;/span&gt; other than those observed that could arise in repeated sampling.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;bivariate-normal-sample-with-one-variable-subject-to-missingness&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Bivariate Normal Sample with One Variable Subject to Missingness&lt;/h2&gt;
+&lt;p&gt;Consider a bivariate normal sample &lt;span class=&#34;math inline&#34;&gt;\(y=(y_{i1},y_{i2})\)&lt;/span&gt;, for &lt;span class=&#34;math inline&#34;&gt;\(i=1,\ldots,n\)&lt;/span&gt; units, but with the values of &lt;span class=&#34;math inline&#34;&gt;\(y_{i2}\)&lt;/span&gt; being missing for &lt;span class=&#34;math inline&#34;&gt;\(i=(n_{cc}+1),\ldots,n\)&lt;/span&gt;. This leads to a monotone missing data pattern with two variables. The loglikelihood of ignoring the missingness mechanism is&lt;/p&gt;
+&lt;p&gt;\[
+l_{ign}\left(\mu, \Sigma \mid y_{0} \right) = \log\left(L_{ign}\left(\mu,\Sigma \mid y_{0} \right) \right) = - \frac{1}{2}n_{cc}ln \mid \Sigma \mid - \frac{1}{2}\sum_{i=1}^{n_{cc}}(y_i - \mu ) \Sigma^{-1}(y_i - \mu)^{T} - \frac{1}{2}(n-n_{cc})ln\sigma_{1} - \frac{1}{2}\sum_{i=n_{cc}+1}^{n}\frac{(y_{i1}-\mu_1)^2}{\sigma_{1}}.
+\]&lt;/p&gt;
+&lt;p&gt;This loglikelihood is appropriate for inference provided the conditional distribution of &lt;span class=&#34;math inline&#34;&gt;\(M\)&lt;/span&gt; does not depend on the values of &lt;span class=&#34;math inline&#34;&gt;\(y_{i2}\)&lt;/span&gt;, and &lt;span class=&#34;math inline&#34;&gt;\(\theta=(\mu,\Sigma)\)&lt;/span&gt; is distinct from &lt;span class=&#34;math inline&#34;&gt;\(\psi\)&lt;/span&gt;. Under these conditions, ML estimates of &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; can be found by maximising this loglikelihood. For Bayesian inference, if these conditions hold and the prior distribution for &lt;span class=&#34;math inline&#34;&gt;\((\theta,\psi)\)&lt;/span&gt; has the form &lt;span class=&#34;math inline&#34;&gt;\(p(\theta)p(\psi)\)&lt;/span&gt;, then the joint posterior distribution of &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; is proportional to the product of &lt;span class=&#34;math inline&#34;&gt;\(p(\theta)\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(L_{ign}(\theta \mid y_{0})\)&lt;/span&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
+&lt;h1&gt;References&lt;/h1&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references&#34;&gt;
+&lt;div id=&#34;ref-little2019statistical&#34;&gt;
+&lt;p&gt;Little, Roderick JA, and Donald B Rubin. 2019. &lt;em&gt;Statistical Analysis with Missing Data&lt;/em&gt;. Vol. 793. John Wiley &amp;amp; Sons.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;

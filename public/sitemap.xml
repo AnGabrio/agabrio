@@ -42,32 +42,112 @@
   </url>
   
   <url>
-    <loc>/talk/isporeu2019/</loc>
-    <lastmod>2019-11-04T13:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/academic/</loc>
-    <lastmod>2019-10-28T12:34:03+01:00</lastmod>
+    <loc>/publication_types/2/</loc>
+    <lastmod>2019-11-22T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>/authors/andrea-gabrio/</loc>
-    <lastmod>2019-10-28T12:34:03+01:00</lastmod>
+    <loc>/authors/a-gabrio/</loc>
+    <lastmod>2019-11-22T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/authors/</loc>
-    <lastmod>2019-10-28T12:34:03+01:00</lastmod>
+    <lastmod>2019-11-22T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/publication/gabrio2019e/</loc>
+    <lastmod>2019-11-22T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/bayesian-methods/</loc>
+    <lastmod>2019-11-22T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/hierarchical-models/</loc>
+    <lastmod>2019-11-22T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/publication_types/</loc>
+    <lastmod>2019-11-22T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/publication/</loc>
+    <lastmod>2019-11-22T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/volleyball/</loc>
+    <lastmod>2019-11-22T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/academic/</loc>
+    <lastmod>2019-11-09T12:34:03+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/authors/andrea-gabrio/</loc>
+    <lastmod>2019-11-09T12:34:03+01:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/categories/</loc>
-    <lastmod>2019-10-28T12:34:03+01:00</lastmod>
+    <lastmod>2019-11-09T12:34:03+01:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/christmas/</loc>
+    <lastmod>2019-11-09T12:34:03+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/christmas/</loc>
+    <lastmod>2019-11-09T12:34:03+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/post/</loc>
+    <lastmod>2019-11-09T12:34:03+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/news/</loc>
+    <lastmod>2019-11-09T12:34:03+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/post/update-november/update-november/</loc>
+    <lastmod>2019-11-09T12:34:03+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/news/</loc>
+    <lastmod>2019-11-09T12:34:03+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/talk/isporeu2019/</loc>
+    <lastmod>2019-11-04T13:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -82,24 +162,7 @@
   </url>
   
   <url>
-    <loc>/post/</loc>
-    <lastmod>2019-10-28T12:34:03+01:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/news/</loc>
-    <lastmod>2019-10-28T12:34:03+01:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>/categories/conferences/</loc>
-    <lastmod>2019-10-28T12:34:03+01:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/news/</loc>
     <lastmod>2019-10-28T12:34:03+01:00</lastmod>
     <priority>0</priority>
   </url>
@@ -309,12 +372,6 @@
   </url>
   
   <url>
-    <loc>/publication_types/2/</loc>
-    <lastmod>2019-06-01T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>/publication_types/6/</loc>
     <lastmod>2019-06-01T00:00:00+00:00</lastmod>
     <priority>0</priority>
@@ -323,12 +380,6 @@
   <url>
     <loc>/publication/gabrio2019c/</loc>
     <lastmod>2019-06-01T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/authors/a-gabrio/</loc>
-    <lastmod>2019-06-01T00:00:00+00:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
@@ -362,17 +413,6 @@
   
   <url>
     <loc>/publication/gabrio2019d/</loc>
-    <lastmod>2019-06-01T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/publication_types/</loc>
-    <lastmod>2019-06-01T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/publication/</loc>
     <lastmod>2019-06-01T00:00:00+00:00</lastmod>
   </url>
   
@@ -569,6 +609,11 @@
     <loc>/tags/last-value-carried-forward/</loc>
     <lastmod>2016-04-27T00:00:00+00:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/missmethods/likelihood-based-methods-ignorable3/</loc>
+    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
   </url>
   
   <url>
