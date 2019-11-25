@@ -2,8 +2,8 @@
 abstract: Invited presentation
 all_day: false
 authors: []
-date: "2019-12-04T13:00:00Z"
-date_end: "2019-12-04T15:00:00Z"
+date: "2019-12-09T13:00:00Z"
+date_end: "2019-12-09T15:00:00Z"
 event: "PRIMENT CTU Methodologists' seminar"
 event_url: https://www.ucl.ac.uk/priment/events
 featured: false
