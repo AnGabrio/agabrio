@@ -19,7 +19,7 @@ location: University College London (UCL), London, UK
 math: true
 projects:
 - missing-data
-publishDate: "2019-12-04T00:00:00Z"
+publishDate: "2019-11-24T00:00:00Z"
 slides: 
 summary: 
 title: MissingHE An R package to deal with missing data in trial based health economic evaluations

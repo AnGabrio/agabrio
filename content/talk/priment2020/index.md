@@ -19,7 +19,7 @@ location: University College London (UCL), London, UK
 math: true
 projects:
 - missing-data
-publishDate: "2020-01-28T00:00:00Z"
+publishDate: "2019-11-24T00:00:00Z"
 slides: 
 summary: 
 tags: ["Economic Evaluations", "Missing Data"]
