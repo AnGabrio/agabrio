@@ -453,10 +453,30 @@ The main drawback of ACA is that the sample used to perform the analysis varies 
   </div>
   
   <div>
+    <h2><a href="/missmethods/bayesian-methods/">Bayesian Iterative Simulation Methods</a></h2>
+    <div class="article-style">
+      
+      A useful alternative approach to Maximum Likelihood(ML) methods, particularly when the sample size is small, is to include a reasonable prior distribution for the parameters and compute the posterior distribution of the parameters of interest. The posterior distribution for a model with ignorable missingness is
+\[p(\theta \mid Y_0, M) \equiv p(\theta \mid Y_0) \propto p(\theta)f(Y_0 \mid \theta),\]
+where \(p(\theta)\) is the prior and \(f(Y_0 \mid \theta)\) is the density of the observed data \(Y_0\).
+      
+    </div>
+  </div>
+  
+  <div>
     <h2><a href="/missmethods/complete-case-analysis/">Complete Case Analysis</a></h2>
     <div class="article-style">
       
       Complete case analysis (CCA), also known as case or listwise deletion (LD), is one of the oldest methods to handle missing data and consists in discarding any unit or case whose information is incomplete. Only the cases with observed values for all the variables under consideration are used in the analysis. For example, suppose we have a data set formed by \(i=1,\ldots,n\) individuals and that we want to fit a linear regression on some outcome variable \(y_i\) using some other variables \(x_{i1},\ldots,x_{ik}\) as covariates.
+      
+    </div>
+  </div>
+  
+  <div>
+    <h2><a href="/missmethods/em-algorithm/">Expectation Maximisation Algorithm</a></h2>
+    <div class="article-style">
+      
+      Patterns of incomplete data in practice often do not have the forms that allow explicit Maximum Likelihood(ML) estimates to be calculated. Suppose we have a model for the complete data \(Y\), with density \(f(Y\mid \theta)\), indexed by the set of unknown parameters \(\theta\). Writing \(Y=(Y_0,Y_1)\) in terms of the observed \(Y_0\) and missing \(Y_1\) components, and assuming that the missingness mechanism is Missing At Random(MAR), we want to maximise the likelihood
       
     </div>
   </div>
@@ -504,24 +524,6 @@ Maximum Likelihood Methods for Complete DataLet \(Y\) denote the set of data, w
     <div class="article-style">
       
       In certain cases, it is possible to reduce biases from case deletion by the application of weights. After incomplete cases are removed, the remaining complete cases can be weighted so that their distribution more closely resembles that of the full sample with respect to auxiliary variables. Weighting methods can eliminate bias due to differential response related to the variables used to model the response probabilities, but it cannot correct for biases related to variables that are unused or unmeasured (Little and Rubin (2019)).
-      
-    </div>
-  </div>
-  
-  <div>
-    <h2><a href="/missmethods/joint-multiple-imputation/">Joint Multiple Imputation</a></h2>
-    <div class="article-style">
-      
-      Multiple Imputation(MI) refers to the procedure of replacing each missing value by a set of \(H\geq 2\) imputed values. These are ordered in the sense that \(H\) completed data sets can be created from the sets of imputations, where the first imputed value replaces the missing value in the first completed data set, the second imputed value in the second completed data set, and so on. Next, standard complete data methods are used to analyse each completed data set.
-      
-    </div>
-  </div>
-  
-  <div>
-    <h2><a href="/missmethods/likelihood-based-methods-ignorable3/">Likelihood Based Inference with Incomplete Data</a></h2>
-    <div class="article-style">
-      
-      As for the inference under complete data, inference under incomplete data consists in deriving the likelihood for the parameters based on the available data, either using a Maximum Likelihood (ML) approach (solving the likelihood equation) or using the Bayes’ rule incorporating a prior distribution (performing necessary integrations to obtain the posterior distribution). However, asymptotic standard errors obtained from the information matrix, are more questionable when dealing with missing data since the sample will not be typically iid and results that imply the large sample normality of the likelihood function do not immediately apply.
       
     </div>
   </div>

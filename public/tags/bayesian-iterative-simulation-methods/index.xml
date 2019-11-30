@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Bayesian Iterative Simulation Methods on Andrea Gabrio</title>
+    <link>/tags/bayesian-iterative-simulation-methods/</link>
+    <description>Recent content in Bayesian Iterative Simulation Methods on Andrea Gabrio</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 27 Apr 2016 00:00:00 +0000</lastBuildDate>
+    
+	    <atom:link href="/tags/bayesian-iterative-simulation-methods/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Bayesian Iterative Simulation Methods</title>
+      <link>/missmethods/bayesian-methods/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/missmethods/bayesian-methods/</guid>
+      <description>
+
+
+&lt;p&gt;A useful alternative approach to &lt;em&gt;Maximum Likelihood&lt;/em&gt;(ML) methods, particularly when the sample size is small, is to include a reasonable prior distribution for the parameters and compute the posterior distribution of the parameters of interest. The posterior distribution for a model with ignorable missingness is&lt;/p&gt;
+&lt;p&gt;\[
+p(\theta \mid Y_0, M) \equiv p(\theta \mid Y_0) \propto p(\theta)f(Y_0 \mid \theta),
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(p(\theta)\)&lt;/span&gt; is the prior and &lt;span class=&#34;math inline&#34;&gt;\(f(Y_0 \mid \theta)\)&lt;/span&gt; is the density of the observed data &lt;span class=&#34;math inline&#34;&gt;\(Y_0\)&lt;/span&gt;. Simulation from the posterior without iteration can be accomplished if the likelihood can be factored into complete data components, while for general patterns of missing data, Bayesian simulation requires iteration.&lt;/p&gt;
+&lt;div id=&#34;data-augmentation&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Data Augmentation&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;Data Augmentation&lt;/em&gt;(&lt;span class=&#34;citation&#34;&gt;Tanner and Wong (1987)&lt;/span&gt;), or DA, is an iterative method of simulating the posteiror distribution of &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; that combines features of the &lt;em&gt;Expecation Maximisation&lt;/em&gt;(EM) algorithm and &lt;em&gt;Multiple Imputation&lt;/em&gt;(MI). Starting with an initial draw &lt;span class=&#34;math inline&#34;&gt;\(\theta_0\)&lt;/span&gt; from an approximation to the posterior, then given the value &lt;span class=&#34;math inline&#34;&gt;\(\theta_t\)&lt;/span&gt; at iteration &lt;span class=&#34;math inline&#34;&gt;\(t\)&lt;/span&gt;:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;p&gt;Draw &lt;span class=&#34;math inline&#34;&gt;\(Y_{1,t+1}\)&lt;/span&gt; with density &lt;span class=&#34;math inline&#34;&gt;\(p(Y_1 \mid Y_0, \theta_t)\)&lt;/span&gt; (I step).&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Draw &lt;span class=&#34;math inline&#34;&gt;\(\theta_{t+1}\)&lt;/span&gt; with density &lt;span class=&#34;math inline&#34;&gt;\(p(\theta \mid Y_0, Y_{1,t+1})\)&lt;/span&gt; (P step).&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;The procedure is motivated by the fact that the distributions in these two steps are often much easier to draw from than either of the posteriors &lt;span class=&#34;math inline&#34;&gt;\(p(Y_1 \mid Y_0)\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(p(\theta \mid Y_0)\)&lt;/span&gt;, or the joint posterior &lt;span class=&#34;math inline&#34;&gt;\(p(\theta, Y_1 \mid Y_0)\)&lt;/span&gt;. The procedure can be shown to eventually yield a draw from the joint posterior of &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; given &lt;span class=&#34;math inline&#34;&gt;\(Y_0\)&lt;/span&gt;, in the sense that as &lt;span class=&#34;math inline&#34;&gt;\(t\)&lt;/span&gt; tends to infinity this sequence converges to a draw from the joint distribution.&lt;/p&gt;
+&lt;div id=&#34;bivariate-normal-data-example&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Bivariate Normal Data Example&lt;/h3&gt;
+&lt;p&gt;Suppose having a sample &lt;span class=&#34;math inline&#34;&gt;\(y_i=(y_{1i},y_{2i})\)&lt;/span&gt; from a Bivariate Normal distribution for &lt;span class=&#34;math inline&#34;&gt;\(i=1,\ldots,n\)&lt;/span&gt; units, with mean vector &lt;span class=&#34;math inline&#34;&gt;\(\mu=(\mu_1,\mu_2)\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(2\times2\)&lt;/span&gt; covariance matrix &lt;span class=&#34;math inline&#34;&gt;\(\Sigma\)&lt;/span&gt;. Assume that one group of units has &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt; observed and &lt;span class=&#34;math inline&#34;&gt;\(Y_2\)&lt;/span&gt; missing, while a second group of units has both variables observed and a third group of units has &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt; missing and &lt;span class=&#34;math inline&#34;&gt;\(Y_2\)&lt;/span&gt; observed. Under DA methods, each iteration &lt;span class=&#34;math inline&#34;&gt;\(t\)&lt;/span&gt; consists of an I step and a P step. In the first, missing data are replaced with draws from its conditional distribution given the observed data and current values of the parameters (rather then its conditional mean as in the EM algorithm). Because units are conditionally independent given the parameters, each missing &lt;span class=&#34;math inline&#34;&gt;\(y_{2i}\)&lt;/span&gt; is drawn independently as&lt;/p&gt;
+&lt;p&gt;\[
+y_{2i,t+1} \sim N\left(\beta_{20t} + \beta_{21t}y_{1i}, \sigma^2_{2t} \right),
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\beta_{20t},\beta_{21t}\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2_{2t}\)&lt;/span&gt; are the &lt;span class=&#34;math inline&#34;&gt;\(t\)&lt;/span&gt;-th iterates of the regression parameters of &lt;span class=&#34;math inline&#34;&gt;\(Y_2\)&lt;/span&gt; on &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt;. Analogously, each missing &lt;span class=&#34;math inline&#34;&gt;\(y_{1i}\)&lt;/span&gt; is drawn independently as&lt;/p&gt;
+&lt;p&gt;\[
+y_{1i,t+1} \sim N\left(\beta_{10t} + \beta_{11t}y_{2i}, \sigma^2_{1t} \right),
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\beta_{10t},\beta_{11t}\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2_{1t}\)&lt;/span&gt; are the &lt;span class=&#34;math inline&#34;&gt;\(t\)&lt;/span&gt;-th iterates of the regression parameters of &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt; on &lt;span class=&#34;math inline&#34;&gt;\(Y_2\)&lt;/span&gt;. In the second step, these drawn values are treated as if they were the observed values and one draw of the bivariate Normal parameters is made from the complete data posterior. In the limit, the draws are from the joint posterior of the missing values and the parameters. Thus, a run of DA generates both a draw from the posterior predictive distribution of &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt; and a draw from the posterior of &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt;, and the procedure can be run &lt;span class=&#34;math inline&#34;&gt;\(D\)&lt;/span&gt; times to obtain &lt;span class=&#34;math inline&#34;&gt;\(D\)&lt;/span&gt; iid draws from the joint posterior of &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt;. Unlike the EM, estimates of the sampling covariance matrix from the filled-in data can be computed without any corrections to the estimated variances because draws from the posterior predictive distribution of the missing values are imputed in the I step of DA, rather than the conditional means as in the E step of EM. The loss of efficiency from imputing draws is limited when the posterior mean from DA is computed over many draws from the posterior.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-gibbs-sampler&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The Gibbs’ Sampler&lt;/h2&gt;
+&lt;p&gt;The &lt;em&gt;Gibbs’s sampler&lt;/em&gt; is an iterative simulation method that is designed to yield draws from the joint posterior distribution in the case of a general pattern of missingness and provides a Bayesian analogous to the &lt;em&gt;Expectation Conditonal Maximisation &lt;/em&gt;(ECM) algorithm for ML estimation. The Gibbs’ sampler eventually generates a draw from the distribution &lt;span class=&#34;math inline&#34;&gt;\(p(x_1,\ldots,x_J)\)&lt;/span&gt; of a set of &lt;span class=&#34;math inline&#34;&gt;\(J\)&lt;/span&gt; random variables &lt;span class=&#34;math inline&#34;&gt;\(X_1,\ldots,X_J\)&lt;/span&gt; in settings where draws from the joint distribution are hard to compute but draws from the conditional distributions &lt;span class=&#34;math inline&#34;&gt;\(p(x_j \mid x_1,\ldots,x_{j-1},x_{j+1},\ldots, x_J)\)&lt;/span&gt; are relatively easy to compute. Initial values &lt;span class=&#34;math inline&#34;&gt;\(x_{10},\ldots,x_{J0}\)&lt;/span&gt; are chosen in some way and then, given current values of &lt;span class=&#34;math inline&#34;&gt;\(x_{1t},\ldots,x_{Jt}\)&lt;/span&gt; at iteration &lt;span class=&#34;math inline&#34;&gt;\(t\)&lt;/span&gt;, new values are found by drawing from the following sequence of conditional distributions:&lt;/p&gt;
+&lt;p&gt;\[
+x_{1t+1} \sim p\left(x_1 \mid x_{2t},\ldots,x_{Jt} \right),
+\]&lt;/p&gt;
+&lt;p&gt;\[
+x_{2t+1} \sim p\left(x_2 \mid x_{1t+1},\ldots,x_{Jt} \right),
+\]&lt;/p&gt;
+&lt;p&gt;up to&lt;/p&gt;
+&lt;p&gt;\[
+x_{Jt+1} \sim p\left(x_J \mid x_{2t+1},\ldots,x_{J-1t+1} \right).
+\]&lt;/p&gt;
+&lt;p&gt;It can be shown that, under general conditions, the sequence of &lt;span class=&#34;math inline&#34;&gt;\(J\)&lt;/span&gt; iterates converges to a draw from the joint posterior of the variables. When &lt;span class=&#34;math inline&#34;&gt;\(J=2\)&lt;/span&gt;, the Gibbs’ sampler is the same as DA if &lt;span class=&#34;math inline&#34;&gt;\(x_1=Y_1\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(x_2=\theta\)&lt;/span&gt; and the distributions condition on &lt;span class=&#34;math inline&#34;&gt;\(Y_0\)&lt;/span&gt;. We can then obtain a draw from the joint posterior of &lt;span class=&#34;math inline&#34;&gt;\(Y_1,\theta \mid Y_0\)&lt;/span&gt; by applying the Gibbs’ sampler, where at iteration &lt;span class=&#34;math inline&#34;&gt;\(t\)&lt;/span&gt; for the &lt;span class=&#34;math inline&#34;&gt;\(d\)&lt;/span&gt;-th imputed data set:&lt;/p&gt;
+&lt;p&gt;\[
+Y^d_{1t+1} \sim p\left(Y_1 \mid Y_0, \theta^d_{t}\right) \;\;\; \text{and} \;\;\; \theta^d_{t+1} \sim p\left(\theta \mid Y^d_{1t+1}, Y_0\right),
+\]&lt;/p&gt;
+&lt;p&gt;such that one run of the sampler converges to a draw from the posterior predictive distribution of &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt; and a draw from the posterior of &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt;. The sampler can be run independently &lt;span class=&#34;math inline&#34;&gt;\(D\)&lt;/span&gt; times to generate &lt;span class=&#34;math inline&#34;&gt;\(D\)&lt;/span&gt; iid draws from the approximate joint posterior of &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt;. The values of &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt; are multiple imputations of the missing values, drawn from their posterior predictive distribution.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;assessing-convergence&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Assessing Convergence&lt;/h2&gt;
+&lt;p&gt;Assessing convergence of the sequence of draws to the target distribution is more difficult than assessing convergence of an EM-type algorithm because there is no single target quantity to monitor like the maximum value of the likelihood. Methods have been proposed to assess convergence of a single sequence (&lt;span class=&#34;citation&#34;&gt;Geyer (1992)&lt;/span&gt;), but a more reliable approach is to simulate &lt;span class=&#34;math inline&#34;&gt;\(D&amp;gt;1\)&lt;/span&gt; sequences with starting values dispersed throughout the parameter space, and the convergence of all quantities of interest can then be monitored by comparing variation between and within simulated sequences, until the “within” variation roughly equals the “between” variation. The idea is that when the distribution of each simulated sequence is close enough to the distribution of all the sequences mixed together, they can all be approximating the target distribution. &lt;span class=&#34;citation&#34;&gt;Gelman and Rubin (1992)&lt;/span&gt; developed an explicit monitoring statistic based on the following idea. For each scalar estimand &lt;span class=&#34;math inline&#34;&gt;\(\psi\)&lt;/span&gt;, label the draws from &lt;span class=&#34;math inline&#34;&gt;\(D\)&lt;/span&gt; parallel sequences as &lt;span class=&#34;math inline&#34;&gt;\(\psi^d_{t}\)&lt;/span&gt;, for &lt;span class=&#34;math inline&#34;&gt;\(t=1,\ldots,T\)&lt;/span&gt; iterations and &lt;span class=&#34;math inline&#34;&gt;\(d=1,\ldots,D\)&lt;/span&gt; sequences, and compute the between &lt;span class=&#34;math inline&#34;&gt;\(B\)&lt;/span&gt; and within &lt;span class=&#34;math inline&#34;&gt;\(\bar{V}\)&lt;/span&gt; sequence variances as:&lt;/p&gt;
+&lt;p&gt;\[
+B=\frac{T}{D-1}\sum_{d=1}^D(\bar{\psi}_{d.} - \bar{\psi}_{..})^2, \;\;\; \text{and} \;\;\; \bar{V}=\frac{1}{D}\sum_{d=1}^D s^2_{d},
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\bar{\psi}_{d.}=\frac{1}{T}\sum_{t=1}^T \psi_{dt}\)&lt;/span&gt;, &lt;span class=&#34;math inline&#34;&gt;\(\bar{\psi}_{..}=\frac{1}{D}\sum_{d=1}^D \bar{\psi}_{d}\)&lt;/span&gt;, and &lt;span class=&#34;math inline&#34;&gt;\(s^2_{d}=\frac{1}{T-1}\sum_{t=1}^T(\psi_{dt} - \bar{\psi}_{d.})^2\)&lt;/span&gt;. We can then estimate the marginal posterior variance of the estimand as&lt;/p&gt;
+&lt;p&gt;\[
+\widehat{Var}(\psi \mid Y_0) = \frac{T-1}{T}\hat{V} + \frac{1}{T} B,
+\]&lt;/p&gt;
+&lt;p&gt;which will &lt;em&gt;overestimate&lt;/em&gt; the marginal posterior variance assuming the starting distribution is appropriately over-dispersed but is &lt;em&gt;unbiased&lt;/em&gt; under stationarity (starting distribution equals the target distribution). For any finte &lt;span class=&#34;math inline&#34;&gt;\(T\)&lt;/span&gt;, the within variance &lt;span class=&#34;math inline&#34;&gt;\(\hat{V}\)&lt;/span&gt; will &lt;em&gt;underestimate&lt;/em&gt; the marginal variance because individual sequences have not had time to range over all the target distribution and should have smaller variance then B. In the limit as &lt;span class=&#34;math inline&#34;&gt;\(T \rightarrow \infty\)&lt;/span&gt; the expecation of &lt;span class=&#34;math inline&#34;&gt;\(\hat{V}\)&lt;/span&gt; approaches the marginal variance. These facts suggest monitoring convergence by estimating the factor by which the scale of the current distribution for &lt;span class=&#34;math inline&#34;&gt;\(\psi\)&lt;/span&gt; might be reduced if the simulations were continued. This is the &lt;em&gt;potential scale reduction factor&lt;/em&gt; and is estimated by&lt;/p&gt;
+&lt;p&gt;\[
+\sqrt{\hat{R}} = \sqrt{\frac{\widehat{Var}(\psi \mid Y_0)}{\hat{V}}},
+\]&lt;/p&gt;
+&lt;p&gt;which declines to 1 as &lt;span class=&#34;math inline&#34;&gt;\(T \rightarrow \infty\)&lt;/span&gt;. When this quantity is high, there is evidence to proceed the simulations further to improve our inference about the target distribution.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;other-simulation-methods&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Other Simulation Methods&lt;/h2&gt;
+&lt;p&gt;When draws from the sequence of conditional distributions forming the Gibbs’ sampler are not easy to obtain, other simulation approaches are needed. Among these there are the &lt;em&gt;Sequential Imputation&lt;/em&gt; (&lt;span class=&#34;citation&#34;&gt;Kong, Liu, and Wong (1994)&lt;/span&gt;), &lt;em&gt;Sampling Imprtance Resampling&lt;/em&gt; (&lt;span class=&#34;citation&#34;&gt;Gelfand and Smith (1990)&lt;/span&gt;), &lt;em&gt;Rejection Sampling&lt;/em&gt; (&lt;span class=&#34;citation&#34;&gt;Von Neumann and others (1951)&lt;/span&gt;). One of these alternatives are the &lt;em&gt;Metropolis-Hastings&lt;/em&gt; (&lt;span class=&#34;citation&#34;&gt;Metropolis et al. (1953)&lt;/span&gt;) algorithms, of which the Gibbs’ sampler is a particular case, which constitute the so-called &lt;em&gt;Markov Chain Monte Carlo&lt;/em&gt; (MCMC) algorithms as the sequence of iterates forms a Markov Chain (&lt;span class=&#34;citation&#34;&gt;Gelman et al. (2013)&lt;/span&gt;).&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
+&lt;h1&gt;References&lt;/h1&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references&#34;&gt;
+&lt;div id=&#34;ref-gelfand1990sampling&#34;&gt;
+&lt;p&gt;Gelfand, Alan E, and Adrian FM Smith. 1990. “Sampling-Based Approaches to Calculating Marginal Densities.” &lt;em&gt;Journal of the American Statistical Association&lt;/em&gt; 85 (410): 398–409.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-gelman2013bayesian&#34;&gt;
+&lt;p&gt;Gelman, Andrew, John B Carlin, Hal S Stern, David B Dunson, Aki Vehtari, and Donald B Rubin. 2013. &lt;em&gt;Bayesian Data Analysis&lt;/em&gt;. Chapman; Hall/CRC.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-gelman1992single&#34;&gt;
+&lt;p&gt;Gelman, Andrew, and Donald B Rubin. 1992. “A Single Series from the Gibbs Sampler Provides a False Sense of Security.” &lt;em&gt;Bayesian Statistics&lt;/em&gt; 4: 625–31.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-geyer1992practical&#34;&gt;
+&lt;p&gt;Geyer, Charles J. 1992. “Practical Markov Chain Monte Carlo.” &lt;em&gt;Statistical Science&lt;/em&gt;, 473–83.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-kong1994sequential&#34;&gt;
+&lt;p&gt;Kong, Augustine, Jun S Liu, and Wing Hung Wong. 1994. “Sequential Imputations and Bayesian Missing Data Problems.” &lt;em&gt;Journal of the American Statistical Association&lt;/em&gt; 89 (425): 278–88.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-metropolis1953equation&#34;&gt;
+&lt;p&gt;Metropolis, Nicholas, Arianna W Rosenbluth, Marshall N Rosenbluth, Augusta H Teller, and Edward Teller. 1953. “Equation of State Calculations by Fast Computing Machines.” &lt;em&gt;The Journal of Chemical Physics&lt;/em&gt; 21 (6): 1087–92.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-tanner1987calculation&#34;&gt;
+&lt;p&gt;Tanner, Martin A, and Wing Hung Wong. 1987. “The Calculation of Posterior Distributions by Data Augmentation.” &lt;em&gt;Journal of the American Statistical Association&lt;/em&gt; 82 (398): 528–40.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-von1951general&#34;&gt;
+&lt;p&gt;Von Neumann, John, and others. 1951. “The General and Logical Theory of Automata.” &lt;em&gt;1951&lt;/em&gt;, 1–41.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

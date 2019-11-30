@@ -434,6 +434,26 @@
   
   
   <div>
+    <h2><a href="/missmethods/bayesian-methods/">Bayesian Iterative Simulation Methods</a></h2>
+    <div class="article-style">
+      
+      A useful alternative approach to Maximum Likelihood(ML) methods, particularly when the sample size is small, is to include a reasonable prior distribution for the parameters and compute the posterior distribution of the parameters of interest. The posterior distribution for a model with ignorable missingness is
+\[p(\theta \mid Y_0, M) \equiv p(\theta \mid Y_0) \propto p(\theta)f(Y_0 \mid \theta),\]
+where \(p(\theta)\) is the prior and \(f(Y_0 \mid \theta)\) is the density of the observed data \(Y_0\).
+      
+    </div>
+  </div>
+  
+  <div>
+    <h2><a href="/missmethods/em-algorithm/">Expectation Maximisation Algorithm</a></h2>
+    <div class="article-style">
+      
+      Patterns of incomplete data in practice often do not have the forms that allow explicit Maximum Likelihood(ML) estimates to be calculated. Suppose we have a model for the complete data \(Y\), with density \(f(Y\mid \theta)\), indexed by the set of unknown parameters \(\theta\). Writing \(Y=(Y_0,Y_1)\) in terms of the observed \(Y_0\) and missing \(Y_1\) components, and assuming that the missingness mechanism is Missing At Random(MAR), we want to maximise the likelihood
+      
+    </div>
+  </div>
+  
+  <div>
     <h2><a href="/missmethods/likelihood-based-methods-ignorable2/">Introduction to Bayesian Inference</a></h2>
     <div class="article-style">
       
