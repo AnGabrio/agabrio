@@ -14,7 +14,7 @@ links:
 - icon: 
   icon_pack: 
   name: Slides
-  url: 
+  url: https://github.com/AnGabrio/short-course/blob/master/talks/workshop-knitr2.pdf
 location: University College London (UCL), London, UK
 math: true
 projects:
@@ -23,7 +23,7 @@ publishDate: "2019-11-24T00:00:00Z"
 slides: 
 summary: 
 title: MissingHE An R package to deal with missing data in trial based health economic evaluations
-url_code: ""
+url_code: "https://github.com/AnGabrio/short-course"
 url_pdf: ""
 url_slides: ""
 url_video: ""
