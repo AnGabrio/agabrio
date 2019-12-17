@@ -112,13 +112,13 @@
   </url>
   
   <url>
-    <loc>/categories/christmas/</loc>
+    <loc>/tags/christmas/</loc>
     <lastmod>2019-11-09T12:34:03+01:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>/tags/christmas/</loc>
+    <loc>/categories/christmas/</loc>
     <lastmod>2019-11-09T12:34:03+01:00</lastmod>
     <priority>0</priority>
   </url>
@@ -579,6 +579,12 @@
   </url>
   
   <url>
+    <loc>/tags/full-data-models-under-mnar/</loc>
+    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>/tags/hot-deck-methods/</loc>
     <lastmod>2016-04-27T00:00:00+00:00</lastmod>
     <priority>0</priority>
@@ -702,6 +708,17 @@
   </url>
   
   <url>
+    <loc>/tags/pattern-mixture-models/</loc>
+    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/missmethods/pattern-mixture-models/</loc>
+    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/tags/predictive-mean-matching/</loc>
     <lastmod>2016-04-27T00:00:00+00:00</lastmod>
     <priority>0</priority>
@@ -711,6 +728,17 @@
     <loc>/tags/regression-imputation/</loc>
     <lastmod>2016-04-27T00:00:00+00:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/selection-models/</loc>
+    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/missmethods/selection-models/</loc>
+    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
   </url>
   
   <url>

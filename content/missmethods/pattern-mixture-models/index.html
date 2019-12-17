@@ -1,0 +1,115 @@
+---
+title: Pattern Mixture Models
+summary: 
+tags:
+- Pattern Mixture Models
+- Full Data Models under MNAR 
+- Likelihood Based Methods Nonignorable
+date: "2016-04-27T00:00:00Z"
+
+# Optional external URL for project (replaces project detail page).
+external_link: ""
+
+categories: ["rubric"]
+bibliography: [pmm.bib]
+
+reading_time: false  # Show estimated reading time?
+share: false  # Show social sharing links?
+profile: false  # Show author profile?
+commentable: false  # Allow visitors to comment? Supported by the Page, Post, and Docs content types.
+editable: true  # Allow visitors to edit the page? Supported by the Page, Post, and Docs content types.
+
+image:
+  caption: Photo by rawpixel on Unsplash
+  focal_point: Smart
+  preview_only: true
+
+links:
+#- icon: 
+#  icon_pack: 
+#  name: 
+#  url: 
+url_code: ""
+url_pdf: ""
+url_slides: ""
+url_video: ""
+url_poster: ""
+
+# Slides (optional).
+#   Associate this project with Markdown slides.
+#   Simply enter your slide deck's filename without extension.
+#   E.g. `slides = "example-slides"` references `content/slides/example-slides.md`.
+#   Otherwise, set `slides = ""`.
+# slides: example
+---
+
+
+
+<p>It is possible to summarise the steps involved in drawing inference from incomplete data as (<span class="citation">Daniels and Hogan (2008)</span>):</p>
+<ul>
+<li><p>Specification of a full data model for the response and missingness indicators <span class="math inline">\(f(y,r)\)</span></p></li>
+<li><p>Specification of the prior distribution (within a Bayesian approach)</p></li>
+<li><p>Sampling from the posterior distribution of full data parameters, given the observed data <span class="math inline">\(Y_{obs}\)</span> and the missingness indicators <span class="math inline">\(R\)</span></p></li>
+</ul>
+<p>Identification of a full data model, particularly the part involving the missing data <span class="math inline">\(Y_{mis}\)</span>, requires making unverifiable assumptions about the full data model <span class="math inline">\(f(y,r)\)</span>. Under the assumption of the ignorability of the missingness mechanism, the model can be identified using only the information from the observed data. When ignorability is not believed to be a suitable assumption, one can use a more general class of models that allows missing data indicators to depend on missing responses themselves. These models allow to parameterise the conditional dependence between <span class="math inline">\(R\)</span> and <span class="math inline">\(Y_{mis}\)</span>, given <span class="math inline">\(Y_{obs}\)</span>. Without the benefit of untestable assumptions, this association structure cannot be identified from the observed data and therefore inference depends on some combination of two elements:</p>
+<ol style="list-style-type: decimal">
+<li><p>Unverifiable parametric assumptions</p></li>
+<li><p>Informative prior distributions (under a Bayesian approach)</p></li>
+</ol>
+<p>We show some simple examples about how these <em>nonignorable</em> models can be constructed, identified and applied. In this section, we specifically focus on the class of nonignorable models known as <em>Pattern Mixture Models</em>(PMM).</p>
+<div id="pattern-mixture-models" class="section level2">
+<h2>Pattern Mixture Models</h2>
+<p>The pattern mixture model approach factors the full data distribution as</p>
+<p>\[
+f(y,r \mid \omega) = f(y \mid r, \phi) f(r \mid y,\chi),
+\]</p>
+<p>where it is typically assumed that the set of full data parameters <span class="math inline">\(\omega\)</span> can be decomposed as separate parameters for each factor <span class="math inline">\((\phi,\chi)\)</span>. Thus, under the PMM approach, the <em>response model</em> <span class="math inline">\(f(y \mid \theta)\)</span> can be retrieved as a mixture of the pattern specific distributions</p>
+<p>\[
+f(y \mid \theta) = \sum_{r}f(y \mid r, \phi)f(r \mid \chi),
+\]</p>
+<p>with weights given by the corresponding probabilities of the different patterns. The <em>missingness mechanism</em> <span class="math inline">\(f(r \mid y, \psi)\)</span> can also be obtained using Bayes’ rule</p>
+<p>\[
+f(y \mid r, \psi) = \frac{f(y \mid r, \phi)f(r\mid \chi)}{f(y \mid \theta)}.
+\]</p>
+<p>The construction of PMMs requires the specification of the full data distribution conditional on different missingness patterns, which may be cumbersome when the number of patterns is large, but with the advantage of making explicit the parameters that cannot be identified by the observed data. In particular, PMMs are well suited to show that the distribution of the response within each pattern can be decomposed as</p>
+<p>\[
+f(y_{obs},y_{mis} \mid r, \phi)= f(y_{mis} \mid y_{obs},r,\phi_{E})f(y_{obs}\mid r,\phi_{O}),
+\]</p>
+<p>where <span class="math inline">\(\phi_E = \lambda_1(\phi)\)</span> and <span class="math inline">\(\phi_O=\lambda_2(\phi)\)</span> are functions of the mixture component parameter <span class="math inline">\(\phi\)</span>. The former subset of parameters indexes the so called <em>extrapolation distribution</em> and cannot be identified from the data, i.e. the distribution of the missing values given the observed values, while the latter indexes the <em>observed data distribution</em> and is typically identifiable from the data. Assuming there exists a partition such that <span class="math inline">\(\phi_E=(\phi_{EI},\phi_{ENI})\)</span> and the observed data distribution is a function of <span class="math inline">\(\phi_{EI}\)</span> but not of <span class="math inline">\(\phi_{ENI}\)</span>, then <span class="math inline">\(\phi_{ENI}\)</span> is a <em>senstivity parameter</em> in that it can only be identified using information from sources other than the observed data and thus makes a suitable basis to formulate sensitivity analysis using informative priors.</p>
+<div id="example-of-pmm-for-bivariate-normal-data" class="section level3">
+<h3>Example of PMM for bivariate normal data</h3>
+<p>Consider a sample of <span class="math inline">\(i=1,\ldots,n\)</span> units from a bivariate normal distribution <span class="math inline">\(Y=(Y_1,Y_2)\)</span>. Assume also that <span class="math inline">\(Y_1\)</span> is always observed while <span class="math inline">\(Y_2\)</span> may be missing, and let <span class="math inline">\(R=R_2\)</span> be the missingness indicator for the partially-observed response <span class="math inline">\(Y_2\)</span>. A PMM factors the full data distribution as</p>
+<p>\[
+f(y_1,y_2,r \mid \omega) = f(y_1, y_2 \mid r, \phi)f(r \mid ,\chi),
+\]</p>
+<p>where, for example, we may have <span class="math inline">\(Y \mid R=1 \sim N(\mu^1,\Sigma^1)\)</span>, <span class="math inline">\(Y \mid R=0 \sim N(\mu^0,\Sigma^0)\)</span> and <span class="math inline">\(R \sim Bern(\chi)\)</span>. We define <span class="math inline">\(\mu^r=(\mu^r_1)\)</span>, while <span class="math inline">\(\Sigma^r\)</span> has elements <span class="math inline">\(\sigma^r=(\sigma^r_{11},\sigma^r_{12},\sigma^r_{22})\)</span>. Similarly, we can define the parameters <span class="math inline">\(\beta^r_0\)</span>, <span class="math inline">\(\beta^r_1\)</span> and <span class="math inline">\(\sigma^r_{2\mid 1}\)</span> as the intercept, slope and residual variance of the regression of <span class="math inline">\(Y_2\)</span> on <span class="math inline">\(Y_1\)</span> for each pattern <span class="math inline">\(r\)</span>. Under this reparameterisation, the full data model parameters are</p>
+<p>\[
+\phi=\{\mu^r_1,\sigma^r_{11},\beta^r_0,\beta^1_1,\sigma^r_{2\mid 1}\}.
+\]</p>
+<p>The extrapolation and observed data distributions, with associated parameters, are then</p>
+<p>\[
+f(y_{mis}\mid y_{obs},\phi_{E}) \rightarrow \phi_{E}=(\beta^0_0, \beta^0_1,\sigma^0_{2\mid1})
+\]</p>
+<p>and</p>
+<p>\[
+f(y_{obs}\mid \phi_{O}) \rightarrow \phi_{O}=(\mu^1,\beta^1,\sigma^1_{11},\mu^0_0,\sigma^1_{11}).
+\]</p>
+<p>It can be shown that, in this specific example, the observed data distribution does not depend on the parameters indexing the extrapolation distribtuon <span class="math inline">\(\phi_{ENI}=(\beta^0_0,\beta^0_1,\sigma^0_{2\mid 1})\)</span>. It is possible to set <span class="math inline">\(\beta^0=\beta=1\)</span> and <span class="math inline">\(\sigma^0_{2\mid1}=\sigma^1_{2\mid1}\)</span> to yield a <em>Missing At Random</em>(MAR) assumption. Hence, a function that maps identified parameters and sensitivity parameters <span class="math inline">\(\Delta\)</span> to the space of unidentified parameters can be used to quantify departures from MAR. For example, assume we impose</p>
+<p>\[
+\beta^0_0=\beta^1_0+\Delta,
+\]</p>
+<p>then assigning a point mass prior at <span class="math inline">\(\Delta=0\)</span> implies MAR, while fixing <span class="math inline">\(\Delta \neq 0\)</span> or using any type of inofrmative prior on this parameter implies a <em>Missing Not At Random</em>(MNAR) assumption.</p>
+</div>
+</div>
+<div id="conlcusions" class="section level2">
+<h2>Conlcusions</h2>
+<p>To summarise, PMMs have the advantage of being able to find full data parameters indexing the distribution of the missing data that are not identified from the observed data, making inference more transparent. A potential downside is the practical implementation of these models which becomes more difficult as the number of patterns and unidentified parameters grows.</p>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references">
+<div id="ref-daniels2008missing">
+<p>Daniels, Michael J, and Joseph W Hogan. 2008. <em>Missing Data in Longitudinal Studies: Strategies for Bayesian Modeling and Sensitivity Analysis</em>. Chapman; Hall/CRC.</p>
+</div>
+</div>
+</div>

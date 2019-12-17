@@ -1,0 +1,107 @@
+---
+title: Selection Models
+summary: 
+tags:
+- Selection Models
+- Full Data Models under MNAR 
+- Likelihood Based Methods Nonignorable
+date: "2016-04-27T00:00:00Z"
+
+# Optional external URL for project (replaces project detail page).
+external_link: ""
+
+categories: ["rubric"]
+bibliography: [sm.bib]
+
+reading_time: false  # Show estimated reading time?
+share: false  # Show social sharing links?
+profile: false  # Show author profile?
+commentable: false  # Allow visitors to comment? Supported by the Page, Post, and Docs content types.
+editable: true  # Allow visitors to edit the page? Supported by the Page, Post, and Docs content types.
+
+image:
+  caption: Photo by rawpixel on Unsplash
+  focal_point: Smart
+  preview_only: true
+
+links:
+#- icon: 
+#  icon_pack: 
+#  name: 
+#  url: 
+url_code: ""
+url_pdf: ""
+url_slides: ""
+url_video: ""
+url_poster: ""
+
+# Slides (optional).
+#   Associate this project with Markdown slides.
+#   Simply enter your slide deck's filename without extension.
+#   E.g. `slides = "example-slides"` references `content/slides/example-slides.md`.
+#   Otherwise, set `slides = ""`.
+# slides: example
+---
+
+
+
+<p>It is possible to summarise the steps involved in drawing inference from incomplete data as (<span class="citation">Daniels and Hogan (2008)</span>):</p>
+<ul>
+<li><p>Specification of a full data model for the response and missingness indicators <span class="math inline">\(f(y,r)\)</span></p></li>
+<li><p>Specification of the prior distribution (within a Bayesian approach)</p></li>
+<li><p>Sampling from the posterior distribution of full data parameters, given the observed data <span class="math inline">\(Y_{obs}\)</span> and the missingness indicators <span class="math inline">\(R\)</span></p></li>
+</ul>
+<p>Identification of a full data model, particularly the part involving the missing data <span class="math inline">\(Y_{mis}\)</span>, requires making unverifiable assumptions about the full data model <span class="math inline">\(f(y,r)\)</span>. Under the assumption of the ignorability of the missingness mechanism, the model can be identified using only the information from the observed data. When ignorability is not believed to be a suitable assumption, one can use a more general class of models that allows missing data indicators to depend on missing responses themselves. These models allow to parameterise the conditional dependence between <span class="math inline">\(R\)</span> and <span class="math inline">\(Y_{mis}\)</span>, given <span class="math inline">\(Y_{obs}\)</span>. Without the benefit of untestable assumptions, this association structure cannot be identified from the observed data and therefore inference depends on some combination of two elements:</p>
+<ol style="list-style-type: decimal">
+<li><p>Unverifiable parametric assumptions</p></li>
+<li><p>Informative prior distributions (under a Bayesian approach)</p></li>
+</ol>
+<p>We show some simple examples about how these <em>nonignorable</em> models can be constructed, identified and applied. In this section, we specifically focus on the class of nonignorable models known as <em>Selection Models</em>(SM).</p>
+<div id="selection-models" class="section level2">
+<h2>Selection Models</h2>
+<p>The selection model approach factors the full data distribution as</p>
+<p>\[
+f(y,r \mid \omega) = f(y \mid \theta) f(r \mid y,\psi),
+\]</p>
+<p>where it is typically assumed that the set of full data parameters <span class="math inline">\(\omega\)</span> can be decomposed as separate parameters for each factor <span class="math inline">\((\theta,\psi)\)</span>. Thus, under the SM approach, the <em>response model</em> <span class="math inline">\(f(y \mid \theta)\)</span> and the <em>missing data mechanism</em> <span class="math inline">\(f(r \mid y, \psi)\)</span> must be specified by the analyst. SMs can be attractive for several reasons, including</p>
+<ul>
+<li><p>The possibility to directly specify the model of interest <span class="math inline">\(f(y \mid \theta)\)</span></p></li>
+<li><p>The SM factorisation appeals to Rubin’s missing data taxonomy, enabling easy characterisation of the missing data mechanism</p></li>
+<li><p>When the missingness pattern is monotone, the missigness mechanism can be formulated as a hazard function, where the hazard of dropout at some time point <span class="math inline">\(j\)</span> can depend on parts of the full data vector <span class="math inline">\(Y\)</span></p></li>
+</ul>
+<div id="example-of-sm-for-bivariate-normal-data" class="section level3">
+<h3>Example of SM for bivariate normal data</h3>
+<p>Consider a sample of <span class="math inline">\(i=1,\ldots,n\)</span> units from a bivariate normal distribution <span class="math inline">\(Y=(Y_1,Y_2)\)</span>. Assume also that <span class="math inline">\(Y_1\)</span> is always observed while <span class="math inline">\(Y_2\)</span> may be missing, and let <span class="math inline">\(R=R_2\)</span> be the missingness indicator for the partially-observed response <span class="math inline">\(Y_2\)</span>. A SM factors the full data distribution as</p>
+<p>\[
+f(y_1,y_2,r \mid \omega) = f(y_1 \mid \theta)f(r \mid y_1,y_2,\psi),
+\]</p>
+<p>where we assume <span class="math inline">\(\omega=(\theta,\psi)\)</span>. Suppose we specify <span class="math inline">\(f(y_1,y_2 \mid \theta)\)</span> as a bivariate normal density with mean <span class="math inline">\(\mu\)</span> and <span class="math inline">\(2\times2\)</span> covariance matrix <span class="math inline">\(\Sigma\)</span>. The distribution of <span class="math inline">\(r\)</span> is assumed to be distributed as a Bernoulli variable with probability <span class="math inline">\(\pi_i\)</span>, such that</p>
+<p>\[
+g(\pi_i) = \psi_0 + \psi_1y_{i1} + \psi_2y_{i2},
+\]</p>
+<p>where <span class="math inline">\(g()\)</span> denotes a given <em>link function</em> which relates the expected value of the response to the linear predictors in the model. When this is taken as the inverse normal cumulative distribution function <span class="math inline">\(\Phi^{-1}()\)</span> the model corresponds to the Heckman probit selection model (<span class="citation">Heckman (1976)</span>). In general, setting <span class="math inline">\(\psi_2=0\)</span> leads to a <em>Missing At Random</em>(MAR) assumption; if, in addition, we have distinctness of the parameters <span class="math inline">\(f(\mu,\Sigma,\psi)=f(\mu,\Sigma)f(\psi)\)</span>, we have <em>ignorability</em>. We note that, even though the parameter <span class="math inline">\(\psi_2\)</span> characterises the association between <span class="math inline">\(R\)</span> and <span class="math inline">\(Y_2\)</span>, the parametric assumptions made in this example will identify <span class="math inline">\(\psi_2\)</span> even in the absence of informative priors, that is the observed data likelihood is a function of <span class="math inline">\(\psi_2\)</span>. Moreover, the parameter indexes the joint distribution of observables <span class="math inline">\(Y_{obs}\)</span> and <span class="math inline">\(R\)</span> and in general can be identified from the observed data. This property of parametric SMs make them ill-suited to assessing sensitivity to assumptions about the missingness mechanism.</p>
+<p>The model can also be generalised to longitudinal data assuming a multivariate normal distribution for <span class="math inline">\(Y=(Y_1,\ldots,Y_J)\)</span> and replacing <span class="math inline">\(\pi_i\)</span> with a discrete time hazard function for dropout</p>
+<p>\[
+h\left(t_j \mid \bar{Y}_{j}\right) = \text{Prob}\left(R_j = 0 \mid R_{j-1} = 1, Y_{1},\ldots,Y_{j} \right).
+\]</p>
+<p>Using the logit function to model the discrete time hazard in terms of observed response history <span class="math inline">\(\bar{Y}_{j-1}\)</span> and the current but possibly unobserved <span class="math inline">\(Y_j\)</span> corresponds to the model of <span class="citation">Diggle and Kenward (1994)</span>.</p>
+</div>
+</div>
+<div id="conlcusions" class="section level2">
+<h2>Conlcusions</h2>
+<p>To summarise, SMs allows to generalise ignorable models to handle nonignorable missingness by letting <span class="math inline">\(f(r \mid y_{obs},y_{mis})\)</span> to depend on <span class="math inline">\(y_{mis}\)</span> and their structure directly appeals to Rubin’s taxonomy. However, identification of the missing data distribution is accomplished through parametric assumptions about the full data response model <span class="math inline">\(f(y \mid \theta)\)</span> and the explicit form of the missingness mechanism. This makes it difficult to disentagle the type of information that is used to identify the model, i.e. parametric modelling assumptions or information from the observed data, therefore complicating the task of assessing the robustness of the results to a range of transparent and plausible assumptions.</p>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references">
+<div id="ref-daniels2008missing">
+<p>Daniels, Michael J, and Joseph W Hogan. 2008. <em>Missing Data in Longitudinal Studies: Strategies for Bayesian Modeling and Sensitivity Analysis</em>. Chapman; Hall/CRC.</p>
+</div>
+<div id="ref-diggle1994informative">
+<p>Diggle, Peter, and Michael G Kenward. 1994. “Informative Drop-Out in Longitudinal Data Analysis.” <em>Journal of the Royal Statistical Society: Series C (Applied Statistics)</em> 43 (1): 49–73.</p>
+</div>
+<div id="ref-heckman1976common">
+<p>Heckman, James J. 1976. “The Common Structure of Statistical Models of Truncation, Sample Selection and Limited Dependent Variables and a Simple Estimator for Such Models.” In <em>Annals of Economic and Social Measurement, Volume 5, Number 4</em>, 475–92. NBER.</p>
+</div>
+</div>
+</div>
