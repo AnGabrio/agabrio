@@ -1,0 +1,113 @@
+---
+title: Shared Parameter Models
+summary: 
+tags:
+- Shared Parameter Models
+- Full Data Models under MNAR 
+- Likelihood Based Methods Nonignorable
+date: "2016-04-27T00:00:00Z"
+
+# Optional external URL for project (replaces project detail page).
+external_link: ""
+
+categories: ["rubric"]
+bibliography: [spm.bib]
+
+reading_time: false  # Show estimated reading time?
+share: false  # Show social sharing links?
+profile: false  # Show author profile?
+commentable: false  # Allow visitors to comment? Supported by the Page, Post, and Docs content types.
+editable: true  # Allow visitors to edit the page? Supported by the Page, Post, and Docs content types.
+
+image:
+  caption: Photo by rawpixel on Unsplash
+  focal_point: Smart
+  preview_only: true
+
+links:
+#- icon: 
+#  icon_pack: 
+#  name: 
+#  url: 
+url_code: ""
+url_pdf: ""
+url_slides: ""
+url_video: ""
+url_poster: ""
+
+# Slides (optional).
+#   Associate this project with Markdown slides.
+#   Simply enter your slide deck's filename without extension.
+#   E.g. `slides = "example-slides"` references `content/slides/example-slides.md`.
+#   Otherwise, set `slides = ""`.
+# slides: example
+---
+
+
+
+<p>It is possible to summarise the steps involved in drawing inference from incomplete data as (<span class="citation">Daniels and Hogan (2008)</span>):</p>
+<ul>
+<li><p>Specification of a full data model for the response and missingness indicators <span class="math inline">\(f(y,r)\)</span></p></li>
+<li><p>Specification of the prior distribution (within a Bayesian approach)</p></li>
+<li><p>Sampling from the posterior distribution of full data parameters, given the observed data <span class="math inline">\(Y_{obs}\)</span> and the missingness indicators <span class="math inline">\(R\)</span></p></li>
+</ul>
+<p>Identification of a full data model, particularly the part involving the missing data <span class="math inline">\(Y_{mis}\)</span>, requires making unverifiable assumptions about the full data model <span class="math inline">\(f(y,r)\)</span>. Under the assumption of the ignorability of the missingness mechanism, the model can be identified using only the information from the observed data. When ignorability is not believed to be a suitable assumption, one can use a more general class of models that allows missing data indicators to depend on missing responses themselves. These models allow to parameterise the conditional dependence between <span class="math inline">\(R\)</span> and <span class="math inline">\(Y_{mis}\)</span>, given <span class="math inline">\(Y_{obs}\)</span>. Without the benefit of untestable assumptions, this association structure cannot be identified from the observed data and therefore inference depends on some combination of two elements:</p>
+<ol style="list-style-type: decimal">
+<li><p>Unverifiable parametric assumptions</p></li>
+<li><p>Informative prior distributions (under a Bayesian approach)</p></li>
+</ol>
+<p>We show some simple examples about how these <em>nonignorable</em> models can be constructed, identified and applied. In this section, we specifically focus on the class of nonignorable models known as <em>Shared Parameter Models</em>(SPM).</p>
+<div id="shared-parameter-models" class="section level2">
+<h2>Shared Parameter Models</h2>
+<p>The shared parameter model approach consists in an explicit multilevel specification, where random effects <span class="math inline">\(b\)</span> are modelled jointly with <span class="math inline">\(Y\)</span> and <span class="math inline">\(R\)</span> (<span class="citation">Wu and Carroll (1988)</span>). The general form of the full data modelling using a SPM approach is</p>
+<p>\[
+f(y,r \mid \omega) = \int f(y, r, b \mid \omega)db.
+\]</p>
+<p>Next, specific SPMs are formulated by making assumptions about the joint distribution under the integral sign. Main advantages of this models is that they are quite easy to specify and that, through the use of random effects, high-dimensional or multilevel data modelling is relatively easy to accomplish. The main drawback is that the underlying missingness mechanism is often difficult to understand and may not have even a closed form.</p>
+<div id="example-random-coefficients-selection-model" class="section level3">
+<h3>Example random coefficients selection model</h3>
+<p><span class="citation">Wu and Carroll (1988)</span> specified a SPM assuming the response follow a linear random effects model</p>
+<p>\[
+Y_i \mid x_i,b_i \sim N(x_i\beta + w_ib_i, \Sigma_i(\phi)),
+\]</p>
+<p>where <span class="math inline">\(w_i\)</span> are the random effects covariates with rows <span class="math inline">\(w_i=(1,t_{ij})\)</span>, therefore implying that each individual has a random slope and intercept. The random effects <span class="math inline">\(b_i=(b_{i1},b_{i2})\)</span> are assumed to follow a bivariate normal distribution</p>
+<p>\[
+b_i \sim N(0,\Omega),
+\]</p>
+<p>while the hazard of dropout is Bernoulli with</p>
+<p>\[
+R_{ij} \mid R_{ij-1}=1,b_i \sim Bern(\pi_{ij}),
+\]</p>
+<p>which depends on the random effects via</p>
+<p>\[
+g(\pi_{ij}) = \psi_0 + \psi_1b_{i1} + \psi_2b_{i2}.
+\]</p>
+<p>The model can be seen as a special case of the general SPM formulation by noticing that the joint distribution under the integral sign can be factored as</p>
+<p>\[
+f(y,r,b \mid x, \omega) = f(r \mid b,x,\psi)f(y \mid b,x,\beta,\phi)f(b \mid \Omega)
+\]</p>
+<p>under the assumption that <span class="math inline">\(R\)</span> is independent of both <span class="math inline">\(Y_{obs}\)</span> and <span class="math inline">\(Y_{mis}\)</span>, conditionally on <span class="math inline">\(b\)</span>. However, integrating over the random effects, dependence between <span class="math inline">\(R\)</span> and <span class="math inline">\(Y_{mis}\)</span>, given <span class="math inline">\(Y_{obs}\)</span>, is induced and therefore the model characterises a <em>Missing Not At Random</em>(MNAR) mechanism.</p>
+<p>The conditional linear model (<span class="citation">Wu and Bailey (1989)</span>) can also be seen as a version of the SPM, which is formulated as</p>
+<p>\[
+f(y,r,b \mid x) = f(y \mid r,b,x)f(b \mid r,x)f(r \mid x).
+\]</p>
+</div>
+</div>
+<div id="conlcusions" class="section level2">
+<h2>Conlcusions</h2>
+<p>To summarise, shared parameter models are very useful for characterizing joint distributions of repeated measures and event times, and can be particularly useful as a method of data reduction when the dimension of <span class="math inline">\(Y\)</span> is high. Nonetheless, their application to the problem of making full data inference from incomplete longitudinal data should be made with caution and with an eye toward justifying the required assumptions. Sensitivity analysis is an open area of research for these models.</p>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references">
+<div id="ref-daniels2008missing">
+<p>Daniels, Michael J, and Joseph W Hogan. 2008. <em>Missing Data in Longitudinal Studies: Strategies for Bayesian Modeling and Sensitivity Analysis</em>. Chapman; Hall/CRC.</p>
+</div>
+<div id="ref-wu1989estimation">
+<p>Wu, Margaret C, and Kent R Bailey. 1989. “Estimation and Comparison of Changes in the Presence of Informative Right Censoring: Conditional Linear Model.” <em>Biometrics</em>, 939–55.</p>
+</div>
+<div id="ref-wu1988estimation">
+<p>Wu, Margaret C, and Raymond J Carroll. 1988. “Estimation and Comparison of Changes in the Presence of Informative Right Censoring by Modeling the Censoring Process.” <em>Biometrics</em>, 175–88.</p>
+</div>
+</div>
+</div>

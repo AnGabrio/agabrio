@@ -112,13 +112,13 @@
   </url>
   
   <url>
-    <loc>/tags/christmas/</loc>
+    <loc>/categories/christmas/</loc>
     <lastmod>2019-11-09T12:34:03+01:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>/categories/christmas/</loc>
+    <loc>/tags/christmas/</loc>
     <lastmod>2019-11-09T12:34:03+01:00</lastmod>
     <priority>0</priority>
   </url>
@@ -745,6 +745,17 @@
     <loc>/tags/semiparametric-methods/</loc>
     <lastmod>2016-04-27T00:00:00+00:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/shared-parameter-models/</loc>
+    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/missmethods/shared-parameter-models/</loc>
+    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
   </url>
   
   <url>
