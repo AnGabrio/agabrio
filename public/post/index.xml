@@ -6,10 +6,35 @@
     <description>Recent content in My blog on Andrea Gabrio</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 09 Nov 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 09 Dec 2019 00:00:00 +0000</lastBuildDate>
     
 	    <atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Not a very good start...</title>
+      <link>/post/update-january/update-november/</link>
+      <pubDate>Mon, 09 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/update-january/update-november/</guid>
+      <description>&lt;p&gt;After some nice holiday break, I came back to work ready for an exciting 2020 &amp;hellip; or so I thought. Unfortunately, I have recently been caught by a terrible flu which forced me to postpone my flight back to London of a week.
+The worst part is that I was basically a dead corpse moving around with high fever and an awful condition for more than 4 days. It was quite a bad experience which I rarely had in my life. I am just glad I survived this.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/12Eo3WBLbH9HRS/giphy.gif&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Going back to more interesting news. Before my cursed period, I was smart enough to work on different things and I am happy to announce a new update for my &lt;code&gt;missingHE&lt;/code&gt; package, which is available both on my &lt;a href=&#34;https://github.com/AnGabrio/missingHE&#34; target=&#34;_blank&#34;&gt;GitHub page&lt;/a&gt; and on the &lt;a href=&#34;https://cran.r-project.org/web/packages/missingHE&#34; target=&#34;_blank&#34;&gt;CRAN repository&lt;/a&gt;.
+Its new version is 1.3.2 and has the nice addition of making available more choices for the parametric distributions that can be selected in all main functions of the package to handle missing data in trial-based economic evaluations. In particular, it is now possible
+to choose among new probability distributions for the health outcomes, including continuous (Gamma, Weibull, Exponential, Logistic), discrete (Poisson, Negative Binomial) and binary (Bernoulli) distributions. These may be useful when the analysis is not based on utilities scores but some other
+types of effects, such as survival time, number of events or binary outcomes. I have also included some examples for each type of outcome in the MenSS dataset (available directly once installed the package on your machine) so that people can play around with the new distributions.&lt;/p&gt;
+
+&lt;p&gt;Another good news is that the last paper written with &lt;a href=&#34;http://users.stat.ufl.edu/~daniels/&#34; target=&#34;_blank&#34;&gt;Michael&lt;/a&gt; about missing data handling in economic evaluations will soon be publiched in the February issue of JRSSA, which will make the final and official version of the article that can be cited, I think.&lt;/p&gt;
+
+&lt;p&gt;Finally, an announcement about the one-day course I am holding together with my mates from the &lt;a href=&#34;https://hearteam.blogspot.com/&#34; target=&#34;_blank&#34;&gt;HEART group&lt;/a&gt; about an introduction to economic evaluations to people who are not familiar with health economics. The course will take place next month, I believe on Feb 11th,
+in central London (soon an update about the exact location) and, as the previous edition, I am happy to see that all spots have been taken and everything is sold out (when to be precise the course is free&amp;hellip;). Need to meet up with the others to make the last changes and prepare the slides but I am quite excited about this, given also the good response we got last time.&lt;/p&gt;
+
+&lt;p&gt;Now I am (hopefully) ready to start the new year and there are many things already piling up on my list of things to do in the next days. Let&amp;rsquo;s try again 2020.&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Too many things, again....</title>

@@ -30,6 +30,24 @@
     </item>
     
     <item>
+      <title>Academic</title>
+      <link>/tags/academic/</link>
+      <pubDate>Mon, 09 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/academic/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>News</title>
+      <link>/tags/news/</link>
+      <pubDate>Mon, 09 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/news/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Bayesian methods</title>
       <link>/tags/bayesian-methods/</link>
       <pubDate>Fri, 22 Nov 2019 00:00:00 +0000</pubDate>
@@ -57,29 +75,11 @@
     </item>
     
     <item>
-      <title>Academic</title>
-      <link>/tags/academic/</link>
-      <pubDate>Sat, 09 Nov 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/academic/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Christmas</title>
       <link>/tags/christmas/</link>
       <pubDate>Sat, 09 Nov 2019 00:00:00 +0000</pubDate>
       
       <guid>/tags/christmas/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>News</title>
-      <link>/tags/news/</link>
-      <pubDate>Sat, 09 Nov 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/news/</guid>
       <description></description>
     </item>
     
@@ -203,7 +203,7 @@
     <item>
       <title>Bayesian Modelling</title>
       <link>/tags/bayesian-modelling/</link>
-      <pubDate>Mon, 05 Feb 2018 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 27 Apr 2018 00:00:00 +0000</pubDate>
       
       <guid>/tags/bayesian-modelling/</guid>
       <description></description>

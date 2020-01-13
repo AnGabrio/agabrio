@@ -6,10 +6,19 @@
     <description>Recent content in Authors on Andrea Gabrio</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 22 Nov 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 09 Dec 2019 00:00:00 +0000</lastBuildDate>
     
 	    <atom:link href="/authors/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Andrea Gabrio</title>
+      <link>/authors/andrea-gabrio/</link>
+      <pubDate>Mon, 09 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/authors/andrea-gabrio/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>A Gabrio</title>
@@ -17,15 +26,6 @@
       <pubDate>Fri, 22 Nov 2019 00:00:00 +0000</pubDate>
       
       <guid>/authors/a-gabrio/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Andrea Gabrio</title>
-      <link>/authors/andrea-gabrio/</link>
-      <pubDate>Sat, 09 Nov 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/authors/andrea-gabrio/</guid>
       <description></description>
     </item>
     

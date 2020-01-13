@@ -57,16 +57,19 @@ delta.effects     0.043  0.028   -0.003  0.089
 delta.costs     -51.514 67.025 -162.862 58.327
 ICER          -1198.431
 ```
-I note that, from 25/09/2019, an updated version (1.2.1) of `missingHE` has become available on [CRAN](https://cran.r-project.org/web/packages/missingHE/), which allows to perform posterior predictive checks for each type of model as a further way to assess the fit of the model to the observed data. 
+
+## News and updates about `missingHE`
+
+* From 25/09/2019, the updated version (1.2.1) of `missingHE` has become available on [CRAN](https://cran.r-project.org/web/packages/missingHE/), which allows to perform posterior predictive checks for each type of model as a further way to assess the fit of the model to the observed data. 
 
 {{< figure library="1" src="plotpred.png" title="Example of posterior predictive checks in missingHE" >}}
 
+* From 07/01/2020, the updated version (1.3.2) of `missingHE` has become available on [CRAN](https://cran.r-project.org/web/packages/missingHE/), which allows to choose among more distributions for the effectiveness measures, including continuous (Gamma, Weibull, Exponential, Logistic), discrete (Poisson, Negative Binomial) and binary (Bernoulli) health outcomes.
 
 
 # Installation
 
-
-There are two ways of installing `missingHE`. A *stable* version (currently 1.2.1) is packaged and available from [CRAN](https://cran.r-project.org/web/packages/missingHE/). You can simply type on your `R` terminal
+There are two ways of installing `missingHE`. A *stable* version (currently 1.3.2) is packaged and available from [CRAN](https://cran.r-project.org/web/packages/missingHE/). You can simply type on your `R` terminal
 
 
 ```r

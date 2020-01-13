@@ -12,7 +12,7 @@
     
     
     <item>
-      <title>A Bayesian Approach to Handle Missingness in Trial Based Economic Evaluations</title>
+      <title>Choosing the Missing Data Method in Trial-Based Economic Evaluations. How to Make the Right Choice?</title>
       <link>/talk/priment2020/</link>
       <pubDate>Tue, 28 Jan 2020 11:15:00 +0000</pubDate>
       
@@ -200,7 +200,11 @@ delta.costs     -51.514 67.025 -162.862 58.327
 ICER          -1198.431
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;I note that, from 25/09/2019, an updated version (1.2.1) of &lt;code&gt;missingHE&lt;/code&gt; has become available on &lt;a href=&#34;https://cran.r-project.org/web/packages/missingHE/&#34; target=&#34;_blank&#34;&gt;CRAN&lt;/a&gt;, which allows to perform posterior predictive checks for each type of model as a further way to assess the fit of the model to the observed data.&lt;/p&gt;
+&lt;h2 id=&#34;news-and-updates-about-missinghe&#34;&gt;News and updates about &lt;code&gt;missingHE&lt;/code&gt;&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;From 25/09/2019, the updated version (1.2.1) of &lt;code&gt;missingHE&lt;/code&gt; has become available on &lt;a href=&#34;https://cran.r-project.org/web/packages/missingHE/&#34; target=&#34;_blank&#34;&gt;CRAN&lt;/a&gt;, which allows to perform posterior predictive checks for each type of model as a further way to assess the fit of the model to the observed data.&lt;/li&gt;
+&lt;/ul&gt;
 
 
 
@@ -224,9 +228,13 @@ ICER          -1198.431
 &lt;/figure&gt;
 
 
+&lt;ul&gt;
+&lt;li&gt;From 07/01/2020, the updated version (1.3.2) of &lt;code&gt;missingHE&lt;/code&gt; has become available on &lt;a href=&#34;https://cran.r-project.org/web/packages/missingHE/&#34; target=&#34;_blank&#34;&gt;CRAN&lt;/a&gt;, which allows to choose among more distributions for the effectiveness measures, including continuous (Gamma, Weibull, Exponential, Logistic), discrete (Poisson, Negative Binomial) and binary (Bernoulli) health outcomes.&lt;/li&gt;
+&lt;/ul&gt;
+
 &lt;h1 id=&#34;installation&#34;&gt;Installation&lt;/h1&gt;
 
-&lt;p&gt;There are two ways of installing &lt;code&gt;missingHE&lt;/code&gt;. A &lt;em&gt;stable&lt;/em&gt; version (currently 1.2.1) is packaged and available from &lt;a href=&#34;https://cran.r-project.org/web/packages/missingHE/&#34; target=&#34;_blank&#34;&gt;CRAN&lt;/a&gt;. You can simply type on your &lt;code&gt;R&lt;/code&gt; terminal&lt;/p&gt;
+&lt;p&gt;There are two ways of installing &lt;code&gt;missingHE&lt;/code&gt;. A &lt;em&gt;stable&lt;/em&gt; version (currently 1.3.2) is packaged and available from &lt;a href=&#34;https://cran.r-project.org/web/packages/missingHE/&#34; target=&#34;_blank&#34;&gt;CRAN&lt;/a&gt;. You can simply type on your &lt;code&gt;R&lt;/code&gt; terminal&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;install.packages(&amp;quot;missingHE&amp;quot;)
 &lt;/code&gt;&lt;/pre&gt;

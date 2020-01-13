@@ -10,7 +10,7 @@ image:
   focal_point: ""
   preview_only: false
 projects: 
-- bayesian-modelling
+- volleyball
 publication: 'arxiv'
 publication_short: ""
 publication_types:

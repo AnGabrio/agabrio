@@ -23,7 +23,7 @@ publishDate: "2019-11-24T00:00:00Z"
 slides: 
 summary: 
 tags: ["Economic Evaluations", "Missing Data"]
-title: A Bayesian Approach to Handle Missingness in Trial Based Economic Evaluations
+title: Choosing the Missing Data Method in Trial-Based Economic Evaluations. How to Make the Right Choice?
 url_code: ""
 url_pdf: ""
 url_slides: ""
