@@ -36,7 +36,7 @@ types of effects, such as survival time, number of events or binary outcomes. I 
 Another good news is that the last paper written with [Michael](http://users.stat.ufl.edu/~daniels/) about missing data handling in economic evaluations will soon be publiched in the February issue of JRSSA, which will make the final and official version of the article that can be cited, I think. 
 
 Finally, an announcement about the one-day course I am holding together with my mates from the [HEART group](https://hearteam.blogspot.com/) about an introduction to economic evaluations to people who are not familiar with health economics. The course will take place next month, I believe on Feb 11th, 
-in central London (soon an update about the exact location) and, as the previous edition, I am happy to see that all spots have been taken and everything is sold out (when to be precise the course is free...). Need to meet up with the others to make the last changes and prepare the slides but I am quite excited about this, given also the good response we got last time.   
+in central London (soon an update about the exact location) and, as the previous edition, I am happy to see that all spots have been taken and everything is sold out (well, to be precise the course is free ...). Need to meet up with the others to make the last changes and prepare the slides but I am quite excited about this, given also the good response we got last time.   
 
 Now I am (hopefully) ready to start the new year and there are many things already piling up on my list of things to do in the next days. Let's try again 2020.
 
