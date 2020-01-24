@@ -1,9 +1,9 @@
 ---
-title: Let us do some work!
+title: Let us do some work
 author: Andrea Gabrio
 date: '2020-01-09'
-slug: update-november
-categories: ["news","presentation","PRIMENT"]
+slug: update-january2
+categories: ["news","talks","PRIMENT"]
 tags:
   - News
   - Academic

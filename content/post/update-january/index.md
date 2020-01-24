@@ -2,7 +2,7 @@
 title: Not a very good start...
 author: Andrea Gabrio
 date: '2019-12-09'
-slug: update-november
+slug: update-january
 categories: ["news","2020"]
 tags:
   - News
