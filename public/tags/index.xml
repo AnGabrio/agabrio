@@ -6,17 +6,35 @@
     <description>Recent content in Tags on Andrea Gabrio</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 28 Jan 2020 11:15:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 11 Feb 2020 09:00:00 +0000</lastBuildDate>
     
 	    <atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
+      <title>Clinical Trials</title>
+      <link>/tags/clinical-trials/</link>
+      <pubDate>Tue, 11 Feb 2020 09:00:00 +0000</pubDate>
+      
+      <guid>/tags/clinical-trials/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Economic Evaluations</title>
       <link>/tags/economic-evaluations/</link>
-      <pubDate>Tue, 28 Jan 2020 11:15:00 +0000</pubDate>
+      <pubDate>Tue, 11 Feb 2020 09:00:00 +0000</pubDate>
       
       <guid>/tags/economic-evaluations/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>HEART</title>
+      <link>/tags/heart/</link>
+      <pubDate>Tue, 11 Feb 2020 09:00:00 +0000</pubDate>
+      
+      <guid>/tags/heart/</guid>
       <description></description>
     </item>
     
@@ -170,15 +188,6 @@
       <pubDate>Tue, 02 Jul 2019 21:11:14 -0500</pubDate>
       
       <guid>/tags/openbugs/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Clinical Trials</title>
-      <link>/tags/clinical-trials/</link>
-      <pubDate>Wed, 03 Jul 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/clinical-trials/</guid>
       <description></description>
     </item>
     
