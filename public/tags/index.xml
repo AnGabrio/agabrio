@@ -39,29 +39,65 @@
     </item>
     
     <item>
-      <title>Missing Data</title>
-      <link>/tags/missing-data/</link>
-      <pubDate>Tue, 28 Jan 2020 11:15:00 +0000</pubDate>
-      
-      <guid>/tags/missing-data/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Academic</title>
       <link>/tags/academic/</link>
-      <pubDate>Thu, 09 Jan 2020 00:00:00 +0000</pubDate>
+      <pubDate>Sat, 01 Feb 2020 00:00:00 +0000</pubDate>
       
       <guid>/tags/academic/</guid>
       <description></description>
     </item>
     
     <item>
+      <title>Bayesian methods</title>
+      <link>/tags/bayesian-methods/</link>
+      <pubDate>Sat, 01 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/bayesian-methods/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Hierarchical Models</title>
+      <link>/tags/hierarchical-models/</link>
+      <pubDate>Sat, 01 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/hierarchical-models/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>News</title>
       <link>/tags/news/</link>
-      <pubDate>Thu, 09 Jan 2020 00:00:00 +0000</pubDate>
+      <pubDate>Sat, 01 Feb 2020 00:00:00 +0000</pubDate>
       
       <guid>/tags/news/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Publication</title>
+      <link>/tags/publication/</link>
+      <pubDate>Sat, 01 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/publication/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Volleyball</title>
+      <link>/tags/volleyball/</link>
+      <pubDate>Sat, 01 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/volleyball/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Missing data</title>
+      <link>/tags/missing-data/</link>
+      <pubDate>Tue, 28 Jan 2020 11:15:00 +0000</pubDate>
+      
+      <guid>/tags/missing-data/</guid>
       <description></description>
     </item>
     
@@ -71,33 +107,6 @@
       <pubDate>Thu, 09 Jan 2020 00:00:00 +0000</pubDate>
       
       <guid>/tags/talks/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Bayesian methods</title>
-      <link>/tags/bayesian-methods/</link>
-      <pubDate>Fri, 22 Nov 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/bayesian-methods/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Hierarchical Models</title>
-      <link>/tags/hierarchical-models/</link>
-      <pubDate>Fri, 22 Nov 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/hierarchical-models/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Volleyball</title>
-      <link>/tags/volleyball/</link>
-      <pubDate>Fri, 22 Nov 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/volleyball/</guid>
       <description></description>
     </item>
     
@@ -116,15 +125,6 @@
       <pubDate>Mon, 28 Oct 2019 00:00:00 +0000</pubDate>
       
       <guid>/tags/conferences/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Publication</title>
-      <link>/tags/publication/</link>
-      <pubDate>Tue, 15 Oct 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/publication/</guid>
       <description></description>
     </item>
     
@@ -156,15 +156,6 @@
     </item>
     
     <item>
-      <title>STAN</title>
-      <link>/tags/stan/</link>
-      <pubDate>Wed, 03 Jul 2019 21:13:14 -0500</pubDate>
-      
-      <guid>/tags/stan/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>introduction</title>
       <link>/tags/introduction/</link>
       <pubDate>Wed, 03 Jul 2019 21:13:14 -0500</pubDate>
@@ -179,6 +170,15 @@
       <pubDate>Wed, 03 Jul 2019 21:13:14 -0500</pubDate>
       
       <guid>/tags/linear-regression/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>STAN</title>
+      <link>/tags/stan/</link>
+      <pubDate>Wed, 03 Jul 2019 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/stan/</guid>
       <description></description>
     </item>
     
@@ -210,7 +210,7 @@
     </item>
     
     <item>
-      <title>Bayesian statistics</title>
+      <title>Bayesian Statistics</title>
       <link>/tags/bayesian-statistics/</link>
       <pubDate>Tue, 11 Jun 2019 10:00:00 +0000</pubDate>
       
