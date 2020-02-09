@@ -39,6 +39,33 @@
     </item>
     
     <item>
+      <title>JAGS</title>
+      <link>/tags/jags/</link>
+      <pubDate>Sat, 01 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/jags/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>population differences</title>
+      <link>/tags/population-differences/</link>
+      <pubDate>Sat, 01 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/population-differences/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>tutorials</title>
+      <link>/tags/tutorials/</link>
+      <pubDate>Sat, 01 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/tutorials/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Academic</title>
       <link>/tags/academic/</link>
       <pubDate>Sat, 01 Feb 2020 00:00:00 +0000</pubDate>
@@ -93,7 +120,7 @@
     </item>
     
     <item>
-      <title>Missing data</title>
+      <title>Missing Data</title>
       <link>/tags/missing-data/</link>
       <pubDate>Tue, 28 Jan 2020 11:15:00 +0000</pubDate>
       
@@ -156,6 +183,15 @@
     </item>
     
     <item>
+      <title>STAN</title>
+      <link>/tags/stan/</link>
+      <pubDate>Wed, 03 Jul 2019 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/stan/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>introduction</title>
       <link>/tags/introduction/</link>
       <pubDate>Wed, 03 Jul 2019 21:13:14 -0500</pubDate>
@@ -170,15 +206,6 @@
       <pubDate>Wed, 03 Jul 2019 21:13:14 -0500</pubDate>
       
       <guid>/tags/linear-regression/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>STAN</title>
-      <link>/tags/stan/</link>
-      <pubDate>Wed, 03 Jul 2019 21:13:14 -0500</pubDate>
-      
-      <guid>/tags/stan/</guid>
       <description></description>
     </item>
     
@@ -201,16 +228,7 @@
     </item>
     
     <item>
-      <title>JAGS</title>
-      <link>/tags/jags/</link>
-      <pubDate>Mon, 01 Jul 2019 21:13:14 -0500</pubDate>
-      
-      <guid>/tags/jags/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Bayesian Statistics</title>
+      <title>Bayesian statistics</title>
       <link>/tags/bayesian-statistics/</link>
       <pubDate>Tue, 11 Jun 2019 10:00:00 +0000</pubDate>
       

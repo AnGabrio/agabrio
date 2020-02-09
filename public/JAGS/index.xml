@@ -6,10 +6,697 @@
     <description>Recent content in Bayesian analysis using R and JAGS on Andrea Gabrio</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 01 Jul 2019 21:13:14 -0500</lastBuildDate>
+    <lastBuildDate>Sat, 01 Feb 2020 21:13:14 -0500</lastBuildDate>
     
 	    <atom:link href="/jags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Comparing Two Populations - JAGS</title>
+      <link>/jags/comparing-two-populations-jags/comparing-two-populations-jags/</link>
+      <pubDate>Sat, 01 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/jags/comparing-two-populations-jags/comparing-two-populations-jags/</guid>
+      <description>
+
+
+&lt;p&gt;This tutorial will focus on the use of Bayesian estimation to explore differences between two populations. &lt;code&gt;BUGS&lt;/code&gt; (Bayesian inference Using &lt;em&gt;Gibbs Sampling&lt;/em&gt;) is an algorithm and supporting language (resembling &lt;code&gt;R&lt;/code&gt;) dedicated to performing the Gibbs sampling implementation of &lt;em&gt;Markov Chain Monte Carlo&lt;/em&gt; (MCMC) method. Dialects of the &lt;code&gt;BUGS&lt;/code&gt; language are implemented within three main projects:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;OpenBUGS&lt;/strong&gt; - written in component pascal.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;JAGS&lt;/strong&gt; - (Just Another Gibbs Sampler) - written in &lt;code&gt;C++&lt;/code&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;STAN&lt;/strong&gt; - a dedicated Bayesian modelling framework written in &lt;code&gt;C++&lt;/code&gt; and implementing &lt;em&gt;Hamiltonian&lt;/em&gt; MCMC samplers.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Whilst the above programs can be used stand-alone, they do offer the rich data pre-processing and graphical capabilities of R, and thus, they are best accessed from within &lt;code&gt;R&lt;/code&gt; itself. As such there are multiple packages devoted to interfacing with the various software implementations:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;R2OpenBUGS&lt;/em&gt; - interfaces with &lt;code&gt;OpenBUGS&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;R2jags&lt;/em&gt; - interfaces with &lt;code&gt;JAGS&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;rstan&lt;/em&gt; - interfaces with &lt;code&gt;STAN&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The &lt;code&gt;BUGS/JAGS/STAN&lt;/code&gt; languages and algorithms are very powerful and flexible. However, the cost of this power and flexibility is complexity and the need for a firm understanding of the model you wish to fit as well as the priors to be used. The algorithms requires the following inputs.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Within the model:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;p&gt;The likelihood function relating the response to the predictors.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;The definition of the priors.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Chain properties:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;p&gt;The number of chains.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;The length of chains (number of iterations).&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;The burn-in length (number of initial iterations to ignore).&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;The thinning rate (number of iterations to count on before storing a sample).&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;The initial estimates to start an MCMC chain. If there are multiple chains, these starting values can differ between chains.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;The list of model parameters and derivatives to monitor (and return the posterior distributions of)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This tutorial will demonstrate how to fit models in &lt;code&gt;JAGS&lt;/code&gt; (&lt;span class=&#34;citation&#34;&gt;Plummer (2004)&lt;/span&gt;) using the package &lt;code&gt;R2jags&lt;/code&gt;(&lt;span class=&#34;citation&#34;&gt;Su et al. (2015)&lt;/span&gt;) as interface, which also requires to load some other packages.&lt;/p&gt;
+&lt;div id=&#34;data-generation&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Data generation&lt;/h1&gt;
+&lt;p&gt;We will start by generating a random data set. Note, I am creating two versions of the predictor variable (a numeric version and a factorial version).&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; set.seed(123)
+&amp;gt; nA &amp;lt;- 60  #sample size from Population A
+&amp;gt; nB &amp;lt;- 40  #sample size from Population B
+&amp;gt; muA &amp;lt;- 105  #population mean of Population A
+&amp;gt; muB &amp;lt;- 77.5  #population mean of Population B
+&amp;gt; sigma &amp;lt;- 3  #standard deviation of both populations (equally varied)
+&amp;gt; yA &amp;lt;- rnorm(nA, muA, sigma)  #Population A sample
+&amp;gt; yB &amp;lt;- rnorm(nB, muB, sigma)  #Population B sample
+&amp;gt; y &amp;lt;- c(yA, yB)
+&amp;gt; x &amp;lt;- factor(rep(c(&amp;quot;A&amp;quot;, &amp;quot;B&amp;quot;), c(nA, nB)))  #categorical listing of the populations
+&amp;gt; xn &amp;lt;- as.numeric(x)  #numerical version of the population category for means parameterization. # Should not start at 0.
+&amp;gt; data &amp;lt;- data.frame(y, x, xn)  # dataset&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Let inspect the first few rows of the dataset using the command &lt;code&gt;head&lt;/code&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; head(data)
+         y x xn
+1 103.3186 A  1
+2 104.3095 A  1
+3 109.6761 A  1
+4 105.2115 A  1
+5 105.3879 A  1
+6 110.1452 A  1&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We can also perform some exploratory data analysis - in this case, a boxplot of the response for each level of the predictor.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; boxplot(y ~ x, data)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/comparing-two-populations-jags/2020-02-01-comparing-two-populations-jags_files/figure-html/boxplot-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-one-sample-t-test&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;The One Sample t-test&lt;/h1&gt;
+&lt;p&gt;A &lt;em&gt;t-test&lt;/em&gt; is essentially just a simple regression model in which the categorical predictor is represented by a binary variable in which one level is coded as &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt; and the other &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt;. For the model itself, the observed response &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; are assumed to be drawn from a normal distribution with a given mean &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; and standard deviation &lt;span class=&#34;math inline&#34;&gt;\(\sigma\)&lt;/span&gt;. The expected values are themselves determined by the linear predictor &lt;span class=&#34;math inline&#34;&gt;\(\mu_i=\beta_0+\beta_1x_i\)&lt;/span&gt;, where &lt;span class=&#34;math inline&#34;&gt;\(\beta_0\)&lt;/span&gt; represents the mean of the first treatment group and &lt;span class=&#34;math inline&#34;&gt;\(\beta_1\)&lt;/span&gt; represents the difference between the mean of the first group and the mean of the second group (the effect of interest).&lt;/p&gt;
+&lt;p&gt;MCMC sampling requires priors on all parameters. We will employ weakly informative priors. Specifying ‘uninformative’ priors is always a bit of a balancing act. If the priors are too vague (wide) the MCMC sampler can wander off into nonscence areas of likelihood rather than concentrate around areas of highest likelihood (desired when wanting the outcomes to be largely driven by the data). On the other hand, if the priors are too strong, they may have an influence on the parameters. In such a simple model, this balance is very forgiving - it is for more complex models that prior choice becomes more important. For this simple model, we will go with zero-centered Gaussian (normal) priors with relatively large standard deviations (&lt;span class=&#34;math inline&#34;&gt;\(1000\)&lt;/span&gt;) for both the intercept and the treatment effect and a wide half-cauchy (scale=&lt;span class=&#34;math inline&#34;&gt;\(25\)&lt;/span&gt;) for the standard deviation (&lt;span class=&#34;citation&#34;&gt;Gelman and others (2006)&lt;/span&gt;).&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[y_i \sim \text{Normal}(\mu_i, \sigma),  \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\mu_i=\beta_0+\beta_1x_i\)&lt;/span&gt;.&lt;/p&gt;
+&lt;p&gt;Priors are defined as:&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \beta_j \sim \text{Normal}(0,1000),  \;\;\; \text{and} \;\;\; \sigma \sim \text{Cauchy}(0,25),  \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;for &lt;span class=&#34;math inline&#34;&gt;\(j=0,1\)&lt;/span&gt;.&lt;/p&gt;
+&lt;div id=&#34;fitting-the-model-in-jags&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Fitting the model in JAGS&lt;/h2&gt;
+&lt;p&gt;Broadly, there are two ways of parameterizing (expressing the unknown (to be estimated) components of a model) a model. Either we can estimate the means of each group (Means parameterization) or we can estimate the mean of one group and the difference between this group and the other group(s) (Effects parameterization). The latter is commonly used for frequentist null hypothesis testing as its parameters are more consistent with the null hypothesis of interest (that the difference between the two groups equals zero).&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;strong&gt;Effects parameterisation&lt;/strong&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ y_i = \beta_0 + \beta_{j(i)}x_i + \epsilon_i, \;\;\; \text{with} \;\;\; \epsilon_i \sim \text{Normal}(0,\sigma).  \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Each &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; is modelled by an intercept &lt;span class=&#34;math inline&#34;&gt;\(\beta_0\)&lt;/span&gt; (mean of group A) plus a difference parameter &lt;span class=&#34;math inline&#34;&gt;\(\beta_j\)&lt;/span&gt; (difference between mean of group A and group B) multiplied by an indicator of which group the observation came from (&lt;span class=&#34;math inline&#34;&gt;\(x_i\)&lt;/span&gt;), plus a residual drawn from a normal distribution with mean &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt; and standard deviation &lt;span class=&#34;math inline&#34;&gt;\(\sigma\)&lt;/span&gt;. Actually, there are as many &lt;span class=&#34;math inline&#34;&gt;\(\beta_j\)&lt;/span&gt; parameters as there are groups but one of them (typically the first) is set to be equal to zero (to avoid over-parameterization). Expected values of &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; are modelled assuming they are drawn from a normal distribution whose mean is determined by a linear combination of effect parameters and whose variance is defined by the degree of variability in this mean. The parameters are: &lt;span class=&#34;math inline&#34;&gt;\(\beta_0\)&lt;/span&gt;, &lt;span class=&#34;math inline&#34;&gt;\(\beta_1\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\sigma\)&lt;/span&gt;.&lt;/p&gt;
+&lt;ol start=&#34;2&#34; style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;strong&gt;Means parameterisation&lt;/strong&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ y_i = \beta_{j} + \epsilon_i, \;\;\; \text{with} \;\;\; \epsilon_i \sim \text{Normal}(0,\sigma).  \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Each &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; is modelled as the mean &lt;span class=&#34;math inline&#34;&gt;\(\beta_j\)&lt;/span&gt; of each group (&lt;span class=&#34;math inline&#34;&gt;\(j=1,2\)&lt;/span&gt;) plus a residual drawn from a normal distribution with a mean of zero and a standard deviation of &lt;span class=&#34;math inline&#34;&gt;\(\sigma\)&lt;/span&gt;. Actually, &lt;span class=&#34;math inline&#34;&gt;\(\boldsymbol \beta\)&lt;/span&gt; is a set of &lt;span class=&#34;math inline&#34;&gt;\(j\)&lt;/span&gt; coefficients corresponding to the &lt;span class=&#34;math inline&#34;&gt;\(j\)&lt;/span&gt; dummy coded factor levels. Expected values of &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; are modelled assuming they are drawn from a normal distribution whose mean is determined by a linear combination of means parameters and whose variance is defined by the degree of variability in this mean. The parameters are: &lt;span class=&#34;math inline&#34;&gt;\(\beta_1\)&lt;/span&gt;, &lt;span class=&#34;math inline&#34;&gt;\(\beta_2\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\sigma\)&lt;/span&gt;.&lt;/p&gt;
+&lt;p&gt;In &lt;code&gt;JAGS&lt;/code&gt;, distributions are defined by their precision &lt;span class=&#34;math inline&#34;&gt;\(\tau\)&lt;/span&gt; rather than their standard deviation &lt;span class=&#34;math inline&#34;&gt;\(\sigma\)&lt;/span&gt;. Precision is just the inverse of variance (&lt;span class=&#34;math inline&#34;&gt;\(\tau=\frac{1}{\sigma^2}\)&lt;/span&gt;) and are chosen as they permit the gamma distribution to be used as the conjugate prior of the variance of a normal distribution. Bayesian analyses require that priors be specified for each of the parameters. We will define vague (non-informative) priors for each of the parameters such that the posterior distributions are almost entirely influenced by the likelihood (and thus the data). Hence, appropriate (conjugate) priors for the effects parameterization could be:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;span class=&#34;math inline&#34;&gt;\(\boldsymbol \beta \sim \text{Normal}(0,1.0\text{E-}6)\)&lt;/span&gt; - a very flat normal distribution centered around zero. Note, &lt;span class=&#34;math inline&#34;&gt;\(1.0\text{E-}6\)&lt;/span&gt; is scientific notation for &lt;span class=&#34;math inline&#34;&gt;\(0.000001\)&lt;/span&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;span class=&#34;math inline&#34;&gt;\(\tau \sim \text{Gamma}(0.1,0.1)\)&lt;/span&gt; a vague gamma distribution with a shape parameter close to zero (must be greater than &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt;).&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The &lt;code&gt;JAGS&lt;/code&gt; language very closely matches the above model and prior definitions - hence the importance on understanding the model you wish to fit. The &lt;code&gt;JAGS&lt;/code&gt; language resembles &lt;code&gt;R&lt;/code&gt; in many respects. It basically consists of:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;stochastic nodes - those that appear on the left hand side of &lt;span class=&#34;math inline&#34;&gt;\(\sim\)&lt;/span&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;deterministic nodes - those that appear on the left hand side of &lt;code&gt;&amp;lt;-&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;span class=&#34;math inline&#34;&gt;\(R\)&lt;/span&gt;-like for loops and functions to transform and summarize data&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;That said, BUGS is a declarative language, which means: the order with which statements appear in the model definition are not important;nodes should not be defined more than once (you cannot change a value).We are now in a good position to define the model (Likelihood function and prior distributions).&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Effects Parameterisation&lt;/strong&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; modelString = &amp;quot;  
++  model {
++   #Likelihood
++   for (i in 1:n) {
++     y[i]~dnorm(mu[i],tau)
++     mu[i] &amp;lt;- beta0+beta[x[i]]
++   }
++  
++   #Priors
++   beta0 ~ dnorm(0,1.0E-06)
++   beta[1] &amp;lt;- 0
++   beta[2] ~ dnorm(0,1.0E-06)
++   tau ~ dgamma(0.1,0.1)
++   sigma&amp;lt;-1/sqrt(tau)
++ 
++   #Other Derived parameters 
++   # Group means (note, beta is a vector)
++   Group.means &amp;lt;-beta0+beta  
++  }
++  &amp;quot;
+&amp;gt; ## write the model to a text file
+&amp;gt; writeLines(modelString, con = &amp;quot;ttestModel.txt&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Means Parameterisation&lt;/strong&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; modelString.means = &amp;quot;  
++   model {
++    #Likelihood 
++    for (i in 1:n) {
++      y[i]~dnorm(mu[i],tau)
++      mu[i] &amp;lt;- beta[x[i]]
++    }
++  
++    #Priors
++    for (j in min(x):max(x)) {
++      beta[j] ~ dnorm(0,0.001)
++    }
++  
++    tau~dgamma(0.1,0.1)
++    sigma&amp;lt;-1/sqrt(tau)
++  
++    #Other Derived parameters 
++    effect &amp;lt;-beta[2]-beta[1]
++  }
++  &amp;quot;
+&amp;gt; 
+&amp;gt; ## write the model to a text file
+&amp;gt; writeLines(modelString.means, con = &amp;quot;ttestModelMeans.txt&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Arrange the data as a list (as required by &lt;code&gt;JAGS&lt;/code&gt;). Note, all variables must be numeric, therefore we use the numeric version of &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt;. Furthermore, the first level must be &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt;.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; data.list &amp;lt;- with(data, list(y = y, x = xn, n = nrow(data)))
+&amp;gt; data.list.means &amp;lt;- with(data, list(y = y, x = xn, n = nrow(data)))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Define the initial values for the chain. Reasonable starting points can be gleaned from the data themselves.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; inits &amp;lt;- list(beta0 = mean(data$y), beta = c(NA, diff(tapply(data$y,
++     data$x, mean))), sigma = sd(data$y/2))
+&amp;gt; inits.means &amp;lt;- list(beta = tapply(data$y, data$x, mean), sigma = sd(data$y/2))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Define the nodes (parameters and derivatives) to monitor.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; params &amp;lt;- c(&amp;quot;beta0&amp;quot;, &amp;quot;beta&amp;quot;, &amp;quot;sigma&amp;quot;, &amp;quot;Group.means&amp;quot;)
+&amp;gt; params.means &amp;lt;- c(&amp;quot;beta&amp;quot;, &amp;quot;effect&amp;quot;, &amp;quot;sigma&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Define the chain parameters.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; adaptSteps = 1000  # the number of steps over which to establish a good stepping distance
+&amp;gt; burnInSteps = 2000  # the number of initial samples to discard
+&amp;gt; nChains = 2  # the number of independed sampling chains to perform 
+&amp;gt; numSavedSteps = 50000  # the total number of samples to store
+&amp;gt; thinSteps = 1  # the thinning rate
+&amp;gt; nIter = ceiling((numSavedSteps * thinSteps)/nChains)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Start the &lt;code&gt;JAGS&lt;/code&gt; model (check the model, load data into the model, specify the number of chains and compile the model). Load the &lt;code&gt;R2jags&lt;/code&gt; package.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(R2jags)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;When using the &lt;code&gt;jags&lt;/code&gt; function (&lt;code&gt;R2jags&lt;/code&gt; package), it is not necessary to provide initial values. However, if they are to be supplied, the inital values list must be a list the same length as the number of chains.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Effects Parameterisation&lt;/strong&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; data.r2jags &amp;lt;- jags(data=data.list,
++ inits=NULL, #or inits=list(inits,inits) # since there are two chains
++ parameters.to.save=params,
++ model.file=&amp;quot;ttestModel.txt&amp;quot;,
++ n.chains=nChains,
++ n.iter=nIter,
++ n.burnin=burnInSteps,
++ n.thin=thinSteps)
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 100
+   Unobserved stochastic nodes: 3
+   Total graph size: 214
+
+Initializing model
+&amp;gt; 
+&amp;gt; #print results
+&amp;gt; print(data.r2jags)
+Inference for Bugs model at &amp;quot;ttestModel.txt&amp;quot;, fit using jags,
+ 2 chains, each with 25000 iterations (first 2000 discarded)
+ n.sims = 46000 iterations saved
+               mu.vect sd.vect    2.5%     25%     50%     75%   97.5%  Rhat
+Group.means[1] 105.200   0.357 104.497 104.959 105.201 105.441 105.900 1.001
+Group.means[2]  77.882   0.438  77.018  77.589  77.882  78.174  78.746 1.001
+beta[1]          0.000   0.000   0.000   0.000   0.000   0.000   0.000 1.000
+beta[2]        -27.318   0.563 -28.426 -27.696 -27.315 -26.943 -26.212 1.001
+beta0          105.200   0.357 104.497 104.959 105.201 105.441 105.900 1.001
+sigma            2.771   0.202   2.408   2.630   2.759   2.900   3.198 1.001
+deviance       487.192   2.485 484.376 485.370 486.547 488.331 493.506 1.001
+               n.eff
+Group.means[1] 46000
+Group.means[2] 15000
+beta[1]            1
+beta[2]        35000
+beta0          46000
+sigma          46000
+deviance       46000
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 3.1 and DIC = 490.3
+DIC is an estimate of expected predictive error (lower deviance is better).&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Means Parameterisation&lt;/strong&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; data.r2jags.means &amp;lt;- jags(data=data.list.means,
++ inits=NULL, #or inits=list(inits.means,inits.means) # since there are two chains
++ parameters.to.save=params.means,
++ model.file=&amp;quot;ttestModelMeans.txt&amp;quot;,
++ n.chains=nChains,
++ n.iter=nIter,
++ n.burnin=burnInSteps,
++ n.thin=thinSteps)
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 100
+   Unobserved stochastic nodes: 3
+   Total graph size: 211
+
+Initializing model
+&amp;gt; 
+&amp;gt; #print results
+&amp;gt; print(data.r2jags.means)
+Inference for Bugs model at &amp;quot;ttestModelMeans.txt&amp;quot;, fit using jags,
+ 2 chains, each with 25000 iterations (first 2000 discarded)
+ n.sims = 46000 iterations saved
+         mu.vect sd.vect    2.5%     25%     50%     75%   97.5%  Rhat n.eff
+beta[1]  105.184   0.357 104.481 104.947 105.184 105.423 105.884 1.001 46000
+beta[2]   77.867   0.439  77.001  77.575  77.866  78.160  78.736 1.001 39000
+effect   -27.317   0.566 -28.433 -27.696 -27.317 -26.940 -26.197 1.001 46000
+sigma      2.768   0.201   2.408   2.626   2.755   2.897   3.192 1.001 34000
+deviance 487.195   2.498 484.360 485.377 486.540 488.323 493.721 1.001 46000
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 3.1 and DIC = 490.3
+DIC is an estimate of expected predictive error (lower deviance is better).&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Notes&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;If &lt;code&gt;inits=NULL&lt;/code&gt; the &lt;code&gt;jags&lt;/code&gt; function will generate vaguely sensible initial values for each chain based on the data.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;*In addition to the mean and quantiles of each of the sample nodes, the &lt;code&gt;jags&lt;/code&gt; function will calculate.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;The &lt;em&gt;effective sample size&lt;/em&gt; for each sample - if &lt;code&gt;n.eff&lt;/code&gt; for a node is substantially less than the number of iterations, then it suggests poor mixing.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;The &lt;em&gt;Potential scale reduction factor&lt;/em&gt; or &lt;code&gt;Rhat&lt;/code&gt; values for each sample - these are a convergence diagnostic (values of &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt; indicate full convergence, values greater than &lt;span class=&#34;math inline&#34;&gt;\(1.01\)&lt;/span&gt; are indicative of non-convergence.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;An &lt;em&gt;information criteria&lt;/em&gt; (DIC) for model selection.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The total number samples collected is &lt;span class=&#34;math inline&#34;&gt;\(4401\)&lt;/span&gt;. That is, ere are &lt;span class=&#34;math inline&#34;&gt;\(4401\)&lt;/span&gt; samples collected from the multidimensional posterior distribution and thus, &lt;span class=&#34;math inline&#34;&gt;\(4401\)&lt;/span&gt; samples collected from the posterior distributions of each parameter. The effective number of samples column indicates the number of independent samples represented in the total. It is clear that for all parameters the chains were well mixed.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;mcmc-diagnostics&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;MCMC diagnostics&lt;/h1&gt;
+&lt;p&gt;In addition to the regular model diagnostic checks (such as residual plots), for Bayesian analyses, it is necessary to explore the characteristics of the MCMC chains and the sampler in general. Recall that the purpose of MCMC sampling is to replicate the posterior distribution of the model likelihood and priors by drawing a known number of samples from this posterior (thereby formulating a probability distribution). This is only reliable if the MCMC samples accurately reflect the posterior. Unfortunately, since we only know the posterior in the most trivial of circumstances, it is necessary to rely on indirect measures of how accurately the MCMC samples are likely to reflect the likelihood. I will breifly outline the most important diagnostics&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;Traceplots&lt;/em&gt; for each parameter illustrate the MCMC sample values after each successive iteration along the chain. Bad chain mixing (characterized by any sort of pattern) suggests that the MCMC sampling chains may not have completely traversed all features of the posterior distribution and that more iterations are required to ensure the distribution has been accurately represented.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;Autocorrelation&lt;/em&gt; plot for each paramter illustrate the degree of correlation between MCMC samples separated by different lags. For example, a lag of &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt; represents the degree of correlation between each MCMC sample and itself (obviously this will be a correlation of &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt;). A lag of &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt; represents the degree of correlation between each MCMC sample and the next sample along the Chain and so on. In order to be able to generate unbiased estimates of parameters, the MCMC samples should be independent (uncorrelated). In the figures below, this would be violated in the top autocorrelation plot and met in the bottom autocorrelation plot.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;Rhat&lt;/em&gt; statistic for each parameter provides a measure of sampling efficiency/effectiveness. Ideally, all values should be less than 1.05. If there are values of 1.05 or greater it suggests that the sampler was not very efficient or effective. Not only does this mean that the sampler was potentiall slower than it could have been, more importantly, it could indicate that the sampler spent time sampling in a region of the likelihood that is less informative. Such a situation can arise from either a misspecified model or overly vague priors that permit sampling in otherwise nonscence parameter space.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Prior to examining the summaries, we should have explored the convergence diagnostics. We use the package &lt;code&gt;mcmcplots&lt;/code&gt; to obtain density and trace plots for the effects model as an example.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(mcmcplots)
+&amp;gt; denplot(data.r2jags, parms = c(&amp;quot;beta0&amp;quot;,&amp;quot;beta[2]&amp;quot;,&amp;quot;sigma&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/comparing-two-populations-jags/2020-02-01-comparing-two-populations-jags_files/figure-html/mcmc_diag-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; traplot(data.r2jags, parms = c(&amp;quot;beta0&amp;quot;,&amp;quot;beta[2]&amp;quot;,&amp;quot;sigma&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/comparing-two-populations-jags/2020-02-01-comparing-two-populations-jags_files/figure-html/mcmc_diag-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;These plots show no evidence that the chains have not reasonably traversed the entire multidimensional parameter space.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;model-validation&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Model validation&lt;/h1&gt;
+&lt;p&gt;Model validation involves exploring the model diagnostics and fit to ensure that the model is broadly appropriate for the data. As such, exploration of the residuals should be routine. Ideally, a good model should also be able to predict the data used to fit the model.&lt;/p&gt;
+&lt;p&gt;Residuals are not computed directly within &lt;code&gt;R2jags&lt;/code&gt;. However, we can calculate them manually form the posteriors and plot them using the package &lt;code&gt;ggplot2&lt;/code&gt;.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(ggplot2)
+&amp;gt; mcmc = data.r2jags$BUGSoutput$sims.matrix[, c(&amp;quot;beta0&amp;quot;, &amp;quot;beta[2]&amp;quot;)]
+&amp;gt; # generate a model matrix
+&amp;gt; newdata = data.frame(x = data$x)
+&amp;gt; Xmat = model.matrix(~x, newdata)
+&amp;gt; ## get median parameter estimates
+&amp;gt; coefs = apply(mcmc, 2, median)
+&amp;gt; fit = as.vector(coefs %*% t(Xmat))
+&amp;gt; resid = data$y - fit
+&amp;gt; ggplot() + geom_point(data = NULL, aes(y = resid, x = fit))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/comparing-two-populations-jags/2020-02-01-comparing-two-populations-jags_files/figure-html/mcmc_residuals-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;There is no evidence that the mcmc chain did not converge on a stable posterior distribution. We are now in a position to examine the summaries of the parameters.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;parameter-estimates&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Parameter estimates&lt;/h1&gt;
+&lt;p&gt;Although all parameters in a Bayesian analysis are considered random and are considered a distribution, rarely would it be useful to present tables of all the samples from each distribution. On the other hand, plots of the posterior distributions are do have some use. Nevertheless, most workers prefer to present simple statistical summaries of the posteriors. Popular choices include the median (or mean) and 95% credibility intervals.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(broom)
+&amp;gt; tidyMCMC(as.mcmc(data.r2jags), conf.int = TRUE, conf.method = &amp;quot;HPDinterval&amp;quot;)
+# A tibble: 7 x 5
+  term           estimate std.error conf.low conf.high
+  &amp;lt;chr&amp;gt;             &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;
+1 Group.means[1]   105.       0.357   105.      106.  
+2 Group.means[2]    77.9      0.438    77.0      78.7 
+3 beta[1]            0        0         0         0   
+4 beta[2]          -27.3      0.563   -28.4     -26.2 
+5 beta0            105.       0.357   105.      106.  
+6 deviance         487.       2.49    484.      492.  
+7 sigma              2.77     0.202     2.39      3.17&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The Group A is typically 27.5 units greater than Group B. The 95% confidence interval for the difference between Group A and B does not overlap with 0 implying a significant difference between the two groups.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;graphical-summaries&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Graphical summaries&lt;/h1&gt;
+&lt;p&gt;A nice graphic is often a great accompaniment to a statistical analysis. Although there are no fixed assumptions associated with graphing (in contrast to statistical analyses), we often want the graphical summaries to reflect the associated statistical analyses. After all, the sample is just one perspective on the population(s). What we are more interested in is being able to estimate and depict likely population parameters/trends. Thus, whilst we could easily provide a plot displaying the raw data along with simple measures of location and spread, arguably, we should use estimates that reflect the fitted model. In this case, it would be appropriate to plot the credibility interval associated with each group. We do this by loading functions in the package &lt;code&gt;dplyr&lt;/code&gt;.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(dplyr)
+&amp;gt; mcmc = data.r2jags$BUGSoutput$sims.matrix
+&amp;gt; ## Calculate the fitted values
+&amp;gt; newdata = data.frame(x = levels(data$x))
+&amp;gt; Xmat = model.matrix(~x, newdata)
+&amp;gt; coefs = mcmc[, c(&amp;quot;beta0&amp;quot;, &amp;quot;beta[2]&amp;quot;)]
+&amp;gt; fit = coefs %*% t(Xmat)
+&amp;gt; newdata = newdata %&amp;gt;% cbind(tidyMCMC(fit, conf.int = TRUE, conf.method = &amp;quot;HPDinterval&amp;quot;))
+&amp;gt; 
+&amp;gt; ggplot(newdata, aes(y = estimate, x = x)) + geom_pointrange(aes(ymin = conf.low,
++     ymax = conf.high)) + scale_y_continuous(&amp;quot;Y&amp;quot;) + scale_x_discrete(&amp;quot;X&amp;quot;) +
++     theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/comparing-two-populations-jags/2020-02-01-comparing-two-populations-jags_files/figure-html/mcmc_post1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;If you wanted to represent sample data on the figure in such a simple example (single predictor) we could simply over- (or under-) lay the raw data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; ggplot(newdata, aes(y = estimate, x = x)) + geom_point(data = data, aes(y = y,
++     x = x), color = &amp;quot;gray&amp;quot;) + geom_pointrange(aes(ymin = conf.low, ymax = conf.high)) +
++     scale_y_continuous(&amp;quot;Y&amp;quot;) + scale_x_discrete(&amp;quot;X&amp;quot;) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/comparing-two-populations-jags/2020-02-01-comparing-two-populations-jags_files/figure-html/mcmc_post2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;A more general solution would be to add the partial residuals to the figure. Partial residuals are the fitted values plus the residuals. In this simple case, that equates to exactly the same as the raw observations since &lt;span class=&#34;math inline&#34;&gt;\(\text{resid}=\text{obs}−\text{fitted}\)&lt;/span&gt; and the fitted values depend only on the single predictor we are interested in.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; ## Calculate partial residuals fitted values
+&amp;gt; fdata = rdata = data
+&amp;gt; fMat = rMat = model.matrix(~x, fdata)
+&amp;gt; fit = as.vector(apply(coefs, 2, median) %*% t(fMat))
+&amp;gt; resid = as.vector(data$y - apply(coefs, 2, median) %*% t(rMat))
+&amp;gt; rdata = rdata %&amp;gt;% mutate(partial.resid = resid + fit)
+&amp;gt; ggplot(newdata, aes(y = estimate, x = x)) + geom_point(data = rdata, aes(y = partial.resid),
++     color = &amp;quot;gray&amp;quot;) + geom_pointrange(aes(ymin = conf.low, ymax = conf.high)) +
++     scale_y_continuous(&amp;quot;Y&amp;quot;) + scale_x_discrete(&amp;quot;X&amp;quot;) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/comparing-two-populations-jags/2020-02-01-comparing-two-populations-jags_files/figure-html/mcmc_post3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;effect-sizes&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Effect sizes&lt;/h1&gt;
+&lt;p&gt;In addition to deriving the distribution means for the second group, we could make use of the Bayesian framework to derive the distribution of the effect size. There are multiple ways of calculating an effect size, but the two most common are:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;Raw effect size&lt;/em&gt; - the difference between two groups (as already calculated)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;Cohen’s D&lt;/em&gt; - the effect size standardized by division with the pooled standard deviation&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;Percent&lt;/em&gt; - effect size expressing the effect size as a percent of the reference group mean&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Calculating the percent effect size involves division by an estimate of &lt;span class=&#34;math inline&#34;&gt;\(\beta_0\)&lt;/span&gt;. The very first sample collected of each parameter (including &lt;span class=&#34;math inline&#34;&gt;\(\beta_0\)&lt;/span&gt;) is based on the initial values supplied. If &lt;code&gt;inits=NULL&lt;/code&gt; the &lt;code&gt;jags&lt;/code&gt; function appears to generate initial values from the priors. Recall that in the previous model definition, &lt;span class=&#34;math inline&#34;&gt;\(\beta_0\)&lt;/span&gt; was deemed to be distributed as a normal distribution with a mean of &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt;. Hence, &lt;span class=&#34;math inline&#34;&gt;\(\beta_0\)&lt;/span&gt; would initially be assigned a value of &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt;. Division by zero is of course illegal and thus an error would be thrown. There are two ways to overcome this:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Modify the prior such that it has a mean of close to zero (and thus the first &lt;span class=&#34;math inline&#34;&gt;\(\beta_0\)&lt;/span&gt; sample is not zero), yet not actually zero (such as &lt;span class=&#34;math inline&#34;&gt;\(0.0001\)&lt;/span&gt;). There is always a danger however that the next sample in the chain will be zero (although this is highly unlikely).&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Define initial values that are based on the observed data (and not zero). This is the method used here - see the initial values used.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; paramsv2 &amp;lt;- c(&amp;quot;beta0&amp;quot;, &amp;quot;beta&amp;quot;, &amp;quot;sigma&amp;quot;, &amp;quot;Group.means&amp;quot;, &amp;quot;cohenD&amp;quot;, &amp;quot;ES&amp;quot;, &amp;quot;p10&amp;quot;)
+&amp;gt; data.r2jagsv2 &amp;lt;- jags(data=data.list,
++ inits=NULL, #or inits=list(inits,inits) # since there are two chains
++ parameters.to.save=paramsv2,
++ model.file=&amp;quot;ttestModelv2.txt&amp;quot;,
++ n.chains=nChains,
++ n.iter=nIter,
++ n.burnin=burnInSteps,
++ n.thin=thinSteps)
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 100
+   Unobserved stochastic nodes: 3
+   Total graph size: 224
+
+Initializing model
+&amp;gt; 
+&amp;gt; #print results
+&amp;gt; print(data.r2jagsv2)
+Inference for Bugs model at &amp;quot;ttestModelv2.txt&amp;quot;, fit using jags,
+ 2 chains, each with 25000 iterations (first 2000 discarded)
+ n.sims = 46000 iterations saved
+                     mu.vect     sd.vect          2.5%           25%
+ES             -2.731582e+08 5674582.561 -2.842814e+08 -2.769559e+08
+Group.means[1]  1.051970e+02       0.358  1.044950e+02  1.049570e+02
+Group.means[2]  7.788100e+01       0.439  7.702000e+01  7.758600e+01
+beta[1]         0.000000e+00       0.000  0.000000e+00  0.000000e+00
+beta[2]        -2.731600e+01       0.567 -2.842800e+01 -2.769600e+01
+beta0           1.051970e+02       0.358  1.044950e+02  1.049570e+02
+cohenD         -9.914000e+00       0.736 -1.139000e+01 -1.040200e+01
+p10             1.000000e+00       0.000  1.000000e+00  1.000000e+00
+sigma           2.770000e+00       0.199  2.413000e+00  2.631000e+00
+deviance        4.871840e+02       2.473  4.843720e+02  4.853700e+02
+                         50%           75%        97.5%  Rhat n.eff
+ES             -2.731702e+08 -2.693438e+08 -2.61909e+08 1.001 46000
+Group.means[1]  1.051990e+02  1.054370e+02  1.05900e+02 1.001 46000
+Group.means[2]  7.788200e+01  7.817400e+01  7.87480e+01 1.001 46000
+beta[1]         0.000000e+00  0.000000e+00  0.00000e+00 1.000     1
+beta[2]        -2.731700e+01 -2.693400e+01 -2.61910e+01 1.001 46000
+beta0           1.051990e+02  1.054370e+02  1.05900e+02 1.001 46000
+cohenD         -9.905000e+00 -9.413000e+00 -8.50300e+00 1.001 46000
+p10             1.000000e+00  1.000000e+00  1.00000e+00 1.000     1
+sigma           2.758000e+00  2.897000e+00  3.19000e+00 1.001 46000
+deviance        4.865460e+02  4.883170e+02  4.93572e+02 1.001 46000
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 3.1 and DIC = 490.2
+DIC is an estimate of expected predictive error (lower deviance is better).&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The Cohen’s D value is &lt;span class=&#34;math inline&#34;&gt;\(-10.09\)&lt;/span&gt;. This value is far greater than the nominal “large effect” guidelines outlined by Cohen and thus we might proclaim the treatment as having a large negative effect. The effect size expressed as a percentage of the Group A mean is &lt;span class=&#34;math inline&#34;&gt;\(-26.11\)&lt;/span&gt;. Hence the treatment was associated with a &lt;span class=&#34;math inline&#34;&gt;\(26.1\)&lt;/span&gt;% reduction.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;probability-statements&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Probability statements&lt;/h1&gt;
+&lt;p&gt;Bayesian statistics provide a natural means to generate probability statements. For example, we could calculate the probability that there is an effect of the treatment. Moreover, we could calculate the probability that the treatment effect exceeds some threshold (which might be based on a measure of ecologically important difference or other compliance guidelines for example).&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc = data.r2jagsv2$BUGSoutput$sims.matrix
+&amp;gt; # Percentage change (relative to Group A)
+&amp;gt; ES = 100 * mcmc[, &amp;quot;beta[2]&amp;quot;]/0.00001
+&amp;gt; hist(ES)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/comparing-two-populations-jags/2020-02-01-comparing-two-populations-jags_files/figure-html/prob_stat-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; 
+&amp;gt; # Probability that the effect is greater than 10% (a decline of &amp;gt;10%)
+&amp;gt; sum(-1 * ES &amp;gt; 10)/length(ES)
+[1] 1
+&amp;gt; # Probability that the effect is greater than 25% (a decline of &amp;gt;25%)
+&amp;gt; sum(-1 * ES &amp;gt; 25)/length(ES)
+[1] 1&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We have defined two additional probability derivatives, both of which utilize the step function (which generates a binary vector based on whether values evaluate less than zero or not).&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;P0 - the probability (mean of 1-step()) that the raw effect is greater than zero.&lt;/li&gt;
+&lt;li&gt;P25 - the probability (mean of 1-step()) that the percent effect size is greater than 25%.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; paramsv3 &amp;lt;- c(&amp;quot;beta0&amp;quot;, &amp;quot;beta&amp;quot;, &amp;quot;sigma&amp;quot;, &amp;quot;Group.means&amp;quot;, &amp;quot;cohenD&amp;quot;, &amp;quot;ES&amp;quot;, &amp;quot;P0&amp;quot;, &amp;quot;P25&amp;quot;)
+&amp;gt; data.r2jagsv3 &amp;lt;- jags(data=data.list,
++ inits=NULL, #or inits=list(inits,inits) # since there are two chains
++ parameters.to.save=paramsv3,
++ model.file=&amp;quot;ttestModelv3.txt&amp;quot;,
++ n.chains=nChains,
++ n.iter=nIter,
++ n.burnin=burnInSteps,
++ n.thin=thinSteps)
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 100
+   Unobserved stochastic nodes: 3
+   Total graph size: 225
+
+Initializing model
+&amp;gt; 
+&amp;gt; #print results
+&amp;gt; print(data.r2jagsv3)
+Inference for Bugs model at &amp;quot;ttestModelv3.txt&amp;quot;, fit using jags,
+ 2 chains, each with 25000 iterations (first 2000 discarded)
+ n.sims = 46000 iterations saved
+                     mu.vect     sd.vect          2.5%           25%
+ES             -2.731454e+08 5678850.964 -2.842706e+08 -2.769568e+08
+Group.means[1]  1.051970e+02       0.359  1.044850e+02  1.049590e+02
+Group.means[2]  7.788200e+01       0.441  7.702200e+01  7.758500e+01
+P0              1.000000e+00       0.000  1.000000e+00  1.000000e+00
+P25             1.000000e+00       0.000  1.000000e+00  1.000000e+00
+beta[1]         0.000000e+00       0.000  0.000000e+00  0.000000e+00
+beta[2]        -2.731500e+01       0.568 -2.842700e+01 -2.769600e+01
+beta0           1.051970e+02       0.359  1.044850e+02  1.049590e+02
+cohenD         -9.912000e+00       0.740 -1.138500e+01 -1.040500e+01
+sigma           2.770000e+00       0.200  2.411000e+00  2.631000e+00
+deviance        4.872020e+02       2.492  4.843640e+02  4.853780e+02
+                        50%           75%        97.5%  Rhat n.eff
+ES             -2.73142e+08 -2.693454e+08 -2.61952e+08 1.001 46000
+Group.means[1]  1.05196e+02  1.054350e+02  1.05897e+02 1.001 46000
+Group.means[2]  7.78810e+01  7.817800e+01  7.87480e+01 1.001 46000
+P0              1.00000e+00  1.000000e+00  1.00000e+00 1.000     1
+P25             1.00000e+00  1.000000e+00  1.00000e+00 1.000     1
+beta[1]         0.00000e+00  0.000000e+00  0.00000e+00 1.000     1
+beta[2]        -2.73140e+01 -2.693500e+01 -2.61950e+01 1.001 46000
+beta0           1.05196e+02  1.054350e+02  1.05897e+02 1.001 46000
+cohenD         -9.90300e+00 -9.412000e+00 -8.47700e+00 1.001 37000
+sigma           2.75800e+00  2.896000e+00  3.19800e+00 1.001 27000
+deviance        4.86557e+02  4.883340e+02  4.93696e+02 1.001 46000
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 3.1 and DIC = 490.3
+DIC is an estimate of expected predictive error (lower deviance is better).&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;finite-population-standard-deviations&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Finite population standard deviations&lt;/h1&gt;
+&lt;p&gt;It is often useful to be able to estimate the relative amount of variability associated with each predictor (or term) in a model. This can provide a sort of relative importance measure for each predictor.&lt;/p&gt;
+&lt;p&gt;In frequentist statistics, such measures are only available for so called random factors (factors whose observational levels are randomly selected to represent all possible levels rather than to represent specific treatment levels). For such random factors, the collective variances (or standard deviation) of each factor are known as the variance components. Each component can also be expressed as a percentage of the total so as to provide a percentage breakdown of the relative contributions of each scale of sampling.&lt;/p&gt;
+&lt;p&gt;Frequentist approaches model random factors according to the variance they add to the model, whereas fixed factors are modelled according to their effects (deviations from reference means). The model does not seek to generalize beyond the observed levels of a given fixed factor (such as control vs treatment) and thus it apparently does not make sense to estimate the population variability between levels (which is what variance components estimate).&lt;/p&gt;
+&lt;p&gt;The notion of “fixed” and “random” factors is somewhat arbitrary and does not really have any meaning within a Bayesian context (as all parameters and thus factors are considered random). Instead, the spirit of what many consider is the difference between fixed and random factors can be captured by conceptualizing whether the levels of a factor are drawn from a finite-population (from which the observed factor levels are the only ones possible) or a superpopulation (from which the observed factor levels are just a random selection of the infinite possible levels possible). Hence, variance components could be defining in terms of either finite-population or superpopulation standard deviations. Super-population standard deviations have traditionally been used to describe the relative scale of sampling variation (e.g. where is the greatest source of variability; Plots, subplots within plots, individual quadrats within subplots, …. or years, months within years, weeks within months, days within weeks, …) and are most logically applicable to factors that have a relatively large number of levels (such as spatial or temporal sampling units). On the other hand, finite-population standard deviations can be used to explore the relative impact or effect of a set of (fixed) treatments.&lt;/p&gt;
+&lt;p&gt;Calculate the amount of unexplained (residual) variance absorbed by the factor. This is generated by fitting a model with (full model) and without (reduced model) the term and subtracting the standard deviations of the residuals one another.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \sigma_A = \sigma_{reduced} - \sigma_{full} \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;This approach works fine for models that only include fixed factors (indeed it is somewhat analogous to the partitioning of variance employed by an ANOVA table), but cannot be used when the model includes random factors.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; data.lmFull &amp;lt;- lm(y ~ x, data)
+&amp;gt; data.lmRed &amp;lt;- lm(y ~ 1, data)
+&amp;gt; sd.a &amp;lt;- sd(data.lmRed$resid) - sd(data.lmFull$resid)
+&amp;gt; sd.resid &amp;lt;- sd(data.lmFull$resid)
+&amp;gt; sds &amp;lt;- c(sd.a, sd.resid)
+&amp;gt; 100 * sds/sum(sds)
+[1] 80.05772 19.94228&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;However, options are somewhat limiting if we want to estimate the relative impacts of a mixture of ‘fixed’ and ‘random’ terms. For example, we may wish to explore the relative importance of a treatment compared to the spatial and/or temporal sampling heterogeneity.
+The Bayesian framework provides a relatively simple way to generate both finite-population and superpopulation standard deviation estimates for all factors.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;Finite populations&lt;/strong&gt;. The standard deviations of the Markov Chain Monte Carlo samples across each of the parameters associated with a factor (eg, &lt;span class=&#34;math inline&#34;&gt;\(\beta_1\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\beta_2\)&lt;/span&gt; in the effects parameterisation model) provide natural estimates of the variability between group levels (and thus the finite-population standard deviation).&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;Superpopulation&lt;/strong&gt;. The mechanism of defining priors also provides a mechanism for calculating infinite-population standard deviations. Recall that in the cell means model, the prior for α specifies that each of the α values are drawn from a normal distribution with a particular mean and a certain level of precision (reciprocal of variability). We could further parameterize this prior into an estimatable mean and precision via hyperpriors &lt;span class=&#34;math inline&#34;&gt;\(\beta_0 \sim \text{Normal}(\mu,\tau)\)&lt;/span&gt;, with &lt;span class=&#34;math inline&#34;&gt;\(\mu \sim \text{Normal}(0,1.0\text{E}-6)\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\tau \sim \text{Gamma}(0.1,0.1)\)&lt;/span&gt;. Since the normal distribution in line one above represents the distribution from which the (infinite) population means are drawn, &lt;span class=&#34;math inline&#34;&gt;\(\tau\)&lt;/span&gt; provides a direct measure of the variability of the population from which the means are drawn.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;When the number of levels of a factor a large, the finite-population and superpopulation standard deviation point estimates will be very similar. However, the finite-population estimates will of course be considered more precise (and thus, less varied). At the other extreme, when the number of factor levels is small (such as two levels), the finite-population estimate will be very precise whereas the superpopulation standard deviation estimate will be very imprecise (highly varied). For this reason, if the purpose of estimating standard deviations is to compare relative contributions of various predictors (some of which have small numbers of levels and others large), then it is best to use finite-population standard deviation estimates.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; paramsv4 &amp;lt;- c(&amp;quot;beta0&amp;quot;, &amp;quot;beta&amp;quot;, &amp;quot;sigma&amp;quot;, &amp;quot;sd.a&amp;quot;, &amp;quot;sd.resid&amp;quot;, &amp;quot;sigma.a&amp;quot;)
+&amp;gt; data.r2jagsv4 &amp;lt;- jags(data=data.list,
++ inits=NULL, #or inits=list(inits,inits) # since there are two chains
++ parameters.to.save=paramsv4,
++ model.file=&amp;quot;ttestModelv4.txt&amp;quot;,
++ n.chains=nChains,
++ n.iter=nIter,
++ n.burnin=burnInSteps,
++ n.thin=thinSteps)
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 100
+   Unobserved stochastic nodes: 4
+   Total graph size: 319
+
+Initializing model
+&amp;gt; 
+&amp;gt; #print results
+&amp;gt; print(data.r2jagsv4)
+Inference for Bugs model at &amp;quot;ttestModelv4.txt&amp;quot;, fit using jags,
+ 2 chains, each with 25000 iterations (first 2000 discarded)
+ n.sims = 46000 iterations saved
+               mu.vect      sd.vect    2.5%     25%     50%     75%
+beta[1]   0.000000e+00 0.000000e+00   0.000   0.000   0.000   0.000
+beta[2]  -2.731400e+01 5.670000e-01 -28.417 -27.694 -27.314 -26.937
+beta0     1.051970e+02 3.590000e-01 104.490 104.955 105.198 105.440
+sd.a      1.931400e+01 4.010000e-01  18.521  19.047  19.314  19.583
+sd.resid  2.751000e+00 2.000000e-02   2.737   2.738   2.743   2.755
+sigma     2.769000e+00 1.990000e-01   2.411   2.629   2.757   2.895
+sigma.a   1.095446e+22 1.956638e+24   0.323   1.712  13.394 440.403
+deviance  4.871890e+02 2.480000e+00 484.365 485.386 486.550 488.303
+                97.5%  Rhat n.eff
+beta[1]         0.000 1.000     1
+beta[2]       -26.193 1.001 46000
+beta0         105.899 1.001 46000
+sd.a           20.094 1.001 46000
+sd.resid        2.808 1.001 46000
+sigma           3.187 1.001 46000
+sigma.a  43469187.743 1.001 46000
+deviance      493.637 1.001 46000
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 3.1 and DIC = 490.3
+DIC is an estimate of expected predictive error (lower deviance is better).&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The between group (finite population) standard deviation is &lt;span class=&#34;math inline&#34;&gt;\(19.44\)&lt;/span&gt; whereas the within group standard deviation is &lt;span class=&#34;math inline&#34;&gt;\(2.71\)&lt;/span&gt;. These equate to respectively.&lt;/p&gt;
+&lt;p&gt;Compared to he finite-population standard deviation, the superpopulation between group standard deviation estimate (&lt;span class=&#34;math inline&#34;&gt;\(\sigma_a\)&lt;/span&gt;) is both very large and highly variable. This is to be expected, whilst the finite-population standard deviation represents he degree of variation between the observed levels, the superpopulation standard deviation seeks to estimate the variability of the population from which the group means of the observed levels AND all other possible levels are drawn. There are only two levels from which to estimate this standard deviation and therefore, its value and variability are going to be higher than those pertaining only to the scope of the current data.&lt;/p&gt;
+&lt;p&gt;Examination of the quantiles for σa suggest that its samples are not distributed normally. Consequently, the mean is not an appropriate measure of its location. We will instead characterize the superpopulation between group and within group standard deviations via their respective medians and as percent medians. The contrast between finite-population and superpopulation standard deviations is also emphasized by the respective estimates for the residuals. The residuals are of course a “random” factor with a large number of observed levels. It is therefore not surprising that the point estimates for the residuals variance components are very similar. However, also notice that the precision of the finite-population standard deviation estimate is substantially higher (lower standard deviation of the standard deviation estimate) than that of the superpopulation estimate.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;unequally-varied-populations&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Unequally varied populations&lt;/h1&gt;
+&lt;p&gt;We can also generate data assuming two populations with different variances, e.g. between male and female subgroups.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; set.seed(123)
+&amp;gt; n1 &amp;lt;- 60  #sample size from population 1
+&amp;gt; n2 &amp;lt;- 40  #sample size from population 2
+&amp;gt; mu1 &amp;lt;- 105  #population mean of population 1
+&amp;gt; mu2 &amp;lt;- 77.5  #population mean of population 2
+&amp;gt; sigma1 &amp;lt;- 3  #standard deviation of population 1
+&amp;gt; sigma2 &amp;lt;- 2  #standard deviation of population 2
+&amp;gt; n &amp;lt;- n1 + n2  #total sample size
+&amp;gt; y1 &amp;lt;- rnorm(n1, mu1, sigma1)  #population 1 sample
+&amp;gt; y2 &amp;lt;- rnorm(n2, mu2, sigma2)  #population 2 sample
+&amp;gt; y &amp;lt;- c(y1, y2)
+&amp;gt; x &amp;lt;- factor(rep(c(&amp;quot;A&amp;quot;, &amp;quot;B&amp;quot;), c(n1, n2)))  #categorical listing of the populations
+&amp;gt; xn &amp;lt;- rep(c(0, 1), c(n1, n2))  #numerical version of the population category
+&amp;gt; data2 &amp;lt;- data.frame(y, x, xn)  # dataset
+&amp;gt; head(data2)  #print out the first six rows of the data set
+         y x xn
+1 103.3186 A  0
+2 104.3095 A  0
+3 109.6761 A  0
+4 105.2115 A  0
+5 105.3879 A  0
+6 110.1452 A  0&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Start by defining the model&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ y_i = \beta_0 + \beta_1x_i + \epsilon, \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\epsilon_1 \sim \text{Normal}(0,\sigma_1)\)&lt;/span&gt; for &lt;span class=&#34;math inline&#34;&gt;\(x_1=0\)&lt;/span&gt; (females), and &lt;span class=&#34;math inline&#34;&gt;\(\epsilon_2 \sim \text{Normal}(0,\sigma_2)\)&lt;/span&gt; for &lt;span class=&#34;math inline&#34;&gt;\(x_2=1\)&lt;/span&gt; (males). In &lt;code&gt;JAGS&lt;/code&gt; code the model becomes:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; modelStringv5=&amp;quot;
++  model {
++  #Likelihood
++  for (i in 1:n1) {
++  y1[i]~dnorm(mu1,tau1)
++  }
++  for (i in 1:n2) {
++  y2[i]~dnorm(mu2,tau2)
++  }
++  
++  #Priors
++  mu1 ~ dnorm (0,0.001)
++  mu2 ~ dnorm(0,0.001)
++  tau1 &amp;lt;- 1 / (sigma1 * sigma1)
++  sigma1~dunif(0,100)
++  tau2 &amp;lt;- 1 / (sigma2 * sigma2)
++  sigma2~dunif(0,100)
++  
++  #Other Derived parameters 
++  delta &amp;lt;- mu2 - mu1
++  }
++  &amp;quot;
+&amp;gt; ## write the model to a text file 
+&amp;gt; writeLines(modelStringv5,con=&amp;quot;ttestModelv5.txt&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We specify priors directly on &lt;span class=&#34;math inline&#34;&gt;\(\sigma_1\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\sigma_2\)&lt;/span&gt; using Uniform distributions between &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(100\)&lt;/span&gt;, and then express &lt;span class=&#34;math inline&#34;&gt;\(\tau\)&lt;/span&gt; as a deterministic function of &lt;span class=&#34;math inline&#34;&gt;\(\sigma\)&lt;/span&gt;. Next, arrange the data as a list (as required by &lt;code&gt;JAGS&lt;/code&gt;) and define the MCMC parameters. Note, all variables must be numeric, therefore we use the numeric version of &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt;. Define the initial values. We are going to initialize three chains so the list must include two elements.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; data2.list &amp;lt;- with(data2,list(y1=y[xn==0], y2=y[xn==1], 
++   n1=length(y[xn==0]), n2=length(y[xn==1])))
+&amp;gt; inits &amp;lt;- list(list(mu1=rnorm(1), mu2=rnorm(1), sigma1=rlnorm(1), sigma2=rlnorm(1)),
++ list(mu1=rnorm(1), mu2=rnorm(1), sigma1=rlnorm(1), sigma2=rlnorm(1)))
+&amp;gt; paramsv5 &amp;lt;- c(&amp;quot;mu1&amp;quot;,&amp;quot;mu2&amp;quot;,&amp;quot;delta&amp;quot;,&amp;quot;sigma1&amp;quot;,&amp;quot;sigma2&amp;quot;)
+&amp;gt; adaptSteps = 1000
+&amp;gt; burnInSteps = 2000
+&amp;gt; nChains = 2
+&amp;gt; numSavedSteps = 50000
+&amp;gt; thinSteps = 1
+&amp;gt; nIter = ceiling((numSavedSteps * thinSteps)/nChains)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Finally, fit the model in &lt;code&gt;JAGS&lt;/code&gt; and print the results.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; data2.r2jagsv5 &amp;lt;- jags(data=data2.list,
++ inits=NULL, #or inits=list(inits,inits) # since there are two
++ parameters.to.save=paramsv5,
++ model.file=&amp;quot;ttestModelv5.txt&amp;quot;,
++ n.chains=nChains,
++ n.iter=nIter,
++ n.burnin=burnInSteps,
++ n.thin=1)
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 100
+   Unobserved stochastic nodes: 4
+   Total graph size: 115
+
+Initializing model
+&amp;gt; 
+&amp;gt; print(data2.r2jagsv5)
+Inference for Bugs model at &amp;quot;ttestModelv5.txt&amp;quot;, fit using jags,
+ 2 chains, each with 25000 iterations (first 2000 discarded)
+ n.sims = 46000 iterations saved
+         mu.vect sd.vect    2.5%     25%     50%     75%   97.5%  Rhat n.eff
+delta    -27.435   0.473 -28.367 -27.755 -27.433 -27.116 -26.508 1.001 27000
+mu1      105.181   0.360 104.478 104.937 105.181 105.422 105.891 1.001 44000
+mu2       77.746   0.306  77.142  77.543  77.748  77.948  78.347 1.001 46000
+sigma1     2.787   0.265   2.328   2.602   2.767   2.951   3.361 1.001 16000
+sigma2     1.913   0.225   1.534   1.753   1.893   2.049   2.414 1.001 21000
+deviance 455.879   2.945 452.217 453.714 455.215 457.354 463.257 1.001 46000
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 4.3 and DIC = 460.2
+DIC is an estimate of expected predictive error (lower deviance is better).&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
+&lt;h1&gt;References&lt;/h1&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references&#34;&gt;
+&lt;div id=&#34;ref-gelman2006prior&#34;&gt;
+&lt;p&gt;Gelman, Andrew, and others. 2006. “Prior Distributions for Variance Parameters in Hierarchical Models (Comment on Article by Browne and Draper).” &lt;em&gt;Bayesian Analysis&lt;/em&gt; 1 (3): 515–34.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-plummer2004jags&#34;&gt;
+&lt;p&gt;Plummer, Martyn. 2004. “JAGS: Just Another Gibbs Sampler.”&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-su2015package&#34;&gt;
+&lt;p&gt;Su, Yu-Sung, Masanao Yajima, Maintainer Yu-Sung Su, and JAGS SystemRequirements. 2015. “Package ‘R2jags’.” &lt;em&gt;R Package Version 0.03-08, URL Http://CRAN. R-Project. Org/Package= R2jags&lt;/em&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
     
     <item>
       <title>Super basic introduction to JAGS</title>
