@@ -6,10 +6,46 @@
     <description>Recent content in Tags on Andrea Gabrio</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 11 Feb 2020 09:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 01 Mar 2020 21:13:14 -0500</lastBuildDate>
     
 	    <atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>JAGS</title>
+      <link>/tags/jags/</link>
+      <pubDate>Sun, 01 Mar 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/jags/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>linear regression</title>
+      <link>/tags/linear-regression/</link>
+      <pubDate>Sun, 01 Mar 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/linear-regression/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>STAN</title>
+      <link>/tags/stan/</link>
+      <pubDate>Sun, 01 Mar 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/stan/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>tutorials</title>
+      <link>/tags/tutorials/</link>
+      <pubDate>Sun, 01 Mar 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/tutorials/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Clinical Trials</title>
@@ -39,38 +75,11 @@
     </item>
     
     <item>
-      <title>JAGS</title>
-      <link>/tags/jags/</link>
-      <pubDate>Sat, 01 Feb 2020 21:13:14 -0500</pubDate>
-      
-      <guid>/tags/jags/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>population differences</title>
       <link>/tags/population-differences/</link>
       <pubDate>Sat, 01 Feb 2020 21:13:14 -0500</pubDate>
       
       <guid>/tags/population-differences/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>STAN</title>
-      <link>/tags/stan/</link>
-      <pubDate>Sat, 01 Feb 2020 21:13:14 -0500</pubDate>
-      
-      <guid>/tags/stan/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>tutorials</title>
-      <link>/tags/tutorials/</link>
-      <pubDate>Sat, 01 Feb 2020 21:13:14 -0500</pubDate>
-      
-      <guid>/tags/tutorials/</guid>
       <description></description>
     </item>
     
@@ -197,15 +206,6 @@
       <pubDate>Wed, 03 Jul 2019 21:13:14 -0500</pubDate>
       
       <guid>/tags/introduction/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>linear regression</title>
-      <link>/tags/linear-regression/</link>
-      <pubDate>Wed, 03 Jul 2019 21:13:14 -0500</pubDate>
-      
-      <guid>/tags/linear-regression/</guid>
       <description></description>
     </item>
     

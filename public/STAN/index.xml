@@ -6,10 +6,687 @@
     <description>Recent content in Bayesian analysis using R and STAN on Andrea Gabrio</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 01 Feb 2020 21:13:14 -0500</lastBuildDate>
+    <lastBuildDate>Sun, 01 Mar 2020 21:13:14 -0500</lastBuildDate>
     
 	    <atom:link href="/stan/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Simple Linear Regression - STAN</title>
+      <link>/stan/simple-linear-regression-stan/simple-linear-regression-stan/</link>
+      <pubDate>Sun, 01 Mar 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/stan/simple-linear-regression-stan/simple-linear-regression-stan/</guid>
+      <description>
+&lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;p&gt;This tutorial will focus on the use of Bayesian estimation to fit simple linear regression models. &lt;code&gt;BUGS&lt;/code&gt; (Bayesian inference Using &lt;em&gt;Gibbs Sampling&lt;/em&gt;) is an algorithm and supporting language (resembling &lt;code&gt;R&lt;/code&gt;) dedicated to performing the Gibbs sampling implementation of &lt;em&gt;Markov Chain Monte Carlo&lt;/em&gt; (MCMC) method. Dialects of the &lt;code&gt;BUGS&lt;/code&gt; language are implemented within three main projects:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;OpenBUGS&lt;/strong&gt; - written in component pascal.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;JAGS&lt;/strong&gt; - (Just Another Gibbs Sampler) - written in &lt;code&gt;C++&lt;/code&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;STAN&lt;/strong&gt; - a dedicated Bayesian modelling framework written in &lt;code&gt;C++&lt;/code&gt; and implementing &lt;em&gt;Hamiltonian&lt;/em&gt; MCMC samplers.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Whilst the above programs can be used stand-alone, they do offer the rich data pre-processing and graphical capabilities of &lt;code&gt;R&lt;/code&gt;, and thus, they are best accessed from within &lt;code&gt;R&lt;/code&gt; itself. As such there are multiple packages devoted to interfacing with the various software implementations:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;R2OpenBUGS&lt;/em&gt; - interfaces with &lt;code&gt;OpenBUGS&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;R2jags&lt;/em&gt; - interfaces with &lt;code&gt;JAGS&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;rstan&lt;/em&gt; - interfaces with &lt;code&gt;STAN&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This tutorial will demonstrate how to fit models in &lt;code&gt;STAN&lt;/code&gt; (&lt;span class=&#34;citation&#34;&gt;Gelman, Lee, and Guo (2015)&lt;/span&gt;) using the package &lt;code&gt;rstan&lt;/code&gt; (&lt;span class=&#34;citation&#34;&gt;Stan Development Team (2018)&lt;/span&gt;) as interface, which also requires to load some other packages.&lt;/p&gt;
+&lt;div id=&#34;overview&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Overview&lt;/h1&gt;
+&lt;div id=&#34;introduction&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;Many clinicians get a little twitchy and nervous around mathematical and statistical formulae and nomenclature. Whilst it is possible to perform basic statistics without too much regard for the actual equation (model) being employed, as the complexity of the analysis increases, the need to understand the underlying model becomes increasingly important. Moreover, model specification in &lt;code&gt;BUGS/JAGS/STAN&lt;/code&gt; (the language used to program Bayesian modelling) aligns very closely to the underlying formulae. Hence a good understanding of the underlying model is vital to be able to create a sensible Bayesian model. Consequently, I will always present the linear model formulae along with the analysis.&lt;/p&gt;
+&lt;p&gt;To introduce the philosophical and mathematical differences between classical (frequentist) and Bayesian statistics, based on previous works, we present a provocative yet compelling trend analysis of two hypothetical populations (A vs B). The temporal trend of population A shows very little variability from a very subtle linear decline (&lt;span class=&#34;math inline&#34;&gt;\(n=10\)&lt;/span&gt;, &lt;span class=&#34;math inline&#34;&gt;\(\text{slope}=-0.10\)&lt;/span&gt;, &lt;span class=&#34;math inline&#34;&gt;\(\text{p-value}=0.048\)&lt;/span&gt;). By contrast, the B population appears to decline more dramatically, yet has substantially more variability (&lt;span class=&#34;math inline&#34;&gt;\(n=10\)&lt;/span&gt;, &lt;span class=&#34;math inline&#34;&gt;\(\text{slope}=-10.23\)&lt;/span&gt;, &lt;span class=&#34;math inline&#34;&gt;\(\text{p-value}=0.058\)&lt;/span&gt;). From a traditional frequentist perspective, we would conclude that there is a “significant” relationship in Population A (&lt;span class=&#34;math inline&#34;&gt;\(p&amp;lt;0.05\)&lt;/span&gt;), yet not in Population B (&lt;span class=&#34;math inline&#34;&gt;\(p&amp;gt;0.05\)&lt;/span&gt;). However, if we consider a third population C which is exactly the same as populstion B but with a higher number of observations, then we may end up with a completely different conclusion compared with that based on population B (&lt;span class=&#34;math inline&#34;&gt;\(n=100\)&lt;/span&gt;, &lt;span class=&#34;math inline&#34;&gt;\(\text{slope}=-10.47\)&lt;/span&gt;, &lt;span class=&#34;math inline&#34;&gt;\(\text{p-value}&amp;lt;0.001\)&lt;/span&gt;).&lt;/p&gt;
+&lt;p&gt;The above illustrates a couple of things:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;statistical significance does not necessarily translate into clinical importance. Indeed, population B is declining at nearly &lt;span class=&#34;math inline&#34;&gt;\(10\)&lt;/span&gt; times the rate of population A. That sounds rather important, yet on the basis of the hypothesis test, we would dismiss the decline in population B.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;that a p-value is just the probability of detecting an effect or relationship - what is the probability that the sample size is large enough to pick up a difference.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Let us now look at it from a Bayesian perspective, with a focus on population A and B. We would conclude that:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;the mean (plus or minus CI) slopes for Population A and B are &lt;span class=&#34;math inline&#34;&gt;\(-0.1 (-0.21,0)\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(-10.08 (-20.32,0.57)\)&lt;/span&gt; respectively&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;the Bayesian approach allows us to query the posterior distribution is many other ways in order to ask sensible clinical questions. For example, we might consider that a rate of change of &lt;span class=&#34;math inline&#34;&gt;\(5\)&lt;/span&gt;% or greater represents an important biological impact. For population A and B, the probability that the rate is &lt;span class=&#34;math inline&#34;&gt;\(5\)&lt;/span&gt;% or greater is &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(0.85\)&lt;/span&gt; respectively.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div id=&#34;linear-regression&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Linear regression&lt;/h2&gt;
+&lt;p&gt;Simple linear regression is a linear modelling process that models a continuous response against a single continuous predictor. The linear model is expressed as:&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ y_i = \beta_0 + \beta_1x_i + \epsilon_i, \;\;\; \epsilon_i \sim \text{Normal}(0,\sigma),\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; is the response variable for each of the &lt;span class=&#34;math inline&#34;&gt;\(i=1\ldots,n\)&lt;/span&gt; observations, &lt;span class=&#34;math inline&#34;&gt;\(\beta_0\)&lt;/span&gt; is the intercept (value when &lt;span class=&#34;math inline&#34;&gt;\(x=0\)&lt;/span&gt;), &lt;span class=&#34;math inline&#34;&gt;\(\beta_1\)&lt;/span&gt; is the slope (rate of change in &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; per unit change in &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt;), &lt;span class=&#34;math inline&#34;&gt;\(x_i\)&lt;/span&gt; is the predictor variable, &lt;span class=&#34;math inline&#34;&gt;\(\epsilon_i\)&lt;/span&gt; is the residual value (difference between the observed value and the value expected by the model). The parameters of the trendline &lt;span class=&#34;math inline&#34;&gt;\(\boldsymbol \beta=(\beta_0,\beta_1)\)&lt;/span&gt; are determined by &lt;em&gt;Ordinary Least Squares&lt;/em&gt; (OLS) in which the sum of the squared residuals is minimized. A non-zero population slope is indicative of a relationship.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;data-generation&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Data generation&lt;/h1&gt;
+&lt;p&gt;Lets say we had set up an experiment in which we applied a continuous treatment (&lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt;) ranging in magnitude from &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt; to &lt;span class=&#34;math inline&#34;&gt;\(16\)&lt;/span&gt; to a total of &lt;span class=&#34;math inline&#34;&gt;\(16\)&lt;/span&gt; sampling units (&lt;span class=&#34;math inline&#34;&gt;\(n=16\)&lt;/span&gt;) and then measured a response (&lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;) from each unit. As this section is mainly about the generation of artificial data (and not specifically about what to do with the data), understanding the actual details are optional and can be safely skipped.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; set.seed(123)
+&amp;gt; n &amp;lt;- 16
+&amp;gt; a &amp;lt;- 40  #intercept
+&amp;gt; b &amp;lt;- -1.5  #slope
+&amp;gt; sigma2 &amp;lt;- 25  #residual variance (sd=5)
+&amp;gt; x &amp;lt;- 1:n  #values of the year covariate
+&amp;gt; eps &amp;lt;- rnorm(n, mean = 0, sd = sqrt(sigma2))  #residuals
+&amp;gt; y &amp;lt;- a + b * x + eps  #response variable
+&amp;gt; # OR
+&amp;gt; y &amp;lt;- (model.matrix(~x) %*% c(a, b)) + eps
+&amp;gt; data &amp;lt;- data.frame(y, x)  #dataset
+&amp;gt; head(data)  #print out the first six rows of the data set
+         y x
+1 35.69762 1
+2 35.84911 2
+3 43.29354 3
+4 34.35254 4
+5 33.14644 5
+6 39.57532 6&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;With these sort of data, we are primarily interested in investigating whether there is a relationship between the continuous response variable and the linear predictor (single continuous predictor).&lt;/p&gt;
+&lt;div id=&#34;centering-the-data&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Centering the data&lt;/h2&gt;
+&lt;p&gt;When a linear model contains a covariate (continuous predictor variable) in addition to another predictor (continuous or categorical), it is nearly always advisable that the continuous predictor variables are centered prior to the analysis. Centering is a process by which the mean of a variable is subtracted from each of the values such that the scale of the variable is shifted so as to be centered around &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt;. Hence the mean of the new centered variable will be &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt;, yet it will retain the same variance.&lt;/p&gt;
+&lt;p&gt;There are multiple reasons for this:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;p&gt;It provides some clinical meaning to the &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;-intercept. Recall that the &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;-intercept is the value of &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; when &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt; is equal to zero. If &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt; is centered, then the &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;-intercept represents the value of &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; at the mid-point of the &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt; range. The &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;-intercept of an uncentered &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt; typically represents a unreal value of &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; (as an &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt; of &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt; is often beyond the reasonable range of values).&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;In multiplicative models (in which predictors and their interactions are included), main effects and interaction terms built from centered predictors will not be correlated to one another.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;For more complex models, centering the covariates can increase the likelihood that the modelling engine converges (arrives at a numerically stable and reliable outcome).&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Note, centering will not effect the slope estimates. In &lt;code&gt;R&lt;/code&gt;, centering is easily achieved with the &lt;code&gt;scale&lt;/code&gt; function.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; data &amp;lt;- within(data, {
++     cx &amp;lt;- as.numeric(scale(x, scale = FALSE))
++ })
+&amp;gt; head(data)
+         y x   cx
+1 35.69762 1 -7.5
+2 35.84911 2 -6.5
+3 43.29354 3 -5.5
+4 34.35254 4 -4.5
+5 33.14644 5 -3.5
+6 39.57532 6 -2.5&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;exploratory-data-analysis&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Exploratory data analysis&lt;/h1&gt;
+&lt;div id=&#34;normality&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Normality&lt;/h2&gt;
+&lt;p&gt;Estimation and inference testing in linear regression assumes that the response is normally distributed in each of the populations. In this case, the populations are all possible measurements that could be collected at each level of &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt; - hence there are &lt;span class=&#34;math inline&#34;&gt;\(16\)&lt;/span&gt; populations. Typically however, we only collect a single observation from each population (as is also the case here). How then can be evaluate whether each of these populations are likely to have been normal? For a given response, the population distributions should follow much the same distribution shapes. Therefore provided the single samples from each population are unbiased representations of those populations, a boxplot of all observations should reflect the population distributions.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;homogeneity-of-variance&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Homogeneity of variance&lt;/h2&gt;
+&lt;p&gt;Simple linear regression also assumes that each of the populations are equally varied. Actually, it is prospect of a relationship between the mean and variance of &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;-values across x-values that is of the greatest concern. Strictly the assumption is that the distribution of &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; values at each &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt; value are equally varied and that there is no relationship between mean and variance. However, as we only have a single &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;-value for each &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt;-value, it is difficult to directly determine whether the assumption of &lt;em&gt;homogeneity of variance&lt;/em&gt; is likely to have been violated (mean of one value is meaningless and variability can’t be assessed from a single value). If we then plot the residuals (difference between observed values and those predicted by the trendline) against the predict values and observe a definite presence of a pattern, then it is indicative of issues with the assumption of homogeneity of variance.&lt;/p&gt;
+&lt;p&gt;Hence looking at the spread of values around a trendline on a scatterplot of &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; against &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt; is a useful way of identifying gross violations of homogeneity of variance. Residual plots provide an even better diagnostic. The presence of a &lt;em&gt;wedge shape&lt;/em&gt; is indicative that the population mean and variance are related.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;linearity&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Linearity&lt;/h2&gt;
+&lt;p&gt;Linear regression fits a straight (linear) line through the data. Therefore, prior to fitting such a model, it is necessary to establish whether this really is the most sensible way of describing the relationship. That is, does the relationship appear to be linearly related or could some other non-linear function describe the relationship better. Scatterplots and residual plots are useful diagnostics.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;model-assumptions&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Model assumptions&lt;/h2&gt;
+&lt;p&gt;The typical assumptions which need to be checked when fitting a standard linear regression model are:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;All of the observations are independent - this must be addressed at the design and collection stages&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;The response variable (and thus the residuals) should be normally distributed&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;The response variable should be equally varied (variance should not be related to mean as these are supposed to be estimated separately)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;The relationship between the linear predictor (right hand side of the regression formula) and the link function should be linear. A scatterplot with smoother can be useful for identifying possible non-linearity.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;So lets explore normality, homogeneity of variances and linearity by constructing a scatterplot of the relationship between the response (&lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;) and the predictor (&lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt;). We will also include a range of smoothers (linear and lowess) and marginal boxplots on the scatterplot to assist in exploring linearity and normality respectively.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; # scatterplot
+&amp;gt; library(car)
+&amp;gt; scatterplot(y ~ x, data)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/simple-linear-regression-stan/2020-02-01-simple-linear-regression-stan_files/figure-html/scatter-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Conclusions&lt;/strong&gt;:&lt;/p&gt;
+&lt;p&gt;There is no evidence that the response variable is non-normal. The spread of values around the trendline seems fairly even (hence it there is no evidence of non-homogeneity). The data seems well represented by the linear trendline. Furthermore, the lowess smoother does not appear to have a consistent shift trajectory. Obvious violations could be addressed either by:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Consider a non-linear linear predictor (such as a polynomial, spline or other non-linear function)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Transform the scale of the response variables (e.g. to address normality)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;model-fitting&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Model fitting&lt;/h1&gt;
+&lt;p&gt;Whilst Gibbs sampling provides an elegantly simple MCMC sampling routine, very complex hierarchical models can take enormous numbers of iterations (often prohibitory large) to converge on a stable posterior distribution. To address this, Andrew Gelman (and other collaborators) have implemented a variation on &lt;em&gt;Hamiltonian Monte Carlo&lt;/em&gt; (HMC): a sampler that selects subsequent samples in a way that reduces the correlation between samples, thereby speeding up convergence) called the &lt;em&gt;No-U-Turn&lt;/em&gt; (NUTS) sampler. All of these developments are brought together into a tool called &lt;em&gt;Stan&lt;/em&gt;. By design (to appeal to the vast &lt;code&gt;BUGS/JAGS&lt;/code&gt; users), &lt;code&gt;STAN&lt;/code&gt; models are defined in a manner reminiscent of &lt;code&gt;BUGS/JAGS&lt;/code&gt;. &lt;code&gt;STAN&lt;/code&gt; first converts these models into &lt;code&gt;C++&lt;/code&gt; code which is then compiled to allow very rapid computation. Consistent with this, the model must be accompanied by variable declarations for all inputs and parameters.&lt;/p&gt;
+&lt;p&gt;Note the following important characteristics of a &lt;code&gt;STAN&lt;/code&gt; code:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;A &lt;code&gt;STAN&lt;/code&gt; model file comprises a number of blocks (not all of which are compulsory).&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;The &lt;code&gt;STAN&lt;/code&gt; language is an intermediary between (&lt;code&gt;R/BUGS&lt;/code&gt; and &lt;code&gt;c++&lt;/code&gt;) and requires all types (integers, vectors, matrices etc) to be declared prior to use and it uses &lt;code&gt;c++&lt;/code&gt; commenting (&lt;code&gt;//&lt;/code&gt; and &lt;code&gt;/* */&lt;/code&gt;)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Code order is important, objects must be declared before they are used. When a type is declared in one block, it is available in subsequent blocks.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code&gt;
+                      data {
+                      // declare the input data / parameters
+                      }
+                      transformed data {
+                      // optional - for transforming/scaling input data
+                      }
+                      parameters {
+                      // define model parameters
+                      }
+                      transformed parameters {
+                      // optional - for deriving additional non-model parameters
+                      //            note however, as they are part of the sampling chain
+                      //            transformed parameters slow sampling down.
+                      }
+                      model {
+                      // specifying priors and likelihood as well as the linear predictor
+                      }
+                      generated quantities {
+                      // optional - derivatives (posteriors) of the samples
+                      }
+            &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The minimum model in &lt;code&gt;STAN&lt;/code&gt; required to fit the above simple regression follows. Note the following modifications from the model defined in &lt;code&gt;JAGS&lt;/code&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;The normal distribution is defined by standard deviation rather than precision&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Rather than using a uniform prior for &lt;span class=&#34;math inline&#34;&gt;\(\sigma\)&lt;/span&gt;, I am using a half-Cauchy&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;We now translate the likelihood model into &lt;code&gt;STAN&lt;/code&gt; code.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; modelString = &amp;quot;
++   data {
++   int&amp;lt;lower=0&amp;gt; n;
++   vector [n] y;
++   vector [n] x;
++   }
++   parameters {
++   real beta0;
++   real beta;
++   real&amp;lt;lower=0&amp;gt; sigma;
++   }
++   model {
++   vector [n] mu;
++   #Priors
++   beta0 ~ normal(0,10000);
++   beta ~ normal(0,10000);
++   sigma ~ cauchy(0,5);
++  
++   mu = beta0+beta*x;
++   
++   #Likelihood
++   y~normal(mu,sigma);
++   }
++   
++   &amp;quot;
+&amp;gt; ## write the model to a stan file 
+&amp;gt; writeLines(modelString, con = &amp;quot;linregModel.stan&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The No-U-Turn sampler operates much more efficiently if all predictors are centered. Although it is possible to pre-center all predictors that are passed to &lt;code&gt;STAN&lt;/code&gt;, it is then often necessary to later convert back to the original scale for graphing and further analyses. Since centering is a routine procedure, arguably it should be built into the &lt;code&gt;STAN&lt;/code&gt; we generate. Furthermore, we should also include the back-scaling as well. In this version, the data are to be supplied as a model matrix (so as to leverage various vectorized and matrix multiplier routines). The transformed data block is used to center the non-intercept columns of the predictor model matrix. The model is fit on centered data thereby generating a slope and intercept. This intercept parameter is also expressed back on the non-centered scale (generated properties block).&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; modelStringv2 = &amp;quot;
++ data { 
++   int&amp;lt;lower=1&amp;gt; n;   // total number of observations 
++   vector[n] Y;      // response variable 
++   int&amp;lt;lower=1&amp;gt; nX;  // number of effects 
++   matrix[n, nX] X;   // model matrix 
++   } 
++   transformed data { 
++   matrix[n, nX - 1] Xc;  // centered version of X 
++   vector[nX - 1] means_X;  // column means of X before centering 
++   
++   for (i in 2:nX) { 
++   means_X[i - 1] = mean(X[, i]); 
++   Xc[, i - 1] = X[, i] - means_X[i - 1]; 
++   } 
++   }  
++   parameters { 
++   vector[nX-1] beta;  // population-level effects 
++   real cbeta0;  // center-scale intercept 
++   real&amp;lt;lower=0&amp;gt; sigma;  // residual SD 
++   } 
++   transformed parameters { 
++   } 
++   model { 
++   vector[n] mu; 
++   mu = Xc * beta + cbeta0; 
++   // prior specifications 
++   beta ~ normal(0, 100); 
++   cbeta0 ~ normal(0, 100); 
++   sigma ~ cauchy(0, 5); 
++   // likelihood contribution 
++   Y ~ normal(mu, sigma); 
++   } 
++   generated quantities { 
++   real beta0;  // population-level intercept 
++   beta0 = cbeta0 - dot_product(means_X, beta); 
++   }
++   
++   &amp;quot;
+&amp;gt; ## write the model to a stan file 
+&amp;gt; writeLines(modelStringv2, con = &amp;quot;linregModelv2.stan&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Arrange the data as a list (as required by &lt;code&gt;JAGS&lt;/code&gt;). As input, &lt;code&gt;JAGS&lt;/code&gt; will need to be supplied with: the response variable, the predictor variable, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; Xmat &amp;lt;- model.matrix(~x, data = data)
+&amp;gt; data.list &amp;lt;- with(data, list(Y = y, X = Xmat, nX = ncol(Xmat), n = nrow(data)))
+&amp;gt; data.list
+$Y
+ [1] 35.69762 35.84911 43.29354 34.35254 33.14644 39.57532 31.80458 21.67469
+ [9] 23.06574 22.77169 29.62041 23.79907 22.50386 19.55341 14.72079 24.93457
+
+$X
+   (Intercept)  x
+1            1  1
+2            1  2
+3            1  3
+4            1  4
+5            1  5
+6            1  6
+7            1  7
+8            1  8
+9            1  9
+10           1 10
+11           1 11
+12           1 12
+13           1 13
+14           1 14
+15           1 15
+16           1 16
+attr(,&amp;quot;assign&amp;quot;)
+[1] 0 1
+
+$nX
+[1] 2
+
+$n
+[1] 16&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Define the initial values for the chain. Reasonable starting points can be gleaned from the data themselves.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; inits &amp;lt;- rep(list(list(beta0 = mean(data$y), beta1 = diff(tapply(data$y,
++     data$x, mean)), sigma = sd(data$y))), 2)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Define the nodes (parameters and derivatives) to monitor.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; params &amp;lt;- c(&amp;quot;beta&amp;quot;,&amp;quot;beta0&amp;quot;, &amp;quot;cbeta0&amp;quot;, &amp;quot;sigma&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Define the chain parameters.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; nChains = 2
+&amp;gt; burnInSteps = 1000
+&amp;gt; thinSteps = 1
+&amp;gt; numSavedSteps = 3000  #across all chains
+&amp;gt; nIter = ceiling(burnInSteps + (numSavedSteps * thinSteps)/nChains)
+&amp;gt; nIter
+[1] 2500&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Start the &lt;code&gt;STAN&lt;/code&gt; model (check the model, load data into the model, specify the number of chains and compile the model). Load the &lt;code&gt;rstan&lt;/code&gt; package.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(rstan)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;When using the &lt;code&gt;stan&lt;/code&gt; function (&lt;code&gt;rstan&lt;/code&gt; package), it is not necessary to provide initial values. However, if they are to be supplied, the inital values must be provided as a list of the same length as the number of chains.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; data.rstan &amp;lt;- stan(data = data.list, file = &amp;quot;linregModelv2.stan&amp;quot;, 
++     chains = nChains, iter = nIter, warmup = burnInSteps,
++     thin = thinSteps, save_dso = TRUE)
+
+SAMPLING FOR MODEL &amp;#39;linregModelv2&amp;#39; NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 0 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 2500 [  0%]  (Warmup)
+Chain 1: Iteration:  250 / 2500 [ 10%]  (Warmup)
+Chain 1: Iteration:  500 / 2500 [ 20%]  (Warmup)
+Chain 1: Iteration:  750 / 2500 [ 30%]  (Warmup)
+Chain 1: Iteration: 1000 / 2500 [ 40%]  (Warmup)
+Chain 1: Iteration: 1001 / 2500 [ 40%]  (Sampling)
+Chain 1: Iteration: 1250 / 2500 [ 50%]  (Sampling)
+Chain 1: Iteration: 1500 / 2500 [ 60%]  (Sampling)
+Chain 1: Iteration: 1750 / 2500 [ 70%]  (Sampling)
+Chain 1: Iteration: 2000 / 2500 [ 80%]  (Sampling)
+Chain 1: Iteration: 2250 / 2500 [ 90%]  (Sampling)
+Chain 1: Iteration: 2500 / 2500 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.027 seconds (Warm-up)
+Chain 1:                0.036 seconds (Sampling)
+Chain 1:                0.063 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL &amp;#39;linregModelv2&amp;#39; NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 0 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 2500 [  0%]  (Warmup)
+Chain 2: Iteration:  250 / 2500 [ 10%]  (Warmup)
+Chain 2: Iteration:  500 / 2500 [ 20%]  (Warmup)
+Chain 2: Iteration:  750 / 2500 [ 30%]  (Warmup)
+Chain 2: Iteration: 1000 / 2500 [ 40%]  (Warmup)
+Chain 2: Iteration: 1001 / 2500 [ 40%]  (Sampling)
+Chain 2: Iteration: 1250 / 2500 [ 50%]  (Sampling)
+Chain 2: Iteration: 1500 / 2500 [ 60%]  (Sampling)
+Chain 2: Iteration: 1750 / 2500 [ 70%]  (Sampling)
+Chain 2: Iteration: 2000 / 2500 [ 80%]  (Sampling)
+Chain 2: Iteration: 2250 / 2500 [ 90%]  (Sampling)
+Chain 2: Iteration: 2500 / 2500 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.028 seconds (Warm-up)
+Chain 2:                0.035 seconds (Sampling)
+Chain 2:                0.063 seconds (Total)
+Chain 2: &lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;mcmc-diagnostics&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;MCMC diagnostics&lt;/h1&gt;
+&lt;p&gt;In addition to the regular model diagnostic checks (such as residual plots), for Bayesian analyses, it is necessary to explore the characteristics of the MCMC chains and the sampler in general. Recall that the purpose of MCMC sampling is to replicate the posterior distribution of the model likelihood and priors by drawing a known number of samples from this posterior (thereby formulating a probability distribution). This is only reliable if the MCMC samples accurately reflect the posterior. Unfortunately, since we only know the posterior in the most trivial of circumstances, it is necessary to rely on indirect measures of how accurately the MCMC samples are likely to reflect the likelihood. I will briefly outline the most important diagnostics.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;Traceplots&lt;/em&gt; for each parameter illustrate the MCMC sample values after each successive iteration along the chain. Bad chain mixing (characterised by any sort of pattern) suggests that the MCMC sampling chains may not have completely traversed all features of the posterior distribution and that more iterations are required to ensure the distribution has been accurately represented.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;Autocorrelation&lt;/em&gt; plot for each parameter illustrate the degree of correlation between MCMC samples separated by different lags. For example, a lag of &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt; represents the degree of correlation between each MCMC sample and itself (obviously this will be a correlation of &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt;). A lag of &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt; represents the degree of correlation between each MCMC sample and the next sample along the chain and so on. In order to be able to generate unbiased estimates of parameters, the MCMC samples should be independent (uncorrelated).&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;Potential scale reduction factor&lt;/em&gt; (Rhat) statistic for each parameter provides a measure of sampling efficiency/effectiveness. Ideally, all values should be less than &lt;span class=&#34;math inline&#34;&gt;\(1.05\)&lt;/span&gt;. If there are values of &lt;span class=&#34;math inline&#34;&gt;\(1.05\)&lt;/span&gt; or greater it suggests that the sampler was not very efficient or effective. Not only does this mean that the sampler was potentially slower than it could have been but, more importantly, it could indicate that the sampler spent time sampling in a region of the likelihood that is less informative. Such a situation can arise from either a misspecified model or overly vague priors that permit sampling in otherwise nonscence parameter space.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Prior to examining the summaries, we should have explored the convergence diagnostics. We use the package &lt;code&gt;mcmcplots&lt;/code&gt; to obtain density and trace plots for the effects model as an example.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(mcmcplots)
+&amp;gt; s = as.array(data.rstan)
+&amp;gt; mcmc &amp;lt;- do.call(mcmc.list, plyr:::alply(s[, , -(length(s[1, 1, ]))], 2, as.mcmc))
+&amp;gt; denplot(mcmc, parms = c(&amp;quot;beta0&amp;quot;,&amp;quot;beta&amp;quot;,&amp;quot;cbeta0&amp;quot;,&amp;quot;sigma&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/simple-linear-regression-stan/2020-02-01-simple-linear-regression-stan_files/figure-html/mcmc_diag-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; traplot(mcmc, parms = c(&amp;quot;beta0&amp;quot;,&amp;quot;beta&amp;quot;,&amp;quot;cbeta0&amp;quot;,&amp;quot;sigma&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/simple-linear-regression-stan/2020-02-01-simple-linear-regression-stan_files/figure-html/mcmc_diag-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;These plots show no evidence that the chains have not reasonably traversed the entire multidimensional parameter space. We can also look at just the density plot computed from the &lt;code&gt;bayesplot&lt;/code&gt; package.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(bayesplot)
+&amp;gt; mcmc_dens(as.array(data.rstan))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/simple-linear-regression-stan/2020-02-01-simple-linear-regression-stan_files/figure-html/mcmc_diag2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Density plots sugggest mean or median would be appropriate to describe the fixed posteriors and median is appropriate for the &lt;span class=&#34;math inline&#34;&gt;\(\sigma\)&lt;/span&gt; posterior.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;model-validation&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Model validation&lt;/h1&gt;
+&lt;p&gt;Model validation involves exploring the model diagnostics and fit to ensure that the model is broadly appropriate for the data. As such, exploration of the residuals should be routine. Ideally, a good model should also be able to predict the data used to fit the model.&lt;/p&gt;
+&lt;p&gt;Although residuals can be computed directly within &lt;code&gt;rstan&lt;/code&gt;, we can calculate them manually from the posteriors to be consistent across other approaches.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(ggplot2)
+&amp;gt; mcmc = as.matrix(data.rstan)[, c(&amp;quot;beta0&amp;quot;, &amp;quot;beta[1]&amp;quot;)]
+&amp;gt; # generate a model matrix
+&amp;gt; newdata = data.frame(x = data$x)
+&amp;gt; Xmat = model.matrix(~x, newdata)
+&amp;gt; ## get median parameter estimates
+&amp;gt; coefs = apply(mcmc, 2, median)
+&amp;gt; fit = as.vector(coefs %*% t(Xmat))
+&amp;gt; resid = data$y - fit
+&amp;gt; ggplot() + geom_point(data = NULL, aes(y = resid, x = fit))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/simple-linear-regression-stan/2020-02-01-simple-linear-regression-stan_files/figure-html/mcmc_residuals-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Residuals against predictors&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc = as.matrix(data.rstan)[, c(&amp;quot;beta0&amp;quot;, &amp;quot;beta[1]&amp;quot;)]
+&amp;gt; # generate a model matrix
+&amp;gt; newdata = data.frame(x = data$x)
+&amp;gt; Xmat = model.matrix(~x, newdata)
+&amp;gt; ## get median parameter estimates
+&amp;gt; coefs = apply(mcmc, 2, median)
+&amp;gt; fit = as.vector(coefs %*% t(Xmat))
+&amp;gt; resid = data$y - fit
+&amp;gt; ggplot() + geom_point(data = NULL, aes(y = resid, x = data$x))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/simple-linear-regression-stan/2020-02-01-simple-linear-regression-stan_files/figure-html/mcmc_residuals2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;And now for studentized residuals&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc = as.matrix(data.rstan)[, c(&amp;quot;beta0&amp;quot;, &amp;quot;beta[1]&amp;quot;)]
+&amp;gt; # generate a model matrix
+&amp;gt; newdata = data.frame(x = data$x)
+&amp;gt; Xmat = model.matrix(~x, newdata)
+&amp;gt; ## get median parameter estimates
+&amp;gt; coefs = apply(mcmc, 2, median)
+&amp;gt; fit = as.vector(coefs %*% t(Xmat))
+&amp;gt; resid = data$y - fit
+&amp;gt; sresid = resid/sd(resid)
+&amp;gt; ggplot() + geom_point(data = NULL, aes(y = sresid, x = fit))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/simple-linear-regression-stan/2020-02-01-simple-linear-regression-stan_files/figure-html/mcmc_residuals3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;For this simple model, the studentized residuals yield the same pattern as the raw residuals (or the Pearson residuals for that matter). Lets see how well data simulated from the model reflects the raw data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc = as.matrix(data.rstan)
+&amp;gt; # generate a model matrix
+&amp;gt; Xmat = model.matrix(~x, data)
+&amp;gt; ## get median parameter estimates
+&amp;gt; coefs = mcmc[, c(&amp;quot;beta0&amp;quot;, &amp;quot;beta[1]&amp;quot;)]
+&amp;gt; fit = coefs %*% t(Xmat)
+&amp;gt; ## draw samples from this model
+&amp;gt; yRep = sapply(1:nrow(mcmc), function(i) rnorm(nrow(data), fit[i, ], mcmc[i,
++     &amp;quot;sigma&amp;quot;]))
+&amp;gt; ggplot() + geom_density(data = NULL, aes(x = as.vector(yRep), fill = &amp;quot;Model&amp;quot;),
++     alpha = 0.5) + geom_density(data = data, aes(x = y, fill = &amp;quot;Obs&amp;quot;),
++     alpha = 0.5)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/simple-linear-regression-stan/2020-02-01-simple-linear-regression-stan_files/figure-html/mcmc_rep-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;parameter-estimates&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Parameter estimates&lt;/h1&gt;
+&lt;p&gt;Although all parameters in a Bayesian analysis are considered random and are considered a distribution, rarely would it be useful to present tables of all the samples from each distribution. On the other hand, plots of the posterior distributions have some use. Nevertheless, most workers prefer to present simple statistical summaries of the posteriors. Popular choices include the median (or mean) and &lt;span class=&#34;math inline&#34;&gt;\(95\)&lt;/span&gt;% credibility intervals.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; summary(data.rstan)
+$summary
+              mean     se_mean        sd       2.5%        25%        50%
+beta[1]  -1.386241 0.005409925 0.2628701  -1.928032  -1.556143  -1.390692
+cbeta0   28.526455 0.025241285 1.2563021  26.053580  27.679148  28.517154
+sigma     4.938850 0.022620333 0.9747690   3.433777   4.255653   4.800261
+beta0    40.309502 0.051054981 2.5104697  35.305689  38.660487  40.321813
+lp__    -32.392865 0.038016453 1.2930877 -35.617366 -32.976932 -32.063282
+               75%       97.5%    n_eff      Rhat
+beta[1]  -1.216324  -0.8695824 2361.021 1.0010917
+cbeta0   29.358476  31.0250363 2477.224 1.0000293
+sigma     5.472441   7.1969472 1856.972 1.0020160
+beta0    41.901624  45.2722391 2417.874 0.9999759
+lp__    -31.431890 -30.9164925 1156.945 1.0014468
+
+$c_summary
+, , chains = chain:1
+
+         stats
+parameter       mean        sd       2.5%        25%        50%        75%
+  beta[1]  -1.395354 0.2663176  -1.938168  -1.570786  -1.397259  -1.224694
+  cbeta0   28.499907 1.2671111  25.965301  27.665662  28.499904  29.339459
+  sigma     4.974297 1.0354718   3.403207   4.248213   4.814835   5.545663
+  beta0    40.360414 2.4961956  35.294178  38.744797  40.418903  41.921210
+  lp__    -32.448925 1.3633114 -35.893989 -33.121738 -32.073215 -31.438407
+         stats
+parameter       97.5%
+  beta[1]  -0.8701744
+  cbeta0   31.0552336
+  sigma     7.3827875
+  beta0    45.2489270
+  lp__    -30.9157752
+
+, , chains = chain:2
+
+         stats
+parameter       mean        sd       2.5%        25%        50%        75%
+  beta[1]  -1.377128 0.2591452  -1.911379  -1.544377  -1.385973  -1.203797
+  cbeta0   28.553004 1.2452556  26.163699  27.717229  28.540569  29.378535
+  sigma     4.903404 0.9089921   3.457094   4.261745   4.785809   5.423194
+  beta0    40.258590 2.5244684  35.319104  38.595264  40.250020  41.864964
+  lp__    -32.336805 1.2167003 -35.405972 -32.883087 -32.042686 -31.424106
+         stats
+parameter       97.5%
+  beta[1]  -0.8699495
+  cbeta0   31.0050930
+  sigma     7.0778361
+  beta0    45.2803661
+  lp__    -30.9173256
+&amp;gt; 
+&amp;gt; # OR
+&amp;gt; library(broom)
+&amp;gt; tidyMCMC(data.rstan, conf.int = TRUE, conf.method = &amp;quot;HPDinterval&amp;quot;, rhat = TRUE, ess = TRUE)
+# A tibble: 4 x 7
+  term    estimate std.error conf.low conf.high  rhat   ess
+  &amp;lt;chr&amp;gt;      &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt; &amp;lt;dbl&amp;gt; &amp;lt;int&amp;gt;
+1 beta[1]    -1.39     0.263    -1.90    -0.856 1.00   2361
+2 cbeta0     28.5      1.26     26.2     31.1   1.00   2477
+3 sigma       4.94     0.975     3.31     6.96  1.00   1857
+4 beta0      40.3      2.51     35.3     45.2   1.000  2418&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;A one unit increase in &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt; is associated with a &lt;span class=&#34;math inline&#34;&gt;\(-1.39\)&lt;/span&gt; change in &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;. That is, &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; declines at a rate of &lt;span class=&#34;math inline&#34;&gt;\(-1.39\)&lt;/span&gt; per unit increase in &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt;. The &lt;span class=&#34;math inline&#34;&gt;\(95\)&lt;/span&gt;% confidence interval for the slope does not overlap with &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt; implying a significant effect of &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt; on &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;. While workers attempt to become comfortable with a new statistical framework, it is only natural that they like to evaluate and comprehend new structures and output alongside more familiar concepts. One way to facilitate this is via Bayesian p-values that are somewhat analogous to the frequentist p-values for investigating the hypothesis that a parameter is equal to zero.&lt;/p&gt;
+&lt;p&gt;Also note that since our &lt;code&gt;STAN&lt;/code&gt; model incorporated predictor centering, we have estimates of the intercept based on both centered (&lt;code&gt;cbeta0&lt;/code&gt;) and uncentered data (&lt;code&gt;beta0&lt;/code&gt;). Since the intercept from uncentered data is beyond the domain of our sampling data it has very little interpretability. However, the intercept based on centered data can be interpreted as the estimate of the response at the mean predictor (in this case &lt;span class=&#34;math inline&#34;&gt;\(28.5\)&lt;/span&gt;).&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmcpvalue &amp;lt;- function(samp) {
++     ## elementary version that creates an empirical p-value for the
++     ## hypothesis that the columns of samp have mean zero versus a general
++     ## multivariate distribution with elliptical contours.
++ 
++     ## differences from the mean standardized by the observed
++     ## variance-covariance factor
++ 
++     ## Note, I put in the bit for single terms
++     if (length(dim(samp)) == 0) {
++         std &amp;lt;- backsolve(chol(var(samp)), cbind(0, t(samp)) - mean(samp),
++             transpose = TRUE)
++         sqdist &amp;lt;- colSums(std * std)
++         sum(sqdist[-1] &amp;gt; sqdist[1])/length(samp)
++     } else {
++         std &amp;lt;- backsolve(chol(var(samp)), cbind(0, t(samp)) - colMeans(samp),
++             transpose = TRUE)
++         sqdist &amp;lt;- colSums(std * std)
++         sum(sqdist[-1] &amp;gt; sqdist[1])/nrow(samp)
++     }
++ 
++ }
+&amp;gt; ## since values are less than zero
+&amp;gt; mcmcpvalue(as.matrix(data.rstan)[, c(&amp;quot;beta[1]&amp;quot;)])
+[1] 0&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;With a p-value of essentially &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt;, we would conclude that there is almost no evidence that the slope was likely to be equal to zero, suggesting there is a relationship.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;graphical-summaries&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Graphical summaries&lt;/h1&gt;
+&lt;p&gt;A nice graphic is often a great accompaniment to a statistical analysis. Although there are no fixed assumptions associated with graphing (in contrast to statistical analyses), we often want the graphical summaries to reflect the associated statistical analyses. After all, the sample is just one perspective on the population(s). What we are more interested in is being able to estimate and depict likely population parameters/trends. Thus, whilst we could easily provide a plot displaying the raw data along with simple measures of location and spread, arguably, we should use estimates that reflect the fitted model. In this case, it would be appropriate to plot the credibility interval associated with each group. We do this by loading functions in the package &lt;code&gt;dplyr&lt;/code&gt;.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(dplyr)
+&amp;gt; mcmc = as.matrix(data.rstan)
+&amp;gt; ## Calculate the fitted values
+&amp;gt; newdata = data.frame(x = seq(min(data$x, na.rm = TRUE), max(data$x, na.rm = TRUE),
++     len = 1000))
+&amp;gt; Xmat = model.matrix(~x, newdata)
+&amp;gt; coefs = mcmc[, c(&amp;quot;beta0&amp;quot;, &amp;quot;beta[1]&amp;quot;)]
+&amp;gt; fit = coefs %*% t(Xmat)
+&amp;gt; newdata = newdata %&amp;gt;% cbind(tidyMCMC(fit, conf.int = TRUE, conf.method = &amp;quot;HPDinterval&amp;quot;))
+&amp;gt; ggplot(newdata, aes(y = estimate, x = x)) + geom_line() + geom_ribbon(aes(ymin = conf.low,
++     ymax = conf.high), fill = &amp;quot;blue&amp;quot;, alpha = 0.3) + scale_y_continuous(&amp;quot;Y&amp;quot;) +
++     scale_x_continuous(&amp;quot;X&amp;quot;) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/simple-linear-regression-stan/2020-02-01-simple-linear-regression-stan_files/figure-html/mcmc_post1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;If you wanted to represent sample data on the figure in such a simple example (single predictor) we could simply over- (or under-) lay the raw data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; ggplot(newdata, aes(y = estimate, x = x)) + geom_point(data = data, aes(y = y,
++     x = x), color = &amp;quot;gray&amp;quot;) + geom_line() + geom_ribbon(aes(ymin = conf.low,
++     ymax = conf.high), fill = &amp;quot;blue&amp;quot;, alpha = 0.3) + scale_y_continuous(&amp;quot;Y&amp;quot;) +
++     scale_x_continuous(&amp;quot;X&amp;quot;) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/simple-linear-regression-stan/2020-02-01-simple-linear-regression-stan_files/figure-html/mcmc_post2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;A more general solution would be to add the partial residuals to the figure. Partial residuals are the fitted values plus the residuals. In this simple case, that equates to exactly the same as the raw observations since &lt;span class=&#34;math inline&#34;&gt;\(\text{resid}=\text{obs}−\text{fitted}\)&lt;/span&gt; and the fitted values depend only on the single predictor we are interested in.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; ## Calculate partial residuals fitted values
+&amp;gt; fdata = rdata = data
+&amp;gt; fMat = rMat = model.matrix(~x, fdata)
+&amp;gt; fit = as.vector(apply(coefs, 2, median) %*% t(fMat))
+&amp;gt; resid = as.vector(data$y - apply(coefs, 2, median) %*% t(rMat))
+&amp;gt; rdata = rdata %&amp;gt;% mutate(partial.resid = resid + fit)
+&amp;gt; ggplot(newdata, aes(y = estimate, x = x)) + geom_point(data = rdata, aes(y = partial.resid),
++     color = &amp;quot;gray&amp;quot;) + geom_line() + geom_ribbon(aes(ymin = conf.low, ymax = conf.high),
++     fill = &amp;quot;blue&amp;quot;, alpha = 0.3) + scale_y_continuous(&amp;quot;Y&amp;quot;) + scale_x_continuous(&amp;quot;X&amp;quot;) +
++     theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/simple-linear-regression-stan/2020-02-01-simple-linear-regression-stan_files/figure-html/mcmc_post3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;effect-sizes&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Effect sizes&lt;/h1&gt;
+&lt;p&gt;Lets explore a range of effect sizes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;Raw effect size&lt;/em&gt; between the largest and smallest &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;Cohen’s D&lt;/em&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;Percentage change&lt;/em&gt; between the largest and smallest &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;Fractional change&lt;/em&gt; between the largest and smallest &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;Probability&lt;/em&gt; that a change in &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt; is associated with greater than a &lt;span class=&#34;math inline&#34;&gt;\(25\)&lt;/span&gt;% decline in &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Clearly, in order to explore this inference, we must first express the change in &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; as a percentage. This in turn requires us to calculate start and end points from which to calculate the magnitude of the effect (amount of decline in &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;) as well as the percentage decline. Hence, we start by predicting the distribution of &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; at the lowest and highest values of &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt;.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc = as.matrix(data.rstan)
+&amp;gt; newdata = data.frame(x = c(min(data$x, na.rm = TRUE), max(data$x, na.rm = TRUE)))
+&amp;gt; Xmat = model.matrix(~x, newdata)
+&amp;gt; coefs = mcmc[, c(&amp;quot;beta0&amp;quot;, &amp;quot;beta[1]&amp;quot;)]
+&amp;gt; fit = coefs %*% t(Xmat)
+&amp;gt; ## Raw effect size
+&amp;gt; (RES = tidyMCMC(as.mcmc(fit[, 2] - fit[, 1]), conf.int = TRUE, conf.method = &amp;quot;HPDinterval&amp;quot;))
+# A tibble: 1 x 5
+  term  estimate std.error conf.low conf.high
+  &amp;lt;chr&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;
+1 var1     -20.8      3.94    -28.5     -12.8
+&amp;gt; ## Cohen&amp;#39;s D
+&amp;gt; cohenD = (fit[, 2] - fit[, 1])/mcmc[, &amp;quot;sigma&amp;quot;]
+&amp;gt; (cohenDES = tidyMCMC(as.mcmc(cohenD), conf.int = TRUE, conf.method = &amp;quot;HPDinterval&amp;quot;))
+# A tibble: 1 x 5
+  term  estimate std.error conf.low conf.high
+  &amp;lt;chr&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;
+1 var1     -4.37      1.14    -6.68     -2.27
+&amp;gt; # Percentage change (relative to Group A)
+&amp;gt; ESp = 100 * (fit[, 2] - fit[, 1])/fit[, 1]
+&amp;gt; (PES = tidyMCMC(as.mcmc(ESp), conf.int = TRUE, conf.method = &amp;quot;HPDinterval&amp;quot;))
+# A tibble: 1 x 5
+  term  estimate std.error conf.low conf.high
+  &amp;lt;chr&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;
+1 var1     -53.1      7.81    -68.5     -37.5
+&amp;gt; # Probability that the effect is greater than 25% (a decline of &amp;gt;25%)
+&amp;gt; sum(-1 * ESp &amp;gt; 25)/length(ESp)
+[1] 0.998
+&amp;gt; ## fractional change
+&amp;gt; fit = fit[fit[, 2] &amp;gt; 0, ]
+&amp;gt; (FES = tidyMCMC(as.mcmc(fit[, 2]/fit[, 1]), conf.int = TRUE, conf.method = &amp;quot;HPDinterval&amp;quot;))
+# A tibble: 1 x 5
+  term  estimate std.error conf.low conf.high
+  &amp;lt;chr&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;
+1 var1     0.469    0.0781    0.315     0.625&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Conclusions&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;On average, &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; declines by &lt;span class=&#34;math inline&#34;&gt;\(-20.8\)&lt;/span&gt; over the observed range of &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt;. We are &lt;span class=&#34;math inline&#34;&gt;\(95\)&lt;/span&gt;% confident that the decline is between &lt;span class=&#34;math inline&#34;&gt;\(-28.5\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(-12.8\)&lt;/span&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;The Cohen’s D associated with a change over the observed range of &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt; is &lt;span class=&#34;math inline&#34;&gt;\(-4.37\)&lt;/span&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;On average, &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; declines by &lt;span class=&#34;math inline&#34;&gt;\(-53.1\)&lt;/span&gt;% over the observed range of &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt;. We are &lt;span class=&#34;math inline&#34;&gt;\(95\)&lt;/span&gt;% confident that the decline is between &lt;span class=&#34;math inline&#34;&gt;\(-68.5\)&lt;/span&gt;% and &lt;span class=&#34;math inline&#34;&gt;\(-37.5\)&lt;/span&gt;%.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;The probability that &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; declines by more than &lt;span class=&#34;math inline&#34;&gt;\(25\)&lt;/span&gt;% over the observed range of &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt; is &lt;span class=&#34;math inline&#34;&gt;\(0.998\)&lt;/span&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;On average, &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; declines by a factor of &lt;span class=&#34;math inline&#34;&gt;\(0.469\)&lt;/span&gt;% over the observed range of &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt;. We are &lt;span class=&#34;math inline&#34;&gt;\(95\)&lt;/span&gt;% confident that the decline is between a factor of &lt;span class=&#34;math inline&#34;&gt;\(0.315\)&lt;/span&gt;% and &lt;span class=&#34;math inline&#34;&gt;\(0.625\)&lt;/span&gt;%.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div id=&#34;finite-population-standard-deviations&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Finite population standard deviations&lt;/h1&gt;
+&lt;p&gt;Variance components, the amount of added variance attributed to each influence, are traditionally estimated for so called random effects. These are the effects for which the levels employed in the design are randomly selected to represent a broader range of possible levels. For such effects, effect sizes (differences between each level and a reference level) are of little value. Instead, the “importance” of the variables are measured in units of variance components. On the other hand, regular variance components for fixed factors (those whose measured levels represent the only levels of interest) are not logical - since variance components estimate variance as if the levels are randomly selected from a larger population. Nevertheless, in order to compare and contrast the scale of variability of both fixed and random factors, it is necessary to measure both on the same scale (sample or population based variance).&lt;/p&gt;
+&lt;p&gt;Finite-population variance components assume that the levels of all factors (fixed and random) in the design are all the possible levels available (&lt;span class=&#34;citation&#34;&gt;Gelman and others (2005)&lt;/span&gt;). In other words, they are assumed to represent finite populations of levels. Sample (rather than population) statistics are then used to calculate these finite-population variances (or standard deviations). Since standard deviation (and variance) are bound at zero, standard deviation posteriors are typically non-normal. Consequently, medians and HPD intervals are more robust estimates.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# A tibble: 2 x 5
+  term     estimate std.error conf.low conf.high
+  &amp;lt;chr&amp;gt;       &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;
+1 sd.x         6.60     1.25      4.07      9.04
+2 sd.resid     4.70     0.243     4.54      5.18
+# A tibble: 2 x 5
+  term     estimate std.error conf.low conf.high
+  &amp;lt;chr&amp;gt;       &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;
+1 sd.x         59.3      5.30     47.8      63.9
+2 sd.resid     40.7      5.30     36.1      52.2&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/simple-linear-regression-stan/2020-02-01-simple-linear-regression-stan_files/figure-html/effects_modelv4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Approximately &lt;span class=&#34;math inline&#34;&gt;\(59.3\)&lt;/span&gt;% of the total finite population standard deviation is due to &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;r-squared&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;R squared&lt;/h1&gt;
+&lt;p&gt;In a frequentist context, the &lt;span class=&#34;math inline&#34;&gt;\(R^2\)&lt;/span&gt; value is seen as a useful indicator of goodness of fit. Whilst it has long been acknowledged that this measure is not appropriate for comparing models (for such purposes information criterion such as AIC are more appropriate), it is nevertheless useful for estimating the amount (percent) of variance explained by the model. In a frequentist context, &lt;span class=&#34;math inline&#34;&gt;\(R^2\)&lt;/span&gt; is calculated as the variance in predicted values divided by the variance in the observed (response) values. Unfortunately, this classical formulation does not translate simply into a Bayesian context since the equivalently calculated numerator can be larger than the an equivalently calculated denominator - thereby resulting in an &lt;span class=&#34;math inline&#34;&gt;\(R^2\)&lt;/span&gt; greater than &lt;span class=&#34;math inline&#34;&gt;\(100\)&lt;/span&gt;%. &lt;span class=&#34;citation&#34;&gt;Gelman et al. (2019)&lt;/span&gt; proposed an alternative formulation in which the denominator comprises the sum of the explained variance and the variance of the residuals.&lt;/p&gt;
+&lt;p&gt;So in the standard regression model notation of:&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ y_i \sim \text{Normal}(\boldsymbol X \boldsymbol \beta, \sigma),\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;the &lt;span class=&#34;math inline&#34;&gt;\(R^2\)&lt;/span&gt; could be formulated as&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ R^2 = \frac{\sigma^2_f}{\sigma^2_f + \sigma^2_e},\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2_f=\text{var}(\boldsymbol X \boldsymbol \beta)\)&lt;/span&gt;, and for normal models &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2_e=\text{var}(y-\boldsymbol X \boldsymbol \beta)\)&lt;/span&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc &amp;lt;- as.matrix(data.rstan)
+&amp;gt; Xmat = model.matrix(~x, data)
+&amp;gt; coefs = mcmc[, c(&amp;quot;beta0&amp;quot;, &amp;quot;beta[1]&amp;quot;)]
+&amp;gt; fit = coefs %*% t(Xmat)
+&amp;gt; resid = sweep(fit, 2, data$y, &amp;quot;-&amp;quot;)
+&amp;gt; var_f = apply(fit, 1, var)
+&amp;gt; var_e = apply(resid, 1, var)
+&amp;gt; R2 = var_f/(var_f + var_e)
+&amp;gt; tidyMCMC(as.mcmc(R2), conf.int = TRUE, conf.method = &amp;quot;HPDinterval&amp;quot;)
+# A tibble: 1 x 5
+  term  estimate std.error conf.low conf.high
+  &amp;lt;chr&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;
+1 var1     0.652    0.0982    0.456     0.758
+&amp;gt; 
+&amp;gt; # for comparison with frequentist
+&amp;gt; summary(lm(y ~ x, data))
+
+Call:
+lm(formula = y ~ x, data = data)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-7.5427 -3.3510 -0.3309  2.0411  7.5791 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&amp;gt;|t|)    
+(Intercept)  40.3328     2.4619  16.382 1.58e-10 ***
+x            -1.3894     0.2546  -5.457 8.45e-05 ***
+---
+Signif. codes:  0 &amp;#39;***&amp;#39; 0.001 &amp;#39;**&amp;#39; 0.01 &amp;#39;*&amp;#39; 0.05 &amp;#39;.&amp;#39; 0.1 &amp;#39; &amp;#39; 1
+
+Residual standard error: 4.695 on 14 degrees of freedom
+Multiple R-squared:  0.6802,    Adjusted R-squared:  0.6574 
+F-statistic: 29.78 on 1 and 14 DF,  p-value: 8.448e-05&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
+&lt;h1&gt;References&lt;/h1&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references hanging-indent&#34;&gt;
+&lt;div id=&#34;ref-gelman2019r&#34;&gt;
+&lt;p&gt;Gelman, Andrew, Ben Goodrich, Jonah Gabry, and Aki Vehtari. 2019. “R-Squared for Bayesian Regression Models.” &lt;em&gt;The American Statistician&lt;/em&gt; 73 (3): 307–9.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-gelman2015stan&#34;&gt;
+&lt;p&gt;Gelman, Andrew, Daniel Lee, and Jiqiang Guo. 2015. “Stan: A Probabilistic Programming Language for Bayesian Inference and Optimization.” &lt;em&gt;Journal of Educational and Behavioral Statistics&lt;/em&gt; 40 (5): 530–43.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-gelman2005analysis&#34;&gt;
+&lt;p&gt;Gelman, Andrew, and others. 2005. “Analysis of Variance—Why It Is More Important Than Ever.” &lt;em&gt;The Annals of Statistics&lt;/em&gt; 33 (1): 1–53.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-rstanpackage&#34;&gt;
+&lt;p&gt;Stan Development Team. 2018. “RStan: The R Interface to Stan.” &lt;a href=&#34;http://mc-stan.org/&#34;&gt;http://mc-stan.org/&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
     
     <item>
       <title>Comparing Two Populations - STAN</title>

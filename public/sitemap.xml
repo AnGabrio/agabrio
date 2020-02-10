@@ -4,7 +4,87 @@
   
   <url>
     <loc>/</loc>
-    <lastmod>2020-02-11T09:00:00+00:00</lastmod>
+    <lastmod>2020-03-01T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/authors/andrea-gabrio/</loc>
+    <lastmod>2020-03-01T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/authors/</loc>
+    <lastmod>2020-03-01T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/jags/</loc>
+    <lastmod>2020-03-01T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/stan/</loc>
+    <lastmod>2020-03-01T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/</loc>
+    <lastmod>2020-03-01T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/jags/</loc>
+    <lastmod>2020-03-01T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/jags/</loc>
+    <lastmod>2020-03-01T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/linear-regression/</loc>
+    <lastmod>2020-03-01T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/linear-regression/</loc>
+    <lastmod>2020-03-01T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/r/</loc>
+    <lastmod>2020-03-01T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/jags/simple-linear-regression-jags/simple-linear-regression-jags/</loc>
+    <lastmod>2020-03-01T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/stan/simple-linear-regression-stan/simple-linear-regression-stan/</loc>
+    <lastmod>2020-03-01T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/stan/</loc>
+    <lastmod>2020-03-01T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/stan/</loc>
+    <lastmod>2020-03-01T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/</loc>
+    <lastmod>2020-03-01T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/tutorials/</loc>
+    <lastmod>2020-03-01T21:13:14-05:00</lastmod>
   </url>
   
   <url>
@@ -28,38 +108,8 @@
   </url>
   
   <url>
-    <loc>/tags/</loc>
-    <lastmod>2020-02-11T09:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/talk/heartcourse2020/</loc>
     <lastmod>2020-02-11T09:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/authors/andrea-gabrio/</loc>
-    <lastmod>2020-02-01T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/authors/</loc>
-    <lastmod>2020-02-01T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/jags/</loc>
-    <lastmod>2020-02-01T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/stan/</loc>
-    <lastmod>2020-02-01T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/</loc>
-    <lastmod>2020-02-01T21:13:14-05:00</lastmod>
   </url>
   
   <url>
@@ -73,42 +123,12 @@
   </url>
   
   <url>
-    <loc>/categories/jags/</loc>
-    <lastmod>2020-02-01T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/jags/</loc>
-    <lastmod>2020-02-01T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/categories/one-sample-t-test/</loc>
     <lastmod>2020-02-01T21:13:14-05:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/population-differences/</loc>
-    <lastmod>2020-02-01T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/r/</loc>
-    <lastmod>2020-02-01T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/stan/</loc>
-    <lastmod>2020-02-01T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/stan/</loc>
-    <lastmod>2020-02-01T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/tutorials/</loc>
     <lastmod>2020-02-01T21:13:14-05:00</lastmod>
   </url>
   
@@ -344,11 +364,6 @@
   
   <url>
     <loc>/tags/introduction/</loc>
-    <lastmod>2019-07-03T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/linear-regression/</loc>
     <lastmod>2019-07-03T21:13:14-05:00</lastmod>
   </url>
   
