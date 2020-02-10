@@ -1,7 +1,7 @@
 ---
 title: "Simple Linear Regression - STAN"
 author: "Andrea Gabrio"
-date: 2020-03-01T21:13:14-05:00
+date: 2020-02-02T21:13:14-05:00
 categories: ["R", "linear regression", "STAN"]
 tags: ["tutorials", "STAN", "linear regression"]
 authors: ["Andrea Gabrio"]

@@ -6,7 +6,7 @@
     <description>Recent content in linear regression on Andrea Gabrio</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 01 Mar 2020 21:13:14 -0500</lastBuildDate>
+    <lastBuildDate>Sun, 02 Feb 2020 21:13:14 -0500</lastBuildDate>
     
 	    <atom:link href="/categories/linear-regression/index.xml" rel="self" type="application/rss+xml" />
     
@@ -14,7 +14,7 @@
     <item>
       <title>Simple Linear Regression - JAGS</title>
       <link>/jags/simple-linear-regression-jags/simple-linear-regression-jags/</link>
-      <pubDate>Sun, 01 Mar 2020 21:13:14 -0500</pubDate>
+      <pubDate>Sun, 02 Feb 2020 21:13:14 -0500</pubDate>
       
       <guid>/jags/simple-linear-regression-jags/simple-linear-regression-jags/</guid>
       <description>
@@ -578,7 +578,7 @@ F-statistic: 29.78 on 1 and 14 DF,  p-value: 8.448e-05&lt;/code&gt;&lt;/pre&gt;
     <item>
       <title>Simple Linear Regression - STAN</title>
       <link>/stan/simple-linear-regression-stan/simple-linear-regression-stan/</link>
-      <pubDate>Sun, 01 Mar 2020 21:13:14 -0500</pubDate>
+      <pubDate>Sun, 02 Feb 2020 21:13:14 -0500</pubDate>
       
       <guid>/stan/simple-linear-regression-stan/simple-linear-regression-stan/</guid>
       <description>
@@ -885,8 +885,8 @@ Chain 1: Iteration: 2000 / 2500 [ 80%]  (Sampling)
 Chain 1: Iteration: 2250 / 2500 [ 90%]  (Sampling)
 Chain 1: Iteration: 2500 / 2500 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 0.027 seconds (Warm-up)
-Chain 1:                0.036 seconds (Sampling)
+Chain 1:  Elapsed Time: 0.028 seconds (Warm-up)
+Chain 1:                0.035 seconds (Sampling)
 Chain 1:                0.063 seconds (Total)
 Chain 1: 
 
