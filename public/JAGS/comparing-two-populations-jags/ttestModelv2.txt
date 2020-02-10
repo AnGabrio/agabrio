@@ -7,7 +7,7 @@
   }
  
   #Priors
-  beta0 ~ dnorm(0,1.0E-06)
+  beta0 ~ dnorm(0.001,1.0E-06)
   beta[1] <- 0
   beta[2] ~ dnorm(0,1.0E-06)
   tau ~ dgamma(0.1,0.1)
@@ -18,7 +18,7 @@
   Group.means <-beta0+beta  
  
   cohenD <- beta[2]/sigma
-  ES <- 100*beta[2]/0.00001
+  ES <- 100*beta[2]/beta0
   p10 <- step((-1*ES) - 10)
  }
  

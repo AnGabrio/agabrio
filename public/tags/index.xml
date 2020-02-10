@@ -57,6 +57,15 @@
     </item>
     
     <item>
+      <title>STAN</title>
+      <link>/tags/stan/</link>
+      <pubDate>Sat, 01 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/stan/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>tutorials</title>
       <link>/tags/tutorials/</link>
       <pubDate>Sat, 01 Feb 2020 21:13:14 -0500</pubDate>
@@ -120,7 +129,7 @@
     </item>
     
     <item>
-      <title>Missing Data</title>
+      <title>Missing data</title>
       <link>/tags/missing-data/</link>
       <pubDate>Tue, 28 Jan 2020 11:15:00 +0000</pubDate>
       
@@ -183,15 +192,6 @@
     </item>
     
     <item>
-      <title>STAN</title>
-      <link>/tags/stan/</link>
-      <pubDate>Wed, 03 Jul 2019 21:13:14 -0500</pubDate>
-      
-      <guid>/tags/stan/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>introduction</title>
       <link>/tags/introduction/</link>
       <pubDate>Wed, 03 Jul 2019 21:13:14 -0500</pubDate>
@@ -228,7 +228,7 @@
     </item>
     
     <item>
-      <title>Bayesian statistics</title>
+      <title>Bayesian Statistics</title>
       <link>/tags/bayesian-statistics/</link>
       <pubDate>Tue, 11 Jun 2019 10:00:00 +0000</pubDate>
       

@@ -52,7 +52,7 @@ The `BUGS/JAGS/STAN` languages and algorithms are very powerful and flexible. Ho
 
 * The list of model parameters and derivatives to monitor (and return the posterior distributions of)
 
-This tutorial will demonstrate how to fit models in `JAGS` (@plummer2004jags) using the package `R2jags`(@su2015package) as interface, which also requires to load some other packages.
+This tutorial will demonstrate how to fit models in `JAGS` (@plummer2004jags) using the package `R2jags` (@su2015package) as interface, which also requires to load some other packages.
 
 # Data generation
 
@@ -89,7 +89,7 @@ boxplot(y ~ x, data)
 
 A *t-test* is essentially just a simple regression model in which the categorical predictor is represented by a binary variable in which one level is coded as $0$ and the other $1$. For the model itself, the observed response $y_i$ are assumed to be drawn from a normal distribution with a given mean $\mu$ and standard deviation $\sigma$. The expected values are themselves determined by the linear predictor $\mu_i=\beta_0+\beta_1x_i$, where $\beta_0$ represents the mean of the first treatment group and $\beta_1$ represents the difference between the mean of the first group and the mean of the second group (the effect of interest).
 
-MCMC sampling requires priors on all parameters. We will employ weakly informative priors. Specifying 'uninformative' priors is always a bit of a balancing act. If the priors are too vague (wide) the MCMC sampler can wander off into nonscence areas of likelihood rather than concentrate around areas of highest likelihood (desired when wanting the outcomes to be largely driven by the data). On the other hand, if the priors are too strong, they may have an influence on the parameters. In such a simple model, this balance is very forgiving - it is for more complex models that prior choice becomes more important. For this simple model, we will go with zero-centered Gaussian (normal) priors with relatively large standard deviations ($1000$) for both the intercept and the treatment effect and a wide half-cauchy (scale=$25$) for the standard deviation (@gelman2006prior).
+MCMC sampling requires priors on all parameters. We will employ weakly informative priors. Specifying "uninformative" priors is always a bit of a balancing act. If the priors are too vague (wide) the MCMC sampler can wander off into nonscence areas of likelihood rather than concentrate around areas of highest likelihood (desired when wanting the outcomes to be largely driven by the data). On the other hand, if the priors are too strong, they may have an influence on the parameters. In such a simple model, this balance is very forgiving - it is for more complex models that prior choice becomes more important. For this simple model, we will go with zero-centered Gaussian (normal) priors with relatively large standard deviations ($1000$) for both the intercept and the treatment effect and a wide half-cauchy (scale=$25$) for the standard deviation (@gelman2006prior).
 
 \[y_i \sim \text{Normal}(\mu_i, \sigma),  \]
 
@@ -103,11 +103,11 @@ for $j=0,1$.
 
 ## Fitting the model in JAGS
 
-Broadly, there are two ways of parameterizing (expressing the unknown (to be estimated) components of a model) a model. Either we can estimate the means of each group (Means parameterization) or we can estimate the mean of one group and the difference between this group and the other group(s) (Effects parameterization). The latter is commonly used for frequentist null hypothesis testing as its parameters are more consistent with the null hypothesis of interest (that the difference between the two groups equals zero).
+Broadly, there are two ways of parameterising (expressing the unknown (to be estimated) components of a model) a model. Either we can estimate the means of each group (*Means parameterisation*) or we can estimate the mean of one group and the difference between this group and the other group(s) (*Effects parameterisation*). The latter is commonly used for frequentist null hypothesis testing as its parameters are more consistent with the null hypothesis of interest (that the difference between the two groups equals zero).
 
 1. **Effects parameterisation**
 
-\[ y_i = \beta_0 + \beta_{j(i)}x_i + \epsilon_i, \;\;\; \text{with} \;\;\; \epsilon_i \sim \text{Normal}(0,\sigma).  \]
+\[ y_i = \beta_0 + \beta_{j}x_i + \epsilon_i, \;\;\; \text{with} \;\;\; \epsilon_i \sim \text{Normal}(0,\sigma).  \]
 
 Each $y_i$ is modelled by an intercept $\beta_0$ (mean of group A) plus a difference parameter $\beta_j$ (difference between mean of group A and group B) multiplied by an indicator of which group the observation came from ($x_i$), plus a residual drawn from a normal distribution with mean $0$ and standard deviation $\sigma$. Actually, there are as many $\beta_j$ parameters as there are groups but one of them (typically the first) is set to be equal to zero (to avoid over-parameterization). Expected values of $y$ are modelled assuming they are drawn from a normal distribution whose mean is determined by a linear combination of effect parameters and whose variance is defined by the degree of variability in this mean. The parameters are: $\beta_0$, $\beta_1$ and $\sigma$.
 
@@ -117,7 +117,7 @@ Each $y_i$ is modelled by an intercept $\beta_0$ (mean of group A) plus a differ
 
 Each $y_i$ is modelled as the mean $\beta_j$ of each group ($j=1,2$) plus a residual drawn from a normal distribution with a mean of zero and a standard deviation of $\sigma$. Actually, $\boldsymbol \beta$ is a set of $j$ coefficients corresponding to the $j$ dummy coded factor levels. Expected values of $y$ are modelled assuming they are drawn from a normal distribution whose mean is determined by a linear combination of means parameters and whose variance is defined by the degree of variability in this mean. The parameters are: $\beta_1$, $\beta_2$ and $\sigma$.
 
-In `JAGS`, distributions are defined by their precision $\tau$ rather than their standard deviation $\sigma$. Precision is just the inverse of variance ($\tau=\frac{1}{\sigma^2}$) and are chosen as they permit the gamma distribution to be used as the conjugate prior of the variance of a normal distribution. Bayesian analyses require that priors be specified for each of the parameters. We will define vague (non-informative) priors for each of the parameters such that the posterior distributions are almost entirely influenced by the likelihood (and thus the data). Hence, appropriate (conjugate) priors for the effects parameterization could be:
+In `JAGS`, distributions are defined by their precision $\tau$ rather than their standard deviation $\sigma$. Precision is just the inverse of variance ($\tau=\frac{1}{\sigma^2}$) and are chosen as they permit the gamma distribution to be used as the conjugate prior of the variance of a normal distribution. Bayesian analyses require that priors are specified for all the parameters. We will define vague (non-informative) priors for each of the parameters such that the posterior distributions are almost entirely influenced by the likelihood (and thus the data). Hence, appropriate (conjugate) priors for the effects parameterisation could be:
 
 * $\boldsymbol \beta \sim \text{Normal}(0,1.0\text{E-}6)$ - a very flat normal distribution centered around zero. Note, $1.0\text{E-}6$ is scientific notation for $0.000001$.
 
@@ -129,9 +129,9 @@ The `JAGS` language very closely matches the above model and prior definitions -
 
 * deterministic nodes - those that appear on the left hand side of `<-`
 
-* $R$-like for loops and functions to transform and summarize data 
+* $R$-like for loops and functions to transform and summarise the data 
 
-That said, BUGS is a declarative language, which means: the order with which statements appear in the model definition are not important;nodes should not be defined more than once (you cannot change a value).We are now in a good position to define the model (Likelihood function and prior distributions). 
+That said, `JAGS` is based on a declarative language, which means: the order with which statements appear in the model definition are not important; nodes should not be defined more than once (you cannot change a value).We are now in a good position to define the model (Likelihood function and prior distributions). 
 
 **Effects Parameterisation**
 
@@ -228,7 +228,7 @@ Start the `JAGS` model (check the model, load data into the model, specify the n
 library(R2jags)
 ```
 
-When using the `jags` function (`R2jags` package), it is not necessary to provide initial values. However, if they are to be supplied, the inital values list must be a list the same length as the number of chains.
+When using the `jags` function (`R2jags` package), it is not necessary to provide initial values. However, if they are to be supplied, the inital values must be provided as a list of the same length as the number of chains.
 
 **Effects Parameterisation**
 
@@ -266,25 +266,25 @@ print(data.r2jags.means)
 
 * If `inits=NULL` the `jags` function will generate vaguely sensible initial values for each chain based on the data.
 
-*In addition to the mean and quantiles of each of the sample nodes, the `jags` function will calculate.
+* In addition to the mean and quantiles of each of the sample nodes, the `jags` function will calculate.
 
-  * The *effective sample size* for each sample - if `n.eff` for a node is substantially less than the number of iterations, then it suggests poor mixing.
+  1. The *effective sample size* for each sample - if `n.eff` for a node is substantially less than the number of iterations, then it suggests poor mixing.
   
-  * The *Potential scale reduction factor* or `Rhat` values for each sample - these are a convergence diagnostic (values of $1$ indicate full convergence, values greater than $1.01$ are indicative of non-convergence.
+  2. The *Potential scale reduction factor* or `Rhat` values for each sample - these are a convergence diagnostic (values of $1$ indicate full convergence, values greater than $1.01$ are indicative of non-convergence.
   
-  * An *information criteria* (DIC) for model selection.
+  3. An *information criteria* (DIC) for model selection.
 
-The total number samples collected is $4401$. That is, ere are $4401$ samples collected from the multidimensional posterior distribution and thus, $4401$ samples collected from the posterior distributions of each parameter. The effective number of samples column indicates the number of independent samples represented in the total. It is clear that for all parameters the chains were well mixed. 
+The total number samples collected is $46000$. That is, there are $46000$ samples collected from the multidimensional posterior distribution and thus, $46000$ samples collected from the posterior distributions of each parameter. The effective number of samples column indicates the number of independent samples represented in the total. It is clear that for all parameters the chains were well mixed. 
 
 # MCMC diagnostics
 
-In addition to the regular model diagnostic checks (such as residual plots), for Bayesian analyses, it is necessary to explore the characteristics of the MCMC chains and the sampler in general. Recall that the purpose of MCMC sampling is to replicate the posterior distribution of the model likelihood and priors by drawing a known number of samples from this posterior (thereby formulating a probability distribution). This is only reliable if the MCMC samples accurately reflect the posterior. Unfortunately, since we only know the posterior in the most trivial of circumstances, it is necessary to rely on indirect measures of how accurately the MCMC samples are likely to reflect the likelihood. I will breifly outline the most important diagnostics
+In addition to the regular model diagnostic checks (such as residual plots), for Bayesian analyses, it is necessary to explore the characteristics of the MCMC chains and the sampler in general. Recall that the purpose of MCMC sampling is to replicate the posterior distribution of the model likelihood and priors by drawing a known number of samples from this posterior (thereby formulating a probability distribution). This is only reliable if the MCMC samples accurately reflect the posterior. Unfortunately, since we only know the posterior in the most trivial of circumstances, it is necessary to rely on indirect measures of how accurately the MCMC samples are likely to reflect the likelihood. I will briefly outline the most important diagnostics.
 
-* *Traceplots* for each parameter illustrate the MCMC sample values after each successive iteration along the chain. Bad chain mixing (characterized by any sort of pattern) suggests that the MCMC sampling chains may not have completely traversed all features of the posterior distribution and that more iterations are required to ensure the distribution has been accurately represented.
+* *Traceplots* for each parameter illustrate the MCMC sample values after each successive iteration along the chain. Bad chain mixing (characterised by any sort of pattern) suggests that the MCMC sampling chains may not have completely traversed all features of the posterior distribution and that more iterations are required to ensure the distribution has been accurately represented.
 
-* *Autocorrelation* plot for each paramter illustrate the degree of correlation between MCMC samples separated by different lags. For example, a lag of $0$ represents the degree of correlation between each MCMC sample and itself (obviously this will be a correlation of $1$). A lag of $1$ represents the degree of correlation between each MCMC sample and the next sample along the Chain and so on. In order to be able to generate unbiased estimates of parameters, the MCMC samples should be independent (uncorrelated). In the figures below, this would be violated in the top autocorrelation plot and met in the bottom autocorrelation plot.
+* *Autocorrelation* plot for each parameter illustrate the degree of correlation between MCMC samples separated by different lags. For example, a lag of $0$ represents the degree of correlation between each MCMC sample and itself (obviously this will be a correlation of $1$). A lag of $1$ represents the degree of correlation between each MCMC sample and the next sample along the chain and so on. In order to be able to generate unbiased estimates of parameters, the MCMC samples should be independent (uncorrelated).
 
-* *Rhat* statistic for each parameter provides a measure of sampling efficiency/effectiveness. Ideally, all values should be less than 1.05. If there are values of 1.05 or greater it suggests that the sampler was not very efficient or effective. Not only does this mean that the sampler was potentiall slower than it could have been, more importantly, it could indicate that the sampler spent time sampling in a region of the likelihood that is less informative. Such a situation can arise from either a misspecified model or overly vague priors that permit sampling in otherwise nonscence parameter space.
+* *Potential scale reduction factor* (Rhat) statistic for each parameter provides a measure of sampling efficiency/effectiveness. Ideally, all values should be less than $1.05$. If there are values of $1.05$ or greater it suggests that the sampler was not very efficient or effective. Not only does this mean that the sampler was potentially slower than it could have been but, more importantly, it could indicate that the sampler spent time sampling in a region of the likelihood that is less informative. Such a situation can arise from either a misspecified model or overly vague priors that permit sampling in otherwise nonscence parameter space.
 
 Prior to examining the summaries, we should have explored the convergence diagnostics. We use the package `mcmcplots` to obtain density and trace plots for the effects model as an example.
 
@@ -319,14 +319,14 @@ There is no evidence that the mcmc chain did not converge on a stable posterior 
 
 # Parameter estimates
 
-Although all parameters in a Bayesian analysis are considered random and are considered a distribution, rarely would it be useful to present tables of all the samples from each distribution. On the other hand, plots of the posterior distributions are do have some use. Nevertheless, most workers prefer to present simple statistical summaries of the posteriors. Popular choices include the median (or mean) and 95% credibility intervals.
+Although all parameters in a Bayesian analysis are considered random and are considered a distribution, rarely would it be useful to present tables of all the samples from each distribution. On the other hand, plots of the posterior distributions have some use. Nevertheless, most workers prefer to present simple statistical summaries of the posteriors. Popular choices include the median (or mean) and $95$% credibility intervals.
 
 ```{r mcmc_post, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 library(broom)
 tidyMCMC(as.mcmc(data.r2jags), conf.int = TRUE, conf.method = "HPDinterval")
 ```
 
-The Group A is typically 27.5 units greater than Group B. The 95% confidence interval for the difference between Group A and B does not overlap with 0 implying a significant difference between the two groups.
+The Group A is typically $27.3$ units greater than Group B. The $95$% confidence interval for the difference between Group A and B does not overlap with $0$ implying a significant difference between the two groups.
 
 # Graphical summaries
 
@@ -371,19 +371,19 @@ ggplot(newdata, aes(y = estimate, x = x)) + geom_point(data = rdata, aes(y = par
 
 # Effect sizes
 
-In addition to deriving the distribution means for the second group, we could make use of the Bayesian framework to derive the distribution of the effect size. There are multiple ways of calculating an effect size, but the two most common are:
+In addition to deriving the distribution means for the second group, we could make use of the Bayesian framework to derive the distribution of the effect size. There are multiple ways of calculating an effect size, but the most common are:
 
 * *Raw effect size* -	the difference between two groups (as already calculated)
 
-* *Cohen's D* -	the effect size standardized by division with the pooled standard deviation
+* *Cohen's D* -	the effect size standardised by division with the pooled standard deviation
 
-* *Percent* - effect size expressing the effect size as a percent of the reference group mean
+* *Percent* - the effect size expressed as a percent of the reference group mean
 
 Calculating the percent effect size involves division by an estimate of $\beta_0$. The very first sample collected of each parameter (including $\beta_0$) is based on the initial values supplied. If `inits=NULL` the `jags` function appears to generate initial values from the priors. Recall that in the previous model definition, $\beta_0$ was deemed to be distributed as a normal distribution with a mean of $0$. Hence, $\beta_0$ would initially be assigned a value of $0$. Division by zero is of course illegal and thus an error would be thrown. There are two ways to overcome this:
 
-* Modify the prior such that it has a mean of close to zero (and thus the first $\beta_0$ sample is not zero), yet not actually zero (such as $0.0001$). There is always a danger however that the next sample in the chain will be zero (although this is highly unlikely).
+* Modify the prior such that it has a mean close to zero (and thus the first $\beta_0$ sample is not zero), yet not actually zero (such as $0.0001$). This is the method used here.
 
-* Define initial values that are based on the observed data (and not zero). This is the method used here - see the initial values used.
+* Define initial values that are based on the observed data (and not zero). 
 
 ```{r effects_modelv2, eval=TRUE, echo=FALSE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 modelStringv2 = "  
@@ -395,7 +395,7 @@ modelStringv2 = "
   }
  
   #Priors
-  beta0 ~ dnorm(0,1.0E-06)
+  beta0 ~ dnorm(0.001,1.0E-06)
   beta[1] <- 0
   beta[2] ~ dnorm(0,1.0E-06)
   tau ~ dgamma(0.1,0.1)
@@ -406,7 +406,7 @@ modelStringv2 = "
   Group.means <-beta0+beta  
  
   cohenD <- beta[2]/sigma
-  ES <- 100*beta[2]/0.00001
+  ES <- 100*beta[2]/beta0
   p10 <- step((-1*ES) - 10)
  }
  "
@@ -429,16 +429,16 @@ n.thin=thinSteps)
 print(data.r2jagsv2)
 ```
 
-The Cohen's D value is $-10.09$. This value is far greater than the nominal "large effect" guidelines outlined by Cohen and thus we might proclaim the treatment as having a large negative effect. The effect size expressed as a percentage of the Group A mean is $-26.11$. Hence the treatment was associated with a $26.1$% reduction.
+The Cohen's D value is $-9.91$. This value is far greater than the nominal "large effect" guidelines outlined by Cohen and thus we might proclaim the treatment as having a large negative effect. The effect size expressed as a percentage of the Group A mean is $-27.3$. Hence the treatment was associated with a $27.3$% reduction.
 
 # Probability statements
 
-Bayesian statistics provide a natural means to generate probability statements. For example, we could calculate the probability that there is an effect of the treatment. Moreover, we could calculate the probability that the treatment effect exceeds some threshold (which might be based on a measure of ecologically important difference or other compliance guidelines for example).
+Bayesian statistics provide a natural means to generate probability statements. For example, we could calculate the probability that there is an effect of the treatment. Moreover, we could calculate the probability that the treatment effect exceeds some threshold (which might be based on a measure of clinically important difference or other compliance guidelines for example).
 
 ```{r prob_stat, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 mcmc = data.r2jagsv2$BUGSoutput$sims.matrix
 # Percentage change (relative to Group A)
-ES = 100 * mcmc[, "beta[2]"]/0.00001
+ES = 100 * mcmc[, "beta[2]"]/mcmc[, "beta0"]
 hist(ES)
 
 # Probability that the effect is greater than 10% (a decline of >10%)
@@ -450,7 +450,7 @@ sum(-1 * ES > 25)/length(ES)
 We have defined two additional probability derivatives, both of which utilize the step function (which generates a binary vector based on whether values evaluate less than zero or not).
 
 * P0 - the probability (mean of 1-step()) that the raw effect is greater than zero.
-* P25 - the probability (mean of 1-step()) that the percent effect size is greater than 25%.
+* P25 - the probability (mean of 1-step()) that the percent effect size is greater than $25$%.
 
 ```{r effects_modelv3, eval=TRUE, echo=FALSE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 modelStringv3 = "  
@@ -462,7 +462,7 @@ modelStringv3 = "
   }
  
   #Priors
-  beta0 ~ dnorm(0,1.0E-06)
+  beta0 ~ dnorm(0.001,1.0E-06)
   beta[1] <- 0
   beta[2] ~ dnorm(0,1.0E-06)
   tau ~ dgamma(0.1,0.1)
@@ -473,7 +473,7 @@ modelStringv3 = "
   Group.means <-beta0+beta  
  
   cohenD <- beta[2]/sigma
-  ES <- 100*beta[2]/0.00001
+  ES <- 100*beta[2]/beta0
   P0 <- 1-step(beta[2])
   P25 <- 1-step(ES+25)
  }
@@ -502,11 +502,9 @@ print(data.r2jagsv3)
 
 It is often useful to be able to estimate the relative amount of variability associated with each predictor (or term) in a model. This can provide a sort of relative importance measure for each predictor.
 
-In frequentist statistics, such measures are only available for so called random factors (factors whose observational levels are randomly selected to represent all possible levels rather than to represent specific treatment levels). For such random factors, the collective variances (or standard deviation) of each factor are known as the variance components. Each component can also be expressed as a percentage of the total so as to provide a percentage breakdown of the relative contributions of each scale of sampling.
+In frequentist statistics, such measures are only available for so called random factors (factors whose observational levels are randomly selected to represent all possible levels rather than to represent specific treatment levels). For such random factors, the collective variances (or standard deviation) of each factor are known as the variance components. Each component can also be expressed as a percentage of the total so as to provide a percentage breakdown of the relative contributions of each scale of sampling. Frequentist approaches model random factors according to the variance they add to the model, whereas fixed factors are modelled according to their effects (deviations from reference means). The model does not seek to generalise beyond the observed levels of a given fixed factor (such as control vs treatment) and thus it apparently does not make sense to estimate the population variability between levels (which is what variance components estimate).
 
-Frequentist approaches model random factors according to the variance they add to the model, whereas fixed factors are modelled according to their effects (deviations from reference means). The model does not seek to generalize beyond the observed levels of a given fixed factor (such as control vs treatment) and thus it apparently does not make sense to estimate the population variability between levels (which is what variance components estimate).
-
-The notion of "fixed" and "random" factors is somewhat arbitrary and does not really have any meaning within a Bayesian context (as all parameters and thus factors are considered random). Instead, the spirit of what many consider is the difference between fixed and random factors can be captured by conceptualizing whether the levels of a factor are drawn from a finite-population (from which the observed factor levels are the only ones possible) or a superpopulation (from which the observed factor levels are just a random selection of the infinite possible levels possible). Hence, variance components could be defining in terms of either finite-population or superpopulation standard deviations. Super-population standard deviations have traditionally been used to describe the relative scale of sampling variation (e.g. where is the greatest source of variability; Plots, subplots within plots, individual quadrats within subplots, .... or years, months within years, weeks within months, days within weeks, ...) and are most logically applicable to factors that have a relatively large number of levels (such as spatial or temporal sampling units). On the other hand, finite-population standard deviations can be used to explore the relative impact or effect of a set of (fixed) treatments.
+The notion of "fixed" and "random" factors is somewhat arbitrary and does not really have any meaning within a Bayesian context (as all parameters and thus factors are considered random). Instead, the spirit of what many consider is that the difference between fixed and random factors can be captured by conceptualising whether the levels of a factor are drawn from a *finite population* (from which the observed factor levels are the only ones possible) or a *superpopulation* (from which the observed factor levels are just a random selection of the infinite possible levels possible). Hence, variance components could be defined in terms of either finite population or superpopulation standard deviations. Superpopulation standard deviations have traditionally been used to describe the relative scale of sampling variation (e.g. where is the greatest source of variability; plots, subplots within plots, individual quadrats within subplots, .... or years, months within years, weeks within months, days within weeks, ...) and are most logically applicable to factors that have a relatively large number of levels (such as spatial or temporal sampling units). On the other hand, finite population standard deviations can be used to explore the relative impact or effect of a set of (fixed) treatments.
 
 Calculate the amount of unexplained (residual) variance absorbed by the factor. This is generated by fitting a model with (full model) and without (reduced model) the term and subtracting the standard deviations of the residuals one another.
 
@@ -523,14 +521,13 @@ sds <- c(sd.a, sd.resid)
 100 * sds/sum(sds)
 ```
 
-However, options are somewhat limiting if we want to estimate the relative impacts of a mixture of 'fixed' and 'random' terms. For example, we may wish to explore the relative importance of a treatment compared to the spatial and/or temporal sampling heterogeneity.
-The Bayesian framework provides a relatively simple way to generate both finite-population and superpopulation standard deviation estimates for all factors.
+However, options are somewhat limiting if we want to estimate the relative impacts of a mixture of "fixed" and "random" terms. For example, we may wish to explore the relative importance of a treatment compared to the spatial and/or temporal sampling heterogeneity. The Bayesian framework provides a relatively simple way to generate both finite population and superpopulation standard deviation estimates for all factors.
 
-* **Finite populations**. The standard deviations of the Markov Chain Monte Carlo samples across each of the parameters associated with a factor (eg, $\beta_1$ and $\beta_2$ in the effects parameterisation model) provide natural estimates of the variability between group levels (and thus the finite-population standard deviation).
+* **Finite populations**. The standard deviations of the MCMC samples across each of the parameters associated with a factor (eg, $\beta_1$ and $\beta_2$ in the effects parameterisation model) provide natural estimates of the variability between group levels (and thus the finite population standard deviation).
 
-* **Superpopulation**. The mechanism of defining priors also provides a mechanism for calculating infinite-population standard deviations. Recall that in the cell means model, the prior for α specifies that each of the α values are drawn from a normal distribution with a particular mean and a certain level of precision (reciprocal of variability). We could further parameterize this prior into an estimatable mean and precision via hyperpriors $\beta_0 \sim \text{Normal}(\mu,\tau)$, with $\mu \sim \text{Normal}(0,1.0\text{E}-6)$ and $\tau \sim \text{Gamma}(0.1,0.1)$. Since the normal distribution in line one above represents the distribution from which the (infinite) population means are drawn, $\tau$ provides a direct measure of the variability of the population from which the means are drawn.
+* **Superpopulation**. The mechanism of defining priors also provides a mechanism for calculating infinite population standard deviations. Recall that in the means model, the prior for $\beta_0$ specifies that each of the $\beta_0$ values are drawn from a normal distribution with a particular mean and a certain level of precision (reciprocal of variability). We could further parameterise this prior into an estimatable mean and precision via hyperpriors $\beta_0 \sim \text{Normal}(\mu,\tau)$, with $\mu \sim \text{Normal}(0,1.0\text{E}-6)$ and $\tau \sim \text{Gamma}(0.1,0.1)$. Since the normal distribution in line one above represents the distribution from which the (infinite) population means are drawn, $\tau$ provides a direct measure of the variability of the population from which the means are drawn.
 
-When the number of levels of a factor a large, the finite-population and superpopulation standard deviation point estimates will be very similar. However, the finite-population estimates will of course be considered more precise (and thus, less varied). At the other extreme, when the number of factor levels is small (such as two levels), the finite-population estimate will be very precise whereas the superpopulation standard deviation estimate will be very imprecise (highly varied). For this reason, if the purpose of estimating standard deviations is to compare relative contributions of various predictors (some of which have small numbers of levels and others large), then it is best to use finite-population standard deviation estimates.
+When the number of levels of a factor are large, the finite population and superpopulation standard deviation point estimates will be very similar. However, when the number of factor levels is small (such as two levels), the finite population estimate will be very precise whereas the superpopulation standard deviation estimate will be very imprecise (highly varied). For this reason, if the purpose of estimating standard deviations is to compare relative contributions of various predictors (some of which have small numbers of levels and others large), then it is best to use finite population standard deviation estimates.
 
 ```{r effects_modelv4, eval=TRUE, echo=FALSE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 modelStringv4 = "  
@@ -577,11 +574,9 @@ n.thin=thinSteps)
 print(data.r2jagsv4)
 ```
 
-The between group (finite population) standard deviation is $19.44$ whereas the within group standard deviation is $2.71$. These equate to respectively.
+The between group (finite population) standard deviation is $20.1$ whereas the within group standard deviation is $2.81$. These equate to respectively. Compared to the finite population standard deviation, the superpopulation between group standard deviation estimate ($\sigma_a$) is both very large and highly variable. This is to be expected, whilst the finite population standard deviation represents the degree of variation between the observed levels, the superpopulation standard deviation seeks to estimate the variability of the population from which the group means of the observed levels **AND** all other possible levels are drawn. There are only two levels from which to estimate this standard deviation and therefore, its value and variability are going to be higher than those pertaining only to the scope of the current data.
 
-Compared to he finite-population standard deviation, the superpopulation between group standard deviation estimate ($\sigma_a$) is both very large and highly variable. This is to be expected, whilst the finite-population standard deviation represents he degree of variation between the observed levels, the superpopulation standard deviation seeks to estimate the variability of the population from which the group means of the observed levels AND all other possible levels are drawn. There are only two levels from which to estimate this standard deviation and therefore, its value and variability are going to be higher than those pertaining only to the scope of the current data.
-
-Examination of the quantiles for σa suggest that its samples are not distributed normally. Consequently, the mean is not an appropriate measure of its location. We will instead characterize the superpopulation between group and within group standard deviations via their respective medians and as percent medians. The contrast between finite-population and superpopulation standard deviations is also emphasized by the respective estimates for the residuals. The residuals are of course a "random" factor with a large number of observed levels. It is therefore not surprising that the point estimates for the residuals variance components are very similar. However, also notice that the precision of the finite-population standard deviation estimate is substantially higher (lower standard deviation of the standard deviation estimate) than that of the superpopulation estimate.
+Examination of the quantiles for $\sigma_a$ suggest that its samples are not distributed normally. Consequently, the mean is not an appropriate measure of its location. We will instead characterise the superpopulation between group and within group standard deviations via their respective medians and as percent medians. The contrast between finite population and superpopulation standard deviations is also emphasised by the respective estimates for the residuals. The residuals are of course a "random" factor with a large number of observed levels. It is therefore not surprising that the point estimates for the residuals variance components are very similar. However, also notice that the precision of the finite population standard deviation estimate is substantially higher (lower standard deviation of the standard deviation estimate) than that of the superpopulation estimate.
 
 
 # Unequally varied populations
@@ -610,7 +605,7 @@ Start by defining the model
 
 \[ y_i = \beta_0 + \beta_1x_i + \epsilon, \]
 
-where $\epsilon_1 \sim \text{Normal}(0,\sigma_1)$ for $x_1=0$ (females), and $\epsilon_2 \sim \text{Normal}(0,\sigma_2)$ for $x_2=1$ (males). In `JAGS` code the model becomes:
+where $\epsilon_1 \sim \text{Normal}(0,\sigma_1)$ for $x_1=0$ (females), and $\epsilon_2 \sim \text{Normal}(0,\sigma_2)$ for $x_2=1$ (males). In `JAGS` code, the model becomes:
 
 ```{r model_ex2, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 modelStringv5="
@@ -639,7 +634,7 @@ modelStringv5="
 writeLines(modelStringv5,con="ttestModelv5.txt")
 ```
 
-We specify priors directly on $\sigma_1$ and $\sigma_2$ using Uniform distributions between $0$ and $100$, and then express $\tau$ as a deterministic function of $\sigma$. Next, arrange the data as a list (as required by `JAGS`) and define the MCMC parameters. Note, all variables must be numeric, therefore we use the numeric version of $x$. Define the initial values. We are going to initialize three chains so the list must include two elements. 
+We specify priors directly on $\sigma_1$ and $\sigma_2$ using Uniform distributions between $0$ and $100$, and then express $\tau$ as a deterministic function of $\sigma$. Next, arrange the data as a list (as required by `JAGS`) and define the MCMC parameters. Note, all variables must be numeric, therefore we use the numeric version of $x$. Define the initial values for two chains so that the initial values list must include two elements (if provided). 
 
 ```{r model_dataex2, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 data2.list <- with(data2,list(y1=y[xn==0], y2=y[xn==1], 
@@ -659,7 +654,7 @@ Finally, fit the model in `JAGS` and print the results.
 
 ```{r model_jagsex2, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 data2.r2jagsv5 <- jags(data=data2.list,
-inits=NULL, #or inits=list(inits,inits) # since there are two
+inits=NULL, #or inits=list(inits,inits) # since there are two chains
 parameters.to.save=paramsv5,
 model.file="ttestModelv5.txt",
 n.chains=nChains,
