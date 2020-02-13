@@ -1,0 +1,807 @@
+---
+title: "Multiple Linear Regression - JAGS"
+author: "Andrea Gabrio"
+date: 2020-02-03T21:13:14-05:00
+categories: ["R", "linear regression", "JAGS"]
+tags: ["tutorials", "JAGS", "linear regression"]
+authors: ["Andrea Gabrio"]
+bibliography: [citations_jags4.bib]
+draft: no
+slug: multiple-linear-regression-jags
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<p>This tutorial will focus on the use of Bayesian estimation to fit simple linear regression models. <code>BUGS</code> (Bayesian inference Using <em>Gibbs Sampling</em>) is an algorithm and supporting language (resembling <code>R</code>) dedicated to performing the Gibbs sampling implementation of <em>Markov Chain Monte Carlo</em> (MCMC) method. Dialects of the <code>BUGS</code> language are implemented within three main projects:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>OpenBUGS</strong> - written in component pascal.</p></li>
+<li><p><strong>JAGS</strong> - (Just Another Gibbs Sampler) - written in <code>C++</code>.</p></li>
+<li><p><strong>STAN</strong> - a dedicated Bayesian modelling framework written in <code>C++</code> and implementing <em>Hamiltonian</em> MCMC samplers.</p></li>
+</ol>
+<p>Whilst the above programs can be used stand-alone, they do offer the rich data pre-processing and graphical capabilities of <code>R</code>, and thus, they are best accessed from within <code>R</code> itself. As such there are multiple packages devoted to interfacing with the various software implementations:</p>
+<ul>
+<li><p><em>R2OpenBUGS</em> - interfaces with <code>OpenBUGS</code></p></li>
+<li><p><em>R2jags</em> - interfaces with <code>JAGS</code></p></li>
+<li><p><em>rstan</em> - interfaces with <code>STAN</code></p></li>
+</ul>
+<p>This tutorial will demonstrate how to fit models in <code>JAGS</code> (<span class="citation">Plummer (2004)</span>) using the package <code>R2jags</code> (<span class="citation">Su et al. (2015)</span>) as interface, which also requires to load some other packages.</p>
+<div id="overview" class="section level1">
+<h1>Overview</h1>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>Multiple regression is an extension of simple linear regression whereby a response variable is modelled against a linear combination of two or more simultaneously measured predictor variables. There are two main purposes of multiple linear regression:</p>
+<ol style="list-style-type: decimal">
+<li><p>To develop a better predictive model (equation) than is possible from models based on single independent variables.</p></li>
+<li><p>To investigate the relative individual effects of each of the multiple independent variables above and beyond (standardised across) the effects of the other variables.</p></li>
+</ol>
+<p>Although the relationship between response variable and the additive effect of all the predictor variables is represented overall by a single multidimensional plane (surface), the individual effects of each of the predictor variables on the response variable (standardised across the other variables) can be depicted by single partial regression lines. The slope of any single partial regression line (partial regression slope) thereby represents the rate of change or effect of that specific predictor variable (holding all the other predictor variables constant to their respective mean values) on the response variable. In essence, it is the effect of one predictor variable at one specific level (the means) of all the other predictor variables (i.e. when each of the other predictors are set to their averages).</p>
+<p>Multiple regression models can be constructed additively (containing only the predictor variables themselves) or in a multiplicative design (which incorporate interactions between predictor variables in addition to the predictor variables themselves). Multiplicative models are used primarily for testing inferences about the effects of various predictor variables and their interactions on the response variable. Additive models by contrast are used for generating predictive models and estimating the relative importance of individual predictor variables more so than hypothesis testing.</p>
+</div>
+<div id="additive-model" class="section level2">
+<h2>Additive Model</h2>
+<p><span class="math display">\[ y_i = \beta_0 + \beta_1x_{i1} +  \beta_2x_{i2} + \ldots + \beta_Jx_{iJ} + \epsilon_i,\]</span></p>
+<p>where <span class="math inline">\(\beta_0\)</span> is the population <span class="math inline">\(y\)</span>-intercept (value of <span class="math inline">\(y\)</span> when all partial slopes equal zero), <span class="math inline">\(\beta_1,\beta_2,\ldots,\beta_{J}\)</span> are the partial population slopes of <span class="math inline">\(Y\)</span> on <span class="math inline">\(X_1,X_2,\ldots,X_J\)</span> respectively holding the other <span class="math inline">\(X\)</span> constant. <span class="math inline">\(\epsilon_i\)</span> is the random unexplained error or residual component. The additive model assumes that the effect of one predictor variable (partial slope) is independent of the levels of the other predictor variables.</p>
+</div>
+<div id="multiplicative-model" class="section level2">
+<h2>Multiplicative Model</h2>
+<p><span class="math display">\[ y_i = \beta_0 + \beta_1x_{i1} +  \beta_2x_{i2} + \beta_3x_{i1}x_{i2} + \ldots + \beta_Jx_{iJ} + \epsilon_i,\]</span></p>
+<p>where <span class="math inline">\(\beta_3x_{i1}x_{i2}\)</span> is the interactive effect of <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span> on <span class="math inline">\(Y\)</span> and it examines the degree to which the effect of one of the predictor variables depends on the levels of the other predictor variable(s).</p>
+</div>
+<div id="data-generation" class="section level2">
+<h2>Data generation</h2>
+<p>Lets say we had set up a natural experiment in which we measured a response (<span class="math inline">\(y\)</span>) from each of <span class="math inline">\(20\)</span> sampling units (<span class="math inline">\(n=20\)</span>) across a landscape. At the same time, we also measured two other continuous covariates (<span class="math inline">\(x_1\)</span> and <span class="math inline">\(x_2\)</span>) from each of the sampling units. As this section is mainly about the generation of artificial data (and not specifically about what to do with the data), understanding the actual details are optional and can be safely skipped.</p>
+<pre class="r"><code>&gt; set.seed(123)
+&gt; n = 100
+&gt; intercept = 5
+&gt; temp = runif(n)
+&gt; nitro = runif(n) + 0.8 * temp
+&gt; int.eff = 2
+&gt; temp.eff &lt;- 0.85
+&gt; nitro.eff &lt;- 0.5
+&gt; res = rnorm(n, 0, 1)
+&gt; coef &lt;- c(int.eff, temp.eff, nitro.eff, int.eff)
+&gt; mm &lt;- model.matrix(~temp * nitro)
+&gt; 
+&gt; y &lt;- t(coef %*% t(mm)) + res
+&gt; data &lt;- data.frame(y, x1 = temp, x2 = nitro, cx1 = scale(temp,
++     scale = F), cx2 = scale(nitro, scale = F))
+&gt; head(data)
+         y        x1        x2         cx1         cx2
+1 2.426468 0.2875775 0.8300510 -0.21098147 -0.08302110
+2 4.927690 0.7883051 0.9634676  0.28974614  0.05039557
+3 3.176118 0.4089769 0.8157946 -0.08958207 -0.09727750
+4 6.166652 0.8830174 1.6608878  0.38445841  0.74781568
+5 4.788890 0.9404673 1.2352762  0.44190829  0.32220415
+6 2.541536 0.0455565 0.9267954 -0.45300249  0.01372335</code></pre>
+<p>With these sort of data, we are primarily interested in investigating whether there is a relationship between the continuous response variable and the components linear predictor (continuous predictors). We could model the relationship via either:</p>
+<ul>
+<li><p>An additive model in which the effects of each predictor contribute in an additive way to the response - we do not allow for an interaction as we consider an interaction either not of great importance or likely to be absent.</p></li>
+<li><p>A multiplicative model in which the effects of each predictor and their interaction contribute to the response - we allow for the impact of one predictor to vary across the range of the other predictor.</p></li>
+</ul>
+</div>
+<div id="centering-the-data" class="section level2">
+<h2>Centering the data</h2>
+<p>When a linear model contains a covariate (continuous predictor variable) in addition to another predictor (continuous or categorical), it is nearly always advisable that the continuous predictor variables are centered prior to the analysis. Centering is a process by which the mean of a variable is subtracted from each of the values such that the scale of the variable is shifted so as to be centered around <span class="math inline">\(0\)</span>. Hence the mean of the new centered variable will be <span class="math inline">\(0\)</span>, yet it will retain the same variance.</p>
+<p>There are multiple reasons for this:</p>
+<ol style="list-style-type: decimal">
+<li><p>It provides some clinical meaning to the <span class="math inline">\(y\)</span>-intercept. Recall that the <span class="math inline">\(y\)</span>-intercept is the value of <span class="math inline">\(Y\)</span> when <span class="math inline">\(X\)</span> is equal to zero. If <span class="math inline">\(X\)</span> is centered, then the <span class="math inline">\(y\)</span>-intercept represents the value of <span class="math inline">\(Y\)</span> at the mid-point of the <span class="math inline">\(X\)</span> range. The <span class="math inline">\(y\)</span>-intercept of an uncentered <span class="math inline">\(X\)</span> typically represents a unreal value of <span class="math inline">\(Y\)</span> (as an <span class="math inline">\(X\)</span> of <span class="math inline">\(0\)</span> is often beyond the reasonable range of values).</p></li>
+<li><p>In multiplicative models (in which predictors and their interactions are included), main effects and interaction terms built from centered predictors will not be correlated to one another.</p></li>
+<li><p>For more complex models, centering the covariates can increase the likelihood that the modelling engine converges (arrives at a numerically stable and reliable outcome).</p></li>
+</ol>
+<p>Note, centering will not effect the slope estimates. In <code>R</code>, centering is easily achieved with the <code>scale</code> function, which centers and scales (divides by standard deviation) the data. We only really need to center the data, so we provide the argument <code>scale=FALSE</code>. Also note that the <code>scale</code> function attaches the pre-centered mean (and standard deviation if scaling is performed) as attributes to the scaled data in order to facilitate back-scaling to the original scale. While these attributes are often convenient, they do cause issues for some of the Bayesian routines and so we will strip these attributes using the <code>as.numeric</code> function. Instead, we will create separate scalar variables to store the pre-scaled means.</p>
+<pre class="r"><code>&gt; data &lt;- within(data, {
++     cx1 &lt;- as.numeric(scale(x1, scale = FALSE))
++     cx2 &lt;- as.numeric(scale(x2, scale = FALSE))
++ })
+&gt; head(data)
+         y        x1        x2         cx1         cx2
+1 2.426468 0.2875775 0.8300510 -0.21098147 -0.08302110
+2 4.927690 0.7883051 0.9634676  0.28974614  0.05039557
+3 3.176118 0.4089769 0.8157946 -0.08958207 -0.09727750
+4 6.166652 0.8830174 1.6608878  0.38445841  0.74781568
+5 4.788890 0.9404673 1.2352762  0.44190829  0.32220415
+6 2.541536 0.0455565 0.9267954 -0.45300249  0.01372335
+&gt; 
+&gt; mean.x1 = mean(data$x1)
+&gt; mean.x2 = mean(data$x2)</code></pre>
+</div>
+</div>
+<div id="assumptions" class="section level1">
+<h1>Assumptions</h1>
+<p>The assumptions of the model are:</p>
+<ul>
+<li><p>All of the observations are independent - this must be addressed at the design and collection stages.</p></li>
+<li><p>The response variable (and thus the residuals) should be normally distributed. A boxplot of the entire variable is usually useful for diagnosing major issues with normality.</p></li>
+<li><p>The response variable should be equally varied (variance should not be related to mean as these are supposed to be estimated separately). Scatterplots with linear smoothers can be useful for exploring the spread of observations around the trendline. The spread of observations around the trendline should not increase (or decrease) along its length.</p></li>
+<li><p>The predictor variables should be uniformly or normally distributed. Again, boxplots can be useful.</p></li>
+<li><p>The relationships between the linear predictors (right hand side of the regression formula) and the response variable should be linear. Scatterplots with smoothers can be useful for identifying possible non-linearity.</p></li>
+<li><p><strong>(Multi)collinearity</strong>. The number of predictor variables must be less than the number of observations otherwise the linear model will be over-parameterized (more parameters to estimate than there are independent data from which estimates are calculated).</p></li>
+</ul>
+<p>(Multi)collinearity breaks the assumption that a predictor variable must not be correlated to the combination of other predictor variables (known collectively as the linear predictor). Multicollinearity has major detrimental effects on model fitting:</p>
+<ul>
+<li><p>Instability of the estimated partial regression slopes (small changes in the data or variable inclusion can cause dramatic changes in parameter estimates).</p></li>
+<li><p>Inflated standard errors and confidence intervals of model parameters, thereby increasing the type II error rate (reducing power) of parameter hypothesis tests.</p></li>
+</ul>
+<p>Multicollinearity can be diagnosed with the following situatons:</p>
+<ul>
+<li><p>Investigate pairwise correlations between all the predictor variables either by a correlation matrix or a scatterplot matrix</p></li>
+<li><p>Calculate the <strong>tolerance</strong> <span class="math inline">\((1−r^2)\)</span> of the relationship between a predictor variable and all the other predictor variables for each of the predictor variables. Tolerance is a measure of the degree of collinearity and values less than <span class="math inline">\(0.2\)</span> should be considered and values less than <span class="math inline">\(0.1\)</span> should be given serious attention. <strong>Variance inflation factor</strong> (VIF) is the inverse of tolerance and thus values greater than <span class="math inline">\(5\)</span>, or worse, <span class="math inline">\(10\)</span> indicate collinearity.</p></li>
+<li><p><strong>PCA</strong> (principle components analysis) eigenvalues (from a correlation matrix for all the predictor variables) close to zero indicate collinearity and component loadings may be useful in determining which predictor variables cause collinearity.</p></li>
+</ul>
+<p>There are several approaches to dealing with collinearity (however the first two of these are likely to result in biased parameter estimates):</p>
+<ol style="list-style-type: decimal">
+<li><p>Remove the highly correlated predictor variable(s), starting with the least most clinically interesting variable(s)</p></li>
+<li><p>PCA (principle components analysis) regression - regress the response variable against the principal components resulting from a correlation matrix for all the predictor variables. Each of these principal components by definition are completely independent, but the resulting parameter estimates must be back-calculated in order to have any clinical meaning.</p></li>
+<li><p>Apply a regression tree - regression trees recursively partitioning (subsetting) the data in accordance to individual variables that explain the greatest remaining variance. Since at each iteration, each predictor variable is effectively evaluated in isolation, (multi)collinearity is not an issue.</p></li>
+</ol>
+</div>
+<div id="model-fitting" class="section level1">
+<h1>Model fitting</h1>
+<p>Multiple linear regression models can include predictors (terms) that are incorporated additively (no interactions) or multiplicatively (with interactions). As such we will explore these separately for each modelling tool. The observed responses (<span class="math inline">\(y_i\)</span>) are assumed to be drawn from a normal distribution with a given mean (<span class="math inline">\(\mu\)</span>) and standard deviation (<span class="math inline">\(\sigma\)</span>). The expected values are themselves determined by the linear predictor. In this case, <span class="math inline">\(\beta_0\)</span> represents the <span class="math inline">\(y\)</span>-intercept (value of <span class="math inline">\(y\)</span> when all of the <span class="math inline">\(x\)</span>’s are equal to zero) and the set of <span class="math inline">\(\beta\)</span>’s represent the rates of change in y for every unit change in each <span class="math inline">\(x\)</span> (the effect) holding each other <span class="math inline">\(x\)</span> constant. Note that since we should always center all predictors (by subtracting the mean of each <span class="math inline">\(x\)</span> from the repective values of each <span class="math inline">\(x\)</span>), the <span class="math inline">\(y\)</span>-intercept represents the value of <span class="math inline">\(y\)</span> at the average value of each <span class="math inline">\(x\)</span>.</p>
+<p>MCMC sampling requires priors on all parameters. We will employ weakly informative priors. Specifying “uninformative” priors is always a bit of a balancing act. If the priors are too vague (wide) the MCMC sampler can wander off into nonscence areas of likelihood rather than concentrate around areas of highest likelihood (desired when wanting the outcomes to be largely driven by the data). On the other hand, if the priors are too strong, they may have an influence on the parameters. In such a simple model, this balance is very forgiving - it is for more complex models that prior choice becomes more important. For this simple model, we will go with zero-centered Gaussian (normal) priors with relatively large standard deviations (<span class="math inline">\(100\)</span>) for both the intercept and the treatment effect and a wide half-cauchy (<span class="math inline">\(\text{scale}=5\)</span>) for the standard deviation:</p>
+<p><span class="math display">\[ y_i \sim \text{Normal}(\mu_i, \sigma),\]</span></p>
+<p>where <span class="math inline">\(\mu_i=\beta_0 + \boldsymbol \beta \boldsymbol X_i\)</span>. Priors are specified as: <span class="math inline">\(\boldsymbol \beta \sim \text{Normal}(0,1000)\)</span> and <span class="math inline">\(\sigma \sim \text{Cauchy}(0,5)\)</span>. We will explore Bayesian modelling of multiple linear regression using <code>JAGS</code>. Remember that in this software normal distributions are specified in terms of precision <span class="math inline">\(\tau\)</span> rather than standard deviation <span class="math inline">\(\sigma\)</span>, where <span class="math inline">\(\tau=\frac{1}{\sigma^2}\)</span>.</p>
+<pre class="r"><code>&gt; modelString = &quot;
++   model {
++   #Likelihood
++   for (i in 1:n) {
++   y[i]~dnorm(mu[i],tau)
++   mu[i] &lt;- beta0 + inprod(beta[],X[i,])
++   }
++   #Priors
++   beta0 ~ dnorm(0.01,1.0E-6)
++   for (j in 1:nX) {
++   beta[j] ~ dnorm(0.01,1.0E-6)
++   }
++   tau &lt;- 1 / (sigma * sigma)
++   sigma~dunif(0,100)
++   }
++   &quot;
+&gt; 
+&gt; ## write the model to a text file
+&gt; writeLines(modelString, con = &quot;ttestModel.txt&quot;)</code></pre>
+<div id="additive-model-1" class="section level2">
+<h2>Additive Model</h2>
+<p>Arrange the data as a list (as required by <code>JAGS</code>). As input, <code>JAGS</code> will need to be supplied with: the response variable, the predictor matrix, the number of predictors, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.</p>
+<pre class="r"><code>&gt; X = model.matrix(~cx1 + cx2, data = data)
+&gt; data.list &lt;- with(data, list(y = y, X = X[, -1], nX = ncol(X) -
++     1, n = nrow(data)))</code></pre>
+<p>Define the nodes (parameters and derivatives) to monitor and the chain parameters.</p>
+<pre class="r"><code>&gt; params &lt;- c(&quot;beta0&quot;, &quot;beta&quot;, &quot;sigma&quot;)
+&gt; nChains = 2
+&gt; burnInSteps = 3000
+&gt; thinSteps = 1
+&gt; numSavedSteps = 15000  #across all chains
+&gt; nIter = ceiling(burnInSteps + (numSavedSteps * thinSteps)/nChains)
+&gt; nIter
+[1] 10500</code></pre>
+<p>Start the <code>JAGS</code> model (check the model, load data into the model, specify the number of chains and compile the model). Load the <code>R2jags</code> package.</p>
+<pre class="r"><code>&gt; library(R2jags)</code></pre>
+<p>Now run the <code>JAGS</code> code via the <code>R2jags</code> interface. Note that the first time jags is run after the <code>R2jags</code> package is loaded, it is often necessary to run any kind of randomization function just to initiate the .Random.seed variable.</p>
+<pre class="r"><code>&gt; data.r2jags.add &lt;- jags(data = data.list, inits = NULL, parameters.to.save = params,
++     model.file = &quot;ttestModel.txt&quot;, n.chains = nChains, n.iter = nIter,
++     n.burnin = burnInSteps, n.thin = thinSteps)
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 100
+   Unobserved stochastic nodes: 4
+   Total graph size: 614
+
+Initializing model
+&gt; 
+&gt; print(data.r2jags.add)
+Inference for Bugs model at &quot;ttestModel.txt&quot;, fit using jags,
+ 2 chains, each with 10500 iterations (first 3000 discarded)
+ n.sims = 15000 iterations saved
+         mu.vect sd.vect    2.5%     25%     50%     75%   97.5%  Rhat n.eff
+beta[1]    2.830   0.442   1.964   2.538   2.830   3.125   3.694 1.001  7400
+beta[2]    1.582   0.380   0.833   1.327   1.581   1.834   2.319 1.001 14000
+beta0      3.799   0.100   3.603   3.733   3.797   3.865   3.997 1.001 15000
+sigma      0.996   0.074   0.864   0.944   0.992   1.043   1.154 1.001 15000
+deviance 281.420   2.961 277.779 279.260 280.727 282.888 288.827 1.001 15000
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 4.4 and DIC = 285.8
+DIC is an estimate of expected predictive error (lower deviance is better).</code></pre>
+</div>
+<div id="multiplicative-model-1" class="section level2">
+<h2>Multiplicative Model</h2>
+<p>Arrange the data as a list (as required by <code>JAGS</code>). As input, <code>JAGS</code> will need to be supplied with: the response variable, the predictor matrix, the number of predictors, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.</p>
+<pre class="r"><code>&gt; X = model.matrix(~cx1 * cx2, data = data)
+&gt; data.list &lt;- with(data, list(y = y, X = X[, -1], nX = ncol(X) - 1, n = nrow(data)))</code></pre>
+<p>Define the nodes (parameters and derivatives) to monitor and the chain parameters.</p>
+<pre class="r"><code>&gt; params &lt;- c(&quot;beta0&quot;, &quot;beta&quot;, &quot;sigma&quot;)
+&gt; nChains = 2
+&gt; burnInSteps = 3000
+&gt; thinSteps = 1
+&gt; numSavedSteps = 15000  #across all chains
+&gt; nIter = ceiling(burnInSteps + (numSavedSteps * thinSteps)/nChains)
+&gt; nIter
+[1] 10500</code></pre>
+<p>Start the <code>JAGS</code> model (check the model, load data into the model, specify the number of chains and compile the model). Run the <code>JAGS</code> code via the <code>R2jags</code> interface. Note that the first time jags is run after the <code>R2jags</code> package is loaded, it is often necessary to run any kind of randomization function just to initiate the .Random.seed variable.</p>
+<pre class="r"><code>&gt; data.r2jags.mult &lt;- jags(data = data.list, inits = NULL, parameters.to.save = params,
++     model.file = &quot;ttestModel.txt&quot;, n.chains = nChains, n.iter = nIter,
++     n.burnin = burnInSteps, n.thin = thinSteps)
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 100
+   Unobserved stochastic nodes: 5
+   Total graph size: 715
+
+Initializing model
+&gt; 
+&gt; print(data.r2jags.mult)
+Inference for Bugs model at &quot;ttestModel.txt&quot;, fit using jags,
+ 2 chains, each with 10500 iterations (first 3000 discarded)
+ n.sims = 15000 iterations saved
+         mu.vect sd.vect    2.5%     25%     50%     75%   97.5%  Rhat n.eff
+beta[1]    2.800   0.451   1.914   2.500   2.801   3.104   3.680 1.001 15000
+beta[2]    1.504   0.389   0.744   1.237   1.505   1.766   2.267 1.001 15000
+beta[3]    1.451   1.210  -0.933   0.643   1.456   2.238   3.849 1.001 15000
+beta0      3.715   0.122   3.475   3.633   3.715   3.797   3.957 1.001  6000
+sigma      0.994   0.073   0.863   0.944   0.989   1.039   1.151 1.001 15000
+deviance 280.964   3.307 276.617 278.541 280.281 282.649 289.157 1.001 15000
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 5.5 and DIC = 286.4
+DIC is an estimate of expected predictive error (lower deviance is better).</code></pre>
+</div>
+</div>
+<div id="mcmc-diagnostics" class="section level1">
+<h1>MCMC diagnostics</h1>
+<p>In addition to the regular model diagnostic checks (such as residual plots), for Bayesian analyses, it is necessary to explore the characteristics of the MCMC chains and the sampler in general. Recall that the purpose of MCMC sampling is to replicate the posterior distribution of the model likelihood and priors by drawing a known number of samples from this posterior (thereby formulating a probability distribution). This is only reliable if the MCMC samples accurately reflect the posterior. Unfortunately, since we only know the posterior in the most trivial of circumstances, it is necessary to rely on indirect measures of how accurately the MCMC samples are likely to reflect the likelihood. I will briefly outline the most important diagnostics.</p>
+<ul>
+<li><p><em>Traceplots</em> for each parameter illustrate the MCMC sample values after each successive iteration along the chain. Bad chain mixing (characterised by any sort of pattern) suggests that the MCMC sampling chains may not have completely traversed all features of the posterior distribution and that more iterations are required to ensure the distribution has been accurately represented.</p></li>
+<li><p><em>Autocorrelation</em> plot for each parameter illustrate the degree of correlation between MCMC samples separated by different lags. For example, a lag of <span class="math inline">\(0\)</span> represents the degree of correlation between each MCMC sample and itself (obviously this will be a correlation of <span class="math inline">\(1\)</span>). A lag of <span class="math inline">\(1\)</span> represents the degree of correlation between each MCMC sample and the next sample along the chain and so on. In order to be able to generate unbiased estimates of parameters, the MCMC samples should be independent (uncorrelated).</p></li>
+<li><p><em>Potential scale reduction factor</em> (Rhat) statistic for each parameter provides a measure of sampling efficiency/effectiveness. Ideally, all values should be less than <span class="math inline">\(1.05\)</span>. If there are values of <span class="math inline">\(1.05\)</span> or greater it suggests that the sampler was not very efficient or effective. Not only does this mean that the sampler was potentially slower than it could have been but, more importantly, it could indicate that the sampler spent time sampling in a region of the likelihood that is less informative. Such a situation can arise from either a misspecified model or overly vague priors that permit sampling in otherwise nonscence parameter space.</p></li>
+</ul>
+<p>Prior to examining the summaries, we should have explored the convergence diagnostics. We use the package <code>mcmcplots</code> to obtain density and trace plots for the effects model as an example. When there are a lot of parameters, this can result in a very large number of traceplots. To focus on just certain parameters, e.g. <span class="math inline">\(\boldsymbol \beta\)</span>. Rather than dublicate this for both additive and multiplicative models, we will only explore the multiplicative model.</p>
+<pre class="r"><code>&gt; library(mcmcplots)
+&gt; denplot(data.r2jags.mult, parms = c(&quot;beta0&quot;,&quot;beta&quot;))</code></pre>
+<p><img src="/JAGS/multiple-linear-regression-jags/2020-02-01-multiple-linear-regression-jags_files/figure-html/mcmc_diag-1.png" width="672" /></p>
+<pre class="r"><code>&gt; traplot(data.r2jags.mult, parms = c(&quot;beta0&quot;,&quot;beta&quot;))</code></pre>
+<p><img src="/JAGS/multiple-linear-regression-jags/2020-02-01-multiple-linear-regression-jags_files/figure-html/mcmc_diag-2.png" width="672" /></p>
+<p>These plots show no evidence that the chains have not reasonably traversed the entire multidimensional parameter space.</p>
+<pre class="r"><code>&gt; data.mcmc = as.mcmc(data.r2jags.mult)
+&gt; #Raftery diagnostic
+&gt; raftery.diag(data.mcmc)
+[[1]]
+
+Quantile (q) = 0.025
+Accuracy (r) = +/- 0.005
+Probability (s) = 0.95 
+                                                
+          Burn-in  Total Lower bound  Dependence
+          (M)      (N)   (Nmin)       factor (I)
+ beta[1]  2        3609  3746         0.963     
+ beta[2]  2        3811  3746         1.020     
+ beta[3]  2        3811  3746         1.020     
+ beta0    2        3770  3746         1.010     
+ deviance 2        3729  3746         0.995     
+ sigma    4        4989  3746         1.330     
+
+
+[[2]]
+
+Quantile (q) = 0.025
+Accuracy (r) = +/- 0.005
+Probability (s) = 0.95 
+                                                
+          Burn-in  Total Lower bound  Dependence
+          (M)      (N)   (Nmin)       factor (I)
+ beta[1]  2        3729  3746         0.995     
+ beta[2]  2        3730  3746         0.996     
+ beta[3]  2        3811  3746         1.020     
+ beta0    2        3729  3746         0.995     
+ deviance 2        3751  3746         1.000     
+ sigma    4        5306  3746         1.420     </code></pre>
+<p>The Raftery diagnostics for each chain estimate that we would require no more than <span class="math inline">\(5000\)</span> samples to reach the specified level of confidence in convergence. As we have <span class="math inline">\(10500\)</span> samples, we can be confidence that convergence has occurred.</p>
+<pre class="r"><code>&gt; #Autocorrelation diagnostic
+&gt; autocorr.diag(data.mcmc)
+            beta[1]       beta[2]      beta[3]        beta0      deviance
+Lag 0   1.000000000  1.0000000000  1.000000000  1.000000000  1.000000e+00
+Lag 1  -0.007495093 -0.0002601039 -0.004404658 -0.016267523  1.340676e-01
+Lag 5   0.004013980 -0.0121560194  0.004193180  0.006361847  7.319664e-05
+Lag 10 -0.009167511 -0.0004423631  0.007960201  0.005194172 -5.183038e-03
+Lag 50  0.001459434  0.0077668977 -0.006551273 -0.003063066 -5.021565e-03
+              sigma
+Lag 0   1.000000000
+Lag 1   0.262166680
+Lag 5  -0.020700390
+Lag 10 -0.006918124
+Lag 50  0.001501713</code></pre>
+<p>A lag of 10 appears to be sufficient to avoid autocorrelation (poor mixing).</p>
+</div>
+<div id="model-validation" class="section level1">
+<h1>Model validation</h1>
+<p>Model validation involves exploring the model diagnostics and fit to ensure that the model is broadly appropriate for the data. As such, exploration of the residuals should be routine. For more complex models (those that contain multiple effects), it is also advisable to plot the residuals against each of the individual predictors. For sampling designs that involve sample collection over space or time, it is also a good idea to explore whether there are any temporal or spatial patterns in the residuals.</p>
+<p>There are numerous situations (e.g. when applying specific variance-covariance structures to a model) where raw residuals do not reflect the interior workings of the model. Typically, this is because they do not take into account the variance-covariance matrix or assume a very simple variance-covariance matrix. Since the purpose of exploring residuals is to evaluate the model, for these cases, it is arguably better to draw conclusions based on standardized (or studentised) residuals. Unfortunately the definitions of standardised and studentised residuals appears to vary and the two terms get used interchangeably. I will adopt the following definitions:</p>
+<ul>
+<li><p><strong>Standardised residuals</strong>. The raw residuals divided by the true standard deviation of the residuals (which of course is rarely known).</p></li>
+<li><p><strong>Studentised residuals</strong>. The raw residuals divided by the standard deviation of the residuals. Note that <strong>externally studentised residuals</strong> are calculated by dividing the raw residuals by a unique standard deviation for each observation that is calculated from regressions having left each successive observation out.</p></li>
+<li><p><strong>Pearson residuals</strong>. The raw residuals divided by the standard deviation of the response variable.</p></li>
+</ul>
+<p>he mark of a good model is being able to predict well. In an ideal world, we would have sufficiently large sample size as to permit us to hold a fraction (such as <span class="math inline">\(25\)</span>%) back thereby allowing us to train the model on <span class="math inline">\(75\)</span>% of the data and then see how well the model can predict the withheld <span class="math inline">\(25\)</span>%. Unfortunately, such a luxury is still rare. The next best option is to see how well the model can predict the observed data. Models tend to struggle most with the extremes of trends and have particular issues when the extremes approach logical boundaries (such as zero for count data and standard deviations). We can use the fitted model to generate random predicted observations and then explore some properties of these compared to the actual observed data.</p>
+<p>Rather than dublicate this for both additive and multiplicative models, we will only explore the multiplicative model. Residuals are not computed directly within <code>JAGS</code>. However, we can calculate them manually form the posteriors.</p>
+<pre class="r"><code>&gt; library(ggplot2)
+&gt; library(dplyr)
+&gt; mcmc = data.r2jags.mult$BUGSoutput$sims.matrix %&gt;% as.data.frame %&gt;% dplyr:::select(beta0,
++     contains(&quot;beta&quot;), sigma) %&gt;% as.matrix
+&gt; # generate a model matrix
+&gt; newdata = data
+&gt; Xmat = model.matrix(~cx1 * cx2, newdata)
+&gt; ## get median parameter estimates
+&gt; coefs = apply(mcmc[, 1:4], 2, median)
+&gt; fit = as.vector(coefs %*% t(Xmat))
+&gt; resid = data$y - fit
+&gt; ggplot() + geom_point(data = NULL, aes(y = resid, x = fit))</code></pre>
+<p><img src="/JAGS/multiple-linear-regression-jags/2020-02-01-multiple-linear-regression-jags_files/figure-html/mcmc_residuals-1.png" width="672" /></p>
+<p>Residuals against predictors</p>
+<pre class="r"><code>&gt; library(tidyr)
+&gt; mcmc = data.r2jags.mult$BUGSoutput$sims.matrix %&gt;% as.data.frame %&gt;% dplyr:::select(beta0,
++     contains(&quot;beta&quot;), sigma) %&gt;% as.matrix
+&gt; # generate a model matrix
+&gt; newdata = newdata
+&gt; Xmat = model.matrix(~cx1 * cx2, newdata)
+&gt; ## get median parameter estimates
+&gt; coefs = apply(mcmc[, 1:4], 2, median)
+&gt; fit = as.vector(coefs %*% t(Xmat))
+&gt; resid = data$y - fit
+&gt; newdata = data %&gt;% cbind(fit, resid)
+&gt; newdata.melt = newdata %&gt;% gather(key = Pred, value = Value, cx1:cx2)
+&gt; ggplot(newdata.melt) + geom_point(aes(y = resid, x = Value)) + facet_wrap(~Pred)</code></pre>
+<p><img src="/JAGS/multiple-linear-regression-jags/2020-02-01-multiple-linear-regression-jags_files/figure-html/mcmc_residuals2-1.png" width="672" /></p>
+<p>And now for studentised residuals</p>
+<pre class="r"><code>&gt; mcmc = data.r2jags.mult$BUGSoutput$sims.matrix %&gt;% as.data.frame %&gt;% dplyr:::select(beta0, 
++   contains(&quot;beta&quot;), sigma) %&gt;% as.matrix
+&gt; # generate a model matrix
+&gt; newdata = data
+&gt; Xmat = model.matrix(~cx1 * cx2, newdata)
+&gt; ## get median parameter estimates
+&gt; coefs = apply(mcmc[, 1:4], 2, median)
+&gt; fit = as.vector(coefs %*% t(Xmat))
+&gt; resid = data$y - fit
+&gt; sresid = resid/sd(resid)
+&gt; ggplot() + geom_point(data = NULL, aes(y = sresid, x = fit))</code></pre>
+<p><img src="/JAGS/multiple-linear-regression-jags/2020-02-01-multiple-linear-regression-jags_files/figure-html/mcmc_residuals3-1.png" width="672" /></p>
+<p>For this simple model, the studentised residuals yield the same pattern as the raw residuals (or the Pearson residuals for that matter). Lets see how well data simulated from the model reflects the raw data.</p>
+<pre class="r"><code>&gt; mcmc = data.r2jags.mult$BUGSoutput$sims.matrix %&gt;% as.data.frame %&gt;%
++     dplyr:::select(beta0, contains(&quot;beta&quot;), sigma) %&gt;% as.matrix
+&gt; # generate a model matrix
+&gt; Xmat = model.matrix(~cx1 * cx2, data)
+&gt; ## get median parameter estimates
+&gt; coefs = mcmc[, 1:4]
+&gt; fit = coefs %*% t(Xmat)
+&gt; ## draw samples from this model
+&gt; yRep = sapply(1:nrow(mcmc), function(i) rnorm(nrow(data), fit[i,
++     ], mcmc[i, &quot;sigma&quot;]))
+&gt; ggplot() + geom_density(data = NULL, aes(x = as.vector(yRep),
++     fill = &quot;Model&quot;), alpha = 0.5) + geom_density(data = data,
++     aes(x = y, fill = &quot;Obs&quot;), alpha = 0.5)</code></pre>
+<p><img src="/JAGS/multiple-linear-regression-jags/2020-02-01-multiple-linear-regression-jags_files/figure-html/mcmc_rep-1.png" width="672" /></p>
+<p>We can also explore the posteriors of each parameter.</p>
+<pre class="r"><code>&gt; library(bayesplot)
+&gt; mcmc_intervals(data.r2jags.mult$BUGSoutput$sims.matrix, regex_pars = &quot;beta|sigma&quot;)</code></pre>
+<p><img src="/JAGS/multiple-linear-regression-jags/2020-02-01-multiple-linear-regression-jags_files/figure-html/mcmc_rep2-1.png" width="672" /></p>
+<pre class="r"><code>&gt; mcmc_areas(data.r2jags.mult$BUGSoutput$sims.matrix, regex_pars = &quot;beta|sigma&quot;)</code></pre>
+<p><img src="/JAGS/multiple-linear-regression-jags/2020-02-01-multiple-linear-regression-jags_files/figure-html/mcmc_rep2-2.png" width="672" /></p>
+</div>
+<div id="parameter-estimates" class="section level1">
+<h1>Parameter estimates</h1>
+<p>Although all parameters in a Bayesian analysis are considered random and are considered a distribution, rarely would it be useful to present tables of all the samples from each distribution. On the other hand, plots of the posterior distributions have some use. Nevertheless, most workers prefer to present simple statistical summaries of the posteriors. Popular choices include the median (or mean) and <span class="math inline">\(95\)</span>% credibility intervals.</p>
+<pre class="r"><code>&gt; mcmcpvalue &lt;- function(samp) {
++     ## elementary version that creates an empirical p-value for the
++     ## hypothesis that the columns of samp have mean zero versus a general
++     ## multivariate distribution with elliptical contours.
++ 
++     ## differences from the mean standardized by the observed
++     ## variance-covariance factor
++ 
++     ## Note, I put in the bit for single terms
++     if (length(dim(samp)) == 0) {
++         std &lt;- backsolve(chol(var(samp)), cbind(0, t(samp)) - mean(samp),
++             transpose = TRUE)
++         sqdist &lt;- colSums(std * std)
++         sum(sqdist[-1] &gt; sqdist[1])/length(samp)
++     } else {
++         std &lt;- backsolve(chol(var(samp)), cbind(0, t(samp)) - colMeans(samp),
++             transpose = TRUE)
++         sqdist &lt;- colSums(std * std)
++         sum(sqdist[-1] &gt; sqdist[1])/nrow(samp)
++     }
++ 
++ }</code></pre>
+<p>First, we look at the results from the additive model.</p>
+<pre class="r"><code>&gt; print(data.r2jags.add)
+Inference for Bugs model at &quot;ttestModel.txt&quot;, fit using jags,
+ 2 chains, each with 10500 iterations (first 3000 discarded)
+ n.sims = 15000 iterations saved
+         mu.vect sd.vect    2.5%     25%     50%     75%   97.5%  Rhat n.eff
+beta[1]    2.830   0.442   1.964   2.538   2.830   3.125   3.694 1.001  7400
+beta[2]    1.582   0.380   0.833   1.327   1.581   1.834   2.319 1.001 14000
+beta0      3.799   0.100   3.603   3.733   3.797   3.865   3.997 1.001 15000
+sigma      0.996   0.074   0.864   0.944   0.992   1.043   1.154 1.001 15000
+deviance 281.420   2.961 277.779 279.260 280.727 282.888 288.827 1.001 15000
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 4.4 and DIC = 285.8
+DIC is an estimate of expected predictive error (lower deviance is better).
+&gt; 
+&gt; # OR
+&gt; library(broom)
+&gt; tidyMCMC(as.mcmc(data.r2jags.add), conf.int = TRUE, conf.method = &quot;HPDinterval&quot;)
+# A tibble: 5 x 5
+  term     estimate std.error conf.low conf.high
+  &lt;chr&gt;       &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+1 beta[1]     2.83     0.442     1.96       3.69
+2 beta[2]     1.58     0.380     0.844      2.33
+3 beta0       3.80     0.1000    3.60       3.99
+4 deviance  281.       2.96    277.       287.  
+5 sigma       0.996    0.0742    0.857      1.14</code></pre>
+<p><strong>Conclusions</strong></p>
+<ul>
+<li><p>When <code>cx2</code> is held constant, a one unit increase in <code>cx1</code> is associated with a <span class="math inline">\(2.83\)</span> change in <span class="math inline">\(y\)</span>. That is, <span class="math inline">\(y\)</span> increases at a rate of <span class="math inline">\(2.83\)</span> per unit increase in <code>cx1</code> when standardised for <code>cx2</code>.</p></li>
+<li><p>When <code>cx1</code> is held constant, a one unit increase in <code>cx2</code> is associated with a <span class="math inline">\(1.58\)</span> change in <span class="math inline">\(y\)</span>. That is, <span class="math inline">\(y\)</span> increases at a rate of <span class="math inline">\(1.58\)</span> per unit increase in <code>cx2</code> when standardised for <code>cx1</code>.</p></li>
+</ul>
+<p>Note, as this is an additive model, the rates associated with <code>cx1</code> are assumed to be constant throughtout the range of <code>cx2</code> and vice versa. The <span class="math inline">\(95\)</span>% confidence interval for each partial slope does not overlap with <span class="math inline">\(0\)</span> implying a significant effects of <code>cx1</code> and <code>cx2</code> on <span class="math inline">\(y\)</span>. While workers attempt to become comfortable with a new statistical framework, it is only natural that they like to evaluate and comprehend new structures and output alongside more familiar concepts. One way to facilitate this is via Bayesian p-values that are somewhat analogous to the frequentist p-values for investigating the hypothesis that a parameter is equal to zero.</p>
+<pre class="r"><code>&gt; ## since values are less than zero
+&gt; mcmcpvalue(data.r2jags.add$BUGSoutput$sims.matrix[, &quot;beta[1]&quot;])
+[1] 0
+&gt; mcmcpvalue(data.r2jags.add$BUGSoutput$sims.matrix[, &quot;beta[2]&quot;])
+[1] 0.0001333333</code></pre>
+<p>With a p-value of essentially <span class="math inline">\(0\)</span>, we would conclude that there is almost no evidence that the slope was likely to be equal to zero, suggesting there is a relationship. Next, we look at the results from the multiplicative model.</p>
+<pre class="r"><code>&gt; print(data.r2jags.mult)
+Inference for Bugs model at &quot;ttestModel.txt&quot;, fit using jags,
+ 2 chains, each with 10500 iterations (first 3000 discarded)
+ n.sims = 15000 iterations saved
+         mu.vect sd.vect    2.5%     25%     50%     75%   97.5%  Rhat n.eff
+beta[1]    2.800   0.451   1.914   2.500   2.801   3.104   3.680 1.001 15000
+beta[2]    1.504   0.389   0.744   1.237   1.505   1.766   2.267 1.001 15000
+beta[3]    1.451   1.210  -0.933   0.643   1.456   2.238   3.849 1.001 15000
+beta0      3.715   0.122   3.475   3.633   3.715   3.797   3.957 1.001  6000
+sigma      0.994   0.073   0.863   0.944   0.989   1.039   1.151 1.001 15000
+deviance 280.964   3.307 276.617 278.541 280.281 282.649 289.157 1.001 15000
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 5.5 and DIC = 286.4
+DIC is an estimate of expected predictive error (lower deviance is better).
+&gt; 
+&gt; # OR
+&gt; library(broom)
+&gt; tidyMCMC(as.mcmc(data.r2jags.mult), conf.int = TRUE, conf.method = &quot;HPDinterval&quot;)
+# A tibble: 6 x 5
+  term     estimate std.error conf.low conf.high
+  &lt;chr&gt;       &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+1 beta[1]     2.80     0.451     1.91       3.67
+2 beta[2]     1.50     0.389     0.746      2.27
+3 beta[3]     1.45     1.21     -0.976      3.79
+4 beta0       3.71     0.122     3.47       3.95
+5 deviance  281.       3.31    276.       287.  
+6 sigma       0.994    0.0729    0.856      1.14</code></pre>
+<p><strong>Conclusions</strong></p>
+<ul>
+<li><p>At the average level of <code>cx2 (=0)</code>, a one unit increase in <code>cx1</code> is associated with a <span class="math inline">\(2.80\)</span> change in y. That is, y increases at a rate of <span class="math inline">\(2.80\)</span> per unit increase in <code>cx1</code> when standardised for <code>cx2</code>.</p></li>
+<li><p>At the average level of <code>cx1 (=0)</code>, a one unit increase in <code>cx2</code> is associated with a <span class="math inline">\(1.50\)</span> change in <span class="math inline">\(y\)</span>. That is, <span class="math inline">\(y\)</span> increases at a rate of <span class="math inline">\(1.50\)</span> per unit increase in <code>cx2</code> when standardised for <code>cx1</code>.</p></li>
+<li><p>The degree to which the rate of change in response associated with a one unit change in <code>cx1</code> changes over the range of <code>cx2</code> (and vice versa) is <span class="math inline">\(1.45\)</span>.</p></li>
+</ul>
+<p>The <span class="math inline">\(95\)</span>% confidence intervals for the interaction partial slope does not overlap with <span class="math inline">\(0\)</span> implying a significant interaction between <code>cx1</code> and <code>cx2</code>. This suggests that the nature of the relationship between <span class="math inline">\(y\)</span> and <code>cx1</code> depends on the level of <code>cx2</code> (and vice versa). The estimates of the effect of <code>cx1</code> are only appropriate when <code>cx2 = 0</code> etc. While workers attempt to become comfortable with a new statistical framework, it is only natural that they like to evaluate and comprehend new structures and output alongside more familiar concepts. One way to facilitate this is via Bayesian p-values that are somewhat analogous to the frequentist p-values for investigating the hypothesis that a parameter is equal to zero.</p>
+<pre class="r"><code>&gt; ## since values are less than zero
+&gt; mcmcpvalue(data.r2jags.mult$BUGSoutput$sims.matrix[, &quot;beta[1]&quot;])
+[1] 0
+&gt; mcmcpvalue(data.r2jags.mult$BUGSoutput$sims.matrix[, &quot;beta[2]&quot;])
+[1] 6.666667e-05
+&gt; mcmcpvalue(data.r2jags.mult$BUGSoutput$sims.matrix[, &quot;beta[3]&quot;])
+[1] 0.2236</code></pre>
+<p>With a p-value of essentially <span class="math inline">\(0\)</span>, we would conclude that there is almost no evidence that the slope was likely to be equal to zero, suggesting there is a relationship.</p>
+</div>
+<div id="graphical-summaries" class="section level1">
+<h1>Graphical summaries</h1>
+<p>A nice graphic is often a great accompaniment to a statistical analysis. Although there are no fixed assumptions associated with graphing (in contrast to statistical analyses), we often want the graphical summaries to reflect the associated statistical analyses. After all, the sample is just one perspective on the population(s). What we are more interested in is being able to estimate and depict likely population parameters/trends. Thus, whilst we could easily provide a plot displaying the raw data along with simple measures of location and spread, arguably, we should use estimates that reflect the fitted model. In this case, it would be appropriate to plot the credibility interval associated with each group.</p>
+<p>With appropriate use of model matrices and data wrangling, it is possible to produce a single prediction data set along with <code>ggplot</code> syntax to produce a multi-panel figure. First we look at the additive model.</p>
+<pre class="r"><code>&gt; mcmc = data.r2jags.add$BUGSoutput$sims.matrix
+&gt; ## Calculate the fitted values
+&gt; newdata = rbind(data.frame(cx1 = seq(min(data$cx1, na.rm = TRUE), max(data$cx1,
++     na.rm = TRUE), len = 100), cx2 = 0, Pred = 1), data.frame(cx1 = 0,
++     cx2 = seq(min(data$cx2, na.rm = TRUE), max(data$cx2, na.rm = TRUE),
++         len = 100), Pred = 2))
+&gt; Xmat = model.matrix(~cx1 + cx2, newdata)
+&gt; coefs = mcmc[, c(&quot;beta0&quot;, &quot;beta[1]&quot;, &quot;beta[2]&quot;)]
+&gt; fit = coefs %*% t(Xmat)
+&gt; newdata = newdata %&gt;% mutate(x1 = cx1 + mean.x1, x2 = cx2 + mean.x2) %&gt;%
++     cbind(tidyMCMC(fit, conf.int = TRUE, conf.method = &quot;HPDinterval&quot;)) %&gt;%
++     mutate(x = dplyr:::recode(Pred, x1, x2))
+&gt; 
+&gt; ggplot(newdata, aes(y = estimate, x = x)) + geom_line() + geom_ribbon(aes(ymin = conf.low,
++     ymax = conf.high), fill = &quot;blue&quot;, alpha = 0.3) + scale_y_continuous(&quot;Y&quot;) +
++     scale_x_continuous(&quot;X&quot;) + theme_classic() + facet_wrap(~Pred)</code></pre>
+<p><img src="/JAGS/multiple-linear-regression-jags/2020-02-01-multiple-linear-regression-jags_files/figure-html/mcmc_post1-1.png" width="672" /></p>
+<p>We cannot simply add the raw data to this figure. The reason for this is that the trends represent the effect of one predictor holding the other variable constant. Therefore, the observations we represent on the figure must likewise be standardised. We can achieve this by adding the partial residuals to the figure. Partial residuals are the fitted values plus the residuals.</p>
+<pre class="r"><code>&gt; ## Calculate partial residuals fitted values
+&gt; fdata = rdata = rbind(data.frame(cx1 = data$cx1, cx2 = 0, Pred = 1), data.frame(cx1 = 0,
++     cx2 = data$cx2, Pred = 2))
+&gt; fMat = rMat = model.matrix(~cx1 + cx2, fdata)
+&gt; fit = as.vector(apply(coefs, 2, median) %*% t(fMat))
+&gt; resid = as.vector(data$y - apply(coefs, 2, median) %*% t(rMat))
+&gt; rdata = rdata %&gt;% mutate(partial.resid = resid + fit) %&gt;% mutate(x1 = cx1 +
++     mean.x1, x2 = cx2 + mean.x2) %&gt;% mutate(x = dplyr:::recode(Pred, x1,
++     x2))
+&gt; 
+&gt; ggplot(newdata, aes(y = estimate, x = x)) + geom_point(data = rdata, aes(y = partial.resid),
++     color = &quot;gray&quot;) + geom_line() + geom_ribbon(aes(ymin = conf.low, ymax = conf.high),
++     fill = &quot;blue&quot;, alpha = 0.3) + scale_y_continuous(&quot;Y&quot;) + theme_classic() +
++     facet_wrap(~Pred, strip.position = &quot;bottom&quot;, labeller = label_bquote(&quot;x&quot; *
++         .(Pred))) + theme(axis.title.x = element_blank(), strip.background = element_blank(),
++     strip.placement = &quot;outside&quot;)</code></pre>
+<p><img src="/JAGS/multiple-linear-regression-jags/2020-02-01-multiple-linear-regression-jags_files/figure-html/mcmc_post2-1.png" width="672" /></p>
+<p>However, this method (whist partially elegant) does become overly opaque if we need more extensive axes labels since the x-axes labels are actually strip labels (which must largely be defined outside of the <code>ggplot</code> structure). The alternative is to simply produce each partial plot separately before arranging them together in the one figure using the package <code>gridExtra</code>.</p>
+<pre class="r"><code>&gt; library(gridExtra)
+&gt; mcmc = data.r2jags.add$BUGSoutput$sims.matrix
+&gt; ## Calculate the fitted values
+&gt; newdata = data.frame(cx1 = seq(min(data$cx1, na.rm = TRUE), max(data$cx1,
++     na.rm = TRUE), len = 100), cx2 = 0)
+&gt; Xmat = model.matrix(~cx1 + cx2, newdata)
+&gt; coefs = mcmc[, c(&quot;beta0&quot;, &quot;beta[1]&quot;, &quot;beta[2]&quot;)]
+&gt; fit = coefs %*% t(Xmat)
+&gt; newdata = newdata %&gt;% mutate(x1 = cx1 + mean.x1, x2 = cx2 + mean.x2) %&gt;%
++     cbind(tidyMCMC(fit, conf.int = TRUE, conf.method = &quot;HPDinterval&quot;))
+&gt; ## Now the partial residuals
+&gt; fdata = rdata = data.frame(cx1 = data$cx1, cx2 = 0)
+&gt; fMat = rMat = model.matrix(~cx1 + cx2, fdata)
+&gt; fit = as.vector(apply(coefs, 2, median) %*% t(fMat))
+&gt; resid = as.vector(data$y - apply(coefs, 2, median) %*% t(rMat))
+&gt; rdata = rdata %&gt;% mutate(partial.resid = resid + fit) %&gt;% mutate(x1 = cx1 +
++     mean.x1, x2 = cx2 + mean.x2)
+&gt; g1 = ggplot(newdata, aes(y = estimate, x = x1)) + geom_point(data = rdata,
++     aes(y = partial.resid), color = &quot;grey&quot;) + geom_line() + geom_ribbon(aes(ymin = conf.low,
++     ymax = conf.high), fill = &quot;blue&quot;, alpha = 0.3) + scale_y_continuous(&quot;Y&quot;) +
++     scale_x_continuous(&quot;X1&quot;) + theme_classic()
+&gt; 
+&gt; newdata = data.frame(cx2 = seq(min(data$cx2, na.rm = TRUE), max(data$cx2,
++     na.rm = TRUE), len = 100), cx1 = 0)
+&gt; Xmat = model.matrix(~cx1 + cx2, newdata)
+&gt; coefs = mcmc[, c(&quot;beta0&quot;, &quot;beta[1]&quot;, &quot;beta[2]&quot;)]
+&gt; fit = coefs %*% t(Xmat)
+&gt; newdata = newdata %&gt;% mutate(x1 = cx1 + mean.x1, x2 = cx2 + mean.x2) %&gt;%
++     cbind(tidyMCMC(fit, conf.int = TRUE, conf.method = &quot;HPDinterval&quot;))
+&gt; ## Now the partial residuals
+&gt; fdata = rdata = data.frame(cx1 = 0, cx2 = data$cx2)
+&gt; fMat = rMat = model.matrix(~cx1 + cx2, fdata)
+&gt; fit = as.vector(apply(coefs, 2, median) %*% t(fMat))
+&gt; resid = as.vector(data$y - apply(coefs, 2, median) %*% t(rMat))
+&gt; rdata = rdata %&gt;% mutate(partial.resid = resid + fit) %&gt;% mutate(x1 = cx1 +
++     mean.x1, x2 = cx2 + mean.x2)
+&gt; g2 = ggplot(newdata, aes(y = estimate, x = x2)) + geom_point(data = rdata,
++     aes(y = partial.resid), color = &quot;grey&quot;) + geom_line() + geom_ribbon(aes(ymin = conf.low,
++     ymax = conf.high), fill = &quot;blue&quot;, alpha = 0.3) + scale_y_continuous(&quot;Y&quot;) +
++     scale_x_continuous(&quot;X2&quot;) + theme_classic()
+&gt; 
+&gt; grid.arrange(g1, g2, ncol = 2)</code></pre>
+<p><img src="/JAGS/multiple-linear-regression-jags/2020-02-01-multiple-linear-regression-jags_files/figure-html/mcmc_post3-1.png" width="672" /></p>
+<p>For the multiplicative model, we could elect to split the trends up so as to explore the effects of one predictor at several set levels of another predictor. In this example, we will explore the effects of <span class="math inline">\(x_1\)</span> when <span class="math inline">\(x_2\)</span> is equal to its mean in the original data as well as one and two standard deviations below and above this mean.</p>
+<pre class="r"><code>&gt; library(fields)
+&gt; mcmc = data.r2jags.mult$BUGSoutput$sims.matrix
+&gt; ## Calculate the fitted values
+&gt; newdata = expand.grid(cx1 = seq(min(data$cx1, na.rm = TRUE), max(data$cx1,
++     na.rm = TRUE), len = 100), cx2 = mean(data$cx2) + sd(data$cx2) %*%
++     -2:2)
+&gt; Xmat = model.matrix(~cx1 * cx2, newdata)
+&gt; coefs = mcmc[, c(&quot;beta0&quot;, &quot;beta[1]&quot;, &quot;beta[2]&quot;, &quot;beta[3]&quot;)]
+&gt; fit = coefs %*% t(Xmat)
+&gt; newdata = newdata %&gt;% mutate(x1 = cx1 + mean.x1, x2 = cx2 + mean.x2) %&gt;%
++     cbind(tidyMCMC(fit, conf.int = TRUE, conf.method = &quot;HPDinterval&quot;)) %&gt;%
++     mutate(x2 = factor(x2, labels = paste(&quot;X2:~&quot;, c(-2, -1, 0, 1, 2), &quot;*sigma&quot;)))
+&gt; ## Partial residuals
+&gt; fdata = rdata = expand.grid(cx1 = data$cx1, cx2 = mean(data$cx2) + sd(data$cx2) *
++     -2:2)
+&gt; fMat = rMat = model.matrix(~cx1 * cx2, fdata)
+&gt; fit = as.vector(apply(coefs, 2, median) %*% t(fMat))
+&gt; resid = as.vector(data$y - apply(coefs, 2, median) %*% t(rMat))
+&gt; rdata = rdata %&gt;% mutate(partial.resid = resid + fit) %&gt;% mutate(x1 = cx1 +
++     mean.x1, x2 = cx2 + mean.x2)
+&gt; ## Partition the partial residuals such that each x1 trend only includes
+&gt; ## x2 data that is within that range in the observed data
+&gt; findNearest = function(x, y) {
++     ff = fields:::rdist(x, y)
++     apply(ff, 1, function(x) which(x == min(x)))
++ }
+&gt; fn = findNearest(x = data[, c(&quot;x1&quot;, &quot;x2&quot;)], y = rdata[, c(&quot;x1&quot;, &quot;x2&quot;)])
+&gt; rdata = rdata[fn, ] %&gt;% mutate(x2 = factor(x2, labels = paste(&quot;X2:~&quot;, c(-2,
++     -1, 0, 1, 2), &quot;*sigma&quot;)))
+&gt; ggplot(newdata, aes(y = estimate, x = x1)) + geom_line() + geom_blank(aes(y = 9)) +
++     geom_point(data = rdata, aes(y = partial.resid), color = &quot;grey&quot;) +
++     geom_ribbon(aes(ymin = conf.low, ymax = conf.high), fill = &quot;blue&quot;,
++         alpha = 0.3) + scale_y_continuous(&quot;Y&quot;) + scale_x_continuous(&quot;X1&quot;) +
++     facet_wrap(~x2, labeller = label_parsed, nrow = 1, scales = &quot;free_y&quot;) +
++     theme_classic() + theme(strip.background = element_blank())</code></pre>
+<p><img src="/JAGS/multiple-linear-regression-jags/2020-02-01-multiple-linear-regression-jags_files/figure-html/mcmc_post4-1.png" width="672" /></p>
+<p>Alternatively, we could explore the interaction by plotting a two dimensional surface as a heat map.</p>
+</div>
+<div id="effect-sizes" class="section level1">
+<h1>Effect sizes</h1>
+<p>In addition to deriving the distribution means for the slope parameter, we could make use of the Bayesian framework to derive the distribution of the effect size. In so doing, effect size could be considered as either the rate of change or alternatively, the difference between pairs of values along the predictor gradient. For the latter case, there are multiple ways of calculating an effect size, but the two most common are:</p>
+<ul>
+<li><p><em>Raw effect size</em>. The difference between two groups (as already calculated)</p></li>
+<li><p><em>Cohen’s D</em>. The effect size standardized by division with the pooled standard deviation: <span class="math inline">\(D=\frac{(\mu_A-\mu_B)}{\sigma}\)</span></p></li>
+<li><p><em>Percentage change</em>. Express the effect size as a percent of one of the pairs. That is, whether you expressing a percentage increase or a percentage decline depends on which of the pairs of values are considered a reference value. Care must be exercised to ensure no division by zeros occur.</p></li>
+</ul>
+<p>For simple linear models, effect size based on a rate is essentially the same as above except that it is expressed per unit of the predictor. Of course in many instances, one unit change in the predictor represents too subtle a shift in the underlying gradient to likely yield any clinically meaningful or appreciable change in response.</p>
+<p>Probability that a change in <span class="math inline">\(x_1\)</span> is associated with greater than a <span class="math inline">\(50\)</span>% increase in <span class="math inline">\(y\)</span> at various levels of <span class="math inline">\(x_2\)</span>. Clearly, in order to explore this inference, we must first express the change in <span class="math inline">\(y\)</span> as a percentage. This in turn requires us to calculate start and end points from which to calculate the magnitude of the effect (amount of increase in <span class="math inline">\(y\)</span>) as well as the percentage decline. Hence, we start by predicting the distribution of <span class="math inline">\(y\)</span> at the lowest and highest values of <span class="math inline">\(x_1\)</span> at five levels of <span class="math inline">\(x_2\)</span> (representing two standard deviations below the <code>cx2</code> mean, one standard deviation below the <code>cx2</code> mean, the <code>cx2</code> mean, one standard deviation above the <code>cx2</code> mean and <span class="math inline">\(2\)</span> standard deviations above the <code>cx2</code> mean. For this exercise we will only use the multiplicative model. Needless to say, the process would be very similar for the additive model.</p>
+<pre class="r"><code>&gt; mcmc = data.r2jags.mult$BUGSoutput$sims.matrix
+&gt; newdata = expand.grid(cx1 = c(min(data$cx1), max(data$cx1)), cx2 = (-2:2) *
++     sd(data$cx2))
+&gt; Xmat = model.matrix(~cx1 * cx2, newdata)
+&gt; coefs = mcmc[, c(&quot;beta0&quot;, &quot;beta[1]&quot;, &quot;beta[2]&quot;, &quot;beta[3]&quot;)]
+&gt; fit = coefs %*% t(Xmat)
+&gt; s1 = seq(1, 9, b = 2)
+&gt; s2 = seq(2, 10, b = 2)
+&gt; ## Raw effect size
+&gt; (RES = tidyMCMC(as.mcmc(fit[, s2] - fit[, s1]), conf.int = TRUE, conf.method = &quot;HPDinterval&quot;))
+# A tibble: 5 x 5
+  term  estimate std.error conf.low conf.high
+  &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+1 2         1.82     0.938  -0.0378      3.64
+2 4         2.30     0.616   1.13        3.54
+3 6         2.78     0.448   1.90        3.65
+4 8         3.26     0.586   2.12        4.42
+5 10        3.74     0.899   2.02        5.55
+&gt; ## Cohen&#39;s D
+&gt; cohenD = (fit[, s2] - fit[, s1])/sqrt(mcmc[, &quot;sigma&quot;])
+&gt; (cohenDES = tidyMCMC(as.mcmc(cohenD), conf.int = TRUE, conf.method = &quot;HPDinterval&quot;))
+# A tibble: 5 x 5
+  term  estimate std.error conf.low conf.high
+  &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+1 2         1.83     0.940   0.0489      3.74
+2 4         2.31     0.622   1.11        3.57
+3 6         2.80     0.461   1.89        3.68
+4 8         3.28     0.599   2.10        4.45
+5 10        3.76     0.910   1.98        5.54
+&gt; # Percentage change (relative to Group A)
+&gt; ESp = 100 * (fit[, s2] - fit[, s1])/fit[, s1]
+&gt; (PES = tidyMCMC(as.mcmc(ESp), conf.int = TRUE, conf.method = &quot;HPDinterval&quot;))
+# A tibble: 5 x 5
+  term  estimate std.error conf.low conf.high
+  &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+1 2         124.     142.     -19.5      318.
+2 4         117.      45.2     33.1      205.
+3 6         123.      32.9     62.1      187.
+4 8         135.      50.0     48.0      230.
+5 10        150.      89.1     29.4      308.
+&gt; # Probability that the effect is greater than 50% (an increase of &gt;50%)
+&gt; (p50 = apply(ESp, 2, function(x) sum(x &gt; 50)/length(x)))
+        2         4         6         8        10 
+0.7996667 0.9576667 0.9978667 0.9925333 0.9723333 
+&gt; ## fractional change
+&gt; (FES = tidyMCMC(as.mcmc(fit[, s2]/fit[, s1]), conf.int = TRUE, conf.method = &quot;HPDinterval&quot;))
+# A tibble: 5 x 5
+  term  estimate std.error conf.low conf.high
+  &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+1 2         2.24     1.42     0.805      4.18
+2 4         2.17     0.452    1.33       3.05
+3 6         2.23     0.329    1.62       2.87
+4 8         2.35     0.500    1.48       3.30
+5 10        2.50     0.891    1.29       4.08</code></pre>
+<p><strong>Conclusions</strong></p>
+<ul>
+<li><p>On average, when <span class="math inline">\(x_2\)</span> is equal to its mean, <span class="math inline">\(Y\)</span> increases by <span class="math inline">\(2.79\)</span> over the observed range of <span class="math inline">\(x_1\)</span>. We are <span class="math inline">\(95\)</span>% confident that the increase is between <span class="math inline">\(1.91\)</span> and <span class="math inline">\(3.66\)</span>.</p></li>
+<li><p>The Cohen’s D associated change over the observed range of <span class="math inline">\(x_1\)</span> is <span class="math inline">\(2.80\)</span>.</p></li>
+<li><p>On average, <span class="math inline">\(Y\)</span> increases by <span class="math inline">\(124\)</span>% over the observed range of <span class="math inline">\(x_1\)</span> (at average <span class="math inline">\(x_2\)</span>). We are <span class="math inline">\(95\)</span>% confident that the increase is between <span class="math inline">\(65\)</span>% and <span class="math inline">\(190\)</span>%.</p></li>
+<li><p>The probability that <span class="math inline">\(Y\)</span> increases by more than <span class="math inline">\(50\)</span>% over the observed range of <span class="math inline">\(x_1\)</span> (average <span class="math inline">\(x_2\)</span>) is <span class="math inline">\(0.998\)</span>.</p></li>
+<li><p>On average, <span class="math inline">\(Y\)</span> increases by a factor of <span class="math inline">\(2.24\)</span>% over the observed range of <span class="math inline">\(x_1\)</span> (average <span class="math inline">\(x_2\)</span>). We are <span class="math inline">\(95\)</span>% confident that the decline is between a factor of <span class="math inline">\(1.65\)</span>% and <span class="math inline">\(2.90\)</span>%.</p></li>
+</ul>
+</div>
+<div id="finite-population-standard-deviations" class="section level1">
+<h1>Finite population standard deviations</h1>
+<p>Variance components, the amount of added variance attributed to each influence, are traditionally estimated for so called random effects. These are the effects for which the levels employed in the design are randomly selected to represent a broader range of possible levels. For such effects, effect sizes (differences between each level and a reference level) are of little value. Instead, the “importance” of the variables are measured in units of variance components. On the other hand, regular variance components for fixed factors (those whose measured levels represent the only levels of interest) are not logical - since variance components estimate variance as if the levels are randomly selected from a larger population. Nevertheless, in order to compare and contrast the scale of variability of both fixed and random factors, it is necessary to measure both on the same scale (sample or population based variance).</p>
+<p>Finite-population variance components assume that the levels of all factors (fixed and random) in the design are all the possible levels available (<span class="citation">Gelman and others (2005)</span>). In other words, they are assumed to represent finite populations of levels. Sample (rather than population) statistics are then used to calculate these finite-population variances (or standard deviations). Since standard deviation (and variance) are bound at zero, standard deviation posteriors are typically non-normal. Consequently, medians and HPD intervals are more robust estimates.</p>
+<pre><code># A tibble: 4 x 5
+  term     estimate std.error   conf.low conf.high
+  &lt;chr&gt;       &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;
+1 sd.x1       0.798    0.129  0.544          1.05 
+2 sd.x2       0.501    0.130  0.249          0.756
+3 sd.x1x2     0.136    0.0877 0.00000784     0.296
+4 sd.resid    0.981    0.0128 0.965          1.01 
+# A tibble: 4 x 5
+  term     estimate std.error  conf.low conf.high
+  &lt;chr&gt;       &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+1 sd.x1       33.1       4.97 23.4           42.7
+2 sd.x2       20.8       5.14 10.4           30.3
+3 sd.x1x2      5.27      3.46  0.000322      11.7
+4 sd.resid    40.5       2.15 36.7           44.9</code></pre>
+<p><img src="/JAGS/multiple-linear-regression-jags/2020-02-01-multiple-linear-regression-jags_files/figure-html/effects_modelv4-1.png" width="672" /></p>
+<p>Approximately <span class="math inline">\(59\)</span>% of the total finite population standard deviation is due to <span class="math inline">\(x_1\)</span>, <span class="math inline">\(x_2\)</span> and their interaction.</p>
+</div>
+<div id="r-squared" class="section level1">
+<h1>R squared</h1>
+<p>In a frequentist context, the <span class="math inline">\(R^2\)</span> value is seen as a useful indicator of goodness of fit. Whilst it has long been acknowledged that this measure is not appropriate for comparing models (for such purposes information criterion such as AIC are more appropriate), it is nevertheless useful for estimating the amount (percent) of variance explained by the model. In a frequentist context, <span class="math inline">\(R^2\)</span> is calculated as the variance in predicted values divided by the variance in the observed (response) values. Unfortunately, this classical formulation does not translate simply into a Bayesian context since the equivalently calculated numerator can be larger than the an equivalently calculated denominator - thereby resulting in an <span class="math inline">\(R^2\)</span> greater than <span class="math inline">\(100\)</span>%. <span class="citation">Gelman et al. (2019)</span> proposed an alternative formulation in which the denominator comprises the sum of the explained variance and the variance of the residuals.</p>
+<p>So in the standard regression model notation of:</p>
+<p><span class="math display">\[ y_i \sim \text{Normal}(\boldsymbol X \boldsymbol \beta, \sigma),\]</span></p>
+<p>the <span class="math inline">\(R^2\)</span> could be formulated as</p>
+<p><span class="math display">\[ R^2 = \frac{\sigma^2_f}{\sigma^2_f + \sigma^2_e},\]</span></p>
+<p>where <span class="math inline">\(\sigma^2_f=\text{var}(\boldsymbol X \boldsymbol \beta)\)</span>, and for normal models <span class="math inline">\(\sigma^2_e=\text{var}(y-\boldsymbol X \boldsymbol \beta)\)</span></p>
+<pre class="r"><code>&gt; mcmc &lt;- data.r2jags.mult$BUGSoutput$sims.matrix
+&gt; Xmat = model.matrix(~cx1 * cx2, data)
+&gt; coefs = mcmc[, c(&quot;beta0&quot;, &quot;beta[1]&quot;, &quot;beta[2]&quot;, &quot;beta[3]&quot;)]
+&gt; fit = coefs %*% t(Xmat)
+&gt; resid = sweep(fit, 2, data$y, &quot;-&quot;)
+&gt; var_f = apply(fit, 1, var)
+&gt; var_e = apply(resid, 1, var)
+&gt; R2 = var_f/(var_f + var_e)
+&gt; tidyMCMC(as.mcmc(R2), conf.int = TRUE, conf.method = &quot;HPDinterval&quot;)
+# A tibble: 1 x 5
+  term  estimate std.error conf.low conf.high
+  &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+1 var1     0.605    0.0400    0.526     0.676
+&gt; 
+&gt; # for comparison with frequentist
+&gt; summary(lm(y ~ cx1 * cx2, data))
+
+Call:
+lm(formula = y ~ cx1 * cx2, data = data)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-1.8173 -0.7167 -0.1092  0.5890  3.3861 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)   3.7152     0.1199  30.987  &lt; 2e-16 ***
+cx1           2.8072     0.4390   6.394 5.84e-09 ***
+cx2           1.4988     0.3810   3.934 0.000158 ***
+cx1:cx2       1.4464     1.1934   1.212 0.228476    
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 0.9804 on 96 degrees of freedom
+Multiple R-squared:  0.6115,    Adjusted R-squared:  0.5994 
+F-statistic: 50.37 on 3 and 96 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div id="bayesian-model-selection" class="section level1">
+<h1>Bayesian model selection</h1>
+<p>A statistical model is by definition a low-dimensional (over simplification) representation of what is really likely to be a very complex system. As a result, no model is right. Some models however can provide useful insights into some of the processes operating on the system. Frequentist statistics have various methods (model selection, dredging, lasso, cross validation) for selecting parsimonious models. These are models that provide a good comprimise between minimizing unexplained patterns and minimizing model complexity. The basic premise is that since no model can hope to capture the full complexity of a system with all its subtleties, only the very major patterns can be estimated. Overly complex models are likely to be representing artificial complexity present only in the specific observed data (not the general population). The Bayesian approach is to apply priors to the non-variance parameters such that parameters close to zero are further shrunk towards zero whilst priors on parameters further away from zero are less effected. The most popular form of prior for sparsity is the <em>horseshoe prior</em>, so called because the shape of a component of this prior resembles a horseshoe (with most of the mass either close to <span class="math inline">\(0\)</span> or close to <span class="math inline">\(1\)</span>).</p>
+<p>Rather than apply weakly informative Gaussian priors on parameters as:</p>
+<p><span class="math display">\[ \beta_j \sim N(0,\sigma^2),\]</span></p>
+<p>the horseshoe prior is defined as</p>
+<p><span class="math display">\[ \beta_j \sim N(0,\tau^2\lambda_j^2),\]</span></p>
+<p>where <span class="math inline">\(\tau \sim \text{Cauchy}(0,1)\)</span> and <span class="math inline">\(\lambda_j \sim \text{Cauchy}(0,1)\)</span>, for <span class="math inline">\(j=1,\ldots,D\)</span>. Using this prior, <span class="math inline">\(D\)</span> is the number of (non-intercept or variance) parameters, <span class="math inline">\(\tau\)</span> represents the global scale that weights or shrinks all parameters towards zero and <span class="math inline">\(\lambda_j\)</span> are thick tailed local scales that allow some of the <span class="math inline">\(j\)</span> parameters to escape shrinkage. More recently, <span class="citation">Piironen, Vehtari, and others (2017)</span> have argued that whilst the above horseshoe priors do guarantee that strong effects (parameters) will not be over-shrunk, there is the potential for weekly identified effects (those based on relatively little data) to be misrepresented in the posteriors. As an alternative they advocated the use of regularised horseshoe priors in which the amount of shrinkage applied to the largest effects can be controlled. The prior is defined as:</p>
+<p><span class="math display">\[ \beta_j \sim N(0,\tau^2 \tilde{\lambda}_j^2),\]</span></p>
+<p>where <span class="math inline">\(\tilde{\lambda}_j^2 = \frac{c^2\lambda^2_j}{c^2+\tau^2 \lambda^2_j}\)</span> and <span class="math inline">\(c\)</span> is (slab width, actually variance) is a constant. For small effects (when <span class="math inline">\(\tau^2 \lambda^2_j &lt; c^2\)</span>) the prior approaches a regular prior. However, for large effects (when <span class="math inline">\(\tau^2 \lambda^2_j &gt; c^2\)</span>) the prior approaches <span class="math inline">\(N(0,c^2)\)</span>. Finally, they recommend applying a inverse-gamma prior on <span class="math inline">\(c^2\)</span>:</p>
+<p><span class="math display">\[ c^2 \sim \text{Inv-Gamma}(\alpha,\beta),\]</span></p>
+<p>where <span class="math inline">\(\alpha=v/2\)</span> and <span class="math inline">\(\beta=vs^2/2\)</span>, which translates to a <span class="math inline">\(\text{Student-t}_ν(0, s^2)\)</span> slab for the coefficients far from zero and is typically a good default choice for a weakly informative prior.</p>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references hanging-indent">
+<div id="ref-gelman2019r">
+<p>Gelman, Andrew, Ben Goodrich, Jonah Gabry, and Aki Vehtari. 2019. “R-Squared for Bayesian Regression Models.” <em>The American Statistician</em> 73 (3): 307–9.</p>
+</div>
+<div id="ref-gelman2005analysis">
+<p>Gelman, Andrew, and others. 2005. “Analysis of Variance—Why It Is More Important Than Ever.” <em>The Annals of Statistics</em> 33 (1): 1–53.</p>
+</div>
+<div id="ref-piironen2017sparsity">
+<p>Piironen, Juho, Aki Vehtari, and others. 2017. “Sparsity Information and Regularization in the Horseshoe and Other Shrinkage Priors.” <em>Electronic Journal of Statistics</em> 11 (2): 5018–51.</p>
+</div>
+<div id="ref-plummer2004jags">
+<p>Plummer, Martyn. 2004. “JAGS: Just Another Gibbs Sampler.”</p>
+</div>
+<div id="ref-su2015package">
+<p>Su, Yu-Sung, Masanao Yajima, Maintainer Yu-Sung Su, and JAGS SystemRequirements. 2015. “Package ‘R2jags’.” <em>R Package Version 0.03-08, URL Http://CRAN. R-Project. Org/Package= R2jags</em>.</p>
+</div>
+</div>
+</div>

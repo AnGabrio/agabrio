@@ -735,7 +735,7 @@ OpenBUGS - written in component pascal.
 +   &quot;
 &gt; ## write the model to a stan file 
 &gt; writeLines(modelStringv2, con = &quot;linregModelv2.stan&quot;)</code></pre>
-<p>Arrange the data as a list (as required by <code>JAGS</code>). As input, <code>JAGS</code> will need to be supplied with: the response variable, the predictor variable, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.</p>
+<p>Arrange the data as a list (as required by <code>STAN</code>). As input, <code>STAN</code> will need to be supplied with: the response variable, the predictor variable, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.</p>
 <pre class="r"><code>&gt; Xmat &lt;- model.matrix(~x, data = data)
 &gt; data.list &lt;- with(data, list(Y = y, X = Xmat, nX = ncol(Xmat), n = nrow(data)))
 &gt; data.list
@@ -809,9 +809,9 @@ Chain 1: Iteration: 2000 / 2500 [ 80%]  (Sampling)
 Chain 1: Iteration: 2250 / 2500 [ 90%]  (Sampling)
 Chain 1: Iteration: 2500 / 2500 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 0.028 seconds (Warm-up)
+Chain 1:  Elapsed Time: 0.027 seconds (Warm-up)
 Chain 1:                0.035 seconds (Sampling)
-Chain 1:                0.063 seconds (Total)
+Chain 1:                0.062 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL &#39;linregModelv2&#39; NOW (CHAIN 2).
@@ -835,8 +835,8 @@ Chain 2: Iteration: 2250 / 2500 [ 90%]  (Sampling)
 Chain 2: Iteration: 2500 / 2500 [100%]  (Sampling)
 Chain 2: 
 Chain 2:  Elapsed Time: 0.028 seconds (Warm-up)
-Chain 2:                0.035 seconds (Sampling)
-Chain 2:                0.063 seconds (Total)
+Chain 2:                0.034 seconds (Sampling)
+Chain 2:                0.062 seconds (Total)
 Chain 2: </code></pre>
 </div>
 <div id="mcmc-diagnostics" class="section level1">

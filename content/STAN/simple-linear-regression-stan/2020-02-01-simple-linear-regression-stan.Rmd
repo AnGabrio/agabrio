@@ -267,7 +267,7 @@ data {
 writeLines(modelStringv2, con = "linregModelv2.stan")
 ```
 
-Arrange the data as a list (as required by `JAGS`). As input, `JAGS` will need to be supplied with: the response variable, the predictor variable, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.
+Arrange the data as a list (as required by `STAN`). As input, `STAN` will need to be supplied with: the response variable, the predictor variable, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.
 
 ```{r data_model, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 Xmat <- model.matrix(~x, data = data)
