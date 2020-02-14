@@ -39,11 +39,47 @@
     </item>
     
     <item>
+      <title>anova</title>
+      <link>/tags/anova/</link>
+      <pubDate>Tue, 04 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/anova/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>facor analysis</title>
+      <link>/tags/facor-analysis/</link>
+      <pubDate>Tue, 04 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/facor-analysis/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>JAGS</title>
       <link>/tags/jags/</link>
-      <pubDate>Mon, 03 Feb 2020 21:13:14 -0500</pubDate>
+      <pubDate>Tue, 04 Feb 2020 21:13:14 -0500</pubDate>
       
       <guid>/tags/jags/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>STAN</title>
+      <link>/tags/stan/</link>
+      <pubDate>Tue, 04 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/stan/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>tutorials</title>
+      <link>/tags/tutorials/</link>
+      <pubDate>Tue, 04 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/tutorials/</guid>
       <description></description>
     </item>
     
@@ -53,24 +89,6 @@
       <pubDate>Mon, 03 Feb 2020 21:13:14 -0500</pubDate>
       
       <guid>/tags/linear-regression/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>STAN</title>
-      <link>/tags/stan/</link>
-      <pubDate>Mon, 03 Feb 2020 21:13:14 -0500</pubDate>
-      
-      <guid>/tags/stan/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>tutorials</title>
-      <link>/tags/tutorials/</link>
-      <pubDate>Mon, 03 Feb 2020 21:13:14 -0500</pubDate>
-      
-      <guid>/tags/tutorials/</guid>
       <description></description>
     </item>
     

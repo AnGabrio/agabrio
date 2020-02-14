@@ -1,0 +1,1605 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>facor analysis on Andrea Gabrio</title>
+    <link>/categories/facor-analysis/</link>
+    <description>Recent content in facor analysis on Andrea Gabrio</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 04 Feb 2020 21:13:14 -0500</lastBuildDate>
+    
+	    <atom:link href="/categories/facor-analysis/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Single Factor Anova - JAGS</title>
+      <link>/jags/single-factor-anova-jags/single-factor-anova-jags/</link>
+      <pubDate>Tue, 04 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/jags/single-factor-anova-jags/single-factor-anova-jags/</guid>
+      <description>
+&lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;p&gt;This tutorial will focus on the use of Bayesian estimation to fit simple linear regression models. &lt;code&gt;BUGS&lt;/code&gt; (Bayesian inference Using &lt;em&gt;Gibbs Sampling&lt;/em&gt;) is an algorithm and supporting language (resembling &lt;code&gt;R&lt;/code&gt;) dedicated to performing the Gibbs sampling implementation of &lt;em&gt;Markov Chain Monte Carlo&lt;/em&gt; (MCMC) method. Dialects of the &lt;code&gt;BUGS&lt;/code&gt; language are implemented within three main projects:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;OpenBUGS&lt;/strong&gt; - written in component pascal.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;JAGS&lt;/strong&gt; - (Just Another Gibbs Sampler) - written in &lt;code&gt;C++&lt;/code&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;STAN&lt;/strong&gt; - a dedicated Bayesian modelling framework written in &lt;code&gt;C++&lt;/code&gt; and implementing &lt;em&gt;Hamiltonian&lt;/em&gt; MCMC samplers.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Whilst the above programs can be used stand-alone, they do offer the rich data pre-processing and graphical capabilities of &lt;code&gt;R&lt;/code&gt;, and thus, they are best accessed from within &lt;code&gt;R&lt;/code&gt; itself. As such there are multiple packages devoted to interfacing with the various software implementations:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;R2OpenBUGS&lt;/em&gt; - interfaces with &lt;code&gt;OpenBUGS&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;R2jags&lt;/em&gt; - interfaces with &lt;code&gt;JAGS&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;rstan&lt;/em&gt; - interfaces with &lt;code&gt;STAN&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This tutorial will demonstrate how to fit models in &lt;code&gt;JAGS&lt;/code&gt; (&lt;span class=&#34;citation&#34;&gt;Plummer (2004)&lt;/span&gt;) using the package &lt;code&gt;R2jags&lt;/code&gt; (&lt;span class=&#34;citation&#34;&gt;Su et al. (2015)&lt;/span&gt;) as interface, which also requires to load some other packages.&lt;/p&gt;
+&lt;div id=&#34;overview&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Overview&lt;/h1&gt;
+&lt;div id=&#34;introduction&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;Single factor Analysis of Variance&lt;/em&gt; (ANOVA), also known as single factor classification, is used to investigate the effect of a single factor comprising two or more groups (treatment levels) from a completely randomised design. Completely randomised refers to the absence of restrictions on the random allocation of experimental or sampling units to factor levels.&lt;/p&gt;
+&lt;p&gt;For example, consider a situation in which three types of treatments (A, B and C) are applied to replicate sampling units across the sampling domain. Importantly, the treatments are applied at the scale of the sampling units and the treatments applied to each sampling unit do not extend to any other neighbouring sampling units. Another possible situation is where the scale of a treatment is far larger than that of a sampling unit. This design features two treatments, each replicated three times. Note that additional sampling units within each Site (the scale at which the treatment occurs) would NOT constitute additional replication. Rather, these would be sub-replicates. That is, they would be replicates of the Sites, not the treatments (since the treatments occur at the level of whole sites). In order to genuinely increase the number of replicates, it is necessary to have more Sites. The random allocation of sampling units within the sampling domain (such as population) is appropriate provided either the underlying response is reasonably homogenous throughout the domain, or else, there is a large number of sampling units. If the conditions are relatively hetrogenous, then the exact location of the sampling units is likely to be highly influential and may mask any detectable effects of treatments.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;fixed-and-random-effects&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Fixed and random effects&lt;/h2&gt;
+&lt;p&gt;From a frequentist perspective, &lt;em&gt;fixed factors&lt;/em&gt; are factors whose levels represent the specific populations of interest. For example, a factor that comprises “high”, “medium” and “low” temperature treatments is a fixed factor - we are only interested in comparing those three populations. Conclusions about the effects of a fixed factor are restricted to the specific treatment levels investigated and for any subsequent experiments to be comparable, the same specific treatments of the factor would need to be used. By contrast, &lt;em&gt;random factors&lt;/em&gt; are factors whose levels are randomly chosen from all the possible levels of populations and are used as random representatives of the populations. For example, five random temperature treatments could be used to represent a full spectrum of temperature treatments. In this case, conclusions are extrapolated to all the possible treatment (temperature) levels and for subsequent experiments, a new random set of treatments of the factor would be selected.&lt;/p&gt;
+&lt;p&gt;Other common examples of random factors include sites and subjects - factors for which we are attempting to generalise over. Furthermore, the nature of random factors means that we have no indication of how a new level of that factor (such as another subject or site) are likely to respond and thus it is not possible to predict new observations from random factors. These differences between fixed and random factors are reflected in the way their respective null hypotheses are formulated and interpreted. Whilst fixed factors contrast the effects of the different levels of the factor, random factors are modelled as the amount of additional variability they introduce. Random factors are modelled with a mean of &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt; and their variance is estimated as the effect coefficient.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;linear-model&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Linear model&lt;/h2&gt;
+&lt;p&gt;The linear model for single factor classification is similar to that of multiple linear regression. The linear model can thus be represented by either:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Means parameterisation&lt;/strong&gt; - in which the regression slopes represent the means of each treatment group and the intercept is removed (to prevent over-parameterisation).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ y_{ij} = \beta_1(\text{level}_1)_{ij} + \beta_2(\text{level}_2)_{ij} + \ldots + \epsilon_{ij},\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\beta_1\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\beta_2\)&lt;/span&gt; respectively represent the means response of treatment level &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(2\)&lt;/span&gt;. This is often simplified to &lt;span class=&#34;math inline&#34;&gt;\(y_{ij}=\alpha_i + \epsilon_{ij}\)&lt;/span&gt;.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Effects parameterisation&lt;/strong&gt; - the intercept represents a property such as the mean of one of the treatment groups (treatment contrasts) or the overall mean (sum contrasts), and the slope parameters represent effects (differences between each other group and the reference mean for example).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ y_{ij} = \mu + \beta_2(\text{level}_2)_{ij} + \beta_3(\text{level}_3)_{ij} + \ldots + \epsilon_{ij},\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; is the mean of the first treatment group, &lt;span class=&#34;math inline&#34;&gt;\(\beta_2\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\beta_3\)&lt;/span&gt; respectively represent the effects (change from level &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt;) of level &lt;span class=&#34;math inline&#34;&gt;\(2\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(3\)&lt;/span&gt; on the mean response. This is often simplified to: &lt;span class=&#34;math inline&#34;&gt;\(y_{ij}=\mu + \alpha_i + \epsilon_{ij}\)&lt;/span&gt;, with &lt;span class=&#34;math inline&#34;&gt;\(\alpha_1=0\)&lt;/span&gt;.&lt;/p&gt;
+&lt;p&gt;Since we are traditionally interested in investigating effects (differences) rather than treatment means, effects parameterisation is far more common (particularly when coupled with hypothesis testing). In a Bayesian framework, it does not really matter whether models are fit with means or effects parameterisation since the posterior likelihood can be querried in any way and repeatedly - thus enabling us to explore any specific effects after the model has been fit. Nevertheless, to ease comparisons with frequentist approaches, we will stick with effects paramterisation.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;null-hypothesis-fixed-factor&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Null hypothesis: fixed factor&lt;/h2&gt;
+&lt;p&gt;We can associate a null hypothesis test with each estimated parameter. For example, in a cell for each estimated mean in a means model we could test a null hypothesis that the population mean is equal to zero (e.g. &lt;span class=&#34;math inline&#34;&gt;\(H_0\)&lt;/span&gt;: &lt;span class=&#34;math inline&#34;&gt;\(\alpha_1=0\)&lt;/span&gt;, &lt;span class=&#34;math inline&#34;&gt;\(H_0\)&lt;/span&gt;: &lt;span class=&#34;math inline&#34;&gt;\(\alpha_2=0\)&lt;/span&gt;, &lt;span class=&#34;math inline&#34;&gt;\(\ldots\)&lt;/span&gt;). However, this rarely would be of much interest. By contrast, individual null hypotheses associated with each parameter of the effects model can be used to investigate the differences between each group and a reference group (for example). In addition to the individual null hypothesis tests, a single fixed factor ANOVA tests the collective &lt;span class=&#34;math inline&#34;&gt;\(H_0\)&lt;/span&gt; that there are no differences between the population group means:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;span class=&#34;math inline&#34;&gt;\(H_0: \mu_1=\mu_2=\ldots=\mu_i=\mu\)&lt;/span&gt; (the population group means are all equal). That is, that the mean of population &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt; is equal to that of population &lt;span class=&#34;math inline&#34;&gt;\(2\)&lt;/span&gt; and so on, and thus all population means are equal to one another - no effect of the factor on the response. If the effect of the &lt;span class=&#34;math inline&#34;&gt;\(i\)&lt;/span&gt;-th group is the difference between the &lt;span class=&#34;math inline&#34;&gt;\(i\)&lt;/span&gt;-th group mean and the mean of the first group (&lt;span class=&#34;math inline&#34;&gt;\(\alpha_i=\mu_i-\mu_1\)&lt;/span&gt;) then the &lt;span class=&#34;math inline&#34;&gt;\(H_0\)&lt;/span&gt; can alternatively be written as:&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;span class=&#34;math inline&#34;&gt;\(H_0 : \alpha_2=\alpha_3=\ldots=\alpha_i=0\)&lt;/span&gt; (the effect of each group equals zero). If one or more of the &lt;span class=&#34;math inline&#34;&gt;\(\alpha_i\)&lt;/span&gt; are different from zero (the response mean for this treatment differs from the overall response mean), there is evidence that the null hypothesis is not true indicating that the factor does affect the response variable.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div id=&#34;null-hypothesis-random-factor&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Null hypothesis: random factor&lt;/h2&gt;
+&lt;p&gt;The collective &lt;span class=&#34;math inline&#34;&gt;\(H_0\)&lt;/span&gt; for a random factor is that the variance between all possible treatment groups equals zero:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;span class=&#34;math inline&#34;&gt;\(H_0 : \sigma^2_{\alpha}=0\)&lt;/span&gt; (added variance due to this factor equals zero).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Note that whilst the null hypotheses for fixed and random factors are different (fixed: population group means all equal, random: variances between populations all equal zero), the linear model fitted for fixed and random factors in single factor ANOVA models is identical. For more complex multi-factor ANOVA models however, the distinction between fixed and random factors has important consequences for building and interpreting statistical models and null hypotheses.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;analysis-of-variance&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Analysis of variance&lt;/h2&gt;
+&lt;p&gt;When the null hypothesis is true (and the populations are identical), the amount of variation among observations within groups should be similar to the amount of variation in observations between groups. However, when the null hypothesis is false (and some means are different from other means), the amount of variation among observations might be expected to be less than the amount of variation within groups. Analysis of variance, or ANOVA, partitions the total variance in the response (dependent) variable into a component of the variance that is explained by combinations of one or more categorical predictor variables (called factors) and a component of the variance that cannot be explained (residual). The variance ratio (F-ratio) from this partitioning can then be used to test the null hypothesis (&lt;span class=&#34;math inline&#34;&gt;\(H_0\)&lt;/span&gt;) that the population group or treatment means are all equal. Ttotal variation can be decomposed into components explained by the groups (&lt;span class=&#34;math inline&#34;&gt;\(MS_{groups}\)&lt;/span&gt;) and and unexplained (&lt;span class=&#34;math inline&#34;&gt;\(MS_{residual}\)&lt;/span&gt;) by the groups. The gray arrows in b) depict the relative amounts explained by the groups. The proposed groupings generally explain why the first few points are higher on the y-axis than the last three points. The probability of collecting our sample, and thus generating the sample ratio of explained to unexplained variation (or one more extreme), when the null hypothesis is true (and population means are equal) is the area under the F-distribution beyond our sample ratio (&lt;span class=&#34;math inline&#34;&gt;\(\text{F-ratio}=\frac{MS_{groups}}{MS_{residual}}\)&lt;/span&gt;).&lt;/p&gt;
+&lt;p&gt;When the null hypothesis is true (and the test assumptions have not been violated), the ratio (F-ratio) of explained to unexplained variance follows a theoretical probability distribution (F-distribution). When the null hypothesis is true, and there is no effect of the treatment on the response variable, the ratio of explained variability to unexplained variability is expected to be &lt;span class=&#34;math inline&#34;&gt;\(\leq 1\)&lt;/span&gt;. Since the denominator should represent the expected numerator in the absence of an effect. Importantly, the denominator in an F-ratio calculation essentially represents what we would expect the numerator to be in the absence of a treatment effect. For simple analyses, identifying what these expected values are is relatively straightforward (equivalent to the degree of within group variability). However, in more complex designs (particularly involving random factors and hierarchical treatment levels), the logical “groups” can be more difficult (and in some cases impossible) to identify. In such cases, nominating the appropriate F-ratio denominator for estimating an specific effect requires careful consideration. The following table depicts the anatomy of the single factor ANOVA table&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; anova_table
+         df       MS       F-ratio          
+Factor A &amp;quot;a-1&amp;quot;    &amp;quot;MS A&amp;quot;   &amp;quot;(MS A)/(MS res)&amp;quot;
+Residual &amp;quot;(n-1)a&amp;quot; &amp;quot;MS res&amp;quot; &amp;quot;&amp;quot;               &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;and corresponding &lt;code&gt;R&lt;/code&gt; syntax.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; anova(lm(DV ~ A, dataset))
+&amp;gt; # OR
+&amp;gt; anova(aov(DV ~ A, dataset))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;An F-ratio substantially greater than &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt; suggests that the model relating the response variable to the categorical variable explains substantially more variability than is left unexplained. In turn, this implies that the linear model does represent the data well and that differences between observations can be explained largely by differences in treatment levels rather than purely the result of random variation. If the probability of getting the observed (sample) F-ratio or one more extreme is less than some predefined critical value (typically &lt;span class=&#34;math inline&#34;&gt;\(5\)&lt;/span&gt;% or &lt;span class=&#34;math inline&#34;&gt;\(0.05\)&lt;/span&gt;), we conclude that it is highly unlikely that the observed samples could have been collected from populations in which the treatment has no effect and therefore we would reject the null hypothesis.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;assumptions&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Assumptions&lt;/h2&gt;
+&lt;p&gt;An F-ratio from real data can only reliably relate to a theoretical F-distribution when the data conform to certain assumptions. Hypothesis testing for a single factor ANOVA model assumes that the residuals (and therefore the response variable for each of the treatment levels) are all:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;normally distributed&lt;/strong&gt; - although ANOVA is robust to non-normality provided sample sizes and variances are equal. Boxplots should be used to explore normality, skewness, bimodality and outliers. In the event of homogeneity of variance issues (see below), a Q-Q normal plot can also be useful for exploring normality (as this might be the cause of non-homogeneity). Scale transformations are often useful.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;equally varied&lt;/strong&gt; - provided sample sizes are equal and the largest to smallest variance ratio does not exceed 3:1 (9:1 for sd), ANOVA is reasonably robust to this assumption, however, relationships between variance and mean and/or sample size are of particular concern as they elevate the Type I error rate. Boxplots and plots of means against variance should be used to explore the spread of values. Residual plots should reveal no patterns. Since unequal variances are often the result of non-normality, transformations that improve normality will also improve variance homogeneity.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;independent of one another&lt;/strong&gt; - this assumption must be addressed at the design and collection stages and cannot be compensated for later (unless a model is used that specifically accounts for particular types of non-independent data, such as that introduced with hierarchical designs or autocorrelation)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Violations of these assumptions reduce the reliability of the analysis.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;data-generation&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Data generation&lt;/h1&gt;
+&lt;p&gt;Lets say we had set up a natural experiment in which we measured a response from &lt;span class=&#34;math inline&#34;&gt;\(10\)&lt;/span&gt; sampling units (replicates) from each of &lt;span class=&#34;math inline&#34;&gt;\(5\)&lt;/span&gt; treatments. Hence, we have a single categorical factor with &lt;span class=&#34;math inline&#34;&gt;\(5\)&lt;/span&gt; levels - we might have five different locations, or five different habitat types or substrates etc. In statistical speak, we have sampled from &lt;span class=&#34;math inline&#34;&gt;\(5\)&lt;/span&gt; different populations. We have then randomly selected &lt;span class=&#34;math inline&#34;&gt;\(10\)&lt;/span&gt; independent and random (representative) units of each population to sample. That is, we have &lt;span class=&#34;math inline&#34;&gt;\(10\)&lt;/span&gt; samples (replicates) of each population. As this section is mainly about the generation of artificial data (and not specifically about what to do with the data), understanding the actual details are optional and can be safely skipped.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; set.seed(123)
+&amp;gt; ngroups &amp;lt;- 5  #number of populations
+&amp;gt; nsample &amp;lt;- 10  #number of reps in each
+&amp;gt; pop.means &amp;lt;- c(40, 45, 55, 40, 30)  #population mean length
+&amp;gt; sigma &amp;lt;- 3  #residual standard deviation
+&amp;gt; n &amp;lt;- ngroups * nsample  #total sample size
+&amp;gt; eps &amp;lt;- rnorm(n, 0, sigma)  #residuals
+&amp;gt; x &amp;lt;- gl(ngroups, nsample, n, lab = LETTERS[1:5])  #factor
+&amp;gt; means &amp;lt;- rep(pop.means, rep(nsample, ngroups))
+&amp;gt; X &amp;lt;- model.matrix(~x - 1)  #create a design matrix
+&amp;gt; y &amp;lt;- as.numeric(X %*% pop.means + eps)
+&amp;gt; data &amp;lt;- data.frame(y, x)
+&amp;gt; head(data)  #print out the first six rows of the data set
+         y x
+1 38.31857 A
+2 39.30947 A
+3 44.67612 A
+4 40.21153 A
+5 40.38786 A
+6 45.14519 A
+&amp;gt; 
+&amp;gt; write.csv(data, &amp;quot;simpleAnova.csv&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;With these sort of data, we are primarily interested in investigating whether there is a relationship between the continuous response variable and the treatment type.&lt;/p&gt;
+&lt;div id=&#34;exploratory-data-analysis&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Exploratory data analysis&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;em&gt;Normality and Homogeneity of variance&lt;/em&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; boxplot(y ~ x, data)
+&amp;gt; 
+&amp;gt; # OR via ggplot2
+&amp;gt; library(ggplot2)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/single-factor-anova-jags/2020-02-01-single-factor-anova-jags_files/figure-html/exp_data-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; ggplot(data, aes(y = y, x = x)) + geom_boxplot() +
++     theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/single-factor-anova-jags/2020-02-01-single-factor-anova-jags_files/figure-html/exp_data-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Conclusions&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;There is no evidence that the response variable is consistently non-normal across all populations - each boxplot is approximately symmetrical. There is no evidence that variance (as estimated by the height of the boxplots) differs between the five populations. More importantly, there is no evidence of a relationship between mean and variance - the height of boxplots does not increase with increasing position along the &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;-axis. Hence it there is no evidence of non-homogeneity. Obvious violations could be addressed either by, for example, transforming the scale of the response variables (to address normality etc). Note transformations should be applied to the entire response variable (not just those populations that are skewed).&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;model-fitting&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Model fitting&lt;/h1&gt;
+&lt;p&gt;The observed response (&lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt;) are assumed to be drawn from a normal distribution with a given mean (&lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt;) and standard deviation (&lt;span class=&#34;math inline&#34;&gt;\(\sigma\)&lt;/span&gt;). The expected values (&lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt;) are themselves determined by the linear predictor (&lt;span class=&#34;math inline&#34;&gt;\(\beta_0+\boldsymbol \beta \boldsymbol X_i\)&lt;/span&gt;). In this case, &lt;span class=&#34;math inline&#34;&gt;\(\beta_0\)&lt;/span&gt; represents the mean of the first group and the set of &lt;span class=&#34;math inline&#34;&gt;\(\boldsymbol \beta\)&lt;/span&gt;’s represent the differences between each other group and the first group. MCMC sampling requires priors on all parameters. We will employ weakly informative priors. Specifying ‘uninformative’ priors is always a bit of a balancing act. If the priors are too vague (wide) the MCMC sampler can wander off into nonscence areas of likelihood rather than concentrate around areas of highest likelihood (desired when wanting the outcomes to be largely driven by the data). On the other hand, if the priors are too strong, they may have an influence on the parameters. In such a simple model, this balance is very forgiving - it is for more complex models that prior choice becomes more important. For this simple model, we will go with zero-centered Gaussian (normal) priors with relatively large standard deviations (&lt;span class=&#34;math inline&#34;&gt;\(100\)&lt;/span&gt;) for both the intercept and the treatment effect and a wide half-cauchy (&lt;span class=&#34;math inline&#34;&gt;\(\text{scale}=5\)&lt;/span&gt;) for the standard deviation.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[y_i \sim N(\mu_i,\sigma),  \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\mu_i=\beta_0 +\boldsymbol \beta \boldsymbol X_i\)&lt;/span&gt;. The assumed priors are: &lt;span class=&#34;math inline&#34;&gt;\(\beta \sim N(0,100)\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\sigma \sim \text{Cauchy}(0,5)\)&lt;/span&gt;. We proceed to code the model into &lt;code&gt;JAGS&lt;/code&gt; (remember that in this software normal distribution are parameterised in terms of precisions &lt;span class=&#34;math inline&#34;&gt;\(\tau\)&lt;/span&gt; rather than variances, where &lt;span class=&#34;math inline&#34;&gt;\(\tau=\frac{1}{\sigma^2}\)&lt;/span&gt;). Note the following example as group means calculated as derived posteriors.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; modelString = &amp;quot;
++   model {
++   #Likelihood
++   for (i in 1:n) {
++   y[i]~dnorm(mean[i],tau.res)
++   mean[i] &amp;lt;- alpha+beta[x[i]]
++   }
++ 
++   #Priors and derivatives
++   alpha ~ dnorm(0,1.0E-6)
++   beta[1] &amp;lt;- 0
++   for (i in 2:ngroups) {
++   beta[i] ~ dnorm(0, 1.0E-6) #prior
++   }
++   sigma.res ~ dunif(0, 100)
++   tau.res &amp;lt;- 1 / (sigma.res * sigma.res)
++   sigma.group &amp;lt;- sd(beta[])
++ 
++   #Group mean posteriors (derivatives)
++   for (i in 1:ngroups) {
++   Group.means[i] &amp;lt;- beta[i]+alpha
++   }
++   }
++   &amp;quot;
+&amp;gt; 
+&amp;gt; ## write the model to a text file
+&amp;gt; writeLines(modelString, con = &amp;quot;anovaModel.txt&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Arrange the data as a list (as required by &lt;code&gt;JAGS&lt;/code&gt;). As input, &lt;code&gt;JAGS&lt;/code&gt; will need to be supplied with: the response variable, the predictor matrix, the number of predictors, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; data.list &amp;lt;- with(data, list(y = y, x = as.numeric(x), n = nrow(data),
++     ngroups = length(levels(data$x))))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Define the nodes (parameters and derivatives) to monitor and the chain parameters.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; params &amp;lt;- c(&amp;quot;alpha&amp;quot;, &amp;quot;beta&amp;quot;, &amp;quot;sigma.res&amp;quot;, &amp;quot;Group.means&amp;quot;)
+&amp;gt; nChains = 2
+&amp;gt; burnInSteps = 3000
+&amp;gt; thinSteps = 1
+&amp;gt; numSavedSteps = 15000  #across all chains
+&amp;gt; nIter = ceiling(burnInSteps + (numSavedSteps * thinSteps)/nChains)
+&amp;gt; nIter
+[1] 10500&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Start the &lt;code&gt;JAGS&lt;/code&gt; model (check the model, load data into the model, specify the number of chains and compile the model). Load the &lt;code&gt;R2jags&lt;/code&gt; package.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(R2jags)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now run the &lt;code&gt;JAGS&lt;/code&gt; code via the &lt;code&gt;R2jags&lt;/code&gt; interface. Note that the first time jags is run after the &lt;code&gt;R2jags&lt;/code&gt; package is loaded, it is often necessary to run any kind of randomization function just to initiate the .Random.seed variable.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; data.r2jags &amp;lt;- jags(data = data.list, inits = NULL, parameters.to.save = params,
++     model.file = &amp;quot;anovaModel.txt&amp;quot;, n.chains = nChains, n.iter = nIter,
++     n.burnin = burnInSteps, n.thin = thinSteps)
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 50
+   Unobserved stochastic nodes: 6
+   Total graph size: 126
+
+Initializing model
+&amp;gt; 
+&amp;gt; print(data.r2jags)
+Inference for Bugs model at &amp;quot;anovaModel.txt&amp;quot;, fit using jags,
+ 2 chains, each with 10500 iterations (first 3000 discarded)
+ n.sims = 15000 iterations saved
+               mu.vect sd.vect    2.5%     25%     50%     75%   97.5%  Rhat
+Group.means[1]  40.232   0.908  38.424  39.631  40.237  40.837  41.991 1.001
+Group.means[2]  45.632   0.902  43.858  45.022  45.626  46.231  47.432 1.002
+Group.means[3]  53.730   0.913  51.947  53.113  53.722  54.334  55.543 1.001
+Group.means[4]  40.962   0.906  39.188  40.350  40.968  41.563  42.734 1.001
+Group.means[5]  29.974   0.915  28.173  29.367  29.974  30.586  31.746 1.001
+alpha           40.232   0.908  38.424  39.631  40.237  40.837  41.991 1.001
+beta[1]          0.000   0.000   0.000   0.000   0.000   0.000   0.000 1.000
+beta[2]          5.400   1.278   2.889   4.551   5.395   6.244   7.896 1.001
+beta[3]         13.498   1.286  11.017  12.639  13.485  14.354  16.049 1.001
+beta[4]          0.730   1.283  -1.768  -0.122   0.722   1.582   3.261 1.001
+beta[5]        -10.258   1.294 -12.820 -11.110 -10.253  -9.412  -7.721 1.001
+sigma.res        2.864   0.320   2.313   2.638   2.832   3.056   3.578 1.001
+deviance       245.540   3.787 240.323 242.761 244.832 247.511 254.843 1.001
+               n.eff
+Group.means[1] 15000
+Group.means[2]  2200
+Group.means[3]  3800
+Group.means[4] 15000
+Group.means[5] 15000
+alpha          15000
+beta[1]            1
+beta[2]         2900
+beta[3]        15000
+beta[4]        15000
+beta[5]        15000
+sigma.res      15000
+deviance       15000
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 7.2 and DIC = 252.7
+DIC is an estimate of expected predictive error (lower deviance is better).&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;model-matrix-formulation&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Model matrix formulation&lt;/h2&gt;
+&lt;p&gt;For very simple models such as this example, we can write the models as:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; modelString2 = &amp;quot;
++   model {
++   #Likelihood
++   for (i in 1:n) {
++   y[i]~dnorm(mean[i],tau)
++   mean[i] &amp;lt;- inprod(beta[],X[i,])
++   }
++   #Priors
++   for (i in 1:ngroups) {
++   beta[i] ~ dnorm(0, 1.0E-6) 
++   }
++   sigma ~ dunif(0, 100)
++   tau &amp;lt;- 1 / (sigma * sigma)
++   }
++   &amp;quot;
+&amp;gt; 
+&amp;gt; ## write the model to a text file
+&amp;gt; writeLines(modelString2, con = &amp;quot;anovaModel2.txt&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Define the data to pass to &lt;code&gt;R2jags&lt;/code&gt;.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; X &amp;lt;- model.matrix(~x, data)
+&amp;gt; data.list &amp;lt;- with(data, list(y = y, X = X, n = nrow(data), ngroups = ncol(X)))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Define the nodes (parameters and derivatives) to monitor and the chain parameters.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; params &amp;lt;- c(&amp;quot;beta&amp;quot;, &amp;quot;sigma&amp;quot;)
+&amp;gt; nChains = 2
+&amp;gt; burnInSteps = 3000
+&amp;gt; thinSteps = 1
+&amp;gt; numSavedSteps = 15000  #across all chains
+&amp;gt; nIter = ceiling(burnInSteps + (numSavedSteps * thinSteps)/nChains)
+&amp;gt; nIter
+[1] 10500&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Start the &lt;code&gt;JAGS&lt;/code&gt; model (check the model, load data into the model, specify the number of chains and compile the model). Run the &lt;code&gt;JAGS&lt;/code&gt; code via the &lt;code&gt;R2jags&lt;/code&gt; interface. Note that the first time jags is run after the &lt;code&gt;R2jags&lt;/code&gt; package is loaded, it is often necessary to run any kind of randomization function just to initiate the .Random.seed variable.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; data.r2jags &amp;lt;- jags(data = data.list, inits = NULL, parameters.to.save = params,
++     model.file = &amp;quot;anovaModel2.txt&amp;quot;, n.chains = nChains, n.iter = nIter,
++     n.burnin = burnInSteps, n.thin = thinSteps)
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 50
+   Unobserved stochastic nodes: 6
+   Total graph size: 370
+
+Initializing model
+&amp;gt; 
+&amp;gt; print(data.r2jags)
+Inference for Bugs model at &amp;quot;anovaModel2.txt&amp;quot;, fit using jags,
+ 2 chains, each with 10500 iterations (first 3000 discarded)
+ n.sims = 15000 iterations saved
+         mu.vect sd.vect    2.5%     25%     50%     75%   97.5%  Rhat n.eff
+beta[1]   40.226   0.901  38.475  39.624  40.222  40.824  41.999 1.001  4800
+beta[2]    5.401   1.272   2.906   4.552   5.397   6.242   7.900 1.001 15000
+beta[3]   13.492   1.296  10.969  12.634  13.484  14.355  16.038 1.001  5100
+beta[4]    0.734   1.279  -1.793  -0.114   0.740   1.582   3.263 1.001 15000
+beta[5]  -10.248   1.283 -12.785 -11.108 -10.242  -9.380  -7.731 1.001  9800
+sigma      2.863   0.315   2.321   2.642   2.838   3.053   3.558 1.001  6200
+deviance 245.551   3.785 240.353 242.765 244.844 247.603 254.815 1.002  1800
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 7.2 and DIC = 252.7
+DIC is an estimate of expected predictive error (lower deviance is better).&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;mcmc-diagnostics&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;MCMC diagnostics&lt;/h1&gt;
+&lt;p&gt;In addition to the regular model diagnostic checks (such as residual plots), for Bayesian analyses, it is necessary to explore the characteristics of the MCMC chains and the sampler in general. Recall that the purpose of MCMC sampling is to replicate the posterior distribution of the model likelihood and priors by drawing a known number of samples from this posterior (thereby formulating a probability distribution). This is only reliable if the MCMC samples accurately reflect the posterior. Unfortunately, since we only know the posterior in the most trivial of circumstances, it is necessary to rely on indirect measures of how accurately the MCMC samples are likely to reflect the likelihood. I will briefly outline the most important diagnostics.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;Traceplots&lt;/em&gt; for each parameter illustrate the MCMC sample values after each successive iteration along the chain. Bad chain mixing (characterised by any sort of pattern) suggests that the MCMC sampling chains may not have completely traversed all features of the posterior distribution and that more iterations are required to ensure the distribution has been accurately represented.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;Autocorrelation&lt;/em&gt; plot for each parameter illustrate the degree of correlation between MCMC samples separated by different lags. For example, a lag of &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt; represents the degree of correlation between each MCMC sample and itself (obviously this will be a correlation of &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt;). A lag of &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt; represents the degree of correlation between each MCMC sample and the next sample along the chain and so on. In order to be able to generate unbiased estimates of parameters, the MCMC samples should be independent (uncorrelated).&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;Potential scale reduction factor&lt;/em&gt; (Rhat) statistic for each parameter provides a measure of sampling efficiency/effectiveness. Ideally, all values should be less than &lt;span class=&#34;math inline&#34;&gt;\(1.05\)&lt;/span&gt;. If there are values of &lt;span class=&#34;math inline&#34;&gt;\(1.05\)&lt;/span&gt; or greater it suggests that the sampler was not very efficient or effective. Not only does this mean that the sampler was potentially slower than it could have been but, more importantly, it could indicate that the sampler spent time sampling in a region of the likelihood that is less informative. Such a situation can arise from either a misspecified model or overly vague priors that permit sampling in otherwise nonscence parameter space.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Prior to examining the summaries, we should have explored the convergence diagnostics. We use the package &lt;code&gt;mcmcplots&lt;/code&gt; to obtain density and trace plots for the effects model as an example. When there are a lot of parameters, this can result in a very large number of traceplots. To focus on just certain parameters, e.g. &lt;span class=&#34;math inline&#34;&gt;\(\boldsymbol \beta\)&lt;/span&gt;.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(mcmcplots)
+&amp;gt; denplot(data.r2jags, parms = c(&amp;quot;beta&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/single-factor-anova-jags/2020-02-01-single-factor-anova-jags_files/figure-html/mcmc_diag-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; traplot(data.r2jags, parms = c(&amp;quot;beta&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/single-factor-anova-jags/2020-02-01-single-factor-anova-jags_files/figure-html/mcmc_diag-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;These plots show no evidence that the chains have not reasonably traversed the entire multidimensional parameter space.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; data.mcmc = as.mcmc(data.r2jags)
+&amp;gt; #Raftery diagnostic
+&amp;gt; raftery.diag(data.mcmc)
+[[1]]
+
+Quantile (q) = 0.025
+Accuracy (r) = +/- 0.005
+Probability (s) = 0.95 
+                                                
+          Burn-in  Total Lower bound  Dependence
+          (M)      (N)   (Nmin)       factor (I)
+ beta[1]  2        3895  3746         1.040     
+ beta[2]  2        3729  3746         0.995     
+ beta[3]  2        3811  3746         1.020     
+ beta[4]  3        4115  3746         1.100     
+ beta[5]  2        3853  3746         1.030     
+ deviance 2        3729  3746         0.995     
+ sigma    5        5834  3746         1.560     
+
+
+[[2]]
+
+Quantile (q) = 0.025
+Accuracy (r) = +/- 0.005
+Probability (s) = 0.95 
+                                                
+          Burn-in  Total Lower bound  Dependence
+          (M)      (N)   (Nmin)       factor (I)
+ beta[1]  2        3853  3746         1.03      
+ beta[2]  2        3918  3746         1.05      
+ beta[3]  2        3811  3746         1.02      
+ beta[4]  2        3853  3746         1.03      
+ beta[5]  2        3853  3746         1.03      
+ deviance 2        3981  3746         1.06      
+ sigma    4        5306  3746         1.42      &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The Raftery diagnostics for each chain estimate that we would require no more than &lt;span class=&#34;math inline&#34;&gt;\(5000\)&lt;/span&gt; samples to reach the specified level of confidence in convergence. As we have &lt;span class=&#34;math inline&#34;&gt;\(10500\)&lt;/span&gt; samples, we can be confidence that convergence has occurred.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; #Autocorrelation diagnostic
+&amp;gt; autocorr.diag(data.mcmc)
+             beta[1]     beta[2]       beta[3]       beta[4]      beta[5]
+Lag 0   1.0000000000 1.000000000  1.0000000000  1.0000000000  1.000000000
+Lag 1   0.0015561854 0.001902670 -0.0023462263  0.0063854498 -0.008928813
+Lag 5  -0.0006487164 0.003556616 -0.0008267107 -0.0003892349  0.004087306
+Lag 10  0.0141414517 0.012308363  0.0064688638 -0.0029210457  0.009117446
+Lag 50 -0.0019115790 0.005069522  0.0072096979 -0.0030858504  0.002938152
+           deviance        sigma
+Lag 0   1.000000000  1.000000000
+Lag 1   0.198317688  0.334172270
+Lag 5  -0.001425768  0.005514213
+Lag 10 -0.000422188 -0.001600486
+Lag 50 -0.008805916  0.007414425&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;A lag of 10 appears to be sufficient to avoid autocorrelation (poor mixing).&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;model-validation&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Model validation&lt;/h1&gt;
+&lt;p&gt;Model validation involves exploring the model diagnostics and fit to ensure that the model is broadly appropriate for the data. As such, exploration of the residuals should be routine. For more complex models (those that contain multiple effects), it is also advisable to plot the residuals against each of the individual predictors. For sampling designs that involve sample collection over space or time, it is also a good idea to explore whether there are any temporal or spatial patterns in the residuals.&lt;/p&gt;
+&lt;p&gt;There are numerous situations (e.g. when applying specific variance-covariance structures to a model) where raw residuals do not reflect the interior workings of the model. Typically, this is because they do not take into account the variance-covariance matrix or assume a very simple variance-covariance matrix. Since the purpose of exploring residuals is to evaluate the model, for these cases, it is arguably better to draw conclusions based on standardized (or studentised) residuals. Unfortunately the definitions of standardised and studentised residuals appears to vary and the two terms get used interchangeably. I will adopt the following definitions:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;Standardised residuals&lt;/strong&gt;. The raw residuals divided by the true standard deviation of the residuals (which of course is rarely known).&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;Studentised residuals&lt;/strong&gt;. The raw residuals divided by the standard deviation of the residuals. Note that &lt;strong&gt;externally studentised residuals&lt;/strong&gt; are calculated by dividing the raw residuals by a unique standard deviation for each observation that is calculated from regressions having left each successive observation out.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;Pearson residuals&lt;/strong&gt;. The raw residuals divided by the standard deviation of the response variable.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;he mark of a good model is being able to predict well. In an ideal world, we would have sufficiently large sample size as to permit us to hold a fraction (such as &lt;span class=&#34;math inline&#34;&gt;\(25\)&lt;/span&gt;%) back thereby allowing us to train the model on &lt;span class=&#34;math inline&#34;&gt;\(75\)&lt;/span&gt;% of the data and then see how well the model can predict the withheld &lt;span class=&#34;math inline&#34;&gt;\(25\)&lt;/span&gt;%. Unfortunately, such a luxury is still rare. The next best option is to see how well the model can predict the observed data. Models tend to struggle most with the extremes of trends and have particular issues when the extremes approach logical boundaries (such as zero for count data and standard deviations). We can use the fitted model to generate random predicted observations and then explore some properties of these compared to the actual observed data.&lt;/p&gt;
+&lt;p&gt;Rather than dublicate this for both additive and multiplicative models, we will only explore the multiplicative model. Residuals are not computed directly within &lt;code&gt;JAGS&lt;/code&gt;. However, we can calculate them manually form the posteriors.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(dplyr)
+&amp;gt; mcmc = data.r2jags$BUGSoutput$sims.matrix %&amp;gt;% as.data.frame %&amp;gt;%
++     dplyr:::select(contains(&amp;quot;beta&amp;quot;), sigma) %&amp;gt;% as.matrix
+&amp;gt; # generate a model matrix
+&amp;gt; newdata = data
+&amp;gt; Xmat = model.matrix(~x, newdata)
+&amp;gt; ## get median parameter estimates
+&amp;gt; coefs = apply(mcmc[, 1:5], 2, median)
+&amp;gt; fit = as.vector(coefs %*% t(Xmat))
+&amp;gt; resid = data$y - fit
+&amp;gt; ggplot() + geom_point(data = NULL, aes(y = resid, x = fit)) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/single-factor-anova-jags/2020-02-01-single-factor-anova-jags_files/figure-html/mcmc_residuals-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Residuals against predictors&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(tidyr)
+&amp;gt; mcmc = data.r2jags$BUGSoutput$sims.matrix %&amp;gt;% as.data.frame %&amp;gt;%
++     dplyr:::select(contains(&amp;quot;beta&amp;quot;), sigma) %&amp;gt;% as.matrix
+&amp;gt; # generate a model matrix
+&amp;gt; newdata = newdata
+&amp;gt; Xmat = model.matrix(~x, newdata)
+&amp;gt; ## get median parameter estimates
+&amp;gt; coefs = apply(mcmc[, 1:5], 2, median)
+&amp;gt; fit = as.vector(coefs %*% t(Xmat))
+&amp;gt; resid = data$y - fit
+&amp;gt; newdata = newdata %&amp;gt;% cbind(fit, resid)
+&amp;gt; ggplot(newdata) + geom_point(aes(y = resid, x = x)) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/single-factor-anova-jags/2020-02-01-single-factor-anova-jags_files/figure-html/mcmc_residuals2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;And now for studentised residuals&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc = data.r2jags$BUGSoutput$sims.matrix %&amp;gt;% as.data.frame %&amp;gt;%
++     dplyr:::select(contains(&amp;quot;beta&amp;quot;), sigma) %&amp;gt;% as.matrix
+&amp;gt; # generate a model matrix
+&amp;gt; newdata = data
+&amp;gt; Xmat = model.matrix(~x, newdata)
+&amp;gt; ## get median parameter estimates
+&amp;gt; coefs = apply(mcmc[, 1:5], 2, median)
+&amp;gt; fit = as.vector(coefs %*% t(Xmat))
+&amp;gt; resid = data$y - fit
+&amp;gt; sresid = resid/sd(resid)
+&amp;gt; ggplot() + geom_point(data = NULL, aes(y = sresid, x = fit)) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/single-factor-anova-jags/2020-02-01-single-factor-anova-jags_files/figure-html/mcmc_residuals3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;For this simple model, the studentised residuals yield the same pattern as the raw residuals (or the Pearson residuals for that matter). Lets see how well data simulated from the model reflects the raw data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc = data.r2jags$BUGSoutput$sims.matrix %&amp;gt;% as.data.frame %&amp;gt;%
++     dplyr:::select(contains(&amp;quot;beta&amp;quot;), sigma) %&amp;gt;% as.matrix
+&amp;gt; # generate a model matrix
+&amp;gt; Xmat = model.matrix(~x, data)
+&amp;gt; ## get median parameter estimates
+&amp;gt; coefs = mcmc[, 1:5]
+&amp;gt; fit = coefs %*% t(Xmat)
+&amp;gt; ## draw samples from this model
+&amp;gt; yRep = sapply(1:nrow(mcmc), function(i) rnorm(nrow(data), fit[i,
++     ], mcmc[i, &amp;quot;sigma&amp;quot;]))
+&amp;gt; newdata = data.frame(x = data$x, yRep) %&amp;gt;% gather(key = Sample,
++     value = Value, -x)
+&amp;gt; ggplot(newdata) + geom_violin(aes(y = Value, x = x, fill = &amp;quot;Model&amp;quot;),
++     alpha = 0.5) + geom_violin(data = data, aes(y = y, x = x,
++     fill = &amp;quot;Obs&amp;quot;), alpha = 0.5) + geom_point(data = data, aes(y = y,
++     x = x), position = position_jitter(width = 0.1, height = 0),
++     color = &amp;quot;black&amp;quot;) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/single-factor-anova-jags/2020-02-01-single-factor-anova-jags_files/figure-html/mcmc_rep-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;The predicted trends do encapsulate the actual data, suggesting that the model is a reasonable representation of the underlying processes. Note, these are prediction intervals rather than confidence intervals as we are seeking intervals within which we can predict individual observations rather than means. We can also explore the posteriors of each parameter.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(bayesplot)
+&amp;gt; mcmc_intervals(data.r2jags$BUGSoutput$sims.matrix, regex_pars = &amp;quot;beta|sigma&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/single-factor-anova-jags/2020-02-01-single-factor-anova-jags_files/figure-html/mcmc_rep2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc_areas(data.r2jags$BUGSoutput$sims.matrix, regex_pars = &amp;quot;beta|sigma&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/single-factor-anova-jags/2020-02-01-single-factor-anova-jags_files/figure-html/mcmc_rep2-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;parameter-estimates&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Parameter estimates&lt;/h1&gt;
+&lt;p&gt;Although all parameters in a Bayesian analysis are considered random and are considered a distribution, rarely would it be useful to present tables of all the samples from each distribution. On the other hand, plots of the posterior distributions have some use. Nevertheless, most workers prefer to present simple statistical summaries of the posteriors. Popular choices include the median (or mean) and &lt;span class=&#34;math inline&#34;&gt;\(95\)&lt;/span&gt;% credibility intervals.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmcpvalue &amp;lt;- function(samp) {
++     ## elementary version that creates an empirical p-value for the
++     ## hypothesis that the columns of samp have mean zero versus a general
++     ## multivariate distribution with elliptical contours.
++ 
++     ## differences from the mean standardized by the observed
++     ## variance-covariance factor
++ 
++     ## Note, I put in the bit for single terms
++     if (length(dim(samp)) == 0) {
++         std &amp;lt;- backsolve(chol(var(samp)), cbind(0, t(samp)) - mean(samp),
++             transpose = TRUE)
++         sqdist &amp;lt;- colSums(std * std)
++         sum(sqdist[-1] &amp;gt; sqdist[1])/length(samp)
++     } else {
++         std &amp;lt;- backsolve(chol(var(samp)), cbind(0, t(samp)) - colMeans(samp),
++             transpose = TRUE)
++         sqdist &amp;lt;- colSums(std * std)
++         sum(sqdist[-1] &amp;gt; sqdist[1])/nrow(samp)
++     }
++ 
++ }&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;First, we look at the results from the additive model.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; print(data.r2jags)
+Inference for Bugs model at &amp;quot;anovaModel2.txt&amp;quot;, fit using jags,
+ 2 chains, each with 10500 iterations (first 3000 discarded)
+ n.sims = 15000 iterations saved
+         mu.vect sd.vect    2.5%     25%     50%     75%   97.5%  Rhat n.eff
+beta[1]   40.226   0.901  38.475  39.624  40.222  40.824  41.999 1.001  4800
+beta[2]    5.401   1.272   2.906   4.552   5.397   6.242   7.900 1.001 15000
+beta[3]   13.492   1.296  10.969  12.634  13.484  14.355  16.038 1.001  5100
+beta[4]    0.734   1.279  -1.793  -0.114   0.740   1.582   3.263 1.001 15000
+beta[5]  -10.248   1.283 -12.785 -11.108 -10.242  -9.380  -7.731 1.001  9800
+sigma      2.863   0.315   2.321   2.642   2.838   3.053   3.558 1.001  6200
+deviance 245.551   3.785 240.353 242.765 244.844 247.603 254.815 1.002  1800
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 7.2 and DIC = 252.7
+DIC is an estimate of expected predictive error (lower deviance is better).
+&amp;gt; 
+&amp;gt; # OR
+&amp;gt; library(broom)
+&amp;gt; tidyMCMC(as.mcmc(data.r2jags), conf.int = TRUE, conf.method = &amp;quot;HPDinterval&amp;quot;)
+# A tibble: 7 x 5
+  term     estimate std.error conf.low conf.high
+  &amp;lt;chr&amp;gt;       &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;
+1 beta[1]    40.2       0.901    38.5      42.0 
+2 beta[2]     5.40      1.27      2.90      7.89
+3 beta[3]    13.5       1.30     11.0      16.1 
+4 beta[4]     0.734     1.28     -1.82      3.21
+5 beta[5]   -10.2       1.28    -12.7      -7.68
+6 deviance  246.        3.79    240.      253.  
+7 sigma       2.86      0.315     2.26      3.48&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Conclusions&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;the mean of the first group (A) is &lt;span class=&#34;math inline&#34;&gt;\(40.2\)&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;the mean of the second group (B) is &lt;span class=&#34;math inline&#34;&gt;\(5.4\)&lt;/span&gt; units greater than (A)&lt;/li&gt;
+&lt;li&gt;the mean of the third group (C) is &lt;span class=&#34;math inline&#34;&gt;\(13.5\)&lt;/span&gt; units greater than (A)&lt;/li&gt;
+&lt;li&gt;the mean of the forth group (D) is &lt;span class=&#34;math inline&#34;&gt;\(0.74\)&lt;/span&gt; units greater than (A)&lt;/li&gt;
+&lt;li&gt;the mean of the fifth group (E) is &lt;span class=&#34;math inline&#34;&gt;\(-10.2\)&lt;/span&gt; units greater (i.e. less) than (A)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The &lt;span class=&#34;math inline&#34;&gt;\(95\)&lt;/span&gt;% confidence interval for the effects of B, C and E do not overlap with &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt; implying a significant difference between group A and groups B, C and E. While workers attempt to become comfortable with a new statistical framework, it is only natural that they like to evaluate and comprehend new structures and output alongside more familiar concepts. One way to facilitate this is via Bayesian p-values that are somewhat analogous to the frequentist p-values for investigating the hypothesis that a parameter is equal to zero.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; ## since values are less than zero
+&amp;gt; mcmcpvalue(data.r2jags$BUGSoutput$sims.matrix[, &amp;quot;beta[2]&amp;quot;])  # effect of (B-A)
+[1] 6.666667e-05
+&amp;gt; mcmcpvalue(data.r2jags$BUGSoutput$sims.matrix[, &amp;quot;beta[3]&amp;quot;])  # effect of (C-A)
+[1] 0
+&amp;gt; mcmcpvalue(data.r2jags$BUGSoutput$sims.matrix[, &amp;quot;beta[4]&amp;quot;])  # effect of (D-A)
+[1] 0.5576
+&amp;gt; mcmcpvalue(data.r2jags$BUGSoutput$sims.matrix[, &amp;quot;beta[5]&amp;quot;])  # effect of (E-A)
+[1] 0
+&amp;gt; mcmcpvalue(data.r2jags$BUGSoutput$sims.matrix[, 2:5])  # effect of (all groups)
+[1] 0&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;There is evidence that the reponse differs between the groups. There is evidence suggesting that the response of group D differs from that of group A.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;graphical-summaries&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Graphical summaries&lt;/h1&gt;
+&lt;p&gt;A nice graphic is often a great accompaniment to a statistical analysis. Although there are no fixed assumptions associated with graphing (in contrast to statistical analyses), we often want the graphical summaries to reflect the associated statistical analyses. After all, the sample is just one perspective on the population(s). What we are more interested in is being able to estimate and depict likely population parameters/trends. Thus, whilst we could easily provide a plot displaying the raw data along with simple measures of location and spread, arguably, we should use estimates that reflect the fitted model. In this case, it would be appropriate to plot the credibility interval associated with each group.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc = data.r2jags$BUGSoutput$sims.matrix
+&amp;gt; ## Calculate the fitted values
+&amp;gt; newdata = rbind(data.frame(x = levels(data$x)))
+&amp;gt; Xmat = model.matrix(~x, newdata)
+&amp;gt; coefs = mcmc[, c(&amp;quot;beta[1]&amp;quot;, &amp;quot;beta[2]&amp;quot;, &amp;quot;beta[3]&amp;quot;, &amp;quot;beta[4]&amp;quot;, &amp;quot;beta[5]&amp;quot;)]
+&amp;gt; fit = coefs %*% t(Xmat)
+&amp;gt; newdata = newdata %&amp;gt;% cbind(tidyMCMC(fit, conf.int = TRUE, conf.method = &amp;quot;HPDinterval&amp;quot;))
+&amp;gt; 
+&amp;gt; ggplot(newdata, aes(y = estimate, x = x)) + geom_linerange(aes(ymin = conf.low,
++     ymax = conf.high)) + geom_point() + scale_y_continuous(&amp;quot;Y&amp;quot;) + scale_x_discrete(&amp;quot;X&amp;quot;) +
++     theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/single-factor-anova-jags/2020-02-01-single-factor-anova-jags_files/figure-html/mcmc_post1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;As this is simple single factor ANOVA, we can simple add the raw data to this figure. For more complex designs with additional predictors, it is necessary to plot partial residuals.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; ## Calculate partial residuals fitted values
+&amp;gt; fdata = rdata = data
+&amp;gt; fMat = rMat = model.matrix(~x, fdata)
+&amp;gt; fit = as.vector(apply(coefs, 2, median) %*% t(fMat))
+&amp;gt; resid = as.vector(data$y - apply(coefs, 2, median) %*% t(rMat))
+&amp;gt; rdata = rdata %&amp;gt;% mutate(partial.resid = resid + fit)
+&amp;gt; 
+&amp;gt; ggplot(newdata, aes(y = estimate, x = as.numeric(x) - 0.1)) + geom_blank(aes(x = x)) +
++     geom_point(data = rdata, aes(y = partial.resid, x = as.numeric(x) +
++         0.1), color = &amp;quot;gray&amp;quot;) + geom_linerange(aes(ymin = conf.low, ymax = conf.high)) +
++     geom_point() + scale_y_continuous(&amp;quot;Y&amp;quot;) + scale_x_discrete(&amp;quot;&amp;quot;) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/single-factor-anova-jags/2020-02-01-single-factor-anova-jags_files/figure-html/mcmc_post2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;posteriors&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Posteriors&lt;/h1&gt;
+&lt;p&gt;In frequentist statistics, when we have more than two groups, we are typically not only interested in whether there is evidence for an overall “effect” of a factor - we are also interested in how various groups compare to one another. To explore these trends, we either compare each group to each other in a pairwise manner (controlling for family-wise Type I error rates) or we explore an independent subset of the possible comparisons. Although these alternate approaches can adequately address a specific research agenda, often they impose severe limitations and compromises on the scope and breadth of questions that can be asked of your data. The reason for these limitations is that in a frequentist framework, any single hypothesis carries with it a (nominally) &lt;span class=&#34;math inline&#34;&gt;\(5\)&lt;/span&gt;% chance of a false rejection (since it is based on long-run frequency). Thus, performing multiple tests are likely to compound this error rate. The point is, that each comparison is compared to its own probability distribution (and each carries a &lt;span class=&#34;math inline&#34;&gt;\(5\)&lt;/span&gt;% error rate). By contrast, in Bayesian statistics, all comparisons (contrasts) are drawn from the one (hopefully stable and convergent) posterior distribution and this posterior is invariant to the type and number of comparisons drawn. Hence, the theory clearly indicates that having generated our posterior distribution, we can then query this distribution in any way that we wish thereby allowing us to explore all of our research questions simultaneously.&lt;/p&gt;
+&lt;p&gt;Bayesian “contrasts” can be performed either:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;within the Bayesian sampling model or&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;construct them from the returned MCMC samples (they are drawn from the posteriors)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Only the latter will be demonstrated as it povides a consistent approach across all routines. In order to allow direct comparison to the frequentist equivalents, I will explore the same set of planned and &lt;em&gt;Tukey&lt;/em&gt;’s test comparisons described here. For the “planned comparison” we defined two contrasts: 1) group 3 vs group 5; and 2) the average of groups 1 and 2 vs the average of groups 3, 4 and 5.&lt;/p&gt;
+&lt;p&gt;Lets start by comparing each group to each other group in a pairwise manner. Arguably the most elegant way to do this is to generate a Tukey’s contrast matrix. This is a model matrix specific to comparing each group to each other group.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc = data.r2jags$BUGSoutput$sims.matrix
+&amp;gt; coefs &amp;lt;- as.matrix(mcmc)[, 1:5]
+&amp;gt; newdata &amp;lt;- data.frame(x = levels(data$x))
+&amp;gt; # A Tukeys contrast matrix
+&amp;gt; library(multcomp)
+&amp;gt; # table(newdata$x) - gets the number of replicates of each level
+&amp;gt; tuk.mat &amp;lt;- contrMat(n = table(newdata$x), type = &amp;quot;Tukey&amp;quot;)
+&amp;gt; Xmat &amp;lt;- model.matrix(~x, data = newdata)
+&amp;gt; pairwise.mat &amp;lt;- tuk.mat %*% Xmat
+&amp;gt; pairwise.mat
+      (Intercept) xB xC xD xE
+B - A           0  1  0  0  0
+C - A           0  0  1  0  0
+D - A           0  0  0  1  0
+E - A           0  0  0  0  1
+C - B           0 -1  1  0  0
+D - B           0 -1  0  1  0
+E - B           0 -1  0  0  1
+D - C           0  0 -1  1  0
+E - C           0  0 -1  0  1
+E - D           0  0  0 -1  1
+&amp;gt; 
+&amp;gt; mcmc_areas(coefs %*% t(pairwise.mat))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/single-factor-anova-jags/2020-02-01-single-factor-anova-jags_files/figure-html/posterior1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; 
+&amp;gt; (comps = tidyMCMC(coefs %*% t(pairwise.mat), conf.int = TRUE, conf.method = &amp;quot;HPDinterval&amp;quot;))
+# A tibble: 10 x 5
+   term  estimate std.error conf.low conf.high
+   &amp;lt;chr&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;
+ 1 B - A    5.40       1.27     2.90      7.89
+ 2 C - A   13.5        1.30    11.0      16.1 
+ 3 D - A    0.734      1.28    -1.82      3.21
+ 4 E - A  -10.2        1.28   -12.7      -7.68
+ 5 C - B    8.09       1.29     5.58     10.7 
+ 6 D - B   -4.67       1.30    -7.19     -2.02
+ 7 E - B  -15.6        1.28   -18.1     -13.1 
+ 8 D - C  -12.8        1.31   -15.3     -10.2 
+ 9 E - C  -23.7        1.29   -26.2     -21.2 
+10 E - D  -11.0        1.29   -13.5      -8.46
+&amp;gt; 
+&amp;gt; ggplot(comps, aes(y = estimate, x = term)) + geom_pointrange(aes(ymin = conf.low,
++     ymax = conf.high)) + geom_hline(yintercept = 0, linetype = &amp;quot;dashed&amp;quot;) +
++     scale_y_continuous(&amp;quot;Effect size&amp;quot;) + scale_x_discrete(&amp;quot;&amp;quot;) + coord_flip() +
++     theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/single-factor-anova-jags/2020-02-01-single-factor-anova-jags_files/figure-html/posterior1-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;With a couple of modifications, we could also express this as percentage changes. A percentage change represents the change (difference between groups) divided by one of the groups (determined by which group you want to express the percentage change to). Hence, we generate an additional mcmc matrix that represents the cell means for the divisor group (group we want to express change relative to). Since the &lt;code&gt;tuk.mat&lt;/code&gt; defines comparisons as &lt;span class=&#34;math inline&#34;&gt;\(-1\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt; pairs, if we simply replace all the &lt;span class=&#34;math inline&#34;&gt;\(-1\)&lt;/span&gt; with &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt;, the eventual matrix multiplication will result in estimates of the divisor cell means instread of the difference. We can then divide the original mcmc matrix above with this new divisor mcmc matrix to yeild a mcmc matrix of percentage change.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; # Modify the tuk.mat to replace -1 with 0.  This will allow us to get a
+&amp;gt; # mcmc matrix of ..
+&amp;gt; tuk.mat[tuk.mat == -1] = 0
+&amp;gt; comp.mat &amp;lt;- tuk.mat %*% Xmat
+&amp;gt; comp.mat
+      (Intercept) xB xC xD xE
+B - A           1  1  0  0  0
+C - A           1  0  1  0  0
+D - A           1  0  0  1  0
+E - A           1  0  0  0  1
+C - B           1  0  1  0  0
+D - B           1  0  0  1  0
+E - B           1  0  0  0  1
+D - C           1  0  0  1  0
+E - C           1  0  0  0  1
+E - D           1  0  0  0  1
+&amp;gt; 
+&amp;gt; comp.mcmc = 100 * (coefs %*% t(pairwise.mat))/coefs %*% t(comp.mat)
+&amp;gt; (comps = tidyMCMC(comp.mcmc, conf.int = TRUE, conf.method = &amp;quot;HPDinterval&amp;quot;))
+# A tibble: 10 x 5
+   term  estimate std.error conf.low conf.high
+   &amp;lt;chr&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;
+ 1 B - A    11.8       2.63     6.52     16.8 
+ 2 C - A    25.1       2.13    21.0      29.4 
+ 3 D - A     1.74      3.10    -4.30      7.88
+ 4 E - A   -34.3       5.09   -44.3     -24.4 
+ 5 C - B    15.0       2.24    10.4      19.2 
+ 6 D - B   -11.5       3.38   -18.1      -4.70
+ 7 E - B   -52.3       5.53   -63.2     -41.6 
+ 8 D - C   -31.2       3.73   -38.5     -23.9 
+ 9 E - C   -79.4       6.26   -91.9     -67.5 
+10 E - D   -36.8       5.15   -47.1     -27.0 
+&amp;gt; 
+&amp;gt; ggplot(comps, aes(y = estimate, x = term)) + geom_pointrange(aes(ymin = conf.low,
++     ymax = conf.high)) + geom_hline(yintercept = 0, linetype = &amp;quot;dashed&amp;quot;) +
++     scale_y_continuous(&amp;quot;Effect size (%)&amp;quot;) + scale_x_discrete(&amp;quot;&amp;quot;) + coord_flip() +
++     theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/single-factor-anova-jags/2020-02-01-single-factor-anova-jags_files/figure-html/posterior2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;And now for the specific planned comparisons (Group 3 vs Group 5 and the average of Groups 1 and 2 vs the average of Groups 3, 4 and 5). This is achieved by generating our own contrast matrix (defining the contributions of each group to each contrast).&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; c.mat = rbind(c(0, 0, -1, 0, 1), c(-1/2, -1/2, 1/3, 1/3, 1/3))
+&amp;gt; c.mat
+     [,1] [,2]       [,3]      [,4]      [,5]
+[1,]  0.0  0.0 -1.0000000 0.0000000 1.0000000
+[2,] -0.5 -0.5  0.3333333 0.3333333 0.3333333
+&amp;gt; 
+&amp;gt; mcmc = data.r2jags$BUGSoutput$sims.matrix
+&amp;gt; coefs &amp;lt;- as.matrix(mcmc)[, 1:5]
+&amp;gt; newdata &amp;lt;- data.frame(x = levels(data$x))
+&amp;gt; Xmat &amp;lt;- model.matrix(~x, data = newdata)
+&amp;gt; c.mat = c.mat %*% Xmat
+&amp;gt; c.mat
+       (Intercept)   xB         xC        xD        xE
+[1,]  0.000000e+00  0.0 -1.0000000 0.0000000 1.0000000
+[2,] -1.110223e-16 -0.5  0.3333333 0.3333333 0.3333333
+&amp;gt; 
+&amp;gt; (comps = tidyMCMC(as.mcmc(coefs %*% t(c.mat)), conf.int = TRUE, conf.method = &amp;quot;HPDinterval&amp;quot;))
+# A tibble: 2 x 5
+  term  estimate std.error conf.low conf.high
+  &amp;lt;chr&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;
+1 var1    -23.7      1.29    -26.2    -21.2  
+2 var2     -1.37     0.836    -3.01     0.273&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;finite-population-standard-deviations&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Finite population standard deviations&lt;/h1&gt;
+&lt;p&gt;Variance components, the amount of added variance attributed to each influence, are traditionally estimated for so called random effects. These are the effects for which the levels employed in the design are randomly selected to represent a broader range of possible levels. For such effects, effect sizes (differences between each level and a reference level) are of little value. Instead, the “importance” of the variables are measured in units of variance components. On the other hand, regular variance components for fixed factors (those whose measured levels represent the only levels of interest) are not logical - since variance components estimate variance as if the levels are randomly selected from a larger population. Nevertheless, in order to compare and contrast the scale of variability of both fixed and random factors, it is necessary to measure both on the same scale (sample or population based variance).&lt;/p&gt;
+&lt;p&gt;Finite-population variance components assume that the levels of all factors (fixed and random) in the design are all the possible levels available (&lt;span class=&#34;citation&#34;&gt;Gelman and others (2005)&lt;/span&gt;). In other words, they are assumed to represent finite populations of levels. Sample (rather than population) statistics are then used to calculate these finite-population variances (or standard deviations). Since standard deviation (and variance) are bound at zero, standard deviation posteriors are typically non-normal. Consequently, medians and HPD intervals are more robust estimates.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;      beta[1]  beta[2]  beta[3]    beta[4]    beta[5] deviance    sigma
+[1,] 41.14988 5.425974 13.10634  0.5423808 -12.004913 245.9651 2.374957
+[2,] 41.77436 3.165155 12.08478 -2.5284367 -11.070257 251.2837 3.546706
+[3,] 39.87873 5.074910 13.46806  0.7805140  -7.932663 245.7947 3.020465
+[4,] 41.15168 3.079048 10.80976 -0.5505218 -10.396170 249.3934 2.547300
+[5,] 39.93263 4.548017 13.82126  1.2192389  -9.549601 242.2442 2.449639
+[6,] 40.41198 4.705732 12.87972  2.3548628  -8.868949 250.1582 2.432338
+# A tibble: 2 x 5
+  term     estimate std.error conf.low conf.high
+  &amp;lt;chr&amp;gt;       &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;
+1 sd.x         9.94    0.528      8.86     10.9 
+2 sd.resid     2.79    0.0903     2.67      2.96
+# A tibble: 2 x 5
+  term     estimate std.error conf.low conf.high
+  &amp;lt;chr&amp;gt;       &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;
+1 sd.x         78.3      1.07     76.0      79.7
+2 sd.resid     21.7      1.07     20.3      24.0&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/single-factor-anova-jags/2020-02-01-single-factor-anova-jags_files/figure-html/eff_pop1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Approximately &lt;span class=&#34;math inline&#34;&gt;\(78.3\)&lt;/span&gt;% of the total finite population standard deviation is due to &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;r-squared&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;R squared&lt;/h1&gt;
+&lt;p&gt;In a frequentist context, the &lt;span class=&#34;math inline&#34;&gt;\(R^2\)&lt;/span&gt; value is seen as a useful indicator of goodness of fit. Whilst it has long been acknowledged that this measure is not appropriate for comparing models (for such purposes information criterion such as AIC are more appropriate), it is nevertheless useful for estimating the amount (percent) of variance explained by the model. In a frequentist context, &lt;span class=&#34;math inline&#34;&gt;\(R^2\)&lt;/span&gt; is calculated as the variance in predicted values divided by the variance in the observed (response) values. Unfortunately, this classical formulation does not translate simply into a Bayesian context since the equivalently calculated numerator can be larger than the an equivalently calculated denominator - thereby resulting in an &lt;span class=&#34;math inline&#34;&gt;\(R^2\)&lt;/span&gt; greater than &lt;span class=&#34;math inline&#34;&gt;\(100\)&lt;/span&gt;%. &lt;span class=&#34;citation&#34;&gt;Gelman et al. (2019)&lt;/span&gt; proposed an alternative formulation in which the denominator comprises the sum of the explained variance and the variance of the residuals.&lt;/p&gt;
+&lt;p&gt;So in the standard regression model notation of:&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ y_i \sim \text{Normal}(\boldsymbol X \boldsymbol \beta, \sigma),\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;the &lt;span class=&#34;math inline&#34;&gt;\(R^2\)&lt;/span&gt; could be formulated as&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ R^2 = \frac{\sigma^2_f}{\sigma^2_f + \sigma^2_e},\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2_f=\text{var}(\boldsymbol X \boldsymbol \beta)\)&lt;/span&gt;, and for normal models &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2_e=\text{var}(y-\boldsymbol X \boldsymbol \beta)\)&lt;/span&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc &amp;lt;- data.r2jags$BUGSoutput$sims.matrix
+&amp;gt; Xmat = model.matrix(~x, data)
+&amp;gt; wch = grep(&amp;quot;beta&amp;quot;, colnames(mcmc))
+&amp;gt; coefs = mcmc[, wch]
+&amp;gt; fit = coefs %*% t(Xmat)
+&amp;gt; var_f = apply(fit, 1, var)
+&amp;gt; var_e = apply(resid, 1, var)
+&amp;gt; R2 = var_f/(var_f + var_e)
+&amp;gt; tidyMCMC(as.mcmc(R2), conf.int = TRUE, conf.method = &amp;quot;HPDinterval&amp;quot;)
+# A tibble: 1 x 5
+  term  estimate std.error conf.low conf.high
+  &amp;lt;chr&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;
+1 var1     0.887    0.0127    0.862     0.905
+&amp;gt; 
+&amp;gt; # for comparison with frequentist
+&amp;gt; summary(lm(y ~ x, data))
+
+Call:
+lm(formula = y ~ x, data = data)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-6.5257 -1.9000 -0.2589  1.4935  6.5330 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&amp;gt;|t|)    
+(Intercept)  40.2239     0.8801  45.702  &amp;lt; 2e-16 ***
+xB            5.4020     1.2447   4.340 7.97e-05 ***
+xC           13.5024     1.2447  10.848 3.82e-14 ***
+xD            0.7423     1.2447   0.596    0.554    
+xE          -10.2500     1.2447  -8.235 1.57e-10 ***
+---
+Signif. codes:  0 &amp;#39;***&amp;#39; 0.001 &amp;#39;**&amp;#39; 0.01 &amp;#39;*&amp;#39; 0.05 &amp;#39;.&amp;#39; 0.1 &amp;#39; &amp;#39; 1
+
+Residual standard error: 2.783 on 45 degrees of freedom
+Multiple R-squared:  0.8957,    Adjusted R-squared:  0.8865 
+F-statistic: 96.64 on 4 and 45 DF,  p-value: &amp;lt; 2.2e-16&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;bayesian-model-selection&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Bayesian model selection&lt;/h1&gt;
+&lt;p&gt;A statistical model is by definition a low-dimensional (over simplification) representation of what is really likely to be a very complex system. As a result, no model is right. Some models however can provide useful insights into some of the processes operating on the system. Frequentist statistics have various methods (model selection, dredging, lasso, cross validation) for selecting parsimonious models. These are models that provide a good comprimise between minimizing unexplained patterns and minimizing model complexity. The basic premise is that since no model can hope to capture the full complexity of a system with all its subtleties, only the very major patterns can be estimated. Overly complex models are likely to be representing artificial complexity present only in the specific observed data (not the general population). The Bayesian approach is to apply priors to the non-variance parameters such that parameters close to zero are further shrunk towards zero whilst priors on parameters further away from zero are less effected. The most popular form of prior for sparsity is the &lt;em&gt;horseshoe prior&lt;/em&gt;, so called because the shape of a component of this prior resembles a horseshoe (with most of the mass either close to &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt; or close to &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt;).&lt;/p&gt;
+&lt;p&gt;Rather than apply weakly informative Gaussian priors on parameters as:&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \beta_j \sim N(0,\sigma^2),\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;the horseshoe prior is defined as&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \beta_j \sim N(0,\tau^2\lambda_j^2),\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\tau \sim \text{Cauchy}(0,1)\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\lambda_j \sim \text{Cauchy}(0,1)\)&lt;/span&gt;, for &lt;span class=&#34;math inline&#34;&gt;\(j=1,\ldots,D\)&lt;/span&gt;. Using this prior, &lt;span class=&#34;math inline&#34;&gt;\(D\)&lt;/span&gt; is the number of (non-intercept or variance) parameters, &lt;span class=&#34;math inline&#34;&gt;\(\tau\)&lt;/span&gt; represents the global scale that weights or shrinks all parameters towards zero and &lt;span class=&#34;math inline&#34;&gt;\(\lambda_j\)&lt;/span&gt; are thick tailed local scales that allow some of the &lt;span class=&#34;math inline&#34;&gt;\(j\)&lt;/span&gt; parameters to escape shrinkage. More recently, &lt;span class=&#34;citation&#34;&gt;Piironen, Vehtari, and others (2017)&lt;/span&gt; have argued that whilst the above horseshoe priors do guarantee that strong effects (parameters) will not be over-shrunk, there is the potential for weekly identified effects (those based on relatively little data) to be misrepresented in the posteriors. As an alternative they advocated the use of regularised horseshoe priors in which the amount of shrinkage applied to the largest effects can be controlled. The prior is defined as:&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \beta_j \sim N(0,\tau^2 \tilde{\lambda}_j^2),\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\tilde{\lambda}_j^2 = \frac{c^2\lambda^2_j}{c^2+\tau^2 \lambda^2_j}\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(c\)&lt;/span&gt; is (slab width, actually variance) is a constant. For small effects (when &lt;span class=&#34;math inline&#34;&gt;\(\tau^2 \lambda^2_j &amp;lt; c^2\)&lt;/span&gt;) the prior approaches a regular prior. However, for large effects (when &lt;span class=&#34;math inline&#34;&gt;\(\tau^2 \lambda^2_j &amp;gt; c^2\)&lt;/span&gt;) the prior approaches &lt;span class=&#34;math inline&#34;&gt;\(N(0,c^2)\)&lt;/span&gt;. Finally, they recommend applying a inverse-gamma prior on &lt;span class=&#34;math inline&#34;&gt;\(c^2\)&lt;/span&gt;:&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ c^2 \sim \text{Inv-Gamma}(\alpha,\beta),\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\alpha=v/2\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\beta=vs^2/2\)&lt;/span&gt;, which translates to a &lt;span class=&#34;math inline&#34;&gt;\(\text{Student-t}_ν(0, s^2)\)&lt;/span&gt; slab for the coefficients far from zero and is typically a good default choice for a weakly informative prior.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
+&lt;h1&gt;References&lt;/h1&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references hanging-indent&#34;&gt;
+&lt;div id=&#34;ref-gelman2019r&#34;&gt;
+&lt;p&gt;Gelman, Andrew, Ben Goodrich, Jonah Gabry, and Aki Vehtari. 2019. “R-Squared for Bayesian Regression Models.” &lt;em&gt;The American Statistician&lt;/em&gt; 73 (3): 307–9.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-gelman2005analysis&#34;&gt;
+&lt;p&gt;Gelman, Andrew, and others. 2005. “Analysis of Variance—Why It Is More Important Than Ever.” &lt;em&gt;The Annals of Statistics&lt;/em&gt; 33 (1): 1–53.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-piironen2017sparsity&#34;&gt;
+&lt;p&gt;Piironen, Juho, Aki Vehtari, and others. 2017. “Sparsity Information and Regularization in the Horseshoe and Other Shrinkage Priors.” &lt;em&gt;Electronic Journal of Statistics&lt;/em&gt; 11 (2): 5018–51.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-plummer2004jags&#34;&gt;
+&lt;p&gt;Plummer, Martyn. 2004. “JAGS: Just Another Gibbs Sampler.”&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-su2015package&#34;&gt;
+&lt;p&gt;Su, Yu-Sung, Masanao Yajima, Maintainer Yu-Sung Su, and JAGS SystemRequirements. 2015. “Package ‘R2jags’.” &lt;em&gt;R Package Version 0.03-08, URL Http://CRAN. R-Project. Org/Package= R2jags&lt;/em&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Single Factor Anova - STAN</title>
+      <link>/stan/single-factor-anova-stan/single-factor-anova-stan/</link>
+      <pubDate>Tue, 04 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/stan/single-factor-anova-stan/single-factor-anova-stan/</guid>
+      <description>
+&lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;p&gt;This tutorial will focus on the use of Bayesian estimation to fit simple linear regression models. &lt;code&gt;BUGS&lt;/code&gt; (Bayesian inference Using &lt;em&gt;Gibbs Sampling&lt;/em&gt;) is an algorithm and supporting language (resembling &lt;code&gt;R&lt;/code&gt;) dedicated to performing the Gibbs sampling implementation of &lt;em&gt;Markov Chain Monte Carlo&lt;/em&gt; (MCMC) method. Dialects of the &lt;code&gt;BUGS&lt;/code&gt; language are implemented within three main projects:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;OpenBUGS&lt;/strong&gt; - written in component pascal.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;JAGS&lt;/strong&gt; - (Just Another Gibbs Sampler) - written in &lt;code&gt;C++&lt;/code&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;STAN&lt;/strong&gt; - a dedicated Bayesian modelling framework written in &lt;code&gt;C++&lt;/code&gt; and implementing &lt;em&gt;Hamiltonian&lt;/em&gt; MCMC samplers.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Whilst the above programs can be used stand-alone, they do offer the rich data pre-processing and graphical capabilities of &lt;code&gt;R&lt;/code&gt;, and thus, they are best accessed from within &lt;code&gt;R&lt;/code&gt; itself. As such there are multiple packages devoted to interfacing with the various software implementations:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;R2OpenBUGS&lt;/em&gt; - interfaces with &lt;code&gt;OpenBUGS&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;R2jags&lt;/em&gt; - interfaces with &lt;code&gt;JAGS&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;rstan&lt;/em&gt; - interfaces with &lt;code&gt;STAN&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This tutorial will demonstrate how to fit models in &lt;code&gt;STAN&lt;/code&gt; (&lt;span class=&#34;citation&#34;&gt;Gelman, Lee, and Guo (2015)&lt;/span&gt;) using the package &lt;code&gt;rstan&lt;/code&gt; (&lt;span class=&#34;citation&#34;&gt;Stan Development Team (2018)&lt;/span&gt;) as interface, which also requires to load some other packages.&lt;/p&gt;
+&lt;div id=&#34;overview&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Overview&lt;/h1&gt;
+&lt;div id=&#34;introduction&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;Single factor Analysis of Variance&lt;/em&gt; (ANOVA), also known as single factor classification, is used to investigate the effect of a single factor comprising two or more groups (treatment levels) from a completely randomised design. Completely randomised refers to the absence of restrictions on the random allocation of experimental or sampling units to factor levels.&lt;/p&gt;
+&lt;p&gt;For example, consider a situation in which three types of treatments (A, B and C) are applied to replicate sampling units across the sampling domain. Importantly, the treatments are applied at the scale of the sampling units and the treatments applied to each sampling unit do not extend to any other neighbouring sampling units. Another possible situation is where the scale of a treatment is far larger than that of a sampling unit. This design features two treatments, each replicated three times. Note that additional sampling units within each Site (the scale at which the treatment occurs) would NOT constitute additional replication. Rather, these would be sub-replicates. That is, they would be replicates of the Sites, not the treatments (since the treatments occur at the level of whole sites). In order to genuinely increase the number of replicates, it is necessary to have more Sites. The random allocation of sampling units within the sampling domain (such as population) is appropriate provided either the underlying response is reasonably homogenous throughout the domain, or else, there is a large number of sampling units. If the conditions are relatively hetrogenous, then the exact location of the sampling units is likely to be highly influential and may mask any detectable effects of treatments.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;fixed-and-random-effects&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Fixed and random effects&lt;/h2&gt;
+&lt;p&gt;From a frequentist perspective, &lt;em&gt;fixed factors&lt;/em&gt; are factors whose levels represent the specific populations of interest. For example, a factor that comprises “high”, “medium” and “low” temperature treatments is a fixed factor - we are only interested in comparing those three populations. Conclusions about the effects of a fixed factor are restricted to the specific treatment levels investigated and for any subsequent experiments to be comparable, the same specific treatments of the factor would need to be used. By contrast, &lt;em&gt;random factors&lt;/em&gt; are factors whose levels are randomly chosen from all the possible levels of populations and are used as random representatives of the populations. For example, five random temperature treatments could be used to represent a full spectrum of temperature treatments. In this case, conclusions are extrapolated to all the possible treatment (temperature) levels and for subsequent experiments, a new random set of treatments of the factor would be selected.&lt;/p&gt;
+&lt;p&gt;Other common examples of random factors include sites and subjects - factors for which we are attempting to generalise over. Furthermore, the nature of random factors means that we have no indication of how a new level of that factor (such as another subject or site) are likely to respond and thus it is not possible to predict new observations from random factors. These differences between fixed and random factors are reflected in the way their respective null hypotheses are formulated and interpreted. Whilst fixed factors contrast the effects of the different levels of the factor, random factors are modelled as the amount of additional variability they introduce. Random factors are modelled with a mean of &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt; and their variance is estimated as the effect coefficient.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;linear-model&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Linear model&lt;/h2&gt;
+&lt;p&gt;The linear model for single factor classification is similar to that of multiple linear regression. The linear model can thus be represented by either:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Means parameterisation&lt;/strong&gt; - in which the regression slopes represent the means of each treatment group and the intercept is removed (to prevent over-parameterisation).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ y_{ij} = \beta_1(\text{level}_1)_{ij} + \beta_2(\text{level}_2)_{ij} + \ldots + \epsilon_{ij},\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\beta_1\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\beta_2\)&lt;/span&gt; respectively represent the means response of treatment level &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(2\)&lt;/span&gt;. This is often simplified to &lt;span class=&#34;math inline&#34;&gt;\(y_{ij}=\alpha_i + \epsilon_{ij}\)&lt;/span&gt;.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Effects parameterisation&lt;/strong&gt; - the intercept represents a property such as the mean of one of the treatment groups (treatment contrasts) or the overall mean (sum contrasts), and the slope parameters represent effects (differences between each other group and the reference mean for example).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ y_{ij} = \mu + \beta_2(\text{level}_2)_{ij} + \beta_3(\text{level}_3)_{ij} + \ldots + \epsilon_{ij},\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; is the mean of the first treatment group, &lt;span class=&#34;math inline&#34;&gt;\(\beta_2\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\beta_3\)&lt;/span&gt; respectively represent the effects (change from level &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt;) of level &lt;span class=&#34;math inline&#34;&gt;\(2\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(3\)&lt;/span&gt; on the mean response. This is often simplified to: &lt;span class=&#34;math inline&#34;&gt;\(y_{ij}=\mu + \alpha_i + \epsilon_{ij}\)&lt;/span&gt;, with &lt;span class=&#34;math inline&#34;&gt;\(\alpha_1=0\)&lt;/span&gt;.&lt;/p&gt;
+&lt;p&gt;Since we are traditionally interested in investigating effects (differences) rather than treatment means, effects parameterisation is far more common (particularly when coupled with hypothesis testing). In a Bayesian framework, it does not really matter whether models are fit with means or effects parameterisation since the posterior likelihood can be querried in any way and repeatedly - thus enabling us to explore any specific effects after the model has been fit. Nevertheless, to ease comparisons with frequentist approaches, we will stick with effects paramterisation.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;null-hypothesis-fixed-factor&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Null hypothesis: fixed factor&lt;/h2&gt;
+&lt;p&gt;We can associate a null hypothesis test with each estimated parameter. For example, in a cell for each estimated mean in a means model we could test a null hypothesis that the population mean is equal to zero (e.g. &lt;span class=&#34;math inline&#34;&gt;\(H_0\)&lt;/span&gt;: &lt;span class=&#34;math inline&#34;&gt;\(\alpha_1=0\)&lt;/span&gt;, &lt;span class=&#34;math inline&#34;&gt;\(H_0\)&lt;/span&gt;: &lt;span class=&#34;math inline&#34;&gt;\(\alpha_2=0\)&lt;/span&gt;, &lt;span class=&#34;math inline&#34;&gt;\(\ldots\)&lt;/span&gt;). However, this rarely would be of much interest. By contrast, individual null hypotheses associated with each parameter of the effects model can be used to investigate the differences between each group and a reference group (for example). In addition to the individual null hypothesis tests, a single fixed factor ANOVA tests the collective &lt;span class=&#34;math inline&#34;&gt;\(H_0\)&lt;/span&gt; that there are no differences between the population group means:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;span class=&#34;math inline&#34;&gt;\(H_0: \mu_1=\mu_2=\ldots=\mu_i=\mu\)&lt;/span&gt; (the population group means are all equal). That is, that the mean of population &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt; is equal to that of population &lt;span class=&#34;math inline&#34;&gt;\(2\)&lt;/span&gt; and so on, and thus all population means are equal to one another - no effect of the factor on the response. If the effect of the &lt;span class=&#34;math inline&#34;&gt;\(i\)&lt;/span&gt;-th group is the difference between the &lt;span class=&#34;math inline&#34;&gt;\(i\)&lt;/span&gt;-th group mean and the mean of the first group (&lt;span class=&#34;math inline&#34;&gt;\(\alpha_i=\mu_i-\mu_1\)&lt;/span&gt;) then the &lt;span class=&#34;math inline&#34;&gt;\(H_0\)&lt;/span&gt; can alternatively be written as:&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;span class=&#34;math inline&#34;&gt;\(H_0 : \alpha_2=\alpha_3=\ldots=\alpha_i=0\)&lt;/span&gt; (the effect of each group equals zero). If one or more of the &lt;span class=&#34;math inline&#34;&gt;\(\alpha_i\)&lt;/span&gt; are different from zero (the response mean for this treatment differs from the overall response mean), there is evidence that the null hypothesis is not true indicating that the factor does affect the response variable.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div id=&#34;null-hypothesis-random-factor&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Null hypothesis: random factor&lt;/h2&gt;
+&lt;p&gt;The collective &lt;span class=&#34;math inline&#34;&gt;\(H_0\)&lt;/span&gt; for a random factor is that the variance between all possible treatment groups equals zero:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;span class=&#34;math inline&#34;&gt;\(H_0 : \sigma^2_{\alpha}=0\)&lt;/span&gt; (added variance due to this factor equals zero).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Note that whilst the null hypotheses for fixed and random factors are different (fixed: population group means all equal, random: variances between populations all equal zero), the linear model fitted for fixed and random factors in single factor ANOVA models is identical. For more complex multi-factor ANOVA models however, the distinction between fixed and random factors has important consequences for building and interpreting statistical models and null hypotheses.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;analysis-of-variance&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Analysis of variance&lt;/h2&gt;
+&lt;p&gt;When the null hypothesis is true (and the populations are identical), the amount of variation among observations within groups should be similar to the amount of variation in observations between groups. However, when the null hypothesis is false (and some means are different from other means), the amount of variation among observations might be expected to be less than the amount of variation within groups. Analysis of variance, or ANOVA, partitions the total variance in the response (dependent) variable into a component of the variance that is explained by combinations of one or more categorical predictor variables (called factors) and a component of the variance that cannot be explained (residual). The variance ratio (F-ratio) from this partitioning can then be used to test the null hypothesis (&lt;span class=&#34;math inline&#34;&gt;\(H_0\)&lt;/span&gt;) that the population group or treatment means are all equal. Ttotal variation can be decomposed into components explained by the groups (&lt;span class=&#34;math inline&#34;&gt;\(MS_{groups}\)&lt;/span&gt;) and and unexplained (&lt;span class=&#34;math inline&#34;&gt;\(MS_{residual}\)&lt;/span&gt;) by the groups. The gray arrows in b) depict the relative amounts explained by the groups. The proposed groupings generally explain why the first few points are higher on the y-axis than the last three points. The probability of collecting our sample, and thus generating the sample ratio of explained to unexplained variation (or one more extreme), when the null hypothesis is true (and population means are equal) is the area under the F-distribution beyond our sample ratio (&lt;span class=&#34;math inline&#34;&gt;\(\text{F-ratio}=\frac{MS_{groups}}{MS_{residual}}\)&lt;/span&gt;).&lt;/p&gt;
+&lt;p&gt;When the null hypothesis is true (and the test assumptions have not been violated), the ratio (F-ratio) of explained to unexplained variance follows a theoretical probability distribution (F-distribution). When the null hypothesis is true, and there is no effect of the treatment on the response variable, the ratio of explained variability to unexplained variability is expected to be &lt;span class=&#34;math inline&#34;&gt;\(\leq 1\)&lt;/span&gt;. Since the denominator should represent the expected numerator in the absence of an effect. Importantly, the denominator in an F-ratio calculation essentially represents what we would expect the numerator to be in the absence of a treatment effect. For simple analyses, identifying what these expected values are is relatively straightforward (equivalent to the degree of within group variability). However, in more complex designs (particularly involving random factors and hierarchical treatment levels), the logical “groups” can be more difficult (and in some cases impossible) to identify. In such cases, nominating the appropriate F-ratio denominator for estimating an specific effect requires careful consideration. The following table depicts the anatomy of the single factor ANOVA table&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; anova_table
+         df       MS       F-ratio          
+Factor A &amp;quot;a-1&amp;quot;    &amp;quot;MS A&amp;quot;   &amp;quot;(MS A)/(MS res)&amp;quot;
+Residual &amp;quot;(n-1)a&amp;quot; &amp;quot;MS res&amp;quot; &amp;quot;&amp;quot;               &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;and corresponding &lt;code&gt;R&lt;/code&gt; syntax.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; anova(lm(DV ~ A, dataset))
+&amp;gt; # OR
+&amp;gt; anova(aov(DV ~ A, dataset))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;An F-ratio substantially greater than &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt; suggests that the model relating the response variable to the categorical variable explains substantially more variability than is left unexplained. In turn, this implies that the linear model does represent the data well and that differences between observations can be explained largely by differences in treatment levels rather than purely the result of random variation. If the probability of getting the observed (sample) F-ratio or one more extreme is less than some predefined critical value (typically &lt;span class=&#34;math inline&#34;&gt;\(5\)&lt;/span&gt;% or &lt;span class=&#34;math inline&#34;&gt;\(0.05\)&lt;/span&gt;), we conclude that it is highly unlikely that the observed samples could have been collected from populations in which the treatment has no effect and therefore we would reject the null hypothesis.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;assumptions&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Assumptions&lt;/h2&gt;
+&lt;p&gt;An F-ratio from real data can only reliably relate to a theoretical F-distribution when the data conform to certain assumptions. Hypothesis testing for a single factor ANOVA model assumes that the residuals (and therefore the response variable for each of the treatment levels) are all:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;normally distributed&lt;/strong&gt; - although ANOVA is robust to non-normality provided sample sizes and variances are equal. Boxplots should be used to explore normality, skewness, bimodality and outliers. In the event of homogeneity of variance issues (see below), a Q-Q normal plot can also be useful for exploring normality (as this might be the cause of non-homogeneity). Scale transformations are often useful.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;equally varied&lt;/strong&gt; - provided sample sizes are equal and the largest to smallest variance ratio does not exceed 3:1 (9:1 for sd), ANOVA is reasonably robust to this assumption, however, relationships between variance and mean and/or sample size are of particular concern as they elevate the Type I error rate. Boxplots and plots of means against variance should be used to explore the spread of values. Residual plots should reveal no patterns. Since unequal variances are often the result of non-normality, transformations that improve normality will also improve variance homogeneity.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;independent of one another&lt;/strong&gt; - this assumption must be addressed at the design and collection stages and cannot be compensated for later (unless a model is used that specifically accounts for particular types of non-independent data, such as that introduced with hierarchical designs or autocorrelation)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Violations of these assumptions reduce the reliability of the analysis.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;data-generation&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Data generation&lt;/h1&gt;
+&lt;p&gt;Lets say we had set up a natural experiment in which we measured a response from &lt;span class=&#34;math inline&#34;&gt;\(10\)&lt;/span&gt; sampling units (replicates) from each of &lt;span class=&#34;math inline&#34;&gt;\(5\)&lt;/span&gt; treatments. Hence, we have a single categorical factor with &lt;span class=&#34;math inline&#34;&gt;\(5\)&lt;/span&gt; levels - we might have five different locations, or five different habitat types or substrates etc. In statistical speak, we have sampled from &lt;span class=&#34;math inline&#34;&gt;\(5\)&lt;/span&gt; different populations. We have then randomly selected &lt;span class=&#34;math inline&#34;&gt;\(10\)&lt;/span&gt; independent and random (representative) units of each population to sample. That is, we have &lt;span class=&#34;math inline&#34;&gt;\(10\)&lt;/span&gt; samples (replicates) of each population. As this section is mainly about the generation of artificial data (and not specifically about what to do with the data), understanding the actual details are optional and can be safely skipped.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; set.seed(123)
+&amp;gt; ngroups &amp;lt;- 5  #number of populations
+&amp;gt; nsample &amp;lt;- 10  #number of reps in each
+&amp;gt; pop.means &amp;lt;- c(40, 45, 55, 40, 30)  #population mean length
+&amp;gt; sigma &amp;lt;- 3  #residual standard deviation
+&amp;gt; n &amp;lt;- ngroups * nsample  #total sample size
+&amp;gt; eps &amp;lt;- rnorm(n, 0, sigma)  #residuals
+&amp;gt; x &amp;lt;- gl(ngroups, nsample, n, lab = LETTERS[1:5])  #factor
+&amp;gt; means &amp;lt;- rep(pop.means, rep(nsample, ngroups))
+&amp;gt; X &amp;lt;- model.matrix(~x - 1)  #create a design matrix
+&amp;gt; y &amp;lt;- as.numeric(X %*% pop.means + eps)
+&amp;gt; data &amp;lt;- data.frame(y, x)
+&amp;gt; head(data)  #print out the first six rows of the data set
+         y x
+1 38.31857 A
+2 39.30947 A
+3 44.67612 A
+4 40.21153 A
+5 40.38786 A
+6 45.14519 A
+&amp;gt; 
+&amp;gt; write.csv(data, &amp;quot;simpleAnova.csv&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;With these sort of data, we are primarily interested in investigating whether there is a relationship between the continuous response variable and the treatment type.&lt;/p&gt;
+&lt;div id=&#34;exploratory-data-analysis&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Exploratory data analysis&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;em&gt;Normality and Homogeneity of variance&lt;/em&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; boxplot(y ~ x, data)
+&amp;gt; 
+&amp;gt; # OR via ggplot2
+&amp;gt; library(ggplot2)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/single-factor-anova-stan/2020-02-01-single-factor-anova-stan_files/figure-html/exp_data-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; ggplot(data, aes(y = y, x = x)) + geom_boxplot() +
++     theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/single-factor-anova-stan/2020-02-01-single-factor-anova-stan_files/figure-html/exp_data-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Conclusions&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;There is no evidence that the response variable is consistently non-normal across all populations - each boxplot is approximately symmetrical. There is no evidence that variance (as estimated by the height of the boxplots) differs between the five populations. More importantly, there is no evidence of a relationship between mean and variance - the height of boxplots does not increase with increasing position along the &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;-axis. Hence it there is no evidence of non-homogeneity. Obvious violations could be addressed either by, for example, transforming the scale of the response variables (to address normality etc). Note transformations should be applied to the entire response variable (not just those populations that are skewed).&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;model-fitting&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Model fitting&lt;/h1&gt;
+&lt;p&gt;The observed response (&lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt;) are assumed to be drawn from a normal distribution with a given mean (&lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt;) and standard deviation (&lt;span class=&#34;math inline&#34;&gt;\(\sigma\)&lt;/span&gt;). The expected values (&lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt;) are themselves determined by the linear predictor (&lt;span class=&#34;math inline&#34;&gt;\(\beta_0+\boldsymbol \beta \boldsymbol X_i\)&lt;/span&gt;). In this case, &lt;span class=&#34;math inline&#34;&gt;\(\beta_0\)&lt;/span&gt; represents the mean of the first group and the set of &lt;span class=&#34;math inline&#34;&gt;\(\boldsymbol \beta\)&lt;/span&gt;’s represent the differences between each other group and the first group. MCMC sampling requires priors on all parameters. We will employ weakly informative priors. Specifying ‘uninformative’ priors is always a bit of a balancing act. If the priors are too vague (wide) the MCMC sampler can wander off into nonscence areas of likelihood rather than concentrate around areas of highest likelihood (desired when wanting the outcomes to be largely driven by the data). On the other hand, if the priors are too strong, they may have an influence on the parameters. In such a simple model, this balance is very forgiving - it is for more complex models that prior choice becomes more important. For this simple model, we will go with zero-centered Gaussian (normal) priors with relatively large standard deviations (&lt;span class=&#34;math inline&#34;&gt;\(100\)&lt;/span&gt;) for both the intercept and the treatment effect and a wide half-cauchy (&lt;span class=&#34;math inline&#34;&gt;\(\text{scale}=5\)&lt;/span&gt;) for the standard deviation.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[y_i \sim N(\mu_i,\sigma),  \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\mu_i=\beta_0 +\boldsymbol \beta \boldsymbol X_i\)&lt;/span&gt;. The assumed priors are: &lt;span class=&#34;math inline&#34;&gt;\(\beta \sim N(0,100)\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\sigma \sim \text{Cauchy}(0,5)\)&lt;/span&gt;. We proceed to code the model into &lt;code&gt;STAN&lt;/code&gt;.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; modelString = &amp;quot;
++   data {
++   int&amp;lt;lower=1&amp;gt; n;
++   int&amp;lt;lower=1&amp;gt; nX;
++   vector [n] y;
++   matrix [n,nX] X;
++   }
++   parameters {
++   vector[nX] beta;
++   real&amp;lt;lower=0&amp;gt; sigma;
++   }
++   transformed parameters {
++   vector[n] mu;
++ 
++   mu = X*beta;
++   }
++   model {
++   //Likelihood
++   y~normal(mu,sigma);
++   
++   //Priors
++   beta ~ normal(0,1000);
++   sigma~cauchy(0,5);
++   }
++   generated quantities {
++   vector[n] log_lik;
++   
++   for (i in 1:n) {
++   log_lik[i] = normal_lpdf(y[i] | mu[i], sigma); 
++   }
++   }
++   
++   &amp;quot;
+&amp;gt; ## write the model to a stan file 
+&amp;gt; writeLines(modelString, con = &amp;quot;anovaModel.stan&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Arrange the data as a list (as required by &lt;code&gt;STAN&lt;/code&gt;). As input, &lt;code&gt;STAN&lt;/code&gt; will need to be supplied with: the response variable, the predictor variable, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; Xmat &amp;lt;- model.matrix(~x, data)
+&amp;gt; data.list &amp;lt;- with(data, list(y = y, X = Xmat, nX = ncol(Xmat), n = nrow(data)))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Define the nodes (parameters and derivatives) to monitor and chain parameters.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; params &amp;lt;- c(&amp;quot;beta&amp;quot;, &amp;quot;sigma&amp;quot;, &amp;quot;log_lik&amp;quot;)
+&amp;gt; nChains = 2
+&amp;gt; burnInSteps = 500
+&amp;gt; thinSteps = 1
+&amp;gt; numSavedSteps = 2000  #across all chains
+&amp;gt; nIter = ceiling(burnInSteps + (numSavedSteps * thinSteps)/nChains)
+&amp;gt; nIter
+[1] 1500&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now compile and run the Stan code via the &lt;code&gt;rstan&lt;/code&gt; interface. Note that the first time &lt;code&gt;stan&lt;/code&gt; is run after the &lt;code&gt;rstan&lt;/code&gt; package is loaded, it is often necessary to run any kind of randomization function just to initiate the .Random.seed variable.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(rstan)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;During the warmup stage, the No-U-Turn sampler (NUTS) attempts to determine the optimum stepsize - the stepsize that achieves the target acceptance rate (&lt;span class=&#34;math inline&#34;&gt;\(0.8\)&lt;/span&gt; or &lt;span class=&#34;math inline&#34;&gt;\(80\)&lt;/span&gt;% by default) without divergence (occurs when the stepsize is too large relative to the curvature of the log posterior and results in approximations that are likely to diverge and be biased) - and without hitting the maximum treedepth (&lt;span class=&#34;math inline&#34;&gt;\(10\)&lt;/span&gt;). At each iteration of the NUTS algorithm, the number of leapfrog steps doubles (as it increases the treedepth) and only terminates when either the NUTS criterion are satisfied or the tree depth reaches the maximum (&lt;span class=&#34;math inline&#34;&gt;\(10\)&lt;/span&gt; by default).&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; data.rstan &amp;lt;- stan(data = data.list, file = &amp;quot;anovaModel.stan&amp;quot;, chains = nChains, pars = params,
++     iter = nIter, warmup = burnInSteps, thin = thinSteps)
+
+SAMPLING FOR MODEL &amp;#39;anovaModel&amp;#39; NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 0.001 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 10 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 1500 [  0%]  (Warmup)
+Chain 1: Iteration:  150 / 1500 [ 10%]  (Warmup)
+Chain 1: Iteration:  300 / 1500 [ 20%]  (Warmup)
+Chain 1: Iteration:  450 / 1500 [ 30%]  (Warmup)
+Chain 1: Iteration:  501 / 1500 [ 33%]  (Sampling)
+Chain 1: Iteration:  650 / 1500 [ 43%]  (Sampling)
+Chain 1: Iteration:  800 / 1500 [ 53%]  (Sampling)
+Chain 1: Iteration:  950 / 1500 [ 63%]  (Sampling)
+Chain 1: Iteration: 1100 / 1500 [ 73%]  (Sampling)
+Chain 1: Iteration: 1250 / 1500 [ 83%]  (Sampling)
+Chain 1: Iteration: 1400 / 1500 [ 93%]  (Sampling)
+Chain 1: Iteration: 1500 / 1500 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.049 seconds (Warm-up)
+Chain 1:                0.053 seconds (Sampling)
+Chain 1:                0.102 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL &amp;#39;anovaModel&amp;#39; NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 0 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 1500 [  0%]  (Warmup)
+Chain 2: Iteration:  150 / 1500 [ 10%]  (Warmup)
+Chain 2: Iteration:  300 / 1500 [ 20%]  (Warmup)
+Chain 2: Iteration:  450 / 1500 [ 30%]  (Warmup)
+Chain 2: Iteration:  501 / 1500 [ 33%]  (Sampling)
+Chain 2: Iteration:  650 / 1500 [ 43%]  (Sampling)
+Chain 2: Iteration:  800 / 1500 [ 53%]  (Sampling)
+Chain 2: Iteration:  950 / 1500 [ 63%]  (Sampling)
+Chain 2: Iteration: 1100 / 1500 [ 73%]  (Sampling)
+Chain 2: Iteration: 1250 / 1500 [ 83%]  (Sampling)
+Chain 2: Iteration: 1400 / 1500 [ 93%]  (Sampling)
+Chain 2: Iteration: 1500 / 1500 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.046 seconds (Warm-up)
+Chain 2:                0.061 seconds (Sampling)
+Chain 2:                0.107 seconds (Total)
+Chain 2: 
+&amp;gt; 
+&amp;gt; print(data.rstan, par = c(&amp;quot;beta&amp;quot;, &amp;quot;sigma&amp;quot;))
+Inference for Stan model: anovaModel.
+2 chains, each with iter=1500; warmup=500; thin=1; 
+post-warmup draws per chain=1000, total post-warmup draws=2000.
+
+          mean se_mean   sd   2.5%    25%    50%   75% 97.5% n_eff Rhat
+beta[1]  40.24    0.04 0.89  38.45  39.69  40.24 40.87 41.93   634 1.01
+beta[2]   5.38    0.04 1.25   2.97   4.54   5.36  6.18  7.86   833 1.00
+beta[3]  13.48    0.04 1.29  10.89  12.64  13.41 14.34 15.97   888 1.00
+beta[4]   0.70    0.04 1.25  -1.81  -0.13   0.69  1.56  3.06   949 1.01
+beta[5] -10.27    0.04 1.25 -12.57 -11.13 -10.30 -9.40 -7.85   817 1.00
+sigma     2.85    0.01 0.31   2.34   2.64   2.83  3.04  3.53  1108 1.00
+
+Samples were drawn using NUTS(diag_e) at Fri Feb 14 15:53:48 2020.
+For each parameter, n_eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor on split chains (at 
+convergence, Rhat=1).&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;mcmc-diagnostics&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;MCMC diagnostics&lt;/h1&gt;
+&lt;p&gt;In addition to the regular model diagnostic checks (such as residual plots), for Bayesian analyses, it is necessary to explore the characteristics of the MCMC chains and the sampler in general. Recall that the purpose of MCMC sampling is to replicate the posterior distribution of the model likelihood and priors by drawing a known number of samples from this posterior (thereby formulating a probability distribution). This is only reliable if the MCMC samples accurately reflect the posterior. Unfortunately, since we only know the posterior in the most trivial of circumstances, it is necessary to rely on indirect measures of how accurately the MCMC samples are likely to reflect the likelihood. I will briefly outline the most important diagnostics.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;Traceplots&lt;/em&gt; for each parameter illustrate the MCMC sample values after each successive iteration along the chain. Bad chain mixing (characterised by any sort of pattern) suggests that the MCMC sampling chains may not have completely traversed all features of the posterior distribution and that more iterations are required to ensure the distribution has been accurately represented.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;Autocorrelation&lt;/em&gt; plot for each parameter illustrate the degree of correlation between MCMC samples separated by different lags. For example, a lag of &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt; represents the degree of correlation between each MCMC sample and itself (obviously this will be a correlation of &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt;). A lag of &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt; represents the degree of correlation between each MCMC sample and the next sample along the chain and so on. In order to be able to generate unbiased estimates of parameters, the MCMC samples should be independent (uncorrelated).&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;Potential scale reduction factor&lt;/em&gt; (Rhat) statistic for each parameter provides a measure of sampling efficiency/effectiveness. Ideally, all values should be less than &lt;span class=&#34;math inline&#34;&gt;\(1.05\)&lt;/span&gt;. If there are values of &lt;span class=&#34;math inline&#34;&gt;\(1.05\)&lt;/span&gt; or greater it suggests that the sampler was not very efficient or effective. Not only does this mean that the sampler was potentially slower than it could have been but, more importantly, it could indicate that the sampler spent time sampling in a region of the likelihood that is less informative. Such a situation can arise from either a misspecified model or overly vague priors that permit sampling in otherwise nonscence parameter space.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Prior to examining the summaries, we should have explored the convergence diagnostics. We use the package &lt;code&gt;mcmcplots&lt;/code&gt; to obtain density and trace plots for the effects model as an example.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(mcmcplots)
+&amp;gt; s = as.array(data.rstan)
+&amp;gt; mcmc &amp;lt;- do.call(mcmc.list, plyr:::alply(s[, , -(length(s[1, 1, ]))], 2, as.mcmc))
+&amp;gt; denplot(mcmc, parms = c(&amp;quot;beta&amp;quot;,&amp;quot;sigma&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/single-factor-anova-stan/2020-02-01-single-factor-anova-stan_files/figure-html/mcmc_diag-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; traplot(mcmc, parms = c(&amp;quot;beta&amp;quot;,&amp;quot;sigma&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/single-factor-anova-stan/2020-02-01-single-factor-anova-stan_files/figure-html/mcmc_diag-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;These plots show no evidence that the chains have not reasonably traversed the entire multidimensional parameter space.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; #Raftery diagnostic
+&amp;gt; raftery.diag(mcmc)
+$`1`
+
+Quantile (q) = 0.025
+Accuracy (r) = +/- 0.005
+Probability (s) = 0.95 
+
+You need a sample size of at least 3746 with these values of q, r and s
+
+$`2`
+
+Quantile (q) = 0.025
+Accuracy (r) = +/- 0.005
+Probability (s) = 0.95 
+
+You need a sample size of at least 3746 with these values of q, r and s&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The Raftery diagnostics for each chain estimate that we would require no more than &lt;span class=&#34;math inline&#34;&gt;\(5000\)&lt;/span&gt; samples to reach the specified level of confidence in convergence. As we have &lt;span class=&#34;math inline&#34;&gt;\(10500\)&lt;/span&gt; samples, we can be confidence that convergence has occurred.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; #Autocorrelation diagnostic
+&amp;gt; stan_ac(data.rstan, pars = c(&amp;quot;beta&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/single-factor-anova-stan/2020-02-01-single-factor-anova-stan_files/figure-html/mcmc_diag3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;A lag of 10 appears to be sufficient to avoid autocorrelation (poor mixing).&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; stan_rhat(data.rstan, pars = c(&amp;quot;beta&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/single-factor-anova-stan/2020-02-01-single-factor-anova-stan_files/figure-html/mcmc_diag4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; stan_ess(data.rstan, pars = c(&amp;quot;beta&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/single-factor-anova-stan/2020-02-01-single-factor-anova-stan_files/figure-html/mcmc_diag4-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Rhat and effective sample size. In this instance, most of the parameters have reasonably high effective samples and thus there is likely to be a good range of values from which to estimate paramter properties.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;model-validation&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Model validation&lt;/h1&gt;
+&lt;p&gt;Model validation involves exploring the model diagnostics and fit to ensure that the model is broadly appropriate for the data. As such, exploration of the residuals should be routine. Ideally, a good model should also be able to predict the data used to fit the model. Residuals are not computed directly within &lt;code&gt;rstan&lt;/code&gt; However, we can calculate them manually form the posteriors.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(dplyr)
+&amp;gt; mcmc = as.data.frame(data.rstan) %&amp;gt;% dplyr:::select(contains(&amp;quot;beta&amp;quot;),
++     sigma) %&amp;gt;% as.matrix
+&amp;gt; # generate a model matrix
+&amp;gt; newdata = data
+&amp;gt; Xmat = model.matrix(~x, newdata)
+&amp;gt; ## get median parameter estimates
+&amp;gt; coefs = apply(mcmc[, 1:5], 2, median)
+&amp;gt; fit = as.vector(coefs %*% t(Xmat))
+&amp;gt; resid = data$y - fit
+&amp;gt; ggplot() + geom_point(data = NULL, aes(y = resid, x = fit)) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/single-factor-anova-stan/2020-02-01-single-factor-anova-stan_files/figure-html/mcmc_residuals-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Residuals against predictors&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(tidyr)
+&amp;gt; mcmc = as.data.frame(data.rstan) %&amp;gt;% dplyr:::select(contains(&amp;quot;beta&amp;quot;),
++     sigma) %&amp;gt;% as.matrix
+&amp;gt; # generate a model matrix
+&amp;gt; newdata = newdata
+&amp;gt; Xmat = model.matrix(~x, newdata)
+&amp;gt; ## get median parameter estimates
+&amp;gt; coefs = apply(mcmc[, 1:5], 2, median)
+&amp;gt; fit = as.vector(coefs %*% t(Xmat))
+&amp;gt; resid = data$y - fit
+&amp;gt; newdata = newdata %&amp;gt;% cbind(fit, resid)
+&amp;gt; ggplot(newdata) + geom_point(aes(y = resid, x = x)) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/single-factor-anova-stan/2020-02-01-single-factor-anova-stan_files/figure-html/mcmc_residuals2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;And now for studentised residuals&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc = as.data.frame(data.rstan) %&amp;gt;% dplyr:::select(contains(&amp;quot;beta&amp;quot;),
++     sigma) %&amp;gt;% as.matrix
+&amp;gt; # generate a model matrix
+&amp;gt; newdata = data
+&amp;gt; Xmat = model.matrix(~x, newdata)
+&amp;gt; ## get median parameter estimates
+&amp;gt; coefs = apply(mcmc[, 1:5], 2, median)
+&amp;gt; fit = as.vector(coefs %*% t(Xmat))
+&amp;gt; resid = data$y - fit
+&amp;gt; sresid = resid/sd(resid)
+&amp;gt; ggplot() + geom_point(data = NULL, aes(y = sresid, x = fit)) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/single-factor-anova-stan/2020-02-01-single-factor-anova-stan_files/figure-html/mcmc_residuals3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;For this simple model, the studentized residuals yield the same pattern as the raw residuals (or the Pearson residuals for that matter). Lets see how well data simulated from the model reflects the raw data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc = as.data.frame(data.rstan) %&amp;gt;% dplyr:::select(contains(&amp;quot;beta&amp;quot;),
++     sigma) %&amp;gt;% as.matrix
+&amp;gt; # generate a model matrix
+&amp;gt; Xmat = model.matrix(~x, data)
+&amp;gt; ## get median parameter estimates
+&amp;gt; coefs = mcmc[, 1:5]
+&amp;gt; fit = coefs %*% t(Xmat)
+&amp;gt; ## draw samples from this model
+&amp;gt; yRep = sapply(1:nrow(mcmc), function(i) rnorm(nrow(data), fit[i,
++     ], mcmc[i, &amp;quot;sigma&amp;quot;]))
+&amp;gt; newdata = data.frame(x = data$x, yRep) %&amp;gt;% gather(key = Sample,
++     value = Value, -x)
+&amp;gt; ggplot(newdata) + geom_violin(aes(y = Value, x = x, fill = &amp;quot;Model&amp;quot;),
++     alpha = 0.5) + geom_violin(data = data, aes(y = y, x = x,
++     fill = &amp;quot;Obs&amp;quot;), alpha = 0.5) + geom_point(data = data, aes(y = y,
++     x = x), position = position_jitter(width = 0.1, height = 0),
++     color = &amp;quot;black&amp;quot;) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/single-factor-anova-stan/2020-02-01-single-factor-anova-stan_files/figure-html/mcmc_rep-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;The predicted trends do encapsulate the actual data, suggesting that the model is a reasonable representation of the underlying processes. Note, these are prediction intervals rather than confidence intervals as we are seeking intervals within which we can predict individual observations rather than means. We can also explore the posteriors of each parameter.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(bayesplot)
+&amp;gt; mcmc_intervals(as.matrix(data.rstan), regex_pars = &amp;quot;beta|sigma&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/single-factor-anova-stan/2020-02-01-single-factor-anova-stan_files/figure-html/mcmc_rep2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc_areas(as.matrix(data.rstan), regex_pars = &amp;quot;beta|sigma&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/single-factor-anova-stan/2020-02-01-single-factor-anova-stan_files/figure-html/mcmc_rep2-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;parameter-estimates&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Parameter estimates&lt;/h1&gt;
+&lt;p&gt;Although all parameters in a Bayesian analysis are considered random and are considered a distribution, rarely would it be useful to present tables of all the samples from each distribution. On the other hand, plots of the posterior distributions have some use. Nevertheless, most workers prefer to present simple statistical summaries of the posteriors. Popular choices include the median (or mean) and &lt;span class=&#34;math inline&#34;&gt;\(95\)&lt;/span&gt;% credibility intervals.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmcpvalue &amp;lt;- function(samp) {
++     ## elementary version that creates an empirical p-value for the
++     ## hypothesis that the columns of samp have mean zero versus a general
++     ## multivariate distribution with elliptical contours.
++ 
++     ## differences from the mean standardized by the observed
++     ## variance-covariance factor
++ 
++     ## Note, I put in the bit for single terms
++     if (length(dim(samp)) == 0) {
++         std &amp;lt;- backsolve(chol(var(samp)), cbind(0, t(samp)) - mean(samp),
++             transpose = TRUE)
++         sqdist &amp;lt;- colSums(std * std)
++         sum(sqdist[-1] &amp;gt; sqdist[1])/length(samp)
++     } else {
++         std &amp;lt;- backsolve(chol(var(samp)), cbind(0, t(samp)) - colMeans(samp),
++             transpose = TRUE)
++         sqdist &amp;lt;- colSums(std * std)
++         sum(sqdist[-1] &amp;gt; sqdist[1])/nrow(samp)
++     }
++ 
++ }&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;First, we look at the results from the additive model.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; print(data.rstan, pars = c(&amp;quot;beta&amp;quot;, &amp;quot;sigma&amp;quot;))
+Inference for Stan model: anovaModel.
+2 chains, each with iter=1500; warmup=500; thin=1; 
+post-warmup draws per chain=1000, total post-warmup draws=2000.
+
+          mean se_mean   sd   2.5%    25%    50%   75% 97.5% n_eff Rhat
+beta[1]  40.24    0.04 0.89  38.45  39.69  40.24 40.87 41.93   634 1.01
+beta[2]   5.38    0.04 1.25   2.97   4.54   5.36  6.18  7.86   833 1.00
+beta[3]  13.48    0.04 1.29  10.89  12.64  13.41 14.34 15.97   888 1.00
+beta[4]   0.70    0.04 1.25  -1.81  -0.13   0.69  1.56  3.06   949 1.01
+beta[5] -10.27    0.04 1.25 -12.57 -11.13 -10.30 -9.40 -7.85   817 1.00
+sigma     2.85    0.01 0.31   2.34   2.64   2.83  3.04  3.53  1108 1.00
+
+Samples were drawn using NUTS(diag_e) at Fri Feb 14 15:53:48 2020.
+For each parameter, n_eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor on split chains (at 
+convergence, Rhat=1).
+&amp;gt; 
+&amp;gt; # OR
+&amp;gt; library(broom)
+&amp;gt; tidyMCMC(data.rstan, conf.int = TRUE, conf.method = &amp;quot;HPDinterval&amp;quot;, pars = c(&amp;quot;beta&amp;quot;, &amp;quot;sigma&amp;quot;))
+# A tibble: 6 x 5
+  term    estimate std.error conf.low conf.high
+  &amp;lt;chr&amp;gt;      &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;
+1 beta[1]   40.2       0.895    38.4      41.9 
+2 beta[2]    5.38      1.25      3.09      7.96
+3 beta[3]   13.5       1.29     11.0      16.1 
+4 beta[4]    0.703     1.25     -1.94      2.90
+5 beta[5]  -10.3       1.25    -12.6      -7.85
+6 sigma      2.85      0.306     2.33      3.50&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Conclusions&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;the mean of the first group (A) is &lt;span class=&#34;math inline&#34;&gt;\(40.2\)&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;the mean of the second group (B) is &lt;span class=&#34;math inline&#34;&gt;\(5.4\)&lt;/span&gt; units greater than (A)&lt;/li&gt;
+&lt;li&gt;the mean of the third group (C) is &lt;span class=&#34;math inline&#34;&gt;\(13.5\)&lt;/span&gt; units greater than (A)&lt;/li&gt;
+&lt;li&gt;the mean of the forth group (D) is &lt;span class=&#34;math inline&#34;&gt;\(0.74\)&lt;/span&gt; units greater than (A)&lt;/li&gt;
+&lt;li&gt;the mean of the fifth group (E) is &lt;span class=&#34;math inline&#34;&gt;\(-10.2\)&lt;/span&gt; units greater (i.e. less) than (A)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The &lt;span class=&#34;math inline&#34;&gt;\(95\)&lt;/span&gt;% confidence interval for the effects of B, C and E do not overlap with &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt; implying a significant difference between group A and groups B, C and E. While workers attempt to become comfortable with a new statistical framework, it is only natural that they like to evaluate and comprehend new structures and output alongside more familiar concepts. One way to facilitate this is via Bayesian p-values that are somewhat analogous to the frequentist p-values for investigating the hypothesis that a parameter is equal to zero.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; ## since values are less than zero
+&amp;gt; mcmcpvalue(as.matrix(data.rstan)[, &amp;quot;beta[2]&amp;quot;])  # effect of (B-A)
+[1] 0
+&amp;gt; mcmcpvalue(as.matrix(data.rstan)[, &amp;quot;beta[3]&amp;quot;])  # effect of (C-A)
+[1] 0
+&amp;gt; mcmcpvalue(as.matrix(data.rstan)[, &amp;quot;beta[4]&amp;quot;])  # effect of (D-A)
+[1] 0.5805
+&amp;gt; mcmcpvalue(as.matrix(data.rstan)[, &amp;quot;beta[5]&amp;quot;])  # effect of (E-A)
+[1] 0
+&amp;gt; mcmcpvalue(as.matrix(data.rstan)[, 2:5])  # effect of (all groups)
+[1] 0&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;There is evidence that the reponse differs between the groups. There is evidence suggesting that the response of group D differs from that of group A. In a Bayesian context, we can compare models using the &lt;strong&gt;leave-one-out cross-validation&lt;/strong&gt; statistics. Leave-one-out (LOO) cross-validation explores how well a series of models can predict withheld values &lt;span class=&#34;citation&#34;&gt;Vehtari, Gelman, and Gabry (2017)&lt;/span&gt;. The LOO Information Criterion (LOOIC) is analogous to the AIC except that the LOOIC takes priors into consideration, does not assume that the posterior distribution is drawn from a multivariate normal and integrates over parameter uncertainty so as to yield a distribution of looic rather than just a point estimate. The LOOIC does however assume that all observations are equally influential (it does not matter which observations are left out). This assumption can be examined via the Pareto &lt;span class=&#34;math inline&#34;&gt;\(k\)&lt;/span&gt; estimate (values greater than &lt;span class=&#34;math inline&#34;&gt;\(0.5\)&lt;/span&gt; or more conservatively &lt;span class=&#34;math inline&#34;&gt;\(0.75\)&lt;/span&gt; are considered overly influential). We can compute LOOIC if we store the loglikelihood from our &lt;code&gt;STAN&lt;/code&gt; model, which can then be extracted to compute the information criterion using the package &lt;code&gt;loo&lt;/code&gt;.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(loo)
+&amp;gt; (full = loo(extract_log_lik(data.rstan)))
+
+Computed from 2000 by 50 log-likelihood matrix
+
+         Estimate   SE
+elpd_loo   -125.8  5.1
+p_loo         5.6  1.1
+looic       251.6 10.2
+------
+Monte Carlo SE of elpd_loo is 0.1.
+
+All Pareto k estimates are good (k &amp;lt; 0.5).
+See help(&amp;#39;pareto-k-diagnostic&amp;#39;) for details.
+&amp;gt; 
+&amp;gt; # now fit a model without main factor
+&amp;gt; modelString2 = &amp;quot;
++   data {
++   int&amp;lt;lower=1&amp;gt; n;
++   int&amp;lt;lower=1&amp;gt; nX;
++   vector [n] y;
++   matrix [n,nX] X;
++   }
++   parameters {
++   vector[nX] beta;
++   real&amp;lt;lower=0&amp;gt; sigma;
++   }
++   transformed parameters {
++   vector[n] mu;
++ 
++   mu = X*beta;
++   }
++   model {
++   //Likelihood
++   y~normal(mu,sigma);
++   
++   //Priors
++   beta ~ normal(0,1000);
++   sigma~cauchy(0,5);
++   }
++   generated quantities {
++   vector[n] log_lik;
++   
++   for (i in 1:n) {
++   log_lik[i] = normal_lpdf(y[i] | mu[i], sigma); 
++   }
++   }
++   
++   &amp;quot;
+&amp;gt; 
+&amp;gt; ## write the model to a stan file 
+&amp;gt; writeLines(modelString2, con = &amp;quot;anovaModel2.stan&amp;quot;)
+&amp;gt; 
+&amp;gt; Xmat &amp;lt;- model.matrix(~1, data)
+&amp;gt; data.list &amp;lt;- with(data, list(y = y, X = Xmat, n = nrow(data), nX = ncol(Xmat)))
+&amp;gt; data.rstan.red &amp;lt;- stan(data = data.list, file = &amp;quot;anovaModel2.stan&amp;quot;, chains = nChains,
++     iter = nIter, warmup = burnInSteps, thin = thinSteps)
+
+SAMPLING FOR MODEL &amp;#39;anovaModel&amp;#39; NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 0.001 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 10 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 1500 [  0%]  (Warmup)
+Chain 1: Iteration:  150 / 1500 [ 10%]  (Warmup)
+Chain 1: Iteration:  300 / 1500 [ 20%]  (Warmup)
+Chain 1: Iteration:  450 / 1500 [ 30%]  (Warmup)
+Chain 1: Iteration:  501 / 1500 [ 33%]  (Sampling)
+Chain 1: Iteration:  650 / 1500 [ 43%]  (Sampling)
+Chain 1: Iteration:  800 / 1500 [ 53%]  (Sampling)
+Chain 1: Iteration:  950 / 1500 [ 63%]  (Sampling)
+Chain 1: Iteration: 1100 / 1500 [ 73%]  (Sampling)
+Chain 1: Iteration: 1250 / 1500 [ 83%]  (Sampling)
+Chain 1: Iteration: 1400 / 1500 [ 93%]  (Sampling)
+Chain 1: Iteration: 1500 / 1500 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.018 seconds (Warm-up)
+Chain 1:                0.038 seconds (Sampling)
+Chain 1:                0.056 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL &amp;#39;anovaModel&amp;#39; NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 0 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 1500 [  0%]  (Warmup)
+Chain 2: Iteration:  150 / 1500 [ 10%]  (Warmup)
+Chain 2: Iteration:  300 / 1500 [ 20%]  (Warmup)
+Chain 2: Iteration:  450 / 1500 [ 30%]  (Warmup)
+Chain 2: Iteration:  501 / 1500 [ 33%]  (Sampling)
+Chain 2: Iteration:  650 / 1500 [ 43%]  (Sampling)
+Chain 2: Iteration:  800 / 1500 [ 53%]  (Sampling)
+Chain 2: Iteration:  950 / 1500 [ 63%]  (Sampling)
+Chain 2: Iteration: 1100 / 1500 [ 73%]  (Sampling)
+Chain 2: Iteration: 1250 / 1500 [ 83%]  (Sampling)
+Chain 2: Iteration: 1400 / 1500 [ 93%]  (Sampling)
+Chain 2: Iteration: 1500 / 1500 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.023 seconds (Warm-up)
+Chain 2:                0.087 seconds (Sampling)
+Chain 2:                0.11 seconds (Total)
+Chain 2: 
+&amp;gt; 
+&amp;gt; (reduced = loo(extract_log_lik(data.rstan.red)))
+
+Computed from 2000 by 50 log-likelihood matrix
+
+         Estimate  SE
+elpd_loo   -177.8 4.4
+p_loo         1.6 0.3
+looic       355.6 8.7
+------
+Monte Carlo SE of elpd_loo is 0.0.
+
+All Pareto k estimates are good (k &amp;lt; 0.5).
+See help(&amp;#39;pareto-k-diagnostic&amp;#39;) for details.
+&amp;gt; 
+&amp;gt; par(mfrow = 1:2, mar = c(5, 3.8, 1, 0) + 0.1, las = 3)
+&amp;gt; plot(full, label_points = TRUE)
+&amp;gt; plot(reduced, label_points = TRUE)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/single-factor-anova-stan/2020-02-01-single-factor-anova-stan_files/figure-html/mcmc_looic-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;The expected out-of-sample predictive accuracy is substantially lower for the model that includes &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt;. This might be used to suggest that the inferential evidence for a general effect of &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt; on &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;graphical-summaries&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Graphical summaries&lt;/h1&gt;
+&lt;p&gt;With appropriate use of model matrices and data wrangling, it is possible to produce a single prediction data set along with &lt;code&gt;ggplot&lt;/code&gt; syntax to produce a multi-panel figure. First we look at the additive model.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc = as.matrix(data.rstan)
+&amp;gt; ## Calculate the fitted values
+&amp;gt; newdata = rbind(data.frame(x = levels(data$x)))
+&amp;gt; Xmat = model.matrix(~x, newdata)
+&amp;gt; coefs = mcmc[, c(&amp;quot;beta[1]&amp;quot;, &amp;quot;beta[2]&amp;quot;, &amp;quot;beta[3]&amp;quot;, &amp;quot;beta[4]&amp;quot;, &amp;quot;beta[5]&amp;quot;)]
+&amp;gt; fit = coefs %*% t(Xmat)
+&amp;gt; newdata = newdata %&amp;gt;% cbind(tidyMCMC(fit, conf.int = TRUE, conf.method = &amp;quot;HPDinterval&amp;quot;))
+&amp;gt; 
+&amp;gt; ggplot(newdata, aes(y = estimate, x = x)) + geom_linerange(aes(ymin = conf.low,
++     ymax = conf.high)) + geom_point() + scale_y_continuous(&amp;quot;Y&amp;quot;) + scale_x_discrete(&amp;quot;X&amp;quot;) +
++     theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/single-factor-anova-stan/2020-02-01-single-factor-anova-stan_files/figure-html/mcmc_post1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;As this is simple single factor ANOVA, we can simple add the raw data to this figure. For more complex designs with additional predictors, it is necessary to plot partial residuals.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; ## Calculate partial residuals fitted values
+&amp;gt; fdata = rdata = data
+&amp;gt; fMat = rMat = model.matrix(~x, fdata)
+&amp;gt; fit = as.vector(apply(coefs, 2, median) %*% t(fMat))
+&amp;gt; resid = as.vector(data$y - apply(coefs, 2, median) %*% t(rMat))
+&amp;gt; rdata = rdata %&amp;gt;% mutate(partial.resid = resid + fit)
+&amp;gt; 
+&amp;gt; ggplot(newdata, aes(y = estimate, x = as.numeric(x) - 0.1)) + geom_blank(aes(x = x)) +
++     geom_point(data = rdata, aes(y = partial.resid, x = as.numeric(x) +
++         0.1), color = &amp;quot;gray&amp;quot;) + geom_linerange(aes(ymin = conf.low, ymax = conf.high)) +
++     geom_point() + scale_y_continuous(&amp;quot;Y&amp;quot;) + scale_x_discrete(&amp;quot;&amp;quot;) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/single-factor-anova-stan/2020-02-01-single-factor-anova-stan_files/figure-html/mcmc_post2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;posteriors&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Posteriors&lt;/h1&gt;
+&lt;p&gt;In frequentist statistics, when we have more than two groups, we are typically not only interested in whether there is evidence for an overall “effect” of a factor - we are also interested in how various groups compare to one another. To explore these trends, we either compare each group to each other in a pairwise manner (controlling for family-wise Type I error rates) or we explore an independent subset of the possible comparisons. Although these alternate approaches can adequately address a specific research agenda, often they impose severe limitations and compromises on the scope and breadth of questions that can be asked of your data. The reason for these limitations is that in a frequentist framework, any single hypothesis carries with it a (nominally) &lt;span class=&#34;math inline&#34;&gt;\(5\)&lt;/span&gt;% chance of a false rejection (since it is based on long-run frequency). Thus, performing multiple tests are likely to compound this error rate. The point is, that each comparison is compared to its own probability distribution (and each carries a &lt;span class=&#34;math inline&#34;&gt;\(5\)&lt;/span&gt;% error rate). By contrast, in Bayesian statistics, all comparisons (contrasts) are drawn from the one (hopefully stable and convergent) posterior distribution and this posterior is invariant to the type and number of comparisons drawn. Hence, the theory clearly indicates that having generated our posterior distribution, we can then query this distribution in any way that we wish thereby allowing us to explore all of our research questions simultaneously.&lt;/p&gt;
+&lt;p&gt;Bayesian “contrasts” can be performed either:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;within the Bayesian sampling model or&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;construct them from the returned MCMC samples (they are drawn from the posteriors)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Only the latter will be demonstrated as it povides a consistent approach across all routines. In order to allow direct comparison to the frequentist equivalents, I will explore the same set of planned and &lt;em&gt;Tukey&lt;/em&gt;’s test comparisons described here. For the “planned comparison” we defined two contrasts: 1) group 3 vs group 5; and 2) the average of groups 1 and 2 vs the average of groups 3, 4 and 5.&lt;/p&gt;
+&lt;p&gt;Lets start by comparing each group to each other group in a pairwise manner. Arguably the most elegant way to do this is to generate a Tukey’s contrast matrix. This is a model matrix specific to comparing each group to each other group.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc = data.rstan
+&amp;gt; coefs &amp;lt;- as.matrix(mcmc)[, 1:5]
+&amp;gt; newdata &amp;lt;- data.frame(x = levels(data$x))
+&amp;gt; # A Tukeys contrast matrix
+&amp;gt; library(multcomp)
+&amp;gt; # table(newdata$x) - gets the number of replicates of each level
+&amp;gt; tuk.mat &amp;lt;- contrMat(n = table(newdata$x), type = &amp;quot;Tukey&amp;quot;)
+&amp;gt; Xmat &amp;lt;- model.matrix(~x, data = newdata)
+&amp;gt; pairwise.mat &amp;lt;- tuk.mat %*% Xmat
+&amp;gt; pairwise.mat
+      (Intercept) xB xC xD xE
+B - A           0  1  0  0  0
+C - A           0  0  1  0  0
+D - A           0  0  0  1  0
+E - A           0  0  0  0  1
+C - B           0 -1  1  0  0
+D - B           0 -1  0  1  0
+E - B           0 -1  0  0  1
+D - C           0  0 -1  1  0
+E - C           0  0 -1  0  1
+E - D           0  0  0 -1  1
+&amp;gt; 
+&amp;gt; mcmc_areas(coefs %*% t(pairwise.mat))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/single-factor-anova-stan/2020-02-01-single-factor-anova-stan_files/figure-html/posterior1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; 
+&amp;gt; (comps = tidyMCMC(coefs %*% t(pairwise.mat), conf.int = TRUE, conf.method = &amp;quot;HPDinterval&amp;quot;))
+# A tibble: 10 x 5
+   term  estimate std.error conf.low conf.high
+   &amp;lt;chr&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;
+ 1 B - A    5.38       1.25     3.09      7.96
+ 2 C - A   13.5        1.29    11.0      16.1 
+ 3 D - A    0.703      1.25    -1.94      2.90
+ 4 E - A  -10.3        1.25   -12.6      -7.85
+ 5 C - B    8.10       1.28     5.71     10.8 
+ 6 D - B   -4.68       1.26    -7.06     -2.21
+ 7 E - B  -15.6        1.25   -18.3     -13.4 
+ 8 D - C  -12.8        1.29   -15.3     -10.1 
+ 9 E - C  -23.7        1.31   -26.2     -21.0 
+10 E - D  -11.0        1.27   -13.5      -8.63
+&amp;gt; 
+&amp;gt; ggplot(comps, aes(y = estimate, x = term)) + geom_pointrange(aes(ymin = conf.low,
++     ymax = conf.high)) + geom_hline(yintercept = 0, linetype = &amp;quot;dashed&amp;quot;) +
++     scale_y_continuous(&amp;quot;Effect size&amp;quot;) + scale_x_discrete(&amp;quot;&amp;quot;) + coord_flip() +
++     theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/single-factor-anova-stan/2020-02-01-single-factor-anova-stan_files/figure-html/posterior1-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;With a couple of modifications, we could also express this as percentage changes. A percentage change represents the change (difference between groups) divided by one of the groups (determined by which group you want to express the percentage change to). Hence, we generate an additional mcmc matrix that represents the cell means for the divisor group (group we want to express change relative to). Since the &lt;code&gt;tuk.mat&lt;/code&gt; defines comparisons as &lt;span class=&#34;math inline&#34;&gt;\(-1\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt; pairs, if we simply replace all the &lt;span class=&#34;math inline&#34;&gt;\(-1\)&lt;/span&gt; with &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt;, the eventual matrix multiplication will result in estimates of the divisor cell means instread of the difference. We can then divide the original mcmc matrix above with this new divisor mcmc matrix to yeild a mcmc matrix of percentage change.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; # Modify the tuk.mat to replace -1 with 0.  This will allow us to get a
+&amp;gt; # mcmc matrix of ..
+&amp;gt; tuk.mat[tuk.mat == -1] = 0
+&amp;gt; comp.mat &amp;lt;- tuk.mat %*% Xmat
+&amp;gt; comp.mat
+      (Intercept) xB xC xD xE
+B - A           1  1  0  0  0
+C - A           1  0  1  0  0
+D - A           1  0  0  1  0
+E - A           1  0  0  0  1
+C - B           1  0  1  0  0
+D - B           1  0  0  1  0
+E - B           1  0  0  0  1
+D - C           1  0  0  1  0
+E - C           1  0  0  0  1
+E - D           1  0  0  0  1
+&amp;gt; 
+&amp;gt; comp.mcmc = 100 * (coefs %*% t(pairwise.mat))/coefs %*% t(comp.mat)
+&amp;gt; (comps = tidyMCMC(comp.mcmc, conf.int = TRUE, conf.method = &amp;quot;HPDinterval&amp;quot;))
+# A tibble: 10 x 5
+   term  estimate std.error conf.low conf.high
+   &amp;lt;chr&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;
+ 1 B - A    11.8       2.59     6.40     16.5 
+ 2 C - A    25.1       2.11    20.9      29.1 
+ 3 D - A     1.67      3.02    -4.53      7.24
+ 4 E - A   -34.4       4.95   -43.7     -24.9 
+ 5 C - B    15.1       2.20    10.9      19.6 
+ 6 D - B   -11.5       3.27   -17.7      -5.09
+ 7 E - B   -52.3       5.36   -62.5     -41.7 
+ 8 D - C   -31.3       3.64   -38.4     -23.7 
+ 9 E - C   -79.4       6.27   -90.6     -66.2 
+10 E - D   -36.7       5.06   -46.9     -27.4 
+&amp;gt; 
+&amp;gt; ggplot(comps, aes(y = estimate, x = term)) + geom_pointrange(aes(ymin = conf.low,
++     ymax = conf.high)) + geom_hline(yintercept = 0, linetype = &amp;quot;dashed&amp;quot;) +
++     scale_y_continuous(&amp;quot;Effect size (%)&amp;quot;) + scale_x_discrete(&amp;quot;&amp;quot;) + coord_flip() +
++     theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/single-factor-anova-stan/2020-02-01-single-factor-anova-stan_files/figure-html/posterior2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;And now for the specific planned comparisons (Group 3 vs Group 5 and the average of Groups 1 and 2 vs the average of Groups 3, 4 and 5). This is achieved by generating our own contrast matrix (defining the contributions of each group to each contrast).&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; c.mat = rbind(c(0, 0, -1, 0, 1), c(-1/2, -1/2, 1/3, 1/3, 1/3))
+&amp;gt; c.mat
+     [,1] [,2]       [,3]      [,4]      [,5]
+[1,]  0.0  0.0 -1.0000000 0.0000000 1.0000000
+[2,] -0.5 -0.5  0.3333333 0.3333333 0.3333333
+&amp;gt; 
+&amp;gt; mcmc = data.rstan
+&amp;gt; coefs &amp;lt;- as.matrix(mcmc)[, 1:5]
+&amp;gt; newdata &amp;lt;- data.frame(x = levels(data$x))
+&amp;gt; Xmat &amp;lt;- model.matrix(~x, data = newdata)
+&amp;gt; c.mat = c.mat %*% Xmat
+&amp;gt; c.mat
+       (Intercept)   xB         xC        xD        xE
+[1,]  0.000000e+00  0.0 -1.0000000 0.0000000 1.0000000
+[2,] -1.110223e-16 -0.5  0.3333333 0.3333333 0.3333333
+&amp;gt; 
+&amp;gt; (comps = tidyMCMC(as.mcmc(coefs %*% t(c.mat)), conf.int = TRUE, conf.method = &amp;quot;HPDinterval&amp;quot;))
+# A tibble: 2 x 5
+  term  estimate std.error conf.low conf.high
+  &amp;lt;chr&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;
+1 var1    -23.7      1.31    -26.2    -21.0  
+2 var2     -1.38     0.806    -2.92     0.186&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;finite-population-standard-deviations&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Finite population standard deviations&lt;/h1&gt;
+&lt;p&gt;Variance components, the amount of added variance attributed to each influence, are traditionally estimated for so called random effects. These are the effects for which the levels employed in the design are randomly selected to represent a broader range of possible levels. For such effects, effect sizes (differences between each level and a reference level) are of little value. Instead, the “importance” of the variables are measured in units of variance components. On the other hand, regular variance components for fixed factors (those whose measured levels represent the only levels of interest) are not logical - since variance components estimate variance as if the levels are randomly selected from a larger population. Nevertheless, in order to compare and contrast the scale of variability of both fixed and random factors, it is necessary to measure both on the same scale (sample or population based variance).&lt;/p&gt;
+&lt;p&gt;Finite-population variance components assume that the levels of all factors (fixed and random) in the design are all the possible levels available (&lt;span class=&#34;citation&#34;&gt;Gelman and others (2005)&lt;/span&gt;). In other words, they are assumed to represent finite populations of levels. Sample (rather than population) statistics are then used to calculate these finite-population variances (or standard deviations). Since standard deviation (and variance) are bound at zero, standard deviation posteriors are typically non-normal. Consequently, medians and HPD intervals are more robust estimates.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# A tibble: 2 x 5
+  term     estimate std.error conf.low conf.high
+  &amp;lt;chr&amp;gt;       &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;
+1 sd.x         9.94    0.532      8.89     11.0 
+2 sd.resid     2.79    0.0888     2.67      2.96
+# A tibble: 2 x 5
+  term     estimate std.error conf.low conf.high
+  &amp;lt;chr&amp;gt;       &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;
+1 sd.x         78.3      1.06     76.0      79.7
+2 sd.resid     21.7      1.06     20.3      24.0&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/single-factor-anova-stan/2020-02-01-single-factor-anova-stan_files/figure-html/effects_modelv4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Approximately &lt;span class=&#34;math inline&#34;&gt;\(78.3\)&lt;/span&gt;% of the total finite population standard deviation is due to &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;r-squared&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;R squared&lt;/h1&gt;
+&lt;p&gt;In a frequentist context, the &lt;span class=&#34;math inline&#34;&gt;\(R^2\)&lt;/span&gt; value is seen as a useful indicator of goodness of fit. Whilst it has long been acknowledged that this measure is not appropriate for comparing models (for such purposes information criterion such as AIC are more appropriate), it is nevertheless useful for estimating the amount (percent) of variance explained by the model. In a frequentist context, &lt;span class=&#34;math inline&#34;&gt;\(R^2\)&lt;/span&gt; is calculated as the variance in predicted values divided by the variance in the observed (response) values. Unfortunately, this classical formulation does not translate simply into a Bayesian context since the equivalently calculated numerator can be larger than the an equivalently calculated denominator - thereby resulting in an &lt;span class=&#34;math inline&#34;&gt;\(R^2\)&lt;/span&gt; greater than &lt;span class=&#34;math inline&#34;&gt;\(100\)&lt;/span&gt;%. &lt;span class=&#34;citation&#34;&gt;Gelman et al. (2019)&lt;/span&gt; proposed an alternative formulation in which the denominator comprises the sum of the explained variance and the variance of the residuals.&lt;/p&gt;
+&lt;p&gt;So in the standard regression model notation of:&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ y_i \sim \text{Normal}(\boldsymbol X \boldsymbol \beta, \sigma),\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;the &lt;span class=&#34;math inline&#34;&gt;\(R^2\)&lt;/span&gt; could be formulated as&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ R^2 = \frac{\sigma^2_f}{\sigma^2_f + \sigma^2_e},\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2_f=\text{var}(\boldsymbol X \boldsymbol \beta)\)&lt;/span&gt;, and for normal models &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2_e=\text{var}(y-\boldsymbol X \boldsymbol \beta)\)&lt;/span&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc &amp;lt;- as.matrix(data.rstan)
+&amp;gt; Xmat = model.matrix(~x, data)
+&amp;gt; wch = grep(&amp;quot;beta&amp;quot;, colnames(mcmc))
+&amp;gt; coefs = mcmc[, wch]
+&amp;gt; fit = coefs %*% t(Xmat)
+&amp;gt; resid = sweep(fit, 2, data$y, &amp;quot;-&amp;quot;)
+&amp;gt; var_f = apply(fit, 1, var)
+&amp;gt; var_e = apply(resid, 1, var)
+&amp;gt; R2 = var_f/(var_f + var_e)
+&amp;gt; tidyMCMC(as.mcmc(R2), conf.int = TRUE, conf.method = &amp;quot;HPDinterval&amp;quot;)
+# A tibble: 1 x 5
+  term  estimate std.error conf.low conf.high
+  &amp;lt;chr&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;
+1 var1     0.887    0.0126    0.863     0.905
+&amp;gt; 
+&amp;gt; # for comparison with frequentist
+&amp;gt; summary(lm(y ~ x, data))
+
+Call:
+lm(formula = y ~ x, data = data)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-6.5257 -1.9000 -0.2589  1.4935  6.5330 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&amp;gt;|t|)    
+(Intercept)  40.2239     0.8801  45.702  &amp;lt; 2e-16 ***
+xB            5.4020     1.2447   4.340 7.97e-05 ***
+xC           13.5024     1.2447  10.848 3.82e-14 ***
+xD            0.7423     1.2447   0.596    0.554    
+xE          -10.2500     1.2447  -8.235 1.57e-10 ***
+---
+Signif. codes:  0 &amp;#39;***&amp;#39; 0.001 &amp;#39;**&amp;#39; 0.01 &amp;#39;*&amp;#39; 0.05 &amp;#39;.&amp;#39; 0.1 &amp;#39; &amp;#39; 1
+
+Residual standard error: 2.783 on 45 degrees of freedom
+Multiple R-squared:  0.8957,    Adjusted R-squared:  0.8865 
+F-statistic: 96.64 on 4 and 45 DF,  p-value: &amp;lt; 2.2e-16&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
+&lt;h1&gt;References&lt;/h1&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references hanging-indent&#34;&gt;
+&lt;div id=&#34;ref-gelman2019r&#34;&gt;
+&lt;p&gt;Gelman, Andrew, Ben Goodrich, Jonah Gabry, and Aki Vehtari. 2019. “R-Squared for Bayesian Regression Models.” &lt;em&gt;The American Statistician&lt;/em&gt; 73 (3): 307–9.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-gelman2015stan&#34;&gt;
+&lt;p&gt;Gelman, Andrew, Daniel Lee, and Jiqiang Guo. 2015. “Stan: A Probabilistic Programming Language for Bayesian Inference and Optimization.” &lt;em&gt;Journal of Educational and Behavioral Statistics&lt;/em&gt; 40 (5): 530–43.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-gelman2005analysis&#34;&gt;
+&lt;p&gt;Gelman, Andrew, and others. 2005. “Analysis of Variance—Why It Is More Important Than Ever.” &lt;em&gt;The Annals of Statistics&lt;/em&gt; 33 (1): 1–53.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-rstanpackage&#34;&gt;
+&lt;p&gt;Stan Development Team. 2018. “RStan: The R Interface to Stan.” &lt;a href=&#34;http://mc-stan.org/&#34;&gt;http://mc-stan.org/&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-vehtari2017practical&#34;&gt;
+&lt;p&gt;Vehtari, Aki, Andrew Gelman, and Jonah Gabry. 2017. “Practical Bayesian Model Evaluation Using Leave-One-Out Cross-Validation and Waic.” &lt;em&gt;Statistics and Computing&lt;/em&gt; 27 (5): 1413–32.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
