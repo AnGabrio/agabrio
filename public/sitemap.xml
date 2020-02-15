@@ -38,8 +38,88 @@
   </url>
   
   <url>
+    <loc>/jags/ancova-jags/ancova-jags/</loc>
+    <lastmod>2020-02-05T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/stan/ancova-stan/ancova-stan/</loc>
+    <lastmod>2020-02-05T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/ancova/</loc>
+    <lastmod>2020-02-05T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/ancova/</loc>
+    <lastmod>2020-02-05T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/authors/andrea-gabrio/</loc>
-    <lastmod>2020-02-04T21:13:14-05:00</lastmod>
+    <lastmod>2020-02-05T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/authors/</loc>
+    <lastmod>2020-02-05T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/jags/</loc>
+    <lastmod>2020-02-05T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/stan/</loc>
+    <lastmod>2020-02-05T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/</loc>
+    <lastmod>2020-02-05T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/facor-analysis/</loc>
+    <lastmod>2020-02-05T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/facor-analysis/</loc>
+    <lastmod>2020-02-05T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/jags/</loc>
+    <lastmod>2020-02-05T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/jags/</loc>
+    <lastmod>2020-02-05T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/r/</loc>
+    <lastmod>2020-02-05T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/stan/</loc>
+    <lastmod>2020-02-05T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/stan/</loc>
+    <lastmod>2020-02-05T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/tutorials/</loc>
+    <lastmod>2020-02-05T21:13:14-05:00</lastmod>
   </url>
   
   <url>
@@ -53,52 +133,7 @@
   </url>
   
   <url>
-    <loc>/authors/</loc>
-    <lastmod>2020-02-04T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/jags/</loc>
-    <lastmod>2020-02-04T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/stan/</loc>
-    <lastmod>2020-02-04T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/</loc>
-    <lastmod>2020-02-04T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/facor-analysis/</loc>
-    <lastmod>2020-02-04T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/facor-analysis/</loc>
-    <lastmod>2020-02-04T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/jags/</loc>
-    <lastmod>2020-02-04T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/jags/</loc>
-    <lastmod>2020-02-04T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/r/</loc>
-    <lastmod>2020-02-04T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/jags/single-factor-anova-jags/single-factor-anova-jags/</loc>
+    <loc>/jags/sin-factor-anova-jags/single-factor-anova-jags/</loc>
     <lastmod>2020-02-04T21:13:14-05:00</lastmod>
   </url>
   
@@ -108,27 +143,12 @@
   </url>
   
   <url>
-    <loc>/tags/stan/</loc>
-    <lastmod>2020-02-04T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/stan/</loc>
-    <lastmod>2020-02-04T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/tutorials/</loc>
-    <lastmod>2020-02-04T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/linear-regression/</loc>
+    <loc>/tags/linear-regression/</loc>
     <lastmod>2020-02-03T21:13:14-05:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/linear-regression/</loc>
+    <loc>/categories/linear-regression/</loc>
     <lastmod>2020-02-03T21:13:14-05:00</lastmod>
   </url>
   

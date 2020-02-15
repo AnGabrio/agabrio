@@ -1,0 +1,2206 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.3.1">
+
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+  
+  
+
+  <meta name="author" content="Andrea Gabrio">
+
+  
+  
+  
+    
+  
+  <meta name="description" content="This tutorial will focus on the use of Bayesian estimation to fit simple linear regression models. BUGS (Bayesian inference Using Gibbs Sampling) is an algorithm and supporting language (resembling R) dedicated to performing the Gibbs sampling implementation of Markov Chain Monte Carlo (MCMC) method. Dialects of the BUGS language are implemented within three main projects:
+OpenBUGS - written in component pascal.
+JAGS - (Just Another Gibbs Sampler) - written in C&#43;&#43;.">
+
+  
+  <link rel="alternate" hreflang="en-us" href="/stan/ancova-stan/ancova-stan/">
+
+  
+
+
+  
+
+  
+  
+  
+  <meta name="theme-color" content="#2962ff">
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.0/css/all.css" integrity="sha384-aOkxzJ5uQz7WBObEZcHvV5JvRW3TUc2rNPA7pe3AwnsUohiw1Vj2Rgx2KSOkF5+h" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" integrity="sha256-ygkqlh3CYSUri3LhQxzdcm0n1EQvH2Y+U5S2idbLtxs=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+        
+      
+    
+
+    
+
+    
+
+  
+
+  
+  
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:450,700|Oswald+Sans:600,700|Roboto+Mono:550,700">
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.min.a71200610c21759266bff163bb521d95.css">
+
+  
+    
+    
+    
+    
+      
+    
+    
+    
+    <link rel="stylesheet" href="/css/academic.3f1befffb0882d6c3372ec9dda375740.css">
+  
+
+  
+  
+  
+
+  
+
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="/stan/ancova-stan/ancova-stan/">
+
+  
+  
+  
+  
+    
+    
+  
+  <meta property="twitter:card" content="summary">
+  
+  <meta property="og:site_name" content="Andrea Gabrio">
+  <meta property="og:url" content="/stan/ancova-stan/ancova-stan/">
+  <meta property="og:title" content="Analysis of Covariance - STAN | Andrea Gabrio">
+  <meta property="og:description" content="This tutorial will focus on the use of Bayesian estimation to fit simple linear regression models. BUGS (Bayesian inference Using Gibbs Sampling) is an algorithm and supporting language (resembling R) dedicated to performing the Gibbs sampling implementation of Markov Chain Monte Carlo (MCMC) method. Dialects of the BUGS language are implemented within three main projects:
+OpenBUGS - written in component pascal.
+JAGS - (Just Another Gibbs Sampler) - written in C&#43;&#43;."><meta property="og:image" content="/img/icon-192.png">
+  <meta property="og:locale" content="en-us">
+  
+  <meta property="article:published_time" content="2020-02-05T21:13:14-05:00">
+  
+  <meta property="article:modified_time" content="2020-02-05T21:13:14-05:00">
+  
+
+  
+
+
+  
+
+
+
+
+
+  <title>Analysis of Covariance - STAN | Andrea Gabrio</title>
+
+</head>
+
+
+<body id="top" data-spy="scroll" data-target="#TableOfContents" data-offset="71" >
+
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" role="textbox" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+  
+<nav class="navbar navbar-light fixed-top navbar-expand-lg py-0" id="navbar-main">
+  <div class="container">
+
+    
+      <a class="navbar-brand" href="/">Andrea Gabrio</a>
+      
+      <button type="button" class="navbar-toggler" data-toggle="collapse"
+              data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span><i class="fas fa-bars"></i></span>
+      </button>
+      
+
+    
+    <div class="collapse navbar-collapse" id="navbar">
+
+      
+      
+      <ul class="navbar-nav ml-auto">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#about"><span>Home</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/post/"><span>Blog</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/research/"><span>Research</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/publication/"><span>Publications</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/talk/"><span>Talks</span></a>
+        </li>
+
+        
+        
+
+        
+        <li class="nav-item dropdown">
+          <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"><span>Software</span><span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            
+            <li class="dropdown-item my-0 py-0 mx-0 px-0">
+              <a href="/missingHE/"><span>missingHE</span></a>
+            </li>
+            
+          </ul>
+        </li>
+
+        
+        
+
+        
+        <li class="nav-item dropdown">
+          <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"><span>Tutorials</span><span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            
+            <li class="dropdown-item my-0 py-0 mx-0 px-0">
+              <a href="/JAGS/"><span>JAGS</span></a>
+            </li>
+            
+            <li class="dropdown-item my-0 py-0 mx-0 px-0">
+              <a href="/OpenBUGS/"><span>OpenBUGS</span></a>
+            </li>
+            
+            <li class="dropdown-item my-0 py-0 mx-0 px-0">
+              <a href="/STAN/"><span>STAN</span></a>
+            </li>
+            
+          </ul>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/missingdata/"><span>Missing Data</span></a>
+        </li>
+
+        
+        
+
+      
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+        </li>
+        
+
+        
+
+        
+
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+  <article class="article" itemscope itemtype="http://schema.org/Article">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  
+  
+<div class="article-container pt-3">
+  <h1 itemprop="name">Analysis of Covariance - STAN</h1>
+
+  
+
+  
+    
+
+
+
+<meta content="2020-02-05 21:13:14 -0500 -0500" itemprop="datePublished">
+<meta content="2020-02-05 21:13:14 -0500 -0500" itemprop="dateModified">
+
+<div class="article-metadata">
+
+  
+  
+  
+  
+  <div>
+    
+
+
+
+  <span itemprop="author name" itemtype="http://schema.org/Person"><a>Andrea Gabrio</a></span>
+  </div>
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+    
+    <time>Feb 5, 2020</time>
+  </span>
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+  <span class="middot-divider"></span>
+  <span class="article-categories">
+    <i class="fas fa-folder"></i>
+    <a href="/categories/r/">R</a>, <a href="/categories/ancova/">ancova</a>, <a href="/categories/stan/">STAN</a>, <a href="/categories/facor-analysis/">facor analysis</a></span>
+  
+
+  
+    
+
+  
+
+</div>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+</div>
+
+
+
+  <div class="article-container">
+
+    <div class="article-style" itemprop="articleBody">
+      
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<p>This tutorial will focus on the use of Bayesian estimation to fit simple linear regression models. <code>BUGS</code> (Bayesian inference Using <em>Gibbs Sampling</em>) is an algorithm and supporting language (resembling <code>R</code>) dedicated to performing the Gibbs sampling implementation of <em>Markov Chain Monte Carlo</em> (MCMC) method. Dialects of the <code>BUGS</code> language are implemented within three main projects:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>OpenBUGS</strong> - written in component pascal.</p></li>
+<li><p><strong>JAGS</strong> - (Just Another Gibbs Sampler) - written in <code>C++</code>.</p></li>
+<li><p><strong>STAN</strong> - a dedicated Bayesian modelling framework written in <code>C++</code> and implementing <em>Hamiltonian</em> MCMC samplers.</p></li>
+</ol>
+<p>Whilst the above programs can be used stand-alone, they do offer the rich data pre-processing and graphical capabilities of <code>R</code>, and thus, they are best accessed from within <code>R</code> itself. As such there are multiple packages devoted to interfacing with the various software implementations:</p>
+<ul>
+<li><p><em>R2OpenBUGS</em> - interfaces with <code>OpenBUGS</code></p></li>
+<li><p><em>R2jags</em> - interfaces with <code>JAGS</code></p></li>
+<li><p><em>rstan</em> - interfaces with <code>STAN</code></p></li>
+</ul>
+<p>This tutorial will demonstrate how to fit models in <code>STAN</code> (<span class="citation">Gelman, Lee, and Guo (2015)</span>) using the package <code>rstan</code> (<span class="citation">Stan Development Team (2018)</span>) as interface, which also requires to load some other packages.</p>
+<div id="overview" class="section level1">
+<h1>Overview</h1>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>Previous tutorials have concentrated on designs for either continuous (Regression) or categorical (ANOVA) predictor variables. <em>Analysis of covariance</em> (ANCOVA) models are essentially ANOVA models that incorporate one or more continuous and categorical variables (covariates). Although the relationship between a response variable and a covariate may itself be of substantial clinical interest, typically covariate(s) are incorporated to reduce the amount of unexplained variability in the model and thereby increase the power of any treatment effects.</p>
+<p>In ANCOVA, a reduction in unexplained variability is achieved by adjusting the response (to each treatment) according to slight differences in the covariate means as well as accounting for any underlying trends between the response and covariate(s). To do so, the extent to which the within treatment group small differences in covariate means between groups and treatment groups are essentially compared via differences in their <span class="math inline">\(y\)</span>-intercepts. The total variation is thereafter partitioned into explained (using the deviations between the overall trend and trends approximated for each of the treatment groups) and unexplained components (using the deviations between the observations and the approximated within group trends). In this way, ANCOVA can be visualized as a regular ANOVA in which the group and overall means are replaced by group and overall trendlines. Importantly, it should be apparent that ANCOVA is only appropriate when each of the within group trends have the same slope and are thus parallel to one another and the overall trend. Furthermore, ANCOVA is not appropriate when the resulting adjustments must be extrapolated from a linear relationship outside the measured range of the covariate.</p>
+<p>As an example, an experiment might be set up to investigate the energetic impacts of sexual vs parthenogenetic (egg development without fertilization) reproduction on leaf insect food consumption. To do so, researchers could measure the daily food intake of individual adult female leaf insects from female only (parthenogenetic) and mixed (sexual) populations. Unfortunately, the available individual leaf insects varied substantially in body size which was expected to increase the variability of daily food intake of treatment groups. Consequently, the researchers also measured the body mass of the individuals as a covariate, thereby providing a means by which daily food consumption could be standardized for body mass. ANCOVA attempts to reduce unexplained variability by standardising the response to the treatment by the effects of the specific covariate condition. Thus ANCOVA provides a means of exercising some statistical control over the variability when it is either not possible or not desirable to exercise experimental control (such as blocking or using otherwise homogeneous observations).</p>
+</div>
+<div id="null-hypothesis" class="section level2">
+<h2>Null hypothesis</h2>
+<p><strong>Factor A: the main treatment effect</strong></p>
+<ul>
+<li><span class="math inline">\(H_0(A):\mu_1(adj)=\mu_2(adj)=\ldots=\mu_i(adj)=\mu(adj)\)</span></li>
+</ul>
+<p>The adjusted population group means are all equal. The mean of population <span class="math inline">\(1\)</span> adjusted for the covariate is equal to that of population <span class="math inline">\(2\)</span> adjusted for the covariate and so on, and thus all population means adjusted for the covariate are equal to an overall adjusted mean. If the effect of the <span class="math inline">\(i\)</span>-th group is the difference between the <span class="math inline">\(i\)</span>-th group adjusted mean and the overall adjusted mean (<span class="math inline">\(\alpha_i(adj)=\mu_i(adj)−\mu(adj)\)</span>) then the <span class="math inline">\(H_0\)</span> can alternatively be written as:</p>
+<ul>
+<li><span class="math inline">\(H_0(A):\alpha_1(adj)=\alpha_2(adj)=\ldots=\alpha_i(adj)=0\)</span></li>
+</ul>
+<p>The effect of each group equals zero. If one or more of the <span class="math inline">\(\alpha_i(adj)\)</span> are different from zero (the response mean for this treatment differs from the overall response mean), the null hypothesis is not true, indicating that the treatment does affect the response variable.</p>
+<p><strong>Factor B: the covariate effect</strong></p>
+<ul>
+<li><span class="math inline">\(H_0(B):\beta_1(pooled)=0\)</span></li>
+</ul>
+<p>The pooled population slope equals zero. Note, that this null hypothesis is rarely of much interest. It is precisely because of this nuisance relationship that ANCOVA designs are applied.</p>
+</div>
+<div id="linear-models" class="section level2">
+<h2>Linear models</h2>
+<p>One or more covariates can be incorporated into single factor, nested, factorial and partly nested designs in order to reduce the unexplained variation. Fundamentally, the covariate(s) are purely used to adjust the response values prior to the regular analysis. The difficulty is in determining the appropriate adjustments. Following is a list of the appropriate linear models and adjusted response calculations for a range of ANCOVA designs. Note that these linear models do not include interactions involving the covariates as these are assumed to be zero. The inclusion of these interaction terms is a useful means of testing the homogeneity of slopes assumption.</p>
+<ul>
+<li><p><em>Single categorical and single covariate</em></p>
+<ul>
+<li><p>Linear model: <span class="math inline">\(y_{ij}=\mu + \alpha_i + \beta(x_{ij}-\bar{x}) + \epsilon_{ij}\)</span></p></li>
+<li><p>Adjustments: <span class="math inline">\(y_{ij(adj)}=y_{ij} - b(x_{ij} - \bar{x})\)</span></p></li>
+</ul></li>
+<li><p><em>Single categorical and two covariates</em></p>
+<ul>
+<li><p>Linear model: <span class="math inline">\(y_{ij}=\mu + \alpha_i + \beta_{YX}(x_{ij}-\bar{x}) + \beta_{YZ}(z_{ij}-\bar{z}) + \epsilon_{ij}\)</span></p></li>
+<li><p>Adjustments: <span class="math inline">\(y_{ij(adj)}=y_{ij} - b_{YX}(x_{ij} - \bar{x}) - b_{YZ}(z_{ij} - \bar{z})\)</span></p></li>
+</ul></li>
+<li><p><em>Factorial designs</em></p>
+<ul>
+<li><p>Linear model: <span class="math inline">\(y_{ij}=\mu + \alpha_i + \gamma_j + (\alpha\gamma)_{ij}+ \beta(x_{ijk}-\bar{x}) + \epsilon_{ijk}\)</span></p></li>
+<li><p>Adjustments: <span class="math inline">\(y_{ijk(adj)}=y_{ijk} - b(x_{ijk} - \bar{x})\)</span></p></li>
+</ul></li>
+<li><p><em>Nested designs</em></p>
+<ul>
+<li><p>Linear model: <span class="math inline">\(y_{ijk}=\mu + \alpha_i + \gamma_{j(i)} + \beta(x_{ijk}-\bar{x}) + \epsilon_{ijk}\)</span></p></li>
+<li><p>Adjustments: <span class="math inline">\(y_{ijk(adj)}=y_{ijk} - b(x_{ijk} - \bar{x})\)</span></p></li>
+</ul></li>
+<li><p><em>Partly nested designs</em></p>
+<ul>
+<li><p>Linear model: <span class="math inline">\(y_{ijkl}=\mu + \alpha_i + \gamma_{j(i)} + \delta_k + (\alpha\delta)_{ik} + (\gamma\delta)_{j(i)k} + \beta(x_{ijk}-\bar{x}) + \epsilon_{ijkl}\)</span></p></li>
+<li><p>Adjustments: <span class="math inline">\(y_{ijk(adj)}=y_{ijkl} - b_{between}(x_{i} - \bar{x}) - b_{within}(x_{ijk} - \bar{x}_i)\)</span></p></li>
+</ul></li>
+</ul>
+</div>
+<div id="analysis-of-variance" class="section level2">
+<h2>Analysis of variance</h2>
+<p>In ANCOVA, the total variability of the response variable is sequentially partitioned into components explained by each of the model terms, starting with the covariate and is therefore equivalent to performing a regular analysis of variance on the response variables that have been adjusted for the covariate. The appropriate unexplained residuals and therefore the appropriate <em>F-ratios</em> for each factor differ according to the different null hypotheses associated with different linear models as well as combinations of fixed and random factors in the model (see the following tables). Note that since the covariate levels measured are typically different for each group, ANCOVA designs are inherently non-orthogonal (unbalanced). Consequently, sequential (Type I sums of squares) should not be used. For very simple Ancova designs that incorporate a single categorical and single covariate, Type I sums of squares can be used provided the covariate appears in the linear model first (and thus is partitioned out last) as we are typically not interested in estimating this effect.</p>
+<pre class="r"><code>&gt; ancova_table
+          df       MS       F-ratio (A&amp;B fixed) F-ratio (B fixed) 
+Factor A  &quot;a-1&quot;    &quot;MS A&quot;   &quot;(MS A)/(MS res)&quot;   &quot;(MS A)/(MS res)&quot; 
+Factor B  &quot;1&quot;      &quot;MS B&quot;   &quot;(MS B)/(MS res)&quot;   &quot;(MS B)/(MS res)&quot; 
+Factor AB &quot;a-1&quot;    &quot;MS AB&quot;  &quot;(MS AB)/(MS res)&quot;  &quot;(MS AB)/(MS res)&quot;
+Residual  &quot;(n-2)a&quot; &quot;MS res&quot; &quot;&quot;                  &quot;&quot;                </code></pre>
+<p>The corresponding <code>R</code> syntax is given below.</p>
+<pre class="r"><code>&gt; anova(lm(DV ~ B * A, dataset))
+&gt; # OR
+&gt; anova(aov(DV ~ B * A, dataset))
+&gt; # OR (make sure not using treatment contrasts)
+&gt; Anova(lm(DV ~ B * A, dataset), type = &quot;III&quot;)</code></pre>
+</div>
+<div id="assumptions" class="section level2">
+<h2>Assumptions</h2>
+<p>As ANCOVA designs are essentially regular ANOVA designs that are first adjusted (centered) for the covariate(s), ANCOVA designs inherit all of the underlying assumptions of the appropriate ANOVA design. Specifically, hypothesis tests assume that:</p>
+<ul>
+<li><p>The appropriate residuals are normally distributed. Boxplots using the appropriate scale of replication (reflecting the appropriate residuals/F-ratio denominator, see the above tables) should be used to explore normality. Scale transformations are often useful.</p></li>
+<li><p>The appropriate residuals are equally varied. Boxplots and plots of means against variance (using the appropriate scale of replication) should be used to explore the spread of values. Residual plots should reveal no patterns. Scale transformations are often useful.</p></li>
+<li><p>The appropriate residuals are independent of one another.</p></li>
+<li><p>The relationship between the response variable and the covariate should be linear. Linearity can be explored using scatterplots and residual plots should reveal no patterns.</p></li>
+<li><p>For repeated measures and other designs in which treatment levels within blocks can not be be randomly ordered, the variance/covariance matrix is assumed to display sphericity.</p></li>
+<li><p>For designs that utilise blocking, it is assumed that there are no block by within block interactions.</p></li>
+</ul>
+<p><strong>Homogeneity of Slopes</strong></p>
+<p>In addition to the above assumptions, ANCOVA designs also assume that slopes of relationships between the response variable and the covariate(s) are the same for each treatment level (group). That is, all the trends are parallel. If the individual slopes deviate substantially from each other (and thus the overall slope), then adjustments made to each of the observations are nonsensical. This situation is analogous to an interaction between two or more factors. In ANCOVA, interactions involving the covariate suggest that the nature of the relationship between the response and the covariate differs between the levels of the categorical treatment. More importantly, they also indicate that whether or not there is an effect of the treatment depends on what range of the covariate you are focussed on. Clearly then, it is not possible to make conclusions about the main effects of treatments in the presence of such interactions. The assumption of homogeneity of slopes can be examined via interaction plots or more formally, by testing hypotheses about the interactions between categorical variables and the covariate(s). There are three broad approaches for dealing with ANCOVA designs with heterogeneous slopes and selection depends on the primary focus of the study.</p>
+<ol style="list-style-type: decimal">
+<li><p>When the primary objective of the analysis is to investigate the effects of categorical treatments, it is possible to adopt an approach similar to that taken when exploring interactions in multiple regression. The effect of treatments can be examined at specific values of the covariate (such as the mean and <span class="math inline">\(\pm\)</span> one standard deviation). This approach is really only useful at revealing broad shifts in patterns over the range of the covariate and if the selected values of the covariate do not have some inherent clinical meaning (selected arbitrarily), then the outcomes can be of only limited clinical interest.</p></li>
+<li><p>Alternatively, the <em>Johnson-Neyman technique</em> (or Wilxon modification thereof) procedure indicates the ranges of the covariate over which the individual regression lines of pairs of treatment groups overlap or cross. Although less powerful than the previous approach, the <em>Wilcox(J-N)</em> procedure has the advantage of revealing the important range (ranges for which the groups are different and not different) of the covariate rather than being constrained by specific levels selected.</p></li>
+<li><p>Use contrast treatments to split up the interaction term into its constituent contrasts for each level of the treatment. Essentially this compares each of the treatment level slopes to the slope from the “control” group and is useful if the primary focus is on the relationships between the response and the covariate.</p></li>
+</ol>
+<p><strong>Similar covariate ranges</strong></p>
+<p>Adjustments made to the response means in an attempt to statistically account for differences in the covariate involve predicting mean response values along displaced linear relationships between the overall response and covariate variables. The degree of trend displacement for any given group is essentially calculated by multiplying the overall regression slope by the degree of difference between the overall covariate mean and the mean of the covariate for that group. However, when the ranges of the covariate within each of the groups differ substantially from one another, these adjustments are effectively extrapolations and therefore of unknown reliability. If a simple ANOVA of the covariate modelled against the categorical factor indicates that the covariate means differ significantly between groups, it may be necessary to either remove extreme observations or reconsider the analysis.</p>
+<p><strong>Robust ANCOVA</strong></p>
+<p>ANCOVA based on rank transformed data can be useful for accommodating data with numerous problematic outliers. Nevertheless, problems about the difficulties of detecting interactions from rank transformed data, obviously have implications for inferential tests of homogeneity of slopes. Randomisation tests that maintain response0covariate pairs and repeatedly randomise these observations amongst the levels of the treatments can also be useful, particularly when there is doubt over the independence of observations. Both planned and unplanned comparisons follow those of other ANOVA chapters without any real additional complications. Notably, recent implementations of the <em>Tukey’s test</em> (within <code>R</code>) accommodate unbalanced designs and thus negate the need for some of the more complicated and specialised techniques that have been highlighted in past texts.</p>
+</div>
+</div>
+<div id="data-generation" class="section level1">
+<h1>Data generation</h1>
+<p>Consider an experimental design aimed at exploring the effects of a categorical variable with three levels (Group A, Group B and Group C) on a response. From previous studies, we know that the response is influenced by another variable (covariate). Unfortunately, it was not possible to ensure that all sampling units were the same degree of the covariate. Therefore, in an attempt to account for this anticipated extra source of variability, we measured the level of the covariate for each sampling unit. Actually, in allocating treatments to the various treatment groups, we tried to ensure a similar mean and range of the covariate within each group.</p>
+<pre class="r"><code>&gt; set.seed(123)
+&gt; n &lt;- 10
+&gt; p &lt;- 3
+&gt; A.eff &lt;- c(40, -15, -20)
+&gt; beta &lt;- -0.45
+&gt; sigma &lt;- 4
+&gt; B &lt;- rnorm(n * p, 0, 15)
+&gt; A &lt;- gl(p, n, lab = paste(&quot;Group&quot;, LETTERS[1:3]))
+&gt; mm &lt;- model.matrix(~A + B)
+&gt; data &lt;- data.frame(A = A, B = B, Y = as.numeric(c(A.eff, beta) %*% t(mm)) + rnorm(n * p, 0, 4))
+&gt; data$B &lt;- data$B + 20
+&gt; head(data)
+        A        B        Y
+1 Group A 11.59287 45.48907
+2 Group A 16.54734 40.37341
+3 Group A 43.38062 33.05922
+4 Group A 21.05763 43.03660
+5 Group A 21.93932 42.41363
+6 Group A 45.72597 31.17787</code></pre>
+<div id="exploratory-data-analysis" class="section level2">
+<h2>Exploratory data analysis</h2>
+<pre class="r"><code>&gt; library(car)
+&gt; scatterplot(Y ~ B | A, data = data)</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/exp_data-1.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; boxplot(Y ~ A, data)
+&gt; 
+&gt; # OR via ggplot
+&gt; library(ggplot2)</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/exp_data-2.png" width="672" /></p>
+<pre class="r"><code>&gt; ggplot(data, aes(y = Y, x = B, group = A)) + geom_point() + geom_smooth(method = &quot;lm&quot;)</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/exp_data-3.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; ggplot(data, aes(y = Y, x = A)) + geom_boxplot()</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/exp_data-4.png" width="672" /></p>
+<p><strong>Conclusions</strong></p>
+<p>There is no evidence of obvious non-normality. The assumption of linearity seems reasonable. The variability of the three groups seems approximately equal. The slopes (<span class="math inline">\(Y\)</span> vs B trends) appear broadly similar for each treatment group.</p>
+<p>We can explore inferential evidence of unequal slopes by examining estimated effects of the interaction between the categorical variable and the covariate. Note, pay no attention to the main effects - only the interaction. Even though I intend to illustrate Bayesian analyses here, for such a simple model, it is considerably simpler to use traditional OLS for testing for the presence of an interaction.</p>
+<pre class="r"><code>&gt; anova(lm(Y ~ B * A, data = data))
+Analysis of Variance Table
+
+Response: Y
+          Df  Sum Sq Mean Sq  F value    Pr(&gt;F)    
+B          1  989.99  989.99  92.6782 1.027e-09 ***
+A          2 2320.05 1160.02 108.5956 9.423e-13 ***
+B:A        2   51.36   25.68   2.4041    0.1118    
+Residuals 24  256.37   10.68                       
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>There is very little evidence to suggest that the assumption of equal slopes will be inappropriate.</p>
+</div>
+</div>
+<div id="model-fitting" class="section level1">
+<h1>Model fitting</h1>
+<p>The observed response (<span class="math inline">\(y_i\)</span>) are assumed to be drawn from a normal distribution with a given mean (<span class="math inline">\(\mu\)</span>) and standard deviation (<span class="math inline">\(\sigma\)</span>). The expected values are themselves determined by the linear predictor (<span class="math inline">\(\boldsymbol X \boldsymbol \beta\)</span>). In this case, <span class="math inline">\(\boldsymbol \beta\)</span> represents the vector of <span class="math inline">\(\beta\)</span>’s - the intercept associated with the first group, the (effects) differences between this intercept and the intercepts for each other group as well as the slope associated with the continuous covariate. <span class="math inline">\(\boldsymbol X\)</span> is the model matrix. MCMC sampling requires priors on all parameters. We will employ weakly informative priors. Specifying ‘uninformative’ priors is always a bit of a balancing act. If the priors are too vague (wide) the MCMC sampler can wander off into nonscence areas of likelihood rather than concentrate around areas of highest likelihood (desired when wanting the outcomes to be largely driven by the data). On the other hand, if the priors are too strong, they may have an influence on the parameters. In such a simple model, this balance is very forgiving - it is for more complex models that prior choice becomes more important. For this simple model, we will go with zero-centered Gaussian (normal) priors with relatively large standard deviations (<span class="math inline">\(100\)</span>) for both the intercept and the treatment effect and a wide half-cauchy (<span class="math inline">\(\text{scale}=5\)</span>) for the standard deviation.</p>
+<p><span class="math display">\[y_i \sim N(\mu_i,\sigma),  \]</span></p>
+<p>where <span class="math inline">\(\mu_i=\beta_0 +\boldsymbol \beta \boldsymbol X\)</span>. The assumed priors are: <span class="math inline">\(\beta \sim N(0,100)\)</span> and <span class="math inline">\(\sigma \sim \text{Cauchy}(0,5)\)</span>. Note, exploratory data analysis suggests that while the intercept (intercept of Group A) and categorical predictor effects (differences between intercepts of each of the Group and Group A’s intercept) could be drawn from a similar distribution (with mean in the <span class="math inline">\(10\)</span>’s and variances in the <span class="math inline">\(100\)</span>’s), the slope (effect associated with Group A linear relationship) is likely to be an order of magnitude less. We might therefore be tempted to provide different priors for the intercept, categorical effects and slope effect. For a simple model such as this, it is unlikely to be necessary. However, for more complex models, where prior specification becomes more critical, separate priors would probably be necessary.</p>
+<p>We proceed to code the model into <code>JAGS</code> (remember that in this software normal distribution are parameterised in terms of precisions <span class="math inline">\(\tau\)</span> rather than variances, where <span class="math inline">\(\tau=\frac{1}{\sigma^2}\)</span>). Note the following example as group means calculated as derived posteriors.</p>
+<pre class="r"><code>&gt; modelString = &quot;
++   data {
++   int&lt;lower=1&gt; n;
++   int&lt;lower=1&gt; nX;
++   vector [n] y;
++   matrix [n,nX] X;
++   }
++   parameters {
++   vector[nX] beta;
++   real&lt;lower=0&gt; sigma;
++   }
++   transformed parameters {
++   vector[n] mu;
++ 
++   mu = X*beta;
++   }
++   model {
++   //Likelihood
++   y~normal(mu,sigma);
++   
++   //Priors
++   beta ~ normal(0,100);
++   sigma~cauchy(0,5);
++   }
++   generated quantities {
++   vector[n] log_lik;
++   
++   for (i in 1:n) {
++   log_lik[i] = normal_lpdf(y[i] | mu[i], sigma); 
++   }
++   }
++   
++   &quot;
+&gt; ## write the model to a stan file 
+&gt; writeLines(modelString, con = &quot;ancovaModel.stan&quot;)</code></pre>
+<p>Arrange the data as a list (as required by <code>STAN</code>). As input, <code>STAN</code> will need to be supplied with: the response variable, the predictor variable, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.</p>
+<pre class="r"><code>&gt; Xmat &lt;- model.matrix(~A + B, data)
+&gt; data.list &lt;- with(data, list(y = Y, X = Xmat, nX = ncol(Xmat), n = nrow(data)))</code></pre>
+<p>Define the nodes (parameters and derivatives) to monitor and chain parameters.</p>
+<pre class="r"><code>&gt; params &lt;- c(&quot;beta&quot;, &quot;sigma&quot;, &quot;log_lik&quot;)
+&gt; nChains = 2
+&gt; burnInSteps = 500
+&gt; thinSteps = 1
+&gt; numSavedSteps = 2000  #across all chains
+&gt; nIter = ceiling(burnInSteps + (numSavedSteps * thinSteps)/nChains)
+&gt; nIter
+[1] 1500</code></pre>
+<p>Now compile and run the Stan code via the <code>rstan</code> interface. Note that the first time <code>stan</code> is run after the <code>rstan</code> package is loaded, it is often necessary to run any kind of randomization function just to initiate the .Random.seed variable.</p>
+<pre class="r"><code>&gt; library(rstan)</code></pre>
+<p>During the warmup stage, the No-U-Turn sampler (NUTS) attempts to determine the optimum stepsize - the stepsize that achieves the target acceptance rate (<span class="math inline">\(0.8\)</span> or <span class="math inline">\(80\)</span>% by default) without divergence (occurs when the stepsize is too large relative to the curvature of the log posterior and results in approximations that are likely to diverge and be biased) - and without hitting the maximum treedepth (<span class="math inline">\(10\)</span>). At each iteration of the NUTS algorithm, the number of leapfrog steps doubles (as it increases the treedepth) and only terminates when either the NUTS criterion are satisfied or the tree depth reaches the maximum (<span class="math inline">\(10\)</span> by default).</p>
+<pre class="r"><code>&gt; data.rstan &lt;- stan(data = data.list, file = &quot;ancovaModel.stan&quot;, chains = nChains, pars = params,
++     iter = nIter, warmup = burnInSteps, thin = thinSteps)
+
+SAMPLING FOR MODEL &#39;ancovaModel&#39; NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 0 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 1500 [  0%]  (Warmup)
+Chain 1: Iteration:  150 / 1500 [ 10%]  (Warmup)
+Chain 1: Iteration:  300 / 1500 [ 20%]  (Warmup)
+Chain 1: Iteration:  450 / 1500 [ 30%]  (Warmup)
+Chain 1: Iteration:  501 / 1500 [ 33%]  (Sampling)
+Chain 1: Iteration:  650 / 1500 [ 43%]  (Sampling)
+Chain 1: Iteration:  800 / 1500 [ 53%]  (Sampling)
+Chain 1: Iteration:  950 / 1500 [ 63%]  (Sampling)
+Chain 1: Iteration: 1100 / 1500 [ 73%]  (Sampling)
+Chain 1: Iteration: 1250 / 1500 [ 83%]  (Sampling)
+Chain 1: Iteration: 1400 / 1500 [ 93%]  (Sampling)
+Chain 1: Iteration: 1500 / 1500 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.073 seconds (Warm-up)
+Chain 1:                0.059 seconds (Sampling)
+Chain 1:                0.132 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL &#39;ancovaModel&#39; NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 0 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 1500 [  0%]  (Warmup)
+Chain 2: Iteration:  150 / 1500 [ 10%]  (Warmup)
+Chain 2: Iteration:  300 / 1500 [ 20%]  (Warmup)
+Chain 2: Iteration:  450 / 1500 [ 30%]  (Warmup)
+Chain 2: Iteration:  501 / 1500 [ 33%]  (Sampling)
+Chain 2: Iteration:  650 / 1500 [ 43%]  (Sampling)
+Chain 2: Iteration:  800 / 1500 [ 53%]  (Sampling)
+Chain 2: Iteration:  950 / 1500 [ 63%]  (Sampling)
+Chain 2: Iteration: 1100 / 1500 [ 73%]  (Sampling)
+Chain 2: Iteration: 1250 / 1500 [ 83%]  (Sampling)
+Chain 2: Iteration: 1400 / 1500 [ 93%]  (Sampling)
+Chain 2: Iteration: 1500 / 1500 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.088 seconds (Warm-up)
+Chain 2:                0.058 seconds (Sampling)
+Chain 2:                0.146 seconds (Total)
+Chain 2: 
+&gt; 
+&gt; print(data.rstan, par = c(&quot;beta&quot;, &quot;sigma&quot;))
+Inference for Stan model: ancovaModel.
+2 chains, each with iter=1500; warmup=500; thin=1; 
+post-warmup draws per chain=1000, total post-warmup draws=2000.
+
+          mean se_mean   sd   2.5%    25%    50%    75%  97.5% n_eff Rhat
+beta[1]  50.95    0.05 1.46  48.08  50.00  50.93  51.85  53.86   949 1.01
+beta[2] -16.23    0.04 1.55 -19.25 -17.24 -16.18 -15.24 -13.12  1322 1.00
+beta[3] -20.60    0.04 1.52 -23.56 -21.58 -20.61 -19.61 -17.55  1430 1.00
+beta[4]  -0.48    0.00 0.05  -0.57  -0.51  -0.48  -0.45  -0.40  1068 1.01
+sigma     3.55    0.02 0.52   2.69   3.17   3.48   3.87   4.67  1175 1.00
+
+Samples were drawn using NUTS(diag_e) at Sat Feb 15 17:20:45 2020.
+For each parameter, n_eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor on split chains (at 
+convergence, Rhat=1).</code></pre>
+</div>
+<div id="mcmc-diagnostics" class="section level1">
+<h1>MCMC diagnostics</h1>
+<p>In addition to the regular model diagnostic checks (such as residual plots), for Bayesian analyses, it is necessary to explore the characteristics of the MCMC chains and the sampler in general. Recall that the purpose of MCMC sampling is to replicate the posterior distribution of the model likelihood and priors by drawing a known number of samples from this posterior (thereby formulating a probability distribution). This is only reliable if the MCMC samples accurately reflect the posterior. Unfortunately, since we only know the posterior in the most trivial of circumstances, it is necessary to rely on indirect measures of how accurately the MCMC samples are likely to reflect the likelihood. I will briefly outline the most important diagnostics.</p>
+<ul>
+<li><p><em>Traceplots</em> for each parameter illustrate the MCMC sample values after each successive iteration along the chain. Bad chain mixing (characterised by any sort of pattern) suggests that the MCMC sampling chains may not have completely traversed all features of the posterior distribution and that more iterations are required to ensure the distribution has been accurately represented.</p></li>
+<li><p><em>Autocorrelation</em> plot for each parameter illustrate the degree of correlation between MCMC samples separated by different lags. For example, a lag of <span class="math inline">\(0\)</span> represents the degree of correlation between each MCMC sample and itself (obviously this will be a correlation of <span class="math inline">\(1\)</span>). A lag of <span class="math inline">\(1\)</span> represents the degree of correlation between each MCMC sample and the next sample along the chain and so on. In order to be able to generate unbiased estimates of parameters, the MCMC samples should be independent (uncorrelated).</p></li>
+<li><p><em>Potential scale reduction factor</em> (Rhat) statistic for each parameter provides a measure of sampling efficiency/effectiveness. Ideally, all values should be less than <span class="math inline">\(1.05\)</span>. If there are values of <span class="math inline">\(1.05\)</span> or greater it suggests that the sampler was not very efficient or effective. Not only does this mean that the sampler was potentially slower than it could have been but, more importantly, it could indicate that the sampler spent time sampling in a region of the likelihood that is less informative. Such a situation can arise from either a misspecified model or overly vague priors that permit sampling in otherwise nonscence parameter space.</p></li>
+</ul>
+<p>Prior to examining the summaries, we should have explored the convergence diagnostics. We use the package <code>mcmcplots</code> to obtain density and trace plots for the effects model as an example.</p>
+<pre class="r"><code>&gt; library(mcmcplots)
+&gt; s = as.array(data.rstan)
+&gt; wch = grep(&quot;beta&quot;, dimnames(s)$parameters)
+&gt; s = s[, , wch]
+&gt; mcmc &lt;- do.call(mcmc.list, plyr:::alply(s[, , -(length(s[1, 1, ]))], 2, as.mcmc))
+&gt; denplot(mcmc, parms = c(&quot;beta&quot;))</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/mcmc_diag-1.png" width="672" /></p>
+<pre class="r"><code>&gt; traplot(mcmc, parms = c(&quot;beta&quot;))</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/mcmc_diag-2.png" width="672" /></p>
+<p>These plots show no evidence that the chains have not reasonably traversed the entire multidimensional parameter space.</p>
+<pre class="r"><code>&gt; #Raftery diagnostic
+&gt; raftery.diag(mcmc)
+$`1`
+
+Quantile (q) = 0.025
+Accuracy (r) = +/- 0.005
+Probability (s) = 0.95 
+
+You need a sample size of at least 3746 with these values of q, r and s
+
+$`2`
+
+Quantile (q) = 0.025
+Accuracy (r) = +/- 0.005
+Probability (s) = 0.95 
+
+You need a sample size of at least 3746 with these values of q, r and s</code></pre>
+<p>The Raftery diagnostics for each chain estimate that we would require no more than <span class="math inline">\(5000\)</span> samples to reach the specified level of confidence in convergence. As we have <span class="math inline">\(10500\)</span> samples, we can be confidence that convergence has occurred.</p>
+<pre class="r"><code>&gt; #Autocorrelation diagnostic
+&gt; stan_ac(data.rstan, pars = c(&quot;beta&quot;))</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/mcmc_diag3-1.png" width="672" /></p>
+<p>A lag of 10 appears to be sufficient to avoid autocorrelation (poor mixing).</p>
+<pre class="r"><code>&gt; stan_rhat(data.rstan, pars = c(&quot;beta&quot;))</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/mcmc_diag4-1.png" width="672" /></p>
+<pre class="r"><code>&gt; stan_ess(data.rstan, pars = c(&quot;beta&quot;))</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/mcmc_diag4-2.png" width="672" /></p>
+<p>Rhat and effective sample size. In this instance, most of the parameters have reasonably high effective samples and thus there is likely to be a good range of values from which to estimate paramter properties.</p>
+</div>
+<div id="model-validation" class="section level1">
+<h1>Model validation</h1>
+<p>Model validation involves exploring the model diagnostics and fit to ensure that the model is broadly appropriate for the data. As such, exploration of the residuals should be routine. Ideally, a good model should also be able to predict the data used to fit the model. Residuals are not computed directly within <code>rstan</code> However, we can calculate them manually form the posteriors.</p>
+<pre class="r"><code>&gt; library(dplyr)
+&gt; mcmc = as.data.frame(data.rstan) %&gt;% dplyr:::select(contains(&quot;beta&quot;),
++     sigma) %&gt;% as.matrix
+&gt; # generate a model matrix
+&gt; newdata = data
+&gt; Xmat = model.matrix(~A + B, newdata)
+&gt; ## get median parameter estimates
+&gt; coefs = apply(mcmc[, 1:4], 2, median)
+&gt; fit = as.vector(coefs %*% t(Xmat))
+&gt; resid = data$Y - fit
+&gt; ggplot() + geom_point(data = NULL, aes(y = resid, x = fit)) + theme_classic()</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/mcmc_residuals-1.png" width="672" /></p>
+<p>Residuals against predictors</p>
+<pre class="r"><code>&gt; library(tidyr)
+&gt; mcmc = as.data.frame(data.rstan) %&gt;% dplyr:::select(contains(&quot;beta&quot;),
++     sigma) %&gt;% as.matrix
+&gt; # generate a model matrix
+&gt; newdata = newdata
+&gt; Xmat = model.matrix(~A + B, newdata)
+&gt; ## get median parameter estimates
+&gt; coefs = apply(mcmc[, 1:4], 2, median)
+&gt; fit = as.vector(coefs %*% t(Xmat))
+&gt; resid = data$Y - fit
+&gt; newdata = newdata %&gt;% cbind(fit, resid)
+&gt; ggplot(newdata) + geom_point(aes(y = resid, x = A)) + theme_classic()</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/mcmc_residuals2-1.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; ggplot(newdata) + geom_point(aes(y = resid, x = B)) + theme_classic()</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/mcmc_residuals2-2.png" width="672" /></p>
+<p>And now for studentised residuals</p>
+<pre class="r"><code>&gt; mcmc = as.data.frame(data.rstan) %&gt;% dplyr:::select(contains(&quot;beta&quot;),
++     sigma) %&gt;% as.matrix
+&gt; # generate a model matrix
+&gt; newdata = data
+&gt; Xmat = model.matrix(~A + B, newdata)
+&gt; ## get median parameter estimates
+&gt; coefs = apply(mcmc[, 1:4], 2, median)
+&gt; fit = as.vector(coefs %*% t(Xmat))
+&gt; resid = data$Y - fit
+&gt; sresid = resid/sd(resid)
+&gt; ggplot() + geom_point(data = NULL, aes(y = sresid, x = fit)) + theme_classic()</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/mcmc_residuals3-1.png" width="672" /></p>
+<p>For this simple model, the studentized residuals yield the same pattern as the raw residuals (or the Pearson residuals for that matter). Lets see how well data simulated from the model reflects the raw data.</p>
+<pre class="r"><code>&gt; mcmc = as.data.frame(data.rstan) %&gt;% dplyr:::select(contains(&quot;beta&quot;),
++     sigma) %&gt;% as.matrix
+&gt; # generate a model matrix
+&gt; Xmat = model.matrix(~A + B, data)
+&gt; ## get median parameter estimates
+&gt; coefs = mcmc[, 1:4]
+&gt; fit = coefs %*% t(Xmat)
+&gt; ## draw samples from this model
+&gt; yRep = sapply(1:nrow(mcmc), function(i) rnorm(nrow(data), fit[i,
++     ], mcmc[i, &quot;sigma&quot;]))
+&gt; newdata = data.frame(A = data$A, B = data$B, yRep) %&gt;% gather(key = Sample,
++     value = Value, -A, -B)
+&gt; ggplot(newdata) + geom_violin(aes(y = Value, x = A, fill = &quot;Model&quot;),
++     alpha = 0.5) + geom_violin(data = data, aes(y = Y, x = A,
++     fill = &quot;Obs&quot;), alpha = 0.5) + geom_point(data = data, aes(y = Y,
++     x = A), position = position_jitter(width = 0.1, height = 0),
++     color = &quot;black&quot;) + theme_classic()</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/mcmc_rep-1.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; ggplot(newdata) + geom_violin(aes(y = Value, x = B, fill = &quot;Model&quot;,
++     group = B, color = A), alpha = 0.5) + geom_point(data = data,
++     aes(y = Y, x = B, group = B, color = A)) + theme_classic()</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/mcmc_rep-2.png" width="672" /></p>
+<p>The predicted trends do encapsulate the actual data, suggesting that the model is a reasonable representation of the underlying processes. Note, these are prediction intervals rather than confidence intervals as we are seeking intervals within which we can predict individual observations rather than means. We can also explore the posteriors of each parameter.</p>
+<pre class="r"><code>&gt; library(bayesplot)
+&gt; mcmc_intervals(as.matrix(data.rstan), regex_pars = &quot;beta|sigma&quot;)</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/mcmc_rep2-1.png" width="672" /></p>
+<pre class="r"><code>&gt; mcmc_areas(as.matrix(data.rstan), regex_pars = &quot;beta|sigma&quot;)</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/mcmc_rep2-2.png" width="672" /></p>
+</div>
+<div id="parameter-estimates" class="section level1">
+<h1>Parameter estimates</h1>
+<p>Although all parameters in a Bayesian analysis are considered random and are considered a distribution, rarely would it be useful to present tables of all the samples from each distribution. On the other hand, plots of the posterior distributions have some use. Nevertheless, most workers prefer to present simple statistical summaries of the posteriors. Popular choices include the median (or mean) and <span class="math inline">\(95\)</span>% credibility intervals.</p>
+<pre class="r"><code>&gt; mcmcpvalue &lt;- function(samp) {
++     ## elementary version that creates an empirical p-value for the
++     ## hypothesis that the columns of samp have mean zero versus a general
++     ## multivariate distribution with elliptical contours.
++ 
++     ## differences from the mean standardized by the observed
++     ## variance-covariance factor
++ 
++     ## Note, I put in the bit for single terms
++     if (length(dim(samp)) == 0) {
++         std &lt;- backsolve(chol(var(samp)), cbind(0, t(samp)) - mean(samp),
++             transpose = TRUE)
++         sqdist &lt;- colSums(std * std)
++         sum(sqdist[-1] &gt; sqdist[1])/length(samp)
++     } else {
++         std &lt;- backsolve(chol(var(samp)), cbind(0, t(samp)) - colMeans(samp),
++             transpose = TRUE)
++         sqdist &lt;- colSums(std * std)
++         sum(sqdist[-1] &gt; sqdist[1])/nrow(samp)
++     }
++ 
++ }</code></pre>
+<p>First, we look at the results from the additive model.</p>
+<pre class="r"><code>&gt; print(data.rstan, pars = c(&quot;beta&quot;, &quot;sigma&quot;))
+Inference for Stan model: ancovaModel.
+2 chains, each with iter=1500; warmup=500; thin=1; 
+post-warmup draws per chain=1000, total post-warmup draws=2000.
+
+          mean se_mean   sd   2.5%    25%    50%    75%  97.5% n_eff Rhat
+beta[1]  50.95    0.05 1.46  48.08  50.00  50.93  51.85  53.86   949 1.01
+beta[2] -16.23    0.04 1.55 -19.25 -17.24 -16.18 -15.24 -13.12  1322 1.00
+beta[3] -20.60    0.04 1.52 -23.56 -21.58 -20.61 -19.61 -17.55  1430 1.00
+beta[4]  -0.48    0.00 0.05  -0.57  -0.51  -0.48  -0.45  -0.40  1068 1.01
+sigma     3.55    0.02 0.52   2.69   3.17   3.48   3.87   4.67  1175 1.00
+
+Samples were drawn using NUTS(diag_e) at Sat Feb 15 17:20:45 2020.
+For each parameter, n_eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor on split chains (at 
+convergence, Rhat=1).
+&gt; 
+&gt; # OR
+&gt; library(broom)
+&gt; tidyMCMC(data.rstan, conf.int = TRUE, conf.method = &quot;HPDinterval&quot;, pars = c(&quot;beta&quot;, &quot;sigma&quot;))
+# A tibble: 5 x 5
+  term    estimate std.error conf.low conf.high
+  &lt;chr&gt;      &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+1 beta[1]   51.0      1.46     48.0      53.8  
+2 beta[2]  -16.2      1.55    -19.3     -13.3  
+3 beta[3]  -20.6      1.52    -23.4     -17.5  
+4 beta[4]   -0.483    0.0460   -0.569    -0.392
+5 sigma      3.55     0.524     2.69      4.67 </code></pre>
+<p><strong>Conclusions</strong></p>
+<ul>
+<li><p>The intercept of the first group (Group A) is <span class="math inline">\(51\)</span>.</p></li>
+<li><p>The mean of the second group (Group B) is <span class="math inline">\(-16.3\)</span> units greater than (A).</p></li>
+<li><p>The mean of the third group (Group C) is <span class="math inline">\(-20.7\)</span> units greater than (A).</p></li>
+<li><p>A one unit increase in B in Group A is associated with a <span class="math inline">\(-0.484\)</span> units increase in <span class="math inline">\(Y\)</span>.</p></li>
+</ul>
+<p>The <span class="math inline">\(95\)</span>% confidence interval for the effects of Group B, Group C and the partial slope associated with B do not overlapp with 0 implying a significant difference between group A and groups B, C and a significant negative relationship with B. While workers attempt to become comfortable with a new statistical framework, it is only natural that they like to evaluate and comprehend new structures and output alongside more familiar concepts. One way to facilitate this is via Bayesian p-values that are somewhat analogous to the frequentist p-values for investigating the hypothesis that a parameter is equal to zero.</p>
+<pre class="r"><code>&gt; ## since values are less than zero
+&gt; mcmcpvalue(as.matrix(data.rstan)[, &quot;beta[2]&quot;])  # effect of (B-A = 0)
+[1] 0
+&gt; mcmcpvalue(as.matrix(data.rstan)[, &quot;beta[3]&quot;])  # effect of (C-A = 0)
+[1] 0
+&gt; mcmcpvalue(as.matrix(data.rstan)[, &quot;beta[4]&quot;])  # effect of (slope = 0)
+[1] 0
+&gt; mcmcpvalue(as.matrix(data.rstan)[, 2:4])  # effect of (model)
+[1] 0</code></pre>
+<p>There is evidence that the reponse differs between the groups. There is evidence suggesting that the response of group D differs from that of group A. In a Bayesian context, we can compare models using the <strong>leave-one-out cross-validation</strong> statistics. Leave-one-out (LOO) cross-validation explores how well a series of models can predict withheld values <span class="citation">Vehtari, Gelman, and Gabry (2017)</span>. The LOO Information Criterion (LOOIC) is analogous to the AIC except that the LOOIC takes priors into consideration, does not assume that the posterior distribution is drawn from a multivariate normal and integrates over parameter uncertainty so as to yield a distribution of looic rather than just a point estimate. The LOOIC does however assume that all observations are equally influential (it does not matter which observations are left out). This assumption can be examined via the Pareto <span class="math inline">\(k\)</span> estimate (values greater than <span class="math inline">\(0.5\)</span> or more conservatively <span class="math inline">\(0.75\)</span> are considered overly influential). We can compute LOOIC if we store the loglikelihood from our <code>STAN</code> model, which can then be extracted to compute the information criterion using the package <code>loo</code>.</p>
+<pre class="r"><code>&gt; library(loo)
+&gt; (full = loo(extract_log_lik(data.rstan)))
+
+Computed from 2000 by 30 log-likelihood matrix
+
+         Estimate  SE
+elpd_loo    -83.1 4.4
+p_loo         4.9 1.4
+looic       166.2 8.9
+------
+Monte Carlo SE of elpd_loo is 0.1.
+
+Pareto k diagnostic values:
+                         Count Pct.    Min. n_eff
+(-Inf, 0.5]   (good)     28    93.3%   269       
+ (0.5, 0.7]   (ok)        2     6.7%   371       
+   (0.7, 1]   (bad)       0     0.0%   &lt;NA&gt;      
+   (1, Inf)   (very bad)  0     0.0%   &lt;NA&gt;      
+
+All Pareto k estimates are ok (k &lt; 0.7).
+See help(&#39;pareto-k-diagnostic&#39;) for details.
+&gt; 
+&gt; # now fit a model without main factor
+&gt; modelString2 = &quot;
++   data {
++   int&lt;lower=1&gt; n;
++   int&lt;lower=1&gt; nX;
++   vector [n] y;
++   matrix [n,nX] X;
++   }
++   parameters {
++   vector[nX] beta;
++   real&lt;lower=0&gt; sigma;
++   }
++   transformed parameters {
++   vector[n] mu;
++ 
++   mu = X*beta;
++   }
++   model {
++   // Likelihood
++   y~normal(mu,sigma);
++   
++   // Priors
++   beta ~ normal(0,1000);
++   sigma~cauchy(0,5);
++   }
++   generated quantities {
++   vector[n] log_lik;
++   
++   for (i in 1:n) {
++   log_lik[i] = normal_lpdf(y[i] | mu[i], sigma); 
++   }
++   }
++   
++   &quot;
+&gt; 
+&gt; ## write the model to a stan file 
+&gt; writeLines(modelString2, con = &quot;ancovaModel2.stan&quot;)
+&gt; 
+&gt; Xmat &lt;- model.matrix(~1, data)
+&gt; data.list &lt;- with(data, list(y = Y, X = Xmat, n = nrow(data), nX = ncol(Xmat)))
+&gt; data.rstan.red &lt;- stan(data = data.list, file = &quot;ancovaModel2.stan&quot;, chains = nChains,
++     iter = nIter, warmup = burnInSteps, thin = thinSteps)
+
+SAMPLING FOR MODEL &#39;ancovaModel2&#39; NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 0 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 1500 [  0%]  (Warmup)
+Chain 1: Iteration:  150 / 1500 [ 10%]  (Warmup)
+Chain 1: Iteration:  300 / 1500 [ 20%]  (Warmup)
+Chain 1: Iteration:  450 / 1500 [ 30%]  (Warmup)
+Chain 1: Iteration:  501 / 1500 [ 33%]  (Sampling)
+Chain 1: Iteration:  650 / 1500 [ 43%]  (Sampling)
+Chain 1: Iteration:  800 / 1500 [ 53%]  (Sampling)
+Chain 1: Iteration:  950 / 1500 [ 63%]  (Sampling)
+Chain 1: Iteration: 1100 / 1500 [ 73%]  (Sampling)
+Chain 1: Iteration: 1250 / 1500 [ 83%]  (Sampling)
+Chain 1: Iteration: 1400 / 1500 [ 93%]  (Sampling)
+Chain 1: Iteration: 1500 / 1500 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.017 seconds (Warm-up)
+Chain 1:                0.026 seconds (Sampling)
+Chain 1:                0.043 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL &#39;ancovaModel2&#39; NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 0 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 1500 [  0%]  (Warmup)
+Chain 2: Iteration:  150 / 1500 [ 10%]  (Warmup)
+Chain 2: Iteration:  300 / 1500 [ 20%]  (Warmup)
+Chain 2: Iteration:  450 / 1500 [ 30%]  (Warmup)
+Chain 2: Iteration:  501 / 1500 [ 33%]  (Sampling)
+Chain 2: Iteration:  650 / 1500 [ 43%]  (Sampling)
+Chain 2: Iteration:  800 / 1500 [ 53%]  (Sampling)
+Chain 2: Iteration:  950 / 1500 [ 63%]  (Sampling)
+Chain 2: Iteration: 1100 / 1500 [ 73%]  (Sampling)
+Chain 2: Iteration: 1250 / 1500 [ 83%]  (Sampling)
+Chain 2: Iteration: 1400 / 1500 [ 93%]  (Sampling)
+Chain 2: Iteration: 1500 / 1500 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.018 seconds (Warm-up)
+Chain 2:                0.021 seconds (Sampling)
+Chain 2:                0.039 seconds (Total)
+Chain 2: 
+&gt; 
+&gt; (reduced = loo(extract_log_lik(data.rstan.red)))
+
+Computed from 2000 by 30 log-likelihood matrix
+
+         Estimate  SE
+elpd_loo   -116.3 3.1
+p_loo         1.6 0.3
+looic       232.6 6.2
+------
+Monte Carlo SE of elpd_loo is 0.0.
+
+All Pareto k estimates are good (k &lt; 0.5).
+See help(&#39;pareto-k-diagnostic&#39;) for details.
+&gt; 
+&gt; par(mfrow = 1:2, mar = c(5, 3.8, 1, 0) + 0.1, las = 3)
+&gt; plot(full, label_points = TRUE)
+&gt; plot(reduced, label_points = TRUE)</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/mcmc_looic-1.png" width="672" /></p>
+<p>The expected out-of-sample predictive accuracy is substantially lower for the model that includes <span class="math inline">\(x\)</span>. This might be used to suggest that the inferential evidence for a general effect of <span class="math inline">\(x\)</span> on <span class="math inline">\(y\)</span>.</p>
+</div>
+<div id="graphical-summaries" class="section level1">
+<h1>Graphical summaries</h1>
+<p>A nice graphic is often a great accompaniment to a statistical analysis. Although there are no fixed assumptions associated with graphing (in contrast to statistical analyses), we often want the graphical summaries to reflect the associated statistical analyses. After all, the sample is just one perspective on the population(s). What we are more interested in is being able to estimate and depict likely population parameters/trends. Thus, whilst we could easily provide a plot displaying the raw data along with simple measures of location and spread, arguably, we should use estimates that reflect the fitted model. In this case, it would be appropriate to plot the credibility interval associated with each group.</p>
+<pre class="r"><code>&gt; mcmc = as.matrix(data.rstan)
+&gt; ## Calculate the fitted values
+&gt; newdata = expand.grid(A = levels(data$A), B = seq(min(data$B), max(data$B),
++     len = 100))
+&gt; Xmat = model.matrix(~A + B, newdata)
+&gt; coefs = mcmc[, c(&quot;beta[1]&quot;, &quot;beta[2]&quot;, &quot;beta[3]&quot;, &quot;beta[4]&quot;)]
+&gt; fit = coefs %*% t(Xmat)
+&gt; newdata = newdata %&gt;% cbind(tidyMCMC(fit, conf.int = TRUE, conf.method = &quot;HPDinterval&quot;))
+&gt; 
+&gt; ggplot(newdata, aes(y = estimate, x = B, fill = A)) + geom_ribbon(aes(ymin = conf.low,
++     ymax = conf.high), alpha = 0.2) + geom_line() + scale_y_continuous(&quot;Y&quot;) +
++     scale_x_continuous(&quot;B&quot;) + theme_classic()</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/mcmc_post1-1.png" width="672" /></p>
+<p>As this is simple single factor ANOVA, we can simple add the raw data to this figure. For more complex designs with additional predictors, it is necessary to plot partial residuals.</p>
+<pre class="r"><code>&gt; ## Calculate partial residuals fitted values
+&gt; fdata = rdata = data
+&gt; fMat = rMat = model.matrix(~A + B, fdata)
+&gt; fit = as.vector(apply(coefs, 2, median) %*% t(fMat))
+&gt; resid = as.vector(data$Y - apply(coefs, 2, median) %*% t(rMat))
+&gt; rdata = rdata %&gt;% mutate(partial.resid = resid + fit)
+&gt; 
+&gt; ggplot(newdata, aes(y = estimate, x = B, fill = A)) + geom_point(data = rdata,
++     aes(y = partial.resid, x = B, color = A)) + geom_ribbon(aes(ymin = conf.low,
++     ymax = conf.high), alpha = 0.2) + geom_line() + scale_y_continuous(&quot;Y&quot;) +
++     scale_x_continuous(&quot;B&quot;) + theme_classic()</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/mcmc_post2-1.png" width="672" /></p>
+</div>
+<div id="posteriors" class="section level1">
+<h1>Posteriors</h1>
+<p>In frequentist statistics, when we have more than two groups, we are typically not only interested in whether there is evidence for an overall “effect” of a factor - we are also interested in how various groups compare to one another. To explore these trends, we either compare each group to each other in a pairwise manner (controlling for family-wise Type I error rates) or we explore an independent subset of the possible comparisons. Although these alternate approaches can adequately address a specific research agenda, often they impose severe limitations and compromises on the scope and breadth of questions that can be asked of your data. The reason for these limitations is that in a frequentist framework, any single hypothesis carries with it a (nominally) <span class="math inline">\(5\)</span>% chance of a false rejection (since it is based on long-run frequency). Thus, performing multiple tests are likely to compound this error rate. The point is, that each comparison is compared to its own probability distribution (and each carries a <span class="math inline">\(5\)</span>% error rate). By contrast, in Bayesian statistics, all comparisons (contrasts) are drawn from the one (hopefully stable and convergent) posterior distribution and this posterior is invariant to the type and number of comparisons drawn. Hence, the theory clearly indicates that having generated our posterior distribution, we can then query this distribution in any way that we wish thereby allowing us to explore all of our research questions simultaneously.</p>
+<p>Bayesian “contrasts” can be performed either:</p>
+<ul>
+<li><p>within the Bayesian sampling model or</p></li>
+<li><p>construct them from the returned MCMC samples (they are drawn from the posteriors)</p></li>
+</ul>
+<p>Only the latter will be demonstrated as it provides a consistent approach across all routines. In order to allow direct comparison to the frequentist equivalents, I will explore the same set of planned and <em>Tukey</em>’s test comparisons described here. For the “planned comparison” we defined two contrasts: 1) group B vs group C; and 2) group A vs the average of groups B and C. Of course each of these could be explored at multiple values of B, however, since we fit an additive model (which assumes that the slopes are homogeneous), the contrasts will be constant throughout the domain of B.</p>
+<p>Lets start by comparing each group to each other group in a pairwise manner. Arguably the most elegant way to do this is to generate a Tukey’s contrast matrix. This is a model matrix specific to comparing each group to each other group. Again, since the lines are parallel, it does not really matter what level of B we estimate these efffects at - so lets use the mean B.</p>
+<pre class="r"><code>&gt; mcmc = data.rstan
+&gt; coefs &lt;- as.matrix(mcmc)[, 1:4]
+&gt; newdata &lt;- data.frame(A = levels(data$A), B = mean(data$B))
+&gt; # A Tukeys contrast matrix
+&gt; library(multcomp)
+&gt; tuk.mat &lt;- contrMat(n = table(newdata$A), type = &quot;Tukey&quot;)
+&gt; Xmat &lt;- model.matrix(~A + B, data = newdata)
+&gt; pairwise.mat &lt;- tuk.mat %*% Xmat
+&gt; pairwise.mat
+                  (Intercept) AGroup B AGroup C B
+Group B - Group A           0        1        0 0
+Group C - Group A           0        0        1 0
+Group C - Group B           0       -1        1 0
+&gt; 
+&gt; mcmc_areas(coefs %*% t(pairwise.mat))</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/posterior1-1.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; (comps = tidyMCMC(coefs %*% t(pairwise.mat), conf.int = TRUE, conf.method = &quot;HPDinterval&quot;))
+# A tibble: 3 x 5
+  term              estimate std.error conf.low conf.high
+  &lt;chr&gt;                &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+1 Group B - Group A   -16.2       1.55   -19.3    -13.3  
+2 Group C - Group A   -20.6       1.52   -23.4    -17.5  
+3 Group C - Group B    -4.37      1.59    -7.30    -0.949
+&gt; 
+&gt; ggplot(comps, aes(y = estimate, x = term)) + geom_pointrange(aes(ymin = conf.low,
++     ymax = conf.high)) + geom_hline(yintercept = 0, linetype = &quot;dashed&quot;) +
++     scale_y_continuous(&quot;Effect size&quot;) + scale_x_discrete(&quot;&quot;) + coord_flip() +
++     theme_classic()</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/posterior1-2.png" width="672" /></p>
+<p>With a couple of modifications, we could also express this as percentage changes. A percentage change represents the change (difference between groups) divided by one of the groups (determined by which group you want to express the percentage change to). Hence, we generate an additional mcmc matrix that represents the cell means for the divisor group (group we want to express change relative to). Since the <code>tuk.mat</code> defines comparisons as <span class="math inline">\(-1\)</span> and <span class="math inline">\(1\)</span> pairs, if we simply replace all the <span class="math inline">\(-1\)</span> with <span class="math inline">\(0\)</span>, the eventual matrix multiplication will result in estimates of the divisor cell means instread of the difference. We can then divide the original mcmc matrix above with this new divisor mcmc matrix to yeild a mcmc matrix of percentage change.</p>
+<pre class="r"><code>&gt; # Modify the tuk.mat to replace -1 with 0.  This will allow us to get a
+&gt; # mcmc matrix of ..
+&gt; tuk.mat[tuk.mat == -1] = 0
+&gt; comp.mat &lt;- tuk.mat %*% Xmat
+&gt; comp.mat
+                  (Intercept) AGroup B AGroup C        B
+Group B - Group A           1        1        0 19.29344
+Group C - Group A           1        0        1 19.29344
+Group C - Group B           1        0        1 19.29344
+&gt; 
+&gt; comp.mcmc = 100 * (coefs %*% t(pairwise.mat))/coefs %*% t(comp.mat)
+&gt; (comps = tidyMCMC(comp.mcmc, conf.int = TRUE, conf.method = &quot;HPDinterval&quot;))
+# A tibble: 3 x 5
+  term              estimate std.error conf.low conf.high
+  &lt;chr&gt;                &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+1 Group B - Group A    -64.2      8.46    -80.3    -47.3 
+2 Group C - Group A    -98.5     11.7    -120.     -74.6 
+3 Group C - Group B    -21.1      8.48    -36.2     -3.13
+&gt; 
+&gt; ggplot(comps, aes(y = estimate, x = term)) + geom_pointrange(aes(ymin = conf.low,
++     ymax = conf.high)) + geom_hline(yintercept = 0, linetype = &quot;dashed&quot;) +
++     scale_y_continuous(&quot;Effect size (%)&quot;) + scale_x_discrete(&quot;&quot;) + coord_flip() +
++     theme_classic()</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/posterior2-1.png" width="672" /></p>
+<p>And now for the specific planned comparisons (Group B vs Group C as well as Group A vs the average of Groups B and C). This is achieved by generating our own contrast matrix (defining the contributions of each group to each contrast).</p>
+<pre class="r"><code>&gt; c.mat = rbind(c(0, 1, -1), c(1/2, -1/3, -1/3))
+&gt; c.mat
+     [,1]       [,2]       [,3]
+[1,]  0.0  1.0000000 -1.0000000
+[2,]  0.5 -0.3333333 -0.3333333
+&gt; 
+&gt; mcmc = data.rstan
+&gt; coefs &lt;- as.matrix(mcmc)[, 1:4]
+&gt; newdata &lt;- data.frame(A = levels(data$A), B = mean(data$B))
+&gt; Xmat &lt;- model.matrix(~A + B, data = newdata)
+&gt; c.mat = c.mat %*% Xmat
+&gt; c.mat
+     (Intercept)   AGroup B   AGroup C         B
+[1,]   0.0000000  1.0000000 -1.0000000  0.000000
+[2,]  -0.1666667 -0.3333333 -0.3333333 -3.215574
+&gt; 
+&gt; (comps = tidyMCMC(as.mcmc(coefs %*% t(c.mat)), conf.int = TRUE, conf.method = &quot;HPDinterval&quot;))
+# A tibble: 2 x 5
+  term  estimate std.error conf.low conf.high
+  &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+1 var1      4.37     1.59     0.949      7.30
+2 var2      5.34     0.739    3.93       6.83</code></pre>
+</div>
+<div id="finite-population-standard-deviations" class="section level1">
+<h1>Finite population standard deviations</h1>
+<p>Variance components, the amount of added variance attributed to each influence, are traditionally estimated for so called random effects. These are the effects for which the levels employed in the design are randomly selected to represent a broader range of possible levels. For such effects, effect sizes (differences between each level and a reference level) are of little value. Instead, the “importance” of the variables are measured in units of variance components. On the other hand, regular variance components for fixed factors (those whose measured levels represent the only levels of interest) are not logical - since variance components estimate variance as if the levels are randomly selected from a larger population. Nevertheless, in order to compare and contrast the scale of variability of both fixed and random factors, it is necessary to measure both on the same scale (sample or population based variance).</p>
+<p>Finite-population variance components assume that the levels of all factors (fixed and random) in the design are all the possible levels available (<span class="citation">Gelman and others (2005)</span>). In other words, they are assumed to represent finite populations of levels. Sample (rather than population) statistics are then used to calculate these finite-population variances (or standard deviations). Since standard deviation (and variance) are bound at zero, standard deviation posteriors are typically non-normal. Consequently, medians and HPD intervals are more robust estimates.</p>
+<pre><code>          parameters
+iterations  beta[1]   beta[2]   beta[3]    beta[4]    sigma log_lik[1]
+      [1,] 50.10205 -15.67611 -17.41476 -0.4593792 2.882566  -2.008171
+      [2,] 50.53300 -15.15556 -21.29190 -0.4213328 3.333128  -2.123994
+      [3,] 50.82345 -16.88383 -18.55789 -0.4953391 3.187249  -2.086291
+      [4,] 51.07765 -16.56728 -18.11673 -0.4914285 3.229001  -2.091676
+      [5,] 50.86176 -17.23601 -22.42360 -0.4583002 3.709629  -2.230000
+      [6,] 50.54948 -17.18733 -22.94231 -0.4507465 3.679292  -2.222665
+          parameters
+iterations log_lik[2] log_lik[3] log_lik[4] log_lik[5] log_lik[6] log_lik[7]
+      [1,]  -2.249891  -2.478578  -2.386901  -2.321355  -2.238304  -2.089910
+      [2,]  -2.580156  -2.151935  -2.208046  -2.179748  -2.123208  -2.123205
+      [3,]  -2.328045  -2.760643  -2.422131  -2.375369  -2.522340  -2.206070
+      [4,]  -2.408442  -2.613356  -2.346400  -2.306150  -2.408162  -2.166403
+      [5,]  -2.536428  -2.386884  -2.350958  -2.323661  -2.288689  -2.241980
+      [6,]  -2.494402  -2.378916  -2.366281  -2.335190  -2.278379  -2.239055
+          parameters
+iterations log_lik[8] log_lik[9] log_lik[10] log_lik[11] log_lik[12]
+      [1,]  -2.085684  -2.278190   -2.353424   -2.464663   -2.040152
+      [2,]  -2.270293  -2.537363   -2.654372   -3.366142   -2.511113
+      [3,]  -2.279861  -2.412778   -2.448060   -2.125289   -2.085211
+      [4,]  -2.341028  -2.494345   -2.536601   -2.229693   -2.095141
+      [5,]  -2.390241  -2.557991   -2.619126   -2.387999   -2.232080
+      [6,]  -2.340846  -2.504261   -2.567828   -2.386463   -2.222788
+          parameters
+iterations log_lik[13] log_lik[14] log_lik[15] log_lik[16] log_lik[17]
+      [1,]   -3.632110   -6.277306   -3.204443   -3.185018   -2.168245
+      [2,]   -4.446037   -4.129568   -2.560973   -4.463466   -2.764685
+      [3,]   -2.797030   -6.726618   -3.524519   -2.340742   -2.082699
+      [4,]   -3.059757   -6.029865   -3.198127   -2.541258   -2.137540
+      [5,]   -2.956316   -5.325142   -3.251598   -2.735297   -2.266883
+      [6,]   -2.938129   -5.436729   -3.330196   -2.760533   -2.255217
+          parameters
+iterations log_lik[18] log_lik[19] log_lik[20] log_lik[21] log_lik[22]
+      [1,]   -2.318947   -2.512054   -2.002140   -2.395950   -2.776903
+      [2,]   -2.520307   -2.156718   -2.317741   -2.142335   -2.154221
+      [3,]   -2.324384   -3.103347   -2.082892   -2.289348   -2.416272
+      [4,]   -2.459206   -2.810777   -2.095693   -2.462432   -2.639612
+      [5,]   -2.319568   -2.740113   -2.230665   -2.323836   -2.242369
+      [6,]   -2.278072   -2.749544   -2.225301   -2.436018   -2.283231
+          parameters
+iterations log_lik[23] log_lik[24] log_lik[25] log_lik[26] log_lik[27]
+      [1,]   -2.853655   -2.188530   -3.191131   -2.303986   -7.496570
+      [2,]   -2.136205   -3.236045   -2.217312   -3.730505   -4.567220
+      [3,]   -2.590975   -2.415939   -2.747167   -2.400663   -5.215582
+      [4,]   -2.836079   -2.262250   -3.029609   -2.261575   -5.810429
+      [5,]   -2.236545   -3.586947   -2.232197   -3.804767   -3.274838
+      [6,]   -2.277066   -3.966924   -2.230807   -4.274277   -3.064820
+          parameters
+iterations log_lik[28] log_lik[29] log_lik[30]      lp__
+      [1,]   -2.055777   -2.580174   -2.341634 -54.29289
+      [2,]   -2.218528   -2.124156   -2.133648 -52.60671
+      [3,]   -2.078444   -2.420461   -2.098403 -51.48189
+      [4,]   -2.114514   -2.627423   -2.197494 -52.37989
+      [5,]   -2.575753   -2.272372   -2.340851 -50.99091
+      [6,]   -2.740488   -2.353656   -2.414602 -52.08341
+# A tibble: 3 x 5
+  term     estimate std.error conf.low conf.high
+  &lt;chr&gt;       &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+1 sd.A         3.10     1.12     0.681      5.16
+2 sd.B         7.11     0.677    5.77       8.38
+3 sd.resid     3.44     0.158    3.26       3.73
+# A tibble: 3 x 5
+  term     estimate std.error conf.low conf.high
+  &lt;chr&gt;       &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+1 sd.A         22.9      6.30     9.80      34.7
+2 sd.B         52.4      4.30    44.0       61.0
+3 sd.resid     24.8      3.04    20.9       31.2</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/effects_modelv4-1.png" width="672" /></p>
+<p>Approximately <span class="math inline">\(22.86\)</span>% of the total finite population standard deviation is due to <span class="math inline">\(x\)</span>.</p>
+</div>
+<div id="r-squared" class="section level1">
+<h1>R squared</h1>
+<p>In a frequentist context, the <span class="math inline">\(R^2\)</span> value is seen as a useful indicator of goodness of fit. Whilst it has long been acknowledged that this measure is not appropriate for comparing models (for such purposes information criterion such as AIC are more appropriate), it is nevertheless useful for estimating the amount (percent) of variance explained by the model. In a frequentist context, <span class="math inline">\(R^2\)</span> is calculated as the variance in predicted values divided by the variance in the observed (response) values. Unfortunately, this classical formulation does not translate simply into a Bayesian context since the equivalently calculated numerator can be larger than the an equivalently calculated denominator - thereby resulting in an <span class="math inline">\(R^2\)</span> greater than <span class="math inline">\(100\)</span>%. <span class="citation">Gelman et al. (2019)</span> proposed an alternative formulation in which the denominator comprises the sum of the explained variance and the variance of the residuals.</p>
+<p>So in the standard regression model notation of:</p>
+<p><span class="math display">\[ y_i \sim \text{Normal}(\boldsymbol X \boldsymbol \beta, \sigma),\]</span></p>
+<p>the <span class="math inline">\(R^2\)</span> could be formulated as</p>
+<p><span class="math display">\[ R^2 = \frac{\sigma^2_f}{\sigma^2_f + \sigma^2_e},\]</span></p>
+<p>where <span class="math inline">\(\sigma^2_f=\text{var}(\boldsymbol X \boldsymbol \beta)\)</span>, and for normal models <span class="math inline">\(\sigma^2_e=\text{var}(y-\boldsymbol X \boldsymbol \beta)\)</span></p>
+<pre class="r"><code>&gt; mcmc &lt;- as.matrix(data.rstan)
+&gt; Xmat = model.matrix(~A + B, data)
+&gt; wch = grep(&quot;beta&quot;, colnames(mcmc))
+&gt; coefs = mcmc[, wch]
+&gt; fit = coefs %*% t(Xmat)
+&gt; resid = sweep(fit, 2, data$Y, &quot;-&quot;)
+&gt; var_f = apply(fit, 1, var)
+&gt; var_e = apply(resid, 1, var)
+&gt; R2 = var_f/(var_f + var_e)
+&gt; tidyMCMC(as.mcmc(R2), conf.int = TRUE, conf.method = &quot;HPDinterval&quot;)
+# A tibble: 1 x 5
+  term  estimate std.error conf.low conf.high
+  &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+1 var1     0.906    0.0136    0.879     0.922
+&gt; 
+&gt; # for comparison with frequentist
+&gt; summary(lm(Y ~ A + B, data))
+
+Call:
+lm(formula = Y ~ A + B, data = data)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-6.4381 -2.2244 -0.6829  2.1732  8.6607 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  51.00608    1.44814   35.22  &lt; 2e-16 ***
+AGroup B    -16.25472    1.54125  -10.55 6.92e-11 ***
+AGroup C    -20.65596    1.57544  -13.11 5.74e-13 ***
+B            -0.48399    0.04526  -10.69 5.14e-11 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 3.44 on 26 degrees of freedom
+Multiple R-squared:  0.9149,    Adjusted R-squared:  0.9051 
+F-statistic: 93.22 on 3 and 26 DF,  p-value: 4.901e-14</code></pre>
+</div>
+<div id="dealing-with-heterogeneous-slopes" class="section level1">
+<h1>Dealing with heterogeneous slopes</h1>
+<p>Generate the data with heterogeneous slope effects.</p>
+<pre class="r"><code>&gt; set.seed(123)
+&gt; n &lt;- 10
+&gt; p &lt;- 3
+&gt; A.eff &lt;- c(40, -15, -20)
+&gt; beta &lt;- c(-0.45, -0.1, 0.5)
+&gt; sigma &lt;- 4
+&gt; B &lt;- rnorm(n * p, 0, 15)
+&gt; A &lt;- gl(p, n, lab = paste(&quot;Group&quot;, LETTERS[1:3]))
+&gt; mm &lt;- model.matrix(~A * B)
+&gt; data1 &lt;- data.frame(A = A, B = B, Y = as.numeric(c(A.eff, beta) %*% t(mm)) + rnorm(n * p, 0, 4))
+&gt; data1$B &lt;- data1$B + 20
+&gt; head(data1)
+        A        B        Y
+1 Group A 11.59287 45.48907
+2 Group A 16.54734 40.37341
+3 Group A 43.38062 33.05922
+4 Group A 21.05763 43.03660
+5 Group A 21.93932 42.41363
+6 Group A 45.72597 31.17787</code></pre>
+<div id="exploratory-data-analysis-1" class="section level2">
+<h2>Exploratory data analysis</h2>
+<pre class="r"><code>&gt; scatterplot(Y ~ B | A, data = data1)</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/exp_het-1.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; boxplot(Y ~ A, data1)</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/exp_het-2.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; # OR via ggplot
+&gt; ggplot(data1, aes(y = Y, x = B, group = A)) + geom_point() + geom_smooth(method = &quot;lm&quot;)</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/exp_het-3.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; ggplot(data1, aes(y = Y, x = A)) + geom_boxplot()</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/exp_het-4.png" width="672" /></p>
+<p>The slopes (<span class="math inline">\(Y\)</span> vs B trends) do appear to differ between treatment groups - in particular, Group C seems to portray a different trend to Groups A and B.</p>
+<pre class="r"><code>&gt; anova(lm(Y ~ B * A, data = data1))
+Analysis of Variance Table
+
+Response: Y
+          Df  Sum Sq Mean Sq F value    Pr(&gt;F)    
+B          1  442.02  442.02  41.380 1.187e-06 ***
+A          2 2760.60 1380.30 129.217 1.418e-13 ***
+B:A        2  285.75  142.87  13.375 0.0001251 ***
+Residuals 24  256.37   10.68                      
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>There is strong evidence to suggest that the assumption of equal slopes is violated.</p>
+</div>
+<div id="fitting-the-model" class="section level2">
+<h2>Fitting the model</h2>
+<pre class="r"><code>&gt; modelString2 = &quot;
++   data {
++   int&lt;lower=1&gt; n;
++   int&lt;lower=1&gt; nX;
++   vector [n] y;
++   matrix [n,nX] X;
++   }
++   parameters {
++   vector[nX] beta;
++   real&lt;lower=0&gt; sigma;
++   }
++   transformed parameters {
++   vector[n] mu;
++ 
++   mu = X*beta;
++   }
++   model {
++   // Likelihood
++   y~normal(mu,sigma);
++   
++   // Priors
++   beta ~ normal(0,100);
++   sigma~cauchy(0,5);
++   }
++   generated quantities {
++   vector[n] log_lik;
++   
++   for (i in 1:n) {
++   log_lik[i] = normal_lpdf(y[i] | mu[i], sigma); 
++   }
++   }
++   
++   &quot;
+&gt; 
+&gt; ## write the model to a text file
+&gt; writeLines(modelString2, con = &quot;ancovaModel2.stan&quot;)</code></pre>
+<p>Arrange the data as a list (as required by <code>STAN</code>). As input, <code>STAN</code> will need to be supplied with: the response variable, the predictor matrix, the number of predictors, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.</p>
+<pre class="r"><code>&gt; Xmat &lt;- model.matrix(~A * B, data1)
+&gt; data1.list &lt;- with(data1, list(y = Y, X = Xmat, nX = ncol(Xmat), n = nrow(data1)))</code></pre>
+<p>Define the nodes (parameters and derivatives) to monitor and the chain parameters.</p>
+<pre class="r"><code>&gt; params &lt;- c(&quot;beta&quot;, &quot;sigma&quot;, &quot;log_lik&quot;)
+&gt; nChains = 2
+&gt; burnInSteps = 500
+&gt; thinSteps = 1
+&gt; numSavedSteps = 2000  #across all chains
+&gt; nIter = ceiling(burnInSteps + (numSavedSteps * thinSteps)/nChains)
+&gt; nIter
+[1] 1500</code></pre>
+<p>Start the <code>JAGS</code> model (check the model, load data into the model, specify the number of chains and compile the model).</p>
+<pre class="r"><code>&gt; data1.rstan &lt;- stan(data = data1.list, file = &quot;ancovaModel2.stan&quot;, chains = nChains, pars = params,
++     iter = nIter, warmup = burnInSteps, thin = thinSteps)
+
+SAMPLING FOR MODEL &#39;ancovaModel2&#39; NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 0 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 1500 [  0%]  (Warmup)
+Chain 1: Iteration:  150 / 1500 [ 10%]  (Warmup)
+Chain 1: Iteration:  300 / 1500 [ 20%]  (Warmup)
+Chain 1: Iteration:  450 / 1500 [ 30%]  (Warmup)
+Chain 1: Iteration:  501 / 1500 [ 33%]  (Sampling)
+Chain 1: Iteration:  650 / 1500 [ 43%]  (Sampling)
+Chain 1: Iteration:  800 / 1500 [ 53%]  (Sampling)
+Chain 1: Iteration:  950 / 1500 [ 63%]  (Sampling)
+Chain 1: Iteration: 1100 / 1500 [ 73%]  (Sampling)
+Chain 1: Iteration: 1250 / 1500 [ 83%]  (Sampling)
+Chain 1: Iteration: 1400 / 1500 [ 93%]  (Sampling)
+Chain 1: Iteration: 1500 / 1500 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.104 seconds (Warm-up)
+Chain 1:                0.088 seconds (Sampling)
+Chain 1:                0.192 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL &#39;ancovaModel2&#39; NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 0 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 1500 [  0%]  (Warmup)
+Chain 2: Iteration:  150 / 1500 [ 10%]  (Warmup)
+Chain 2: Iteration:  300 / 1500 [ 20%]  (Warmup)
+Chain 2: Iteration:  450 / 1500 [ 30%]  (Warmup)
+Chain 2: Iteration:  501 / 1500 [ 33%]  (Sampling)
+Chain 2: Iteration:  650 / 1500 [ 43%]  (Sampling)
+Chain 2: Iteration:  800 / 1500 [ 53%]  (Sampling)
+Chain 2: Iteration:  950 / 1500 [ 63%]  (Sampling)
+Chain 2: Iteration: 1100 / 1500 [ 73%]  (Sampling)
+Chain 2: Iteration: 1250 / 1500 [ 83%]  (Sampling)
+Chain 2: Iteration: 1400 / 1500 [ 93%]  (Sampling)
+Chain 2: Iteration: 1500 / 1500 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.126 seconds (Warm-up)
+Chain 2:                0.098 seconds (Sampling)
+Chain 2:                0.224 seconds (Total)
+Chain 2: 
+&gt; 
+&gt; print(data1.rstan, par = c(&quot;beta&quot;, &quot;sigma&quot;))
+Inference for Stan model: ancovaModel2.
+2 chains, each with iter=1500; warmup=500; thin=1; 
+post-warmup draws per chain=1000, total post-warmup draws=2000.
+
+          mean se_mean   sd   2.5%    25%    50%    75%  97.5% n_eff Rhat
+beta[1]  48.14    0.09 2.00  44.21  46.88  48.13  49.45  52.06   541    1
+beta[2] -10.58    0.11 2.83 -16.17 -12.34 -10.58  -8.77  -4.81   621    1
+beta[3] -26.48    0.11 2.58 -31.66 -28.17 -26.48 -24.71 -21.48   551    1
+beta[4]  -0.35    0.00 0.08  -0.50  -0.40  -0.35  -0.30  -0.20   555    1
+beta[5]  -0.27    0.00 0.11  -0.48  -0.34  -0.27  -0.20  -0.05   597    1
+beta[6]   0.27    0.00 0.12   0.04   0.20   0.27   0.35   0.50   552    1
+sigma     3.39    0.02 0.50   2.57   3.02   3.33   3.67   4.50  1108    1
+
+Samples were drawn using NUTS(diag_e) at Sat Feb 15 17:22:17 2020.
+For each parameter, n_eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor on split chains (at 
+convergence, Rhat=1).</code></pre>
+</div>
+<div id="mcmc-diagnostics-1" class="section level2">
+<h2>MCMC diagnostics</h2>
+<pre class="r"><code>&gt; mcmc &lt;- As.mcmc.list(data1.rstan)
+&gt; 
+&gt; denplot(mcmc, parms = c(&quot;beta&quot;))</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/mcmc_diag_het-1.png" width="672" /></p>
+<pre class="r"><code>&gt; traplot(mcmc, parms = c(&quot;beta&quot;))</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/mcmc_diag_het-2.png" width="672" /></p>
+<p>Trace plots show no evidence that the chains have not reasonably traversed the entire multidimensional parameter space. When there are a lot of parameters, this can result in a very large number of traceplots. To focus on just certain parameters (such as <span class="math inline">\(\beta\)</span>s).</p>
+<pre class="r"><code>&gt; #Raftery diagnostic
+&gt; raftery.diag(mcmc)
+[[1]]
+
+Quantile (q) = 0.025
+Accuracy (r) = +/- 0.005
+Probability (s) = 0.95 
+
+You need a sample size of at least 3746 with these values of q, r and s
+
+[[2]]
+
+Quantile (q) = 0.025
+Accuracy (r) = +/- 0.005
+Probability (s) = 0.95 
+
+You need a sample size of at least 3746 with these values of q, r and s</code></pre>
+<p>The Raftery diagnostics for each chain estimate that we would require no more than <span class="math inline">\(5000\)</span> samples to reach the specified level of confidence in convergence. As we have <span class="math inline">\(10500\)</span> samples, we can be confidence that convergence has occurred.</p>
+<pre class="r"><code>&gt; #Autocorrelation diagnostic
+&gt; autocorr.diag(mcmc)
+            beta[1]      beta[2]     beta[3]      beta[4]     beta[5]
+Lag 0   1.000000000  1.000000000  1.00000000  1.000000000  1.00000000
+Lag 1   0.487975871  0.425019403  0.44941737  0.460836797  0.46355010
+Lag 5   0.088899283  0.062327893  0.08476067  0.087316054  0.05016421
+Lag 10  0.007454517 -0.003124592 -0.00632013 -0.031363005 -0.02547379
+Lag 50 -0.014702929 -0.011159634  0.01546605  0.007422907 -0.02987378
+            beta[6]        sigma   log_lik[1]   log_lik[2]   log_lik[3]
+Lag 0   1.000000000  1.000000000 1.0000000000  1.000000000  1.000000000
+Lag 1   0.407845502  0.229381985 0.3229947423  0.148911691  0.246151735
+Lag 5   0.108990741  0.013015911 0.0359928135  0.007106644 -0.041606834
+Lag 10 -0.002789907 -0.006160622 0.0074013124  0.034867394  0.005265643
+Lag 50  0.021062271 -0.011828026 0.0004208875 -0.010961206 -0.036358518
+          log_lik[4]   log_lik[5]   log_lik[6]   log_lik[7] log_lik[8]
+Lag 0   1.0000000000  1.000000000  1.000000000  1.000000000 1.00000000
+Lag 1   0.0851487042  0.097545282  0.204344885  0.269672389 0.38558262
+Lag 5  -0.0003507043  0.002305382 -0.049386304 -0.000960398 0.02069575
+Lag 10 -0.0166774245 -0.025515245 -0.001912747 -0.016722339 0.04889381
+Lag 50 -0.0162443058 -0.014714579 -0.011135106 -0.014633639 0.01680510
+        log_lik[9]  log_lik[10] log_lik[11]  log_lik[12]  log_lik[13]
+Lag 0  1.000000000  1.000000000  1.00000000  1.000000000  1.000000000
+Lag 1  0.313784783  0.237324163  0.09482508  0.227340224 -0.047089190
+Lag 5  0.056460648  0.037850329 -0.03382433  0.001289457  0.011086069
+Lag 10 0.035202184  0.034879805 -0.07137294 -0.040985200 -0.021897934
+Lag 50 0.008974814 -0.006569175  0.04107530  0.028135748  0.006235697
+        log_lik[14]  log_lik[15] log_lik[16]  log_lik[17] log_lik[18]
+Lag 0   1.000000000  1.000000000  1.00000000  1.000000000  1.00000000
+Lag 1   0.066779275  0.012761718  0.05153404  0.139497451  0.06864146
+Lag 5   0.021390228  0.036712340 -0.04509391 -0.007858839  0.03114302
+Lag 10 -0.039601576  0.009368704 -0.06501412 -0.061861469  0.02566650
+Lag 50 -0.009169908 -0.017729557  0.02175915  0.037622080 -0.04205178
+       log_lik[19]  log_lik[20]  log_lik[21]  log_lik[22] log_lik[23]
+Lag 0   1.00000000  1.000000000  1.000000000  1.000000000 1.000000000
+Lag 1  -0.03208587  0.199707279  0.122441725  0.216102237 0.030364826
+Lag 5  -0.01369268  0.017146307  0.056981177  0.031619771 0.038405137
+Lag 10 -0.05184742  0.002266797 -0.002546269 -0.003615615 0.002827458
+Lag 50 -0.01491998 -0.000185515  0.026181446  0.003742424 0.042867022
+        log_lik[24] log_lik[25]  log_lik[26] log_lik[27] log_lik[28]
+Lag 0   1.000000000 1.000000000  1.000000000  1.00000000  1.00000000
+Lag 1  -0.043300952 0.008897055  0.055272052 -0.02494535 -0.03902829
+Lag 5  -0.007623726 0.032328930 -0.003951948  0.04408482 -0.01410360
+Lag 10  0.010511950 0.005615084 -0.005860687  0.01468160  0.01575607
+Lag 50  0.051297631 0.036588261  0.018664972  0.03213627  0.04216138
+       log_lik[29] log_lik[30]          lp__
+Lag 0  1.000000000  1.00000000  1.0000000000
+Lag 1  0.065026235 -0.01657044  0.5111573914
+Lag 5  0.050138816  0.02213345  0.0005946888
+Lag 10 0.002064092  0.02410877  0.0243211235
+Lag 50 0.039550469  0.01788728 -0.0046540824</code></pre>
+<pre class="r"><code>&gt; stan_rhat(data1.rstan)</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/mcmc_diag4_het-1.png" width="672" /></p>
+<pre class="r"><code>&gt; stan_ess(data1.rstan)</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/mcmc_diag4_het-2.png" width="672" /></p>
+<p>Rhat and effective sample size. In this instance, most of the parameters have reasonably high effective samples and thus there is likely to be a good range of values from which to estimate paramter properties.</p>
+</div>
+<div id="model-validation-1" class="section level2">
+<h2>Model validation</h2>
+<pre class="r"><code>&gt; mcmc = as.data.frame(data1.rstan) %&gt;% dplyr:::select(contains(&quot;beta&quot;),
++     sigma) %&gt;% as.matrix
+&gt; # generate a model matrix
+&gt; newdata1 = data1
+&gt; Xmat = model.matrix(~A * B, newdata1)
+&gt; ## get median parameter estimates
+&gt; coefs = apply(mcmc[, 1:6], 2, median)
+&gt; fit = as.vector(coefs %*% t(Xmat))
+&gt; resid = data1$Y - fit
+&gt; ggplot() + geom_point(data = NULL, aes(y = resid, x = fit)) + theme_classic()</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/mcmc_residuals_het-1.png" width="672" /></p>
+<p>Residuals against predictors</p>
+<pre class="r"><code>&gt; mcmc = as.data.frame(data1.rstan) %&gt;% dplyr:::select(contains(&quot;beta&quot;),
++     sigma) %&gt;% as.matrix
+&gt; # generate a model matrix
+&gt; newdata1 = newdata1
+&gt; Xmat = model.matrix(~A * B, newdata1)
+&gt; ## get median parameter estimates
+&gt; coefs = apply(mcmc[, 1:6], 2, median)
+&gt; fit = as.vector(coefs %*% t(Xmat))
+&gt; resid = data1$Y - fit
+&gt; newdata1 = newdata1 %&gt;% cbind(fit, resid)
+&gt; ggplot(newdata1) + geom_point(aes(y = resid, x = A)) + theme_classic()</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/mcmc_residuals2_het-1.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; ggplot(newdata1) + geom_point(aes(y = resid, x = B)) + theme_classic()</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/mcmc_residuals2_het-2.png" width="672" /></p>
+<p>And now for studentised residuals</p>
+<pre class="r"><code>&gt; mcmc = as.data.frame(data1.rstan) %&gt;% dplyr:::select(contains(&quot;beta&quot;),
++     sigma) %&gt;% as.matrix
+&gt; # generate a model matrix
+&gt; newdata1 = data1
+&gt; Xmat = model.matrix(~A * B, newdata1)
+&gt; ## get median parameter estimates
+&gt; coefs = apply(mcmc[, 1:6], 2, median)
+&gt; fit = as.vector(coefs %*% t(Xmat))
+&gt; resid = data1$Y - fit
+&gt; sresid = resid/sd(resid)
+&gt; ggplot() + geom_point(data = NULL, aes(y = sresid, x = fit)) + theme_classic()</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/mcmc_residuals3_het-1.png" width="672" /></p>
+<p>For this simple model, the studentised residuals yield the same pattern as the raw residuals (or the Pearson residuals for that matter). Lets see how well data simulated from the model reflects the raw data.</p>
+<pre class="r"><code>&gt; mcmc = as.data.frame(data1.rstan) %&gt;% dplyr:::select(contains(&quot;beta&quot;),
++     sigma) %&gt;% as.matrix
+&gt; # generate a model matrix
+&gt; Xmat = model.matrix(~A * B, data1)
+&gt; ## get median parameter estimates
+&gt; coefs = mcmc[, 1:6]
+&gt; fit = coefs %*% t(Xmat)
+&gt; ## draw samples from this model
+&gt; yRep = sapply(1:nrow(mcmc), function(i) rnorm(nrow(data1), fit[i,
++     ], mcmc[i, &quot;sigma&quot;]))
+&gt; newdata1 = data.frame(A = data1$A, B = data1$B, yRep) %&gt;% gather(key = Sample,
++     value = Value, -A, -B)
+&gt; ggplot(newdata1) + geom_violin(aes(y = Value, x = A, fill = &quot;Model&quot;),
++     alpha = 0.5) + geom_violin(data = data1, aes(y = Y, x = A,
++     fill = &quot;Obs&quot;), alpha = 0.5) + geom_point(data = data1, aes(y = Y,
++     x = A), position = position_jitter(width = 0.1, height = 0),
++     color = &quot;black&quot;) + theme_classic()</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/mcmc_rep_het-1.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; ggplot(newdata1) + geom_violin(aes(y = Value, x = B, fill = &quot;Model&quot;,
++     group = B, color = A), alpha = 0.5) + geom_point(data = data1,
++     aes(y = Y, x = B, group = B, color = A)) + theme_classic()</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/mcmc_rep_het-2.png" width="672" /></p>
+<p>The predicted trends do encapsulate the actual data, suggesting that the model is a reasonable representation of the underlying processes. Note, these are prediction intervals rather than confidence intervals as we are seeking intervals within which we can predict individual observations rather than means. We can also explore the posteriors of each parameter.</p>
+<pre class="r"><code>&gt; mcmc_intervals(as.matrix(data1.rstan), regex_pars = &quot;beta|sigma&quot;)</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/mcmc_rep2_het-1.png" width="672" /></p>
+<pre class="r"><code>&gt; mcmc_areas(as.matrix(data1.rstan), regex_pars = &quot;beta|sigma&quot;)</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/mcmc_rep2_het-2.png" width="672" /></p>
+</div>
+<div id="parameter-estimates-1" class="section level2">
+<h2>Parameter estimates</h2>
+<p>First, we look at the results from the additive model.</p>
+<pre class="r"><code>&gt; print(data1.rstan, pars = c(&quot;beta&quot;, &quot;sigma&quot;))
+Inference for Stan model: ancovaModel2.
+2 chains, each with iter=1500; warmup=500; thin=1; 
+post-warmup draws per chain=1000, total post-warmup draws=2000.
+
+          mean se_mean   sd   2.5%    25%    50%    75%  97.5% n_eff Rhat
+beta[1]  48.14    0.09 2.00  44.21  46.88  48.13  49.45  52.06   541    1
+beta[2] -10.58    0.11 2.83 -16.17 -12.34 -10.58  -8.77  -4.81   621    1
+beta[3] -26.48    0.11 2.58 -31.66 -28.17 -26.48 -24.71 -21.48   551    1
+beta[4]  -0.35    0.00 0.08  -0.50  -0.40  -0.35  -0.30  -0.20   555    1
+beta[5]  -0.27    0.00 0.11  -0.48  -0.34  -0.27  -0.20  -0.05   597    1
+beta[6]   0.27    0.00 0.12   0.04   0.20   0.27   0.35   0.50   552    1
+sigma     3.39    0.02 0.50   2.57   3.02   3.33   3.67   4.50  1108    1
+
+Samples were drawn using NUTS(diag_e) at Sat Feb 15 17:22:17 2020.
+For each parameter, n_eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor on split chains (at 
+convergence, Rhat=1).
+&gt; 
+&gt; # OR
+&gt; tidyMCMC(data1.rstan, conf.int = TRUE, conf.method = &quot;HPDinterval&quot;, pars = c(&quot;beta&quot;, &quot;sigma&quot;))
+# A tibble: 7 x 5
+  term    estimate std.error conf.low conf.high
+  &lt;chr&gt;      &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+1 beta[1]   48.1      2.00    43.9      51.7   
+2 beta[2]  -10.6      2.83   -16.0      -4.66  
+3 beta[3]  -26.5      2.58   -31.8     -21.6   
+4 beta[4]   -0.350    0.0778  -0.501    -0.204 
+5 beta[5]   -0.270    0.106   -0.460    -0.0436
+6 beta[6]    0.269    0.115    0.0515    0.508 
+7 sigma      3.39     0.502    2.49      4.33  </code></pre>
+<p><strong>Conclusions</strong></p>
+<ul>
+<li><p>The intercept of the first group (Group A) is <span class="math inline">\(48.2\)</span>.</p></li>
+<li><p>The mean of the second group (Group B) is <span class="math inline">\(-10.6\)</span> units greater than (A).</p></li>
+<li><p>The mean of the third group (Group C) is <span class="math inline">\(-26.5\)</span> units greater than (A).</p></li>
+<li><p>A one unit increase in B in Group A is associated with a <span class="math inline">\(-0.351\)</span> units increase in <span class="math inline">\(Y\)</span>.</p></li>
+<li><p>difference in slope between Group B and Group A <span class="math inline">\(-0.270\)</span>.</p></li>
+<li><p>difference in slope between Group C and Group A <span class="math inline">\(0.270\)</span>.</p></li>
+</ul>
+<p>The <span class="math inline">\(95\)</span>% confidence interval for the effects of Group B, Group C and the partial slope associated with B do not overlapp with <span class="math inline">\(0\)</span> implying a significant difference between group A and groups B, C (at the mean level of predictor B) and a significant negative relationship with B (for Group A). The slope associated with Group B was not found to be significantly different from that associated with Group A, however, the slope associated with Group C was found to be significantly less negative than the slope associated with Group A. While workers attempt to become comfortable with a new statistical framework, it is only natural that they like to evaluate and comprehend new structures and output alongside more familiar concepts. One way to facilitate this is via Bayesian p-values that are somewhat analogous to the frequentist p-values for investigating the hypothesis that a parameter is equal to zero.</p>
+<pre class="r"><code>&gt; ## since values are less than zero
+&gt; mcmcpvalue(as.matrix(data1.rstan)[, &quot;beta[2]&quot;])  # effect of (B-A = 0)
+[1] 5e-04
+&gt; mcmcpvalue(as.matrix(data1.rstan)[, &quot;beta[3]&quot;])  # effect of (C-A = 0)
+[1] 0
+&gt; mcmcpvalue(as.matrix(data1.rstan)[, &quot;beta[4]&quot;])  # effect of (slope = 0)
+[1] 0.001
+&gt; mcmcpvalue(as.matrix(data1.rstan)[, &quot;beta[5]&quot;])  # effect of (slopeB - slopeA = 0)
+[1] 0.0145
+&gt; mcmcpvalue(as.matrix(data1.rstan)[, &quot;beta[6]&quot;])  # effect of (slopeC - slopeA = 0)
+[1] 0.0185
+&gt; mcmcpvalue(as.matrix(data1.rstan)[, 2:6])  # effect of (model)
+[1] 0</code></pre>
+<p>There is evidence that the reponse differs between the groups.</p>
+<pre class="r"><code>&gt; (full = loo(extract_log_lik(data1.rstan)))
+
+Computed from 2000 by 30 log-likelihood matrix
+
+         Estimate  SE
+elpd_loo    -83.6 4.8
+p_loo         7.3 2.1
+looic       167.1 9.5
+------
+Monte Carlo SE of elpd_loo is NA.
+
+Pareto k diagnostic values:
+                         Count Pct.    Min. n_eff
+(-Inf, 0.5]   (good)     26    86.7%   465       
+ (0.5, 0.7]   (ok)        3    10.0%   233       
+   (0.7, 1]   (bad)       1     3.3%   34        
+   (1, Inf)   (very bad)  0     0.0%   &lt;NA&gt;      
+See help(&#39;pareto-k-diagnostic&#39;) for details.
+&gt; 
+&gt; # now fit a model without main factor
+&gt; modelString3 = &quot;
++   data {
++   int&lt;lower=1&gt; n;
++   int&lt;lower=1&gt; nX;
++   vector [n] y;
++   matrix [n,nX] X;
++   }
++   parameters {
++   vector[nX] beta;
++   real&lt;lower=0&gt; sigma;
++   }
++   transformed parameters {
++   vector[n] mu;
++ 
++   mu = X*beta;
++   }
++   model {
++   // Likelihood
++   y~normal(mu,sigma);
++   
++   // Priors
++   beta ~ normal(0,1000);
++   sigma~cauchy(0,5);
++   }
++   generated quantities {
++   vector[n] log_lik;
++   
++   for (i in 1:n) {
++   log_lik[i] = normal_lpdf(y[i] | mu[i], sigma); 
++   }
++   }
++   
++   &quot;
+&gt; 
+&gt; ## write the model to a stan file 
+&gt; writeLines(modelString3, con = &quot;ancovaModel3.stan&quot;)
+&gt; 
+&gt; Xmat &lt;- model.matrix(~A + B, data1)
+&gt; data1.list &lt;- with(data1, list(y = Y, X = Xmat, n = nrow(data1), nX = ncol(Xmat)))
+&gt; data1.rstan.red &lt;- stan(data = data1.list, file = &quot;ancovaModel3.stan&quot;, chains = nChains,
++     iter = nIter, warmup = burnInSteps, thin = thinSteps)
+
+SAMPLING FOR MODEL &#39;ancovaModel2&#39; NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 0 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 1500 [  0%]  (Warmup)
+Chain 1: Iteration:  150 / 1500 [ 10%]  (Warmup)
+Chain 1: Iteration:  300 / 1500 [ 20%]  (Warmup)
+Chain 1: Iteration:  450 / 1500 [ 30%]  (Warmup)
+Chain 1: Iteration:  501 / 1500 [ 33%]  (Sampling)
+Chain 1: Iteration:  650 / 1500 [ 43%]  (Sampling)
+Chain 1: Iteration:  800 / 1500 [ 53%]  (Sampling)
+Chain 1: Iteration:  950 / 1500 [ 63%]  (Sampling)
+Chain 1: Iteration: 1100 / 1500 [ 73%]  (Sampling)
+Chain 1: Iteration: 1250 / 1500 [ 83%]  (Sampling)
+Chain 1: Iteration: 1400 / 1500 [ 93%]  (Sampling)
+Chain 1: Iteration: 1500 / 1500 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.091 seconds (Warm-up)
+Chain 1:                0.07 seconds (Sampling)
+Chain 1:                0.161 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL &#39;ancovaModel2&#39; NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 0 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 1500 [  0%]  (Warmup)
+Chain 2: Iteration:  150 / 1500 [ 10%]  (Warmup)
+Chain 2: Iteration:  300 / 1500 [ 20%]  (Warmup)
+Chain 2: Iteration:  450 / 1500 [ 30%]  (Warmup)
+Chain 2: Iteration:  501 / 1500 [ 33%]  (Sampling)
+Chain 2: Iteration:  650 / 1500 [ 43%]  (Sampling)
+Chain 2: Iteration:  800 / 1500 [ 53%]  (Sampling)
+Chain 2: Iteration:  950 / 1500 [ 63%]  (Sampling)
+Chain 2: Iteration: 1100 / 1500 [ 73%]  (Sampling)
+Chain 2: Iteration: 1250 / 1500 [ 83%]  (Sampling)
+Chain 2: Iteration: 1400 / 1500 [ 93%]  (Sampling)
+Chain 2: Iteration: 1500 / 1500 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.077 seconds (Warm-up)
+Chain 2:                0.062 seconds (Sampling)
+Chain 2:                0.139 seconds (Total)
+Chain 2: 
+&gt; 
+&gt; (reduced = loo(extract_log_lik(data1.rstan.red)))
+
+Computed from 2000 by 30 log-likelihood matrix
+
+         Estimate  SE
+elpd_loo    -91.9 4.7
+p_loo         5.4 1.8
+looic       183.8 9.4
+------
+Monte Carlo SE of elpd_loo is 0.1.
+
+Pareto k diagnostic values:
+                         Count Pct.    Min. n_eff
+(-Inf, 0.5]   (good)     29    96.7%   379       
+ (0.5, 0.7]   (ok)        1     3.3%   166       
+   (0.7, 1]   (bad)       0     0.0%   &lt;NA&gt;      
+   (1, Inf)   (very bad)  0     0.0%   &lt;NA&gt;      
+
+All Pareto k estimates are ok (k &lt; 0.7).
+See help(&#39;pareto-k-diagnostic&#39;) for details.
+&gt; 
+&gt; par(mfrow = 1:2, mar = c(5, 3.8, 1, 0) + 0.1, las = 3)
+&gt; plot(full, label_points = TRUE)
+&gt; plot(reduced, label_points = TRUE)</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/mcmc_looic_het-1.png" width="672" /></p>
+<p>The expected out-of-sample predictive accuracy is substantially lower for the model that includes <span class="math inline">\(x\)</span>. This might be used to suggest that the inferential evidence for a general effect of <span class="math inline">\(x\)</span> on <span class="math inline">\(y\)</span>.</p>
+</div>
+<div id="graphical-summaries-1" class="section level2">
+<h2>Graphical summaries</h2>
+<pre class="r"><code>&gt; mcmc = as.matrix(data1.rstan)
+&gt; ## Calculate the fitted values
+&gt; newdata1 = expand.grid(A = levels(data1$A), B = seq(min(data1$B), max(data1$B),
++     len = 100))
+&gt; Xmat = model.matrix(~A * B, newdata1)
+&gt; coefs = mcmc[, c(&quot;beta[1]&quot;, &quot;beta[2]&quot;, &quot;beta[3]&quot;, &quot;beta[4]&quot;, &quot;beta[5]&quot;,
++     &quot;beta[6]&quot;)]
+&gt; fit = coefs %*% t(Xmat)
+&gt; newdata1 = newdata1 %&gt;% cbind(tidyMCMC(fit, conf.int = TRUE, conf.method = &quot;HPDinterval&quot;))
+&gt; 
+&gt; ggplot(newdata1, aes(y = estimate, x = B, fill = A)) + geom_ribbon(aes(ymin = conf.low,
++     ymax = conf.high), alpha = 0.2) + geom_line() + scale_y_continuous(&quot;Y&quot;) +
++     scale_x_continuous(&quot;B&quot;) + theme_classic()</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/mcmc_post1_het-1.png" width="672" /></p>
+<p>As this is simple single factor ANOVA, we can simple add the raw data to this figure. For more complex designs with additional predictors, it is necessary to plot partial residuals.</p>
+<pre class="r"><code>&gt; ## Calculate partial residuals fitted values
+&gt; fdata1 = rdata1 = data1
+&gt; fMat = rMat = model.matrix(~A * B, fdata1)
+&gt; fit = as.vector(apply(coefs, 2, median) %*% t(fMat))
+&gt; resid = as.vector(data1$Y - apply(coefs, 2, median) %*% t(rMat))
+&gt; rdata1 = rdata1 %&gt;% mutate(partial.resid = resid + fit)
+&gt; 
+&gt; ggplot(newdata1, aes(y = estimate, x = B, fill = A)) + geom_point(data = rdata1,
++     aes(y = partial.resid, x = B, color = A)) + geom_ribbon(aes(ymin = conf.low,
++     ymax = conf.high), alpha = 0.2) + geom_line() + scale_y_continuous(&quot;Y&quot;) +
++     scale_x_continuous(&quot;B&quot;) + theme_classic()</code></pre>
+<p><img src="/STAN/ancova-stan/2020-02-01-ancova-stan_files/figure-html/mcmc_post2_het-1.png" width="672" /></p>
+</div>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references hanging-indent">
+<div id="ref-gelman2019r">
+<p>Gelman, Andrew, Ben Goodrich, Jonah Gabry, and Aki Vehtari. 2019. “R-Squared for Bayesian Regression Models.” <em>The American Statistician</em> 73 (3): 307–9.</p>
+</div>
+<div id="ref-gelman2015stan">
+<p>Gelman, Andrew, Daniel Lee, and Jiqiang Guo. 2015. “Stan: A Probabilistic Programming Language for Bayesian Inference and Optimization.” <em>Journal of Educational and Behavioral Statistics</em> 40 (5): 530–43.</p>
+</div>
+<div id="ref-gelman2005analysis">
+<p>Gelman, Andrew, and others. 2005. “Analysis of Variance—Why It Is More Important Than Ever.” <em>The Annals of Statistics</em> 33 (1): 1–53.</p>
+</div>
+<div id="ref-rstanpackage">
+<p>Stan Development Team. 2018. “RStan: The R Interface to Stan.” <a href="http://mc-stan.org/">http://mc-stan.org/</a>.</p>
+</div>
+<div id="ref-vehtari2017practical">
+<p>Vehtari, Aki, Andrew Gelman, and Jonah Gabry. 2017. “Practical Bayesian Model Evaluation Using Leave-One-Out Cross-Validation and Waic.” <em>Statistics and Computing</em> 27 (5): 1413–32.</p>
+</div>
+</div>
+</div>
+
+    </div>
+
+    
+
+<div class="article-tags">
+  
+  <a class="badge badge-light" href="/tags/tutorials/">tutorials</a>
+  
+  <a class="badge badge-light" href="/tags/stan/">STAN</a>
+  
+  <a class="badge badge-light" href="/tags/ancova/">ancova</a>
+  
+  <a class="badge badge-light" href="/tags/facor-analysis/">facor analysis</a>
+  
+</div>
+
+
+
+    
+      
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+  
+
+
+
+
+
+  
+  
+  
+  
+  <div class="media author-card" itemscope itemtype="http://schema.org/Person">
+    
+
+    <div class="media-body">
+      <h5 class="card-title" itemprop="name"><a href="/authors/andrea-gabrio/"></a></h5>
+      
+      
+      <ul class="network-icon" aria-hidden="true">
+        
+      </ul>
+    </div>
+  </div>
+
+
+
+      
+      
+      <div class="article-widget">
+        <div class="hr-light"></div>
+        <h3>Related</h3>
+        <ul>
+          
+          <li><a href="/jags/ancova-jags/ancova-jags/">Analysis of Covariance - JAGS</a></li>
+          
+          <li><a href="/stan/single-factor-anova-stan/single-factor-anova-stan/">Single Factor Anova - STAN</a></li>
+          
+          <li><a href="/jags/sin-factor-anova-jags/single-factor-anova-jags/">Single Factor Anova - JAGS</a></li>
+          
+          <li><a href="/stan/multiple-linear-regression-stan/multiple-linear-regression-stan/">Multiple Linear Regression - STAN</a></li>
+          
+          <li><a href="/stan/simple-linear-regression-stan/simple-linear-regression-stan/">Simple Linear Regression - STAN</a></li>
+          
+        </ul>
+      </div>
+      
+    
+
+    
+
+    
+
+
+  </div>
+</article>
+
+      
+
+    
+    
+    
+    <script src="/js/mathjax-config.js"></script>
+    
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
+
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js" integrity="sha256-aYTdUrn6Ow1DDgh5JTc3aDGnnju48y/1c8s1dgkYPQ8=" crossorigin="anonymous"></script>
+        
+        <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/r.min.js"></script>
+        
+      
+
+      
+      
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_CHTML-full" integrity="sha256-GhM+5JHb6QUzOQPXSJLEWP7R73CbkisjzK5Eyij4U9w=" crossorigin="anonymous" async></script>
+      
+    
+
+    
+    
+      <script async defer src="//maps.googleapis.com/maps/api/js?key=AIzaSyAYShZdrjjE_TojzlN30gOZCZjvTBD3b3c"></script>
+      
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/gmaps.js/0.4.25/gmaps.min.js" integrity="sha256-7vjlAeb8OaTrCXZkCNun9djzuB2owUsaO72kXaFDBJs=" crossorigin="anonymous"></script>
+      
+    
+
+    
+    
+    
+
+    
+    
+    <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script>
+      const search_index_filename = "/index.json";
+      const i18n = {
+        'placeholder': "Search...",
+        'results': "results found",
+        'no_results': "No results found"
+      };
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/js/academic.min.3394a224b26ce58ff36f44c54743e0ab.js"></script>
+
+    
+
+
+
+
+
+
+  
+  <div class="container">
+    <footer class="site-footer">
+
+  <p class="powered-by">
+    
+
+    &#169; Andrea Gabrio 2019. Based on the 
+    <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+    <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+    
+    <span class="float-right" aria-hidden="true">
+      <a href="#" id="back_to_top">
+        <span class="button_icon">
+          <i class="fas fa-chevron-up fa-2x"></i>
+        </span>
+      </a>
+    </span>
+    
+  </p>
+</footer>
+
+  </div>
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
