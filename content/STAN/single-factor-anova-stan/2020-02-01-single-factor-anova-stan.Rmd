@@ -2,8 +2,8 @@
 title: "Single Factor Anova - STAN"
 author: "Andrea Gabrio"
 date: 2020-02-04T21:13:14-05:00
-categories: ["R", "anova", "STAN", "facor analysis"]
-tags: ["tutorials", "STAN", "anova", "facor analysis"]
+categories: ["R", "anova", "STAN", "factor analysis"]
+tags: ["tutorials", "STAN", "anova", "factor analysis"]
 authors: ["Andrea Gabrio"]
 bibliography: [citations_stan5.bib]
 draft: no

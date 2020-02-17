@@ -1286,9 +1286,9 @@ Chain 1: Iteration: 1250 / 1500 [ 83%]  (Sampling)
 Chain 1: Iteration: 1400 / 1500 [ 93%]  (Sampling)
 Chain 1: Iteration: 1500 / 1500 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 0.073 seconds (Warm-up)
-Chain 1:                0.059 seconds (Sampling)
-Chain 1:                0.132 seconds (Total)
+Chain 1:  Elapsed Time: 0.087 seconds (Warm-up)
+Chain 1:                0.07 seconds (Sampling)
+Chain 1:                0.157 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL &amp;#39;ancovaModel&amp;#39; NOW (CHAIN 2).
@@ -1311,9 +1311,9 @@ Chain 2: Iteration: 1250 / 1500 [ 83%]  (Sampling)
 Chain 2: Iteration: 1400 / 1500 [ 93%]  (Sampling)
 Chain 2: Iteration: 1500 / 1500 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 0.088 seconds (Warm-up)
-Chain 2:                0.058 seconds (Sampling)
-Chain 2:                0.146 seconds (Total)
+Chain 2:  Elapsed Time: 0.105 seconds (Warm-up)
+Chain 2:                0.069 seconds (Sampling)
+Chain 2:                0.174 seconds (Total)
 Chain 2: 
 &amp;gt; 
 &amp;gt; print(data.rstan, par = c(&amp;quot;beta&amp;quot;, &amp;quot;sigma&amp;quot;))
@@ -1328,7 +1328,7 @@ beta[3] -20.60    0.04 1.52 -23.56 -21.58 -20.61 -19.61 -17.55  1430 1.00
 beta[4]  -0.48    0.00 0.05  -0.57  -0.51  -0.48  -0.45  -0.40  1068 1.01
 sigma     3.55    0.02 0.52   2.69   3.17   3.48   3.87   4.67  1175 1.00
 
-Samples were drawn using NUTS(diag_e) at Sat Feb 15 17:20:45 2020.
+Samples were drawn using NUTS(diag_e) at Mon Feb 17 11:24:26 2020.
 For each parameter, n_eff is a crude measure of effective sample size,
 and Rhat is the potential scale reduction factor on split chains (at 
 convergence, Rhat=1).&lt;/code&gt;&lt;/pre&gt;
@@ -1494,7 +1494,7 @@ beta[3] -20.60    0.04 1.52 -23.56 -21.58 -20.61 -19.61 -17.55  1430 1.00
 beta[4]  -0.48    0.00 0.05  -0.57  -0.51  -0.48  -0.45  -0.40  1068 1.01
 sigma     3.55    0.02 0.52   2.69   3.17   3.48   3.87   4.67  1175 1.00
 
-Samples were drawn using NUTS(diag_e) at Sat Feb 15 17:20:45 2020.
+Samples were drawn using NUTS(diag_e) at Mon Feb 17 11:24:26 2020.
 For each parameter, n_eff is a crude measure of effective sample size,
 and Rhat is the potential scale reduction factor on split chains (at 
 convergence, Rhat=1).
@@ -1613,9 +1613,9 @@ Chain 1: Iteration: 1250 / 1500 [ 83%]  (Sampling)
 Chain 1: Iteration: 1400 / 1500 [ 93%]  (Sampling)
 Chain 1: Iteration: 1500 / 1500 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 0.017 seconds (Warm-up)
+Chain 1:  Elapsed Time: 0.018 seconds (Warm-up)
 Chain 1:                0.026 seconds (Sampling)
-Chain 1:                0.043 seconds (Total)
+Chain 1:                0.044 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL &amp;#39;ancovaModel2&amp;#39; NOW (CHAIN 2).
@@ -1638,9 +1638,9 @@ Chain 2: Iteration: 1250 / 1500 [ 83%]  (Sampling)
 Chain 2: Iteration: 1400 / 1500 [ 93%]  (Sampling)
 Chain 2: Iteration: 1500 / 1500 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 0.018 seconds (Warm-up)
-Chain 2:                0.021 seconds (Sampling)
-Chain 2:                0.039 seconds (Total)
+Chain 2:  Elapsed Time: 0.019 seconds (Warm-up)
+Chain 2:                0.022 seconds (Sampling)
+Chain 2:                0.041 seconds (Total)
 Chain 2: 
 &amp;gt; 
 &amp;gt; (reduced = loo(extract_log_lik(data.rstan.red)))
@@ -2009,8 +2009,8 @@ Signif. codes:  0 &amp;#39;***&amp;#39; 0.001 &amp;#39;**&amp;#39; 0.01 &amp;#39
 
 SAMPLING FOR MODEL &amp;#39;ancovaModel2&amp;#39; NOW (CHAIN 1).
 Chain 1: 
-Chain 1: Gradient evaluation took 0 seconds
-Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 1: Gradient evaluation took 0.001 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 10 seconds.
 Chain 1: Adjust your expectations accordingly!
 Chain 1: 
 Chain 1: 
@@ -2027,9 +2027,9 @@ Chain 1: Iteration: 1250 / 1500 [ 83%]  (Sampling)
 Chain 1: Iteration: 1400 / 1500 [ 93%]  (Sampling)
 Chain 1: Iteration: 1500 / 1500 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 0.104 seconds (Warm-up)
-Chain 1:                0.088 seconds (Sampling)
-Chain 1:                0.192 seconds (Total)
+Chain 1:  Elapsed Time: 0.107 seconds (Warm-up)
+Chain 1:                0.091 seconds (Sampling)
+Chain 1:                0.198 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL &amp;#39;ancovaModel2&amp;#39; NOW (CHAIN 2).
@@ -2052,9 +2052,9 @@ Chain 2: Iteration: 1250 / 1500 [ 83%]  (Sampling)
 Chain 2: Iteration: 1400 / 1500 [ 93%]  (Sampling)
 Chain 2: Iteration: 1500 / 1500 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 0.126 seconds (Warm-up)
-Chain 2:                0.098 seconds (Sampling)
-Chain 2:                0.224 seconds (Total)
+Chain 2:  Elapsed Time: 0.13 seconds (Warm-up)
+Chain 2:                0.102 seconds (Sampling)
+Chain 2:                0.232 seconds (Total)
 Chain 2: 
 &amp;gt; 
 &amp;gt; print(data1.rstan, par = c(&amp;quot;beta&amp;quot;, &amp;quot;sigma&amp;quot;))
@@ -2071,7 +2071,7 @@ beta[5]  -0.27    0.00 0.11  -0.48  -0.34  -0.27  -0.20  -0.05   597    1
 beta[6]   0.27    0.00 0.12   0.04   0.20   0.27   0.35   0.50   552    1
 sigma     3.39    0.02 0.50   2.57   3.02   3.33   3.67   4.50  1108    1
 
-Samples were drawn using NUTS(diag_e) at Sat Feb 15 17:22:17 2020.
+Samples were drawn using NUTS(diag_e) at Mon Feb 17 11:26:00 2020.
 For each parameter, n_eff is a crude measure of effective sample size,
 and Rhat is the potential scale reduction factor on split chains (at 
 convergence, Rhat=1).&lt;/code&gt;&lt;/pre&gt;
@@ -2248,7 +2248,7 @@ beta[5]  -0.27    0.00 0.11  -0.48  -0.34  -0.27  -0.20  -0.05   597    1
 beta[6]   0.27    0.00 0.12   0.04   0.20   0.27   0.35   0.50   552    1
 sigma     3.39    0.02 0.50   2.57   3.02   3.33   3.67   4.50  1108    1
 
-Samples were drawn using NUTS(diag_e) at Sat Feb 15 17:22:17 2020.
+Samples were drawn using NUTS(diag_e) at Mon Feb 17 11:26:00 2020.
 For each parameter, n_eff is a crude measure of effective sample size,
 and Rhat is the potential scale reduction factor on split chains (at 
 convergence, Rhat=1).
@@ -2371,9 +2371,9 @@ Chain 1: Iteration: 1250 / 1500 [ 83%]  (Sampling)
 Chain 1: Iteration: 1400 / 1500 [ 93%]  (Sampling)
 Chain 1: Iteration: 1500 / 1500 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 0.091 seconds (Warm-up)
-Chain 1:                0.07 seconds (Sampling)
-Chain 1:                0.161 seconds (Total)
+Chain 1:  Elapsed Time: 0.078 seconds (Warm-up)
+Chain 1:                0.063 seconds (Sampling)
+Chain 1:                0.141 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL &amp;#39;ancovaModel2&amp;#39; NOW (CHAIN 2).
@@ -2396,9 +2396,9 @@ Chain 2: Iteration: 1250 / 1500 [ 83%]  (Sampling)
 Chain 2: Iteration: 1400 / 1500 [ 93%]  (Sampling)
 Chain 2: Iteration: 1500 / 1500 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 0.077 seconds (Warm-up)
-Chain 2:                0.062 seconds (Sampling)
-Chain 2:                0.139 seconds (Total)
+Chain 2:  Elapsed Time: 0.078 seconds (Warm-up)
+Chain 2:                0.06 seconds (Sampling)
+Chain 2:                0.138 seconds (Total)
 Chain 2: 
 &amp;gt; 
 &amp;gt; (reduced = loo(extract_log_lik(data1.rstan.red)))

@@ -2,8 +2,8 @@
 title: "Analysis of Covariance - STAN"
 author: "Andrea Gabrio"
 date: 2020-02-05T21:13:14-05:00
-categories: ["R", "ancova", "STAN", "facor analysis"]
-tags: ["tutorials", "STAN", "ancova", "facor analysis"]
+categories: ["R", "ancova", "STAN", "factor analysis"]
+tags: ["tutorials", "STAN", "ancova", "factor analysis"]
 authors: ["Andrea Gabrio"]
 bibliography: [citations_stan6.bib]
 draft: no

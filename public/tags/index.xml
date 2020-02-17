@@ -39,27 +39,36 @@
     </item>
     
     <item>
-      <title>ancova</title>
-      <link>/tags/ancova/</link>
-      <pubDate>Wed, 05 Feb 2020 21:13:14 -0500</pubDate>
+      <title>anova</title>
+      <link>/tags/anova/</link>
+      <pubDate>Thu, 06 Feb 2020 21:13:14 -0500</pubDate>
       
-      <guid>/tags/ancova/</guid>
+      <guid>/tags/anova/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>facor analysis</title>
-      <link>/tags/facor-analysis/</link>
-      <pubDate>Wed, 05 Feb 2020 21:13:14 -0500</pubDate>
+      <title>factor analysis</title>
+      <link>/tags/factor-analysis/</link>
+      <pubDate>Thu, 06 Feb 2020 21:13:14 -0500</pubDate>
       
-      <guid>/tags/facor-analysis/</guid>
+      <guid>/tags/factor-analysis/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>factorial designs</title>
+      <link>/tags/factorial-designs/</link>
+      <pubDate>Thu, 06 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/factorial-designs/</guid>
       <description></description>
     </item>
     
     <item>
       <title>JAGS</title>
       <link>/tags/jags/</link>
-      <pubDate>Wed, 05 Feb 2020 21:13:14 -0500</pubDate>
+      <pubDate>Thu, 06 Feb 2020 21:13:14 -0500</pubDate>
       
       <guid>/tags/jags/</guid>
       <description></description>
@@ -68,7 +77,7 @@
     <item>
       <title>STAN</title>
       <link>/tags/stan/</link>
-      <pubDate>Wed, 05 Feb 2020 21:13:14 -0500</pubDate>
+      <pubDate>Thu, 06 Feb 2020 21:13:14 -0500</pubDate>
       
       <guid>/tags/stan/</guid>
       <description></description>
@@ -77,18 +86,18 @@
     <item>
       <title>tutorials</title>
       <link>/tags/tutorials/</link>
-      <pubDate>Wed, 05 Feb 2020 21:13:14 -0500</pubDate>
+      <pubDate>Thu, 06 Feb 2020 21:13:14 -0500</pubDate>
       
       <guid>/tags/tutorials/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>anova</title>
-      <link>/tags/anova/</link>
-      <pubDate>Tue, 04 Feb 2020 21:13:14 -0500</pubDate>
+      <title>ancova</title>
+      <link>/tags/ancova/</link>
+      <pubDate>Wed, 05 Feb 2020 21:13:14 -0500</pubDate>
       
-      <guid>/tags/anova/</guid>
+      <guid>/tags/ancova/</guid>
       <description></description>
     </item>
     

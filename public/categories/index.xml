@@ -6,33 +6,42 @@
     <description>Recent content in Categories on Andrea Gabrio</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 05 Feb 2020 21:13:14 -0500</lastBuildDate>
+    <lastBuildDate>Thu, 06 Feb 2020 21:13:14 -0500</lastBuildDate>
     
 	    <atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>ancova</title>
-      <link>/categories/ancova/</link>
-      <pubDate>Wed, 05 Feb 2020 21:13:14 -0500</pubDate>
+      <title>anova</title>
+      <link>/categories/anova/</link>
+      <pubDate>Thu, 06 Feb 2020 21:13:14 -0500</pubDate>
       
-      <guid>/categories/ancova/</guid>
+      <guid>/categories/anova/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>facor analysis</title>
-      <link>/categories/facor-analysis/</link>
-      <pubDate>Wed, 05 Feb 2020 21:13:14 -0500</pubDate>
+      <title>factor analysis</title>
+      <link>/categories/factor-analysis/</link>
+      <pubDate>Thu, 06 Feb 2020 21:13:14 -0500</pubDate>
       
-      <guid>/categories/facor-analysis/</guid>
+      <guid>/categories/factor-analysis/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>factorial designs</title>
+      <link>/categories/factorial-designs/</link>
+      <pubDate>Thu, 06 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/categories/factorial-designs/</guid>
       <description></description>
     </item>
     
     <item>
       <title>JAGS</title>
       <link>/categories/jags/</link>
-      <pubDate>Wed, 05 Feb 2020 21:13:14 -0500</pubDate>
+      <pubDate>Thu, 06 Feb 2020 21:13:14 -0500</pubDate>
       
       <guid>/categories/jags/</guid>
       <description></description>
@@ -41,7 +50,7 @@
     <item>
       <title>R</title>
       <link>/categories/r/</link>
-      <pubDate>Wed, 05 Feb 2020 21:13:14 -0500</pubDate>
+      <pubDate>Thu, 06 Feb 2020 21:13:14 -0500</pubDate>
       
       <guid>/categories/r/</guid>
       <description></description>
@@ -50,18 +59,18 @@
     <item>
       <title>STAN</title>
       <link>/categories/stan/</link>
-      <pubDate>Wed, 05 Feb 2020 21:13:14 -0500</pubDate>
+      <pubDate>Thu, 06 Feb 2020 21:13:14 -0500</pubDate>
       
       <guid>/categories/stan/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>anova</title>
-      <link>/categories/anova/</link>
-      <pubDate>Tue, 04 Feb 2020 21:13:14 -0500</pubDate>
+      <title>ancova</title>
+      <link>/categories/ancova/</link>
+      <pubDate>Wed, 05 Feb 2020 21:13:14 -0500</pubDate>
       
-      <guid>/categories/anova/</guid>
+      <guid>/categories/ancova/</guid>
       <description></description>
     </item>
     

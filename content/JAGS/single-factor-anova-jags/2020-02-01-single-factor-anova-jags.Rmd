@@ -2,8 +2,8 @@
 title: "Single Factor Anova - JAGS"
 author: "Andrea Gabrio"
 date: 2020-02-04T21:13:14-05:00
-categories: ["R", "anova", "JAGS", "facor analysis"]
-tags: ["tutorials", "JAGS", "anova", "facor analysis"]
+categories: ["R", "anova", "JAGS", "factor analysis"]
+tags: ["tutorials", "JAGS", "anova", "factor analysis"]
 authors: ["Andrea Gabrio"]
 bibliography: [citations_jags5.bib]
 draft: no
