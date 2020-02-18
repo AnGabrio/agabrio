@@ -1211,8 +1211,7 @@ Signif. codes:  0 &amp;#39;***&amp;#39; 0.001 &amp;#39;**&amp;#39; 0.01 &amp;#39
 &lt;h1&gt;Model fitting&lt;/h1&gt;
 &lt;p&gt;The observed response (&lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt;) are assumed to be drawn from a normal distribution with a given mean (&lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt;) and standard deviation (&lt;span class=&#34;math inline&#34;&gt;\(\sigma\)&lt;/span&gt;). The expected values are themselves determined by the linear predictor (&lt;span class=&#34;math inline&#34;&gt;\(\boldsymbol X \boldsymbol \beta\)&lt;/span&gt;). In this case, &lt;span class=&#34;math inline&#34;&gt;\(\boldsymbol \beta\)&lt;/span&gt; represents the vector of &lt;span class=&#34;math inline&#34;&gt;\(\beta\)&lt;/span&gt;’s - the intercept associated with the first group, the (effects) differences between this intercept and the intercepts for each other group as well as the slope associated with the continuous covariate. &lt;span class=&#34;math inline&#34;&gt;\(\boldsymbol X\)&lt;/span&gt; is the model matrix. MCMC sampling requires priors on all parameters. We will employ weakly informative priors. Specifying ‘uninformative’ priors is always a bit of a balancing act. If the priors are too vague (wide) the MCMC sampler can wander off into nonscence areas of likelihood rather than concentrate around areas of highest likelihood (desired when wanting the outcomes to be largely driven by the data). On the other hand, if the priors are too strong, they may have an influence on the parameters. In such a simple model, this balance is very forgiving - it is for more complex models that prior choice becomes more important. For this simple model, we will go with zero-centered Gaussian (normal) priors with relatively large standard deviations (&lt;span class=&#34;math inline&#34;&gt;\(100\)&lt;/span&gt;) for both the intercept and the treatment effect and a wide half-cauchy (&lt;span class=&#34;math inline&#34;&gt;\(\text{scale}=5\)&lt;/span&gt;) for the standard deviation.&lt;/p&gt;
 &lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[y_i \sim N(\mu_i,\sigma),  \]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\mu_i=\beta_0 +\boldsymbol \beta \boldsymbol X\)&lt;/span&gt;. The assumed priors are: &lt;span class=&#34;math inline&#34;&gt;\(\beta \sim N(0,100)\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\sigma \sim \text{Cauchy}(0,5)\)&lt;/span&gt;. Note, exploratory data analysis suggests that while the intercept (intercept of Group A) and categorical predictor effects (differences between intercepts of each of the Group and Group A’s intercept) could be drawn from a similar distribution (with mean in the &lt;span class=&#34;math inline&#34;&gt;\(10\)&lt;/span&gt;’s and variances in the &lt;span class=&#34;math inline&#34;&gt;\(100\)&lt;/span&gt;’s), the slope (effect associated with Group A linear relationship) is likely to be an order of magnitude less. We might therefore be tempted to provide different priors for the intercept, categorical effects and slope effect. For a simple model such as this, it is unlikely to be necessary. However, for more complex models, where prior specification becomes more critical, separate priors would probably be necessary.&lt;/p&gt;
-&lt;p&gt;We proceed to code the model into &lt;code&gt;JAGS&lt;/code&gt; (remember that in this software normal distribution are parameterised in terms of precisions &lt;span class=&#34;math inline&#34;&gt;\(\tau\)&lt;/span&gt; rather than variances, where &lt;span class=&#34;math inline&#34;&gt;\(\tau=\frac{1}{\sigma^2}\)&lt;/span&gt;). Note the following example as group means calculated as derived posteriors.&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\mu_i=\beta_0 +\boldsymbol \beta \boldsymbol X\)&lt;/span&gt;. The assumed priors are: &lt;span class=&#34;math inline&#34;&gt;\(\beta \sim N(0,100)\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\sigma \sim \text{Cauchy}(0,5)\)&lt;/span&gt;. Note, exploratory data analysis suggests that while the intercept (intercept of Group A) and categorical predictor effects (differences between intercepts of each of the Group and Group A’s intercept) could be drawn from a similar distribution (with mean in the &lt;span class=&#34;math inline&#34;&gt;\(10\)&lt;/span&gt;’s and variances in the &lt;span class=&#34;math inline&#34;&gt;\(100\)&lt;/span&gt;’s), the slope (effect associated with Group A linear relationship) is likely to be an order of magnitude less. We might therefore be tempted to provide different priors for the intercept, categorical effects and slope effect. For a simple model such as this, it is unlikely to be necessary. However, for more complex models, where prior specification becomes more critical, separate priors would probably be necessary. We proceed to code the model into &lt;code&gt;STAN&lt;/code&gt;.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; modelString = &amp;quot;
 +   data {
 +   int&amp;lt;lower=1&amp;gt; n;
@@ -1286,9 +1285,9 @@ Chain 1: Iteration: 1250 / 1500 [ 83%]  (Sampling)
 Chain 1: Iteration: 1400 / 1500 [ 93%]  (Sampling)
 Chain 1: Iteration: 1500 / 1500 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 0.087 seconds (Warm-up)
-Chain 1:                0.07 seconds (Sampling)
-Chain 1:                0.157 seconds (Total)
+Chain 1:  Elapsed Time: 0.072 seconds (Warm-up)
+Chain 1:                0.059 seconds (Sampling)
+Chain 1:                0.131 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL &amp;#39;ancovaModel&amp;#39; NOW (CHAIN 2).
@@ -1311,9 +1310,9 @@ Chain 2: Iteration: 1250 / 1500 [ 83%]  (Sampling)
 Chain 2: Iteration: 1400 / 1500 [ 93%]  (Sampling)
 Chain 2: Iteration: 1500 / 1500 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 0.105 seconds (Warm-up)
-Chain 2:                0.069 seconds (Sampling)
-Chain 2:                0.174 seconds (Total)
+Chain 2:  Elapsed Time: 0.088 seconds (Warm-up)
+Chain 2:                0.058 seconds (Sampling)
+Chain 2:                0.146 seconds (Total)
 Chain 2: 
 &amp;gt; 
 &amp;gt; print(data.rstan, par = c(&amp;quot;beta&amp;quot;, &amp;quot;sigma&amp;quot;))
@@ -1328,7 +1327,7 @@ beta[3] -20.60    0.04 1.52 -23.56 -21.58 -20.61 -19.61 -17.55  1430 1.00
 beta[4]  -0.48    0.00 0.05  -0.57  -0.51  -0.48  -0.45  -0.40  1068 1.01
 sigma     3.55    0.02 0.52   2.69   3.17   3.48   3.87   4.67  1175 1.00
 
-Samples were drawn using NUTS(diag_e) at Mon Feb 17 11:24:26 2020.
+Samples were drawn using NUTS(diag_e) at Tue Feb 18 14:30:06 2020.
 For each parameter, n_eff is a crude measure of effective sample size,
 and Rhat is the potential scale reduction factor on split chains (at 
 convergence, Rhat=1).&lt;/code&gt;&lt;/pre&gt;
@@ -1341,7 +1340,7 @@ convergence, Rhat=1).&lt;/code&gt;&lt;/pre&gt;
 &lt;li&gt;&lt;p&gt;&lt;em&gt;Autocorrelation&lt;/em&gt; plot for each parameter illustrate the degree of correlation between MCMC samples separated by different lags. For example, a lag of &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt; represents the degree of correlation between each MCMC sample and itself (obviously this will be a correlation of &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt;). A lag of &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt; represents the degree of correlation between each MCMC sample and the next sample along the chain and so on. In order to be able to generate unbiased estimates of parameters, the MCMC samples should be independent (uncorrelated).&lt;/p&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;&lt;em&gt;Potential scale reduction factor&lt;/em&gt; (Rhat) statistic for each parameter provides a measure of sampling efficiency/effectiveness. Ideally, all values should be less than &lt;span class=&#34;math inline&#34;&gt;\(1.05\)&lt;/span&gt;. If there are values of &lt;span class=&#34;math inline&#34;&gt;\(1.05\)&lt;/span&gt; or greater it suggests that the sampler was not very efficient or effective. Not only does this mean that the sampler was potentially slower than it could have been but, more importantly, it could indicate that the sampler spent time sampling in a region of the likelihood that is less informative. Such a situation can arise from either a misspecified model or overly vague priors that permit sampling in otherwise nonscence parameter space.&lt;/p&gt;&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;Prior to examining the summaries, we should have explored the convergence diagnostics. We use the package &lt;code&gt;mcmcplots&lt;/code&gt; to obtain density and trace plots for the effects model as an example.&lt;/p&gt;
+&lt;p&gt;Prior to examining the summaries, we should have explored the convergence diagnostics. We use the package &lt;code&gt;mcmcplots&lt;/code&gt; to obtain density and trace plots.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(mcmcplots)
 &amp;gt; s = as.array(data.rstan)
 &amp;gt; wch = grep(&amp;quot;beta&amp;quot;, dimnames(s)$parameters)
@@ -1494,7 +1493,7 @@ beta[3] -20.60    0.04 1.52 -23.56 -21.58 -20.61 -19.61 -17.55  1430 1.00
 beta[4]  -0.48    0.00 0.05  -0.57  -0.51  -0.48  -0.45  -0.40  1068 1.01
 sigma     3.55    0.02 0.52   2.69   3.17   3.48   3.87   4.67  1175 1.00
 
-Samples were drawn using NUTS(diag_e) at Mon Feb 17 11:24:26 2020.
+Samples were drawn using NUTS(diag_e) at Tue Feb 18 14:30:06 2020.
 For each parameter, n_eff is a crude measure of effective sample size,
 and Rhat is the potential scale reduction factor on split chains (at 
 convergence, Rhat=1).
@@ -1614,8 +1613,8 @@ Chain 1: Iteration: 1400 / 1500 [ 93%]  (Sampling)
 Chain 1: Iteration: 1500 / 1500 [100%]  (Sampling)
 Chain 1: 
 Chain 1:  Elapsed Time: 0.018 seconds (Warm-up)
-Chain 1:                0.026 seconds (Sampling)
-Chain 1:                0.044 seconds (Total)
+Chain 1:                0.025 seconds (Sampling)
+Chain 1:                0.043 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL &amp;#39;ancovaModel2&amp;#39; NOW (CHAIN 2).
@@ -1638,9 +1637,9 @@ Chain 2: Iteration: 1250 / 1500 [ 83%]  (Sampling)
 Chain 2: Iteration: 1400 / 1500 [ 93%]  (Sampling)
 Chain 2: Iteration: 1500 / 1500 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 0.019 seconds (Warm-up)
-Chain 2:                0.022 seconds (Sampling)
-Chain 2:                0.041 seconds (Total)
+Chain 2:  Elapsed Time: 0.018 seconds (Warm-up)
+Chain 2:                0.02 seconds (Sampling)
+Chain 2:                0.038 seconds (Total)
 Chain 2: 
 &amp;gt; 
 &amp;gt; (reduced = loo(extract_log_lik(data.rstan.red)))
@@ -2009,8 +2008,8 @@ Signif. codes:  0 &amp;#39;***&amp;#39; 0.001 &amp;#39;**&amp;#39; 0.01 &amp;#39
 
 SAMPLING FOR MODEL &amp;#39;ancovaModel2&amp;#39; NOW (CHAIN 1).
 Chain 1: 
-Chain 1: Gradient evaluation took 0.001 seconds
-Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 10 seconds.
+Chain 1: Gradient evaluation took 0 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
 Chain 1: Adjust your expectations accordingly!
 Chain 1: 
 Chain 1: 
@@ -2027,9 +2026,9 @@ Chain 1: Iteration: 1250 / 1500 [ 83%]  (Sampling)
 Chain 1: Iteration: 1400 / 1500 [ 93%]  (Sampling)
 Chain 1: Iteration: 1500 / 1500 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 0.107 seconds (Warm-up)
-Chain 1:                0.091 seconds (Sampling)
-Chain 1:                0.198 seconds (Total)
+Chain 1:  Elapsed Time: 0.106 seconds (Warm-up)
+Chain 1:                0.089 seconds (Sampling)
+Chain 1:                0.195 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL &amp;#39;ancovaModel2&amp;#39; NOW (CHAIN 2).
@@ -2052,9 +2051,9 @@ Chain 2: Iteration: 1250 / 1500 [ 83%]  (Sampling)
 Chain 2: Iteration: 1400 / 1500 [ 93%]  (Sampling)
 Chain 2: Iteration: 1500 / 1500 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 0.13 seconds (Warm-up)
-Chain 2:                0.102 seconds (Sampling)
-Chain 2:                0.232 seconds (Total)
+Chain 2:  Elapsed Time: 0.128 seconds (Warm-up)
+Chain 2:                0.1 seconds (Sampling)
+Chain 2:                0.228 seconds (Total)
 Chain 2: 
 &amp;gt; 
 &amp;gt; print(data1.rstan, par = c(&amp;quot;beta&amp;quot;, &amp;quot;sigma&amp;quot;))
@@ -2071,7 +2070,7 @@ beta[5]  -0.27    0.00 0.11  -0.48  -0.34  -0.27  -0.20  -0.05   597    1
 beta[6]   0.27    0.00 0.12   0.04   0.20   0.27   0.35   0.50   552    1
 sigma     3.39    0.02 0.50   2.57   3.02   3.33   3.67   4.50  1108    1
 
-Samples were drawn using NUTS(diag_e) at Mon Feb 17 11:26:00 2020.
+Samples were drawn using NUTS(diag_e) at Tue Feb 18 14:31:40 2020.
 For each parameter, n_eff is a crude measure of effective sample size,
 and Rhat is the potential scale reduction factor on split chains (at 
 convergence, Rhat=1).&lt;/code&gt;&lt;/pre&gt;
@@ -2248,7 +2247,7 @@ beta[5]  -0.27    0.00 0.11  -0.48  -0.34  -0.27  -0.20  -0.05   597    1
 beta[6]   0.27    0.00 0.12   0.04   0.20   0.27   0.35   0.50   552    1
 sigma     3.39    0.02 0.50   2.57   3.02   3.33   3.67   4.50  1108    1
 
-Samples were drawn using NUTS(diag_e) at Mon Feb 17 11:26:00 2020.
+Samples were drawn using NUTS(diag_e) at Tue Feb 18 14:31:40 2020.
 For each parameter, n_eff is a crude measure of effective sample size,
 and Rhat is the potential scale reduction factor on split chains (at 
 convergence, Rhat=1).
@@ -2371,9 +2370,9 @@ Chain 1: Iteration: 1250 / 1500 [ 83%]  (Sampling)
 Chain 1: Iteration: 1400 / 1500 [ 93%]  (Sampling)
 Chain 1: Iteration: 1500 / 1500 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 0.078 seconds (Warm-up)
-Chain 1:                0.063 seconds (Sampling)
-Chain 1:                0.141 seconds (Total)
+Chain 1:  Elapsed Time: 0.077 seconds (Warm-up)
+Chain 1:                0.062 seconds (Sampling)
+Chain 1:                0.139 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL &amp;#39;ancovaModel2&amp;#39; NOW (CHAIN 2).
@@ -2396,9 +2395,9 @@ Chain 2: Iteration: 1250 / 1500 [ 83%]  (Sampling)
 Chain 2: Iteration: 1400 / 1500 [ 93%]  (Sampling)
 Chain 2: Iteration: 1500 / 1500 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 0.078 seconds (Warm-up)
-Chain 2:                0.06 seconds (Sampling)
-Chain 2:                0.138 seconds (Total)
+Chain 2:  Elapsed Time: 0.083 seconds (Warm-up)
+Chain 2:                0.059 seconds (Sampling)
+Chain 2:                0.142 seconds (Total)
 Chain 2: 
 &amp;gt; 
 &amp;gt; (reduced = loo(extract_log_lik(data1.rstan.red)))

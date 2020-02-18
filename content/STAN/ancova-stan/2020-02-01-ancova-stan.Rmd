@@ -211,9 +211,7 @@ The observed response ($y_i$) are assumed to be drawn from a normal distribution
 
 \[y_i \sim N(\mu_i,\sigma),  \]
 
-where $\mu_i=\beta_0 +\boldsymbol \beta \boldsymbol X$. The assumed priors are: $\beta \sim N(0,100)$ and $\sigma \sim \text{Cauchy}(0,5)$. Note, exploratory data analysis suggests that while the intercept (intercept of Group A) and categorical predictor effects (differences between intercepts of each of the Group and Group A's intercept) could be drawn from a similar distribution (with mean in the $10$'s and variances in the $100$'s), the slope (effect associated with Group A linear relationship) is likely to be an order of magnitude less. We might therefore be tempted to provide different priors for the intercept, categorical effects and slope effect. For a simple model such as this, it is unlikely to be necessary. However, for more complex models, where prior specification becomes more critical, separate priors would probably be necessary.
-
-We proceed to code the model into `JAGS` (remember that in this software normal distribution are parameterised in terms of precisions $\tau$ rather than variances, where $\tau=\frac{1}{\sigma^2}$). Note the following example as group means calculated as derived posteriors.
+where $\mu_i=\beta_0 +\boldsymbol \beta \boldsymbol X$. The assumed priors are: $\beta \sim N(0,100)$ and $\sigma \sim \text{Cauchy}(0,5)$. Note, exploratory data analysis suggests that while the intercept (intercept of Group A) and categorical predictor effects (differences between intercepts of each of the Group and Group A's intercept) could be drawn from a similar distribution (with mean in the $10$'s and variances in the $100$'s), the slope (effect associated with Group A linear relationship) is likely to be an order of magnitude less. We might therefore be tempted to provide different priors for the intercept, categorical effects and slope effect. For a simple model such as this, it is unlikely to be necessary. However, for more complex models, where prior specification becomes more critical, separate priors would probably be necessary. We proceed to code the model into `STAN`.
 
 ```{r code_model, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 modelString = "
@@ -297,7 +295,7 @@ In addition to the regular model diagnostic checks (such as residual plots), for
 
 * *Potential scale reduction factor* (Rhat) statistic for each parameter provides a measure of sampling efficiency/effectiveness. Ideally, all values should be less than $1.05$. If there are values of $1.05$ or greater it suggests that the sampler was not very efficient or effective. Not only does this mean that the sampler was potentially slower than it could have been but, more importantly, it could indicate that the sampler spent time sampling in a region of the likelihood that is less informative. Such a situation can arise from either a misspecified model or overly vague priors that permit sampling in otherwise nonscence parameter space.
 
-Prior to examining the summaries, we should have explored the convergence diagnostics. We use the package `mcmcplots` to obtain density and trace plots for the effects model as an example.
+Prior to examining the summaries, we should have explored the convergence diagnostics. We use the package `mcmcplots` to obtain density and trace plots.
 
 ```{r mcmc_diag, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 library(mcmcplots)

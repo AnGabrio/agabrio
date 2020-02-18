@@ -243,8 +243,7 @@ Res &quot;&quot;                         &quot;&quot;                         </
 <h1>Model fitting</h1>
 <p>The observed response (<span class="math inline">\(y_i\)</span>) are assumed to be drawn from a normal distribution with a given mean (<span class="math inline">\(\mu\)</span>) and standard deviation (<span class="math inline">\(\sigma\)</span>). The expected values are themselves determined by the linear predictor (<span class="math inline">\(\boldsymbol X \boldsymbol \beta\)</span>). In this case, <span class="math inline">\(\boldsymbol \beta\)</span> represents the intercept associated with the first combination of groups, as well as the (effects) differences between this intercept and each other group. <span class="math inline">\(\boldsymbol X\)</span> is the model matrix. MCMC sampling requires priors on all parameters. We will employ weakly informative priors. Specifying ‘uninformative’ priors is always a bit of a balancing act. If the priors are too vague (wide) the MCMC sampler can wander off into nonscence areas of likelihood rather than concentrate around areas of highest likelihood (desired when wanting the outcomes to be largely driven by the data). On the other hand, if the priors are too strong, they may have an influence on the parameters. In such a simple model, this balance is very forgiving - it is for more complex models that prior choice becomes more important. For this simple model, we will go with zero-centered Gaussian (normal) priors with relatively large standard deviations (<span class="math inline">\(100\)</span>) for both the intercept and the treatment effect and a wide half-cauchy (<span class="math inline">\(\text{scale}=5\)</span>) for the standard deviation.</p>
 <p><span class="math display">\[y_i \sim N(\mu_i,\sigma),  \]</span></p>
-<p>where <span class="math inline">\(\mu_i=\beta_0 +\boldsymbol \beta \boldsymbol X\)</span>. The assumed priors are: <span class="math inline">\(\beta \sim N(0,100)\)</span> and <span class="math inline">\(\sigma \sim \text{Cauchy}(0,5)\)</span>. Exploratory data analysis suggests that the intercept and effects could be drawn from similar distributions (with mean in the <span class="math inline">\(10\)</span>’s and variances in the <span class="math inline">\(100\)</span>’s). Whilst we might therefore be tempted to provide different priors for the intercept, compared to the effects, for a simple model such as this, it is unlikely to be necessary. However, for more complex models, where prior specification becomes more critical, separate priors would probably be necessary.</p>
-<p>We proceed to code the model into <code>JAGS</code> (remember that in this software normal distribution are parameterised in terms of precisions <span class="math inline">\(\tau\)</span> rather than variances, where <span class="math inline">\(\tau=\frac{1}{\sigma^2}\)</span>). Note the following example as group means calculated as derived posteriors.</p>
+<p>where <span class="math inline">\(\mu_i=\beta_0 +\boldsymbol \beta \boldsymbol X\)</span>. The assumed priors are: <span class="math inline">\(\beta \sim N(0,100)\)</span> and <span class="math inline">\(\sigma \sim \text{Cauchy}(0,5)\)</span>. Exploratory data analysis suggests that the intercept and effects could be drawn from similar distributions (with mean in the <span class="math inline">\(10\)</span>’s and variances in the <span class="math inline">\(100\)</span>’s). Whilst we might therefore be tempted to provide different priors for the intercept, compared to the effects, for a simple model such as this, it is unlikely to be necessary. However, for more complex models, where prior specification becomes more critical, separate priors would probably be necessary. We proceed to code the model into <code>STAN</code>.</p>
 <pre class="r"><code>&gt; modelString = &quot;
 +   data {
 +   int&lt;lower=1&gt; n;
@@ -318,9 +317,9 @@ Chain 1: Iteration: 1250 / 1500 [ 83%]  (Sampling)
 Chain 1: Iteration: 1400 / 1500 [ 93%]  (Sampling)
 Chain 1: Iteration: 1500 / 1500 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 0.065 seconds (Warm-up)
-Chain 1:                0.086 seconds (Sampling)
-Chain 1:                0.151 seconds (Total)
+Chain 1:  Elapsed Time: 0.064 seconds (Warm-up)
+Chain 1:                0.085 seconds (Sampling)
+Chain 1:                0.149 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL &#39;fact_anovaModel&#39; NOW (CHAIN 2).
@@ -343,9 +342,9 @@ Chain 2: Iteration: 1250 / 1500 [ 83%]  (Sampling)
 Chain 2: Iteration: 1400 / 1500 [ 93%]  (Sampling)
 Chain 2: Iteration: 1500 / 1500 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 0.071 seconds (Warm-up)
-Chain 2:                0.088 seconds (Sampling)
-Chain 2:                0.159 seconds (Total)
+Chain 2:  Elapsed Time: 0.07 seconds (Warm-up)
+Chain 2:                0.087 seconds (Sampling)
+Chain 2:                0.157 seconds (Total)
 Chain 2: 
 &gt; 
 &gt; print(data.rstan, par = c(&quot;beta&quot;, &quot;sigma&quot;))
@@ -362,7 +361,7 @@ beta[5] -14.51    0.07 1.86 -18.22 -15.78 -14.49 -13.21 -10.84   772 1.00
 beta[6]  11.12    0.07 1.85   7.41   9.93  11.15  12.42  14.68   791 1.01
 sigma     2.89    0.01 0.28   2.41   2.70   2.88   3.07   3.48  1521 1.00
 
-Samples were drawn using NUTS(diag_e) at Mon Feb 17 11:26:56 2020.
+Samples were drawn using NUTS(diag_e) at Tue Feb 18 14:32:34 2020.
 For each parameter, n_eff is a crude measure of effective sample size,
 and Rhat is the potential scale reduction factor on split chains (at 
 convergence, Rhat=1).</code></pre>
@@ -375,7 +374,7 @@ convergence, Rhat=1).</code></pre>
 <li><p><em>Autocorrelation</em> plot for each parameter illustrate the degree of correlation between MCMC samples separated by different lags. For example, a lag of <span class="math inline">\(0\)</span> represents the degree of correlation between each MCMC sample and itself (obviously this will be a correlation of <span class="math inline">\(1\)</span>). A lag of <span class="math inline">\(1\)</span> represents the degree of correlation between each MCMC sample and the next sample along the chain and so on. In order to be able to generate unbiased estimates of parameters, the MCMC samples should be independent (uncorrelated).</p></li>
 <li><p><em>Potential scale reduction factor</em> (Rhat) statistic for each parameter provides a measure of sampling efficiency/effectiveness. Ideally, all values should be less than <span class="math inline">\(1.05\)</span>. If there are values of <span class="math inline">\(1.05\)</span> or greater it suggests that the sampler was not very efficient or effective. Not only does this mean that the sampler was potentially slower than it could have been but, more importantly, it could indicate that the sampler spent time sampling in a region of the likelihood that is less informative. Such a situation can arise from either a misspecified model or overly vague priors that permit sampling in otherwise nonscence parameter space.</p></li>
 </ul>
-<p>Prior to examining the summaries, we should have explored the convergence diagnostics. We use the package <code>mcmcplots</code> to obtain density and trace plots for the effects model as an example.</p>
+<p>Prior to examining the summaries, we should have explored the convergence diagnostics. We use the package <code>mcmcplots</code> to obtain density and trace plots.</p>
 <pre class="r"><code>&gt; library(mcmcplots)
 &gt; s = as.array(data.rstan)
 &gt; wch = grep(&quot;beta&quot;, dimnames(s)$parameters)
@@ -532,7 +531,7 @@ beta[5] -14.51    0.07 1.86 -18.22 -15.78 -14.49 -13.21 -10.84   772 1.00
 beta[6]  11.12    0.07 1.85   7.41   9.93  11.15  12.42  14.68   791 1.01
 sigma     2.89    0.01 0.28   2.41   2.70   2.88   3.07   3.48  1521 1.00
 
-Samples were drawn using NUTS(diag_e) at Mon Feb 17 11:26:56 2020.
+Samples were drawn using NUTS(diag_e) at Tue Feb 18 14:32:34 2020.
 For each parameter, n_eff is a crude measure of effective sample size,
 and Rhat is the potential scale reduction factor on split chains (at 
 convergence, Rhat=1).
@@ -652,9 +651,9 @@ Chain 1: Iteration: 1250 / 1500 [ 83%]  (Sampling)
 Chain 1: Iteration: 1400 / 1500 [ 93%]  (Sampling)
 Chain 1: Iteration: 1500 / 1500 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 0.053 seconds (Warm-up)
-Chain 1:                0.061 seconds (Sampling)
-Chain 1:                0.114 seconds (Total)
+Chain 1:  Elapsed Time: 0.061 seconds (Warm-up)
+Chain 1:                0.068 seconds (Sampling)
+Chain 1:                0.129 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL &#39;fact_anovaModel2&#39; NOW (CHAIN 2).
@@ -677,9 +676,9 @@ Chain 2: Iteration: 1250 / 1500 [ 83%]  (Sampling)
 Chain 2: Iteration: 1400 / 1500 [ 93%]  (Sampling)
 Chain 2: Iteration: 1500 / 1500 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 0.056 seconds (Warm-up)
-Chain 2:                0.055 seconds (Sampling)
-Chain 2:                0.111 seconds (Total)
+Chain 2:  Elapsed Time: 0.064 seconds (Warm-up)
+Chain 2:                0.062 seconds (Sampling)
+Chain 2:                0.126 seconds (Total)
 Chain 2: 
 &gt; 
 &gt; (reduced = loo(extract_log_lik(data.rstan.red)))

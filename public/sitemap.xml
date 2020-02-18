@@ -39,12 +39,107 @@
   
   <url>
     <loc>/authors/andrea-gabrio/</loc>
-    <lastmod>2020-02-06T21:13:14-05:00</lastmod>
+    <lastmod>2020-02-08T21:13:14-05:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/anova/</loc>
-    <lastmod>2020-02-06T21:13:14-05:00</lastmod>
+    <loc>/authors/</loc>
+    <lastmod>2020-02-08T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/autocorrelation/</loc>
+    <lastmod>2020-02-08T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/autocorrelation/</loc>
+    <lastmod>2020-02-08T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/jags/</loc>
+    <lastmod>2020-02-08T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/stan/</loc>
+    <lastmod>2020-02-08T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/</loc>
+    <lastmod>2020-02-08T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/jags/</loc>
+    <lastmod>2020-02-08T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/jags/</loc>
+    <lastmod>2020-02-08T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/r/</loc>
+    <lastmod>2020-02-08T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/stan/</loc>
+    <lastmod>2020-02-08T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/stan/</loc>
+    <lastmod>2020-02-08T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/jags/autocorrelation-jags/autocorrelation-jags/</loc>
+    <lastmod>2020-02-08T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/stan/autocorrelation-stan/autocorrelation-stan/</loc>
+    <lastmod>2020-02-08T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/tutorials/</loc>
+    <lastmod>2020-02-08T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/heterogeneity/</loc>
+    <lastmod>2020-02-07T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/heterogeneity/</loc>
+    <lastmod>2020-02-07T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/heteroskedasticity/</loc>
+    <lastmod>2020-02-07T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/heteroskedasticity/</loc>
+    <lastmod>2020-02-07T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/jags/heterogeneity-jags/heterogeneity-jags/</loc>
+    <lastmod>2020-02-07T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/stan/heterogeneity-stan/heterogeneity-stan/</loc>
+    <lastmod>2020-02-07T21:13:14-05:00</lastmod>
   </url>
   
   <url>
@@ -53,22 +148,7 @@
   </url>
   
   <url>
-    <loc>/authors/</loc>
-    <lastmod>2020-02-06T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/jags/</loc>
-    <lastmod>2020-02-06T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/stan/</loc>
-    <lastmod>2020-02-06T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/</loc>
+    <loc>/tags/anova/</loc>
     <lastmod>2020-02-06T21:13:14-05:00</lastmod>
   </url>
   
@@ -103,36 +183,6 @@
   </url>
   
   <url>
-    <loc>/tags/jags/</loc>
-    <lastmod>2020-02-06T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/jags/</loc>
-    <lastmod>2020-02-06T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/r/</loc>
-    <lastmod>2020-02-06T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/stan/</loc>
-    <lastmod>2020-02-06T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/stan/</loc>
-    <lastmod>2020-02-06T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/tutorials/</loc>
-    <lastmod>2020-02-06T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/jags/ancova-jags/ancova-jags/</loc>
     <lastmod>2020-02-05T21:13:14-05:00</lastmod>
   </url>
@@ -143,12 +193,12 @@
   </url>
   
   <url>
-    <loc>/tags/ancova/</loc>
+    <loc>/categories/ancova/</loc>
     <lastmod>2020-02-05T21:13:14-05:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/ancova/</loc>
+    <loc>/tags/ancova/</loc>
     <lastmod>2020-02-05T21:13:14-05:00</lastmod>
   </url>
   
@@ -163,12 +213,12 @@
   </url>
   
   <url>
-    <loc>/categories/linear-regression/</loc>
+    <loc>/tags/linear-regression/</loc>
     <lastmod>2020-02-03T21:13:14-05:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/linear-regression/</loc>
+    <loc>/categories/linear-regression/</loc>
     <lastmod>2020-02-03T21:13:14-05:00</lastmod>
   </url>
   
@@ -333,12 +383,12 @@
   </url>
   
   <url>
-    <loc>/tags/christmas/</loc>
+    <loc>/categories/christmas/</loc>
     <lastmod>2019-11-09T12:34:03+01:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/christmas/</loc>
+    <loc>/tags/christmas/</loc>
     <lastmod>2019-11-09T12:34:03+01:00</lastmod>
   </url>
   

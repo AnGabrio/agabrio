@@ -1,0 +1,471 @@
+---
+title: "Temporal Autocorrelation - JAGS"
+author: "Andrea Gabrio"
+date: 2020-02-08T21:13:14-05:00
+categories: ["R", "autocorrelation", "JAGS"]
+tags: ["tutorials", "JAGS", "autocorrelation"]
+authors: ["Andrea Gabrio"]
+bibliography: [citations_jags9.bib]
+draft: no
+slug: autocorrelation-jags
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<p>This tutorial will focus on the use of Bayesian estimation to fit simple linear regression models. <code>BUGS</code> (Bayesian inference Using <em>Gibbs Sampling</em>) is an algorithm and supporting language (resembling <code>R</code>) dedicated to performing the Gibbs sampling implementation of <em>Markov Chain Monte Carlo</em> (MCMC) method. Dialects of the <code>BUGS</code> language are implemented within three main projects:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>OpenBUGS</strong> - written in component pascal.</p></li>
+<li><p><strong>JAGS</strong> - (Just Another Gibbs Sampler) - written in <code>C++</code>.</p></li>
+<li><p><strong>STAN</strong> - a dedicated Bayesian modelling framework written in <code>C++</code> and implementing <em>Hamiltonian</em> MCMC samplers.</p></li>
+</ol>
+<p>Whilst the above programs can be used stand-alone, they do offer the rich data pre-processing and graphical capabilities of <code>R</code>, and thus, they are best accessed from within <code>R</code> itself. As such there are multiple packages devoted to interfacing with the various software implementations:</p>
+<ul>
+<li><p><em>R2OpenBUGS</em> - interfaces with <code>OpenBUGS</code></p></li>
+<li><p><em>R2jags</em> - interfaces with <code>JAGS</code></p></li>
+<li><p><em>rstan</em> - interfaces with <code>STAN</code></p></li>
+</ul>
+<p>This tutorial will demonstrate how to fit models in <code>JAGS</code> (<span class="citation">Plummer (2004)</span>) using the package <code>R2jags</code> (<span class="citation">Su et al. (2015)</span>) as interface, which also requires to load some other packages.</p>
+<div id="overview" class="section level1">
+<h1>Overview</h1>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>Up until now (in the proceeding tutorials), the focus has been on models that adhere to specific assumptions about the underlying populations (and data). Indeed, both before and immediately after fitting these models, I have stressed the importance of evaluating and validating the proposed and fitted models to ensure reliability of the models. It is now worth us revisiting those fundamental assumptions as well as exploring the options that are available when the populations (data) do not conform. Let’s explore a simple linear regression model to see how each of the assumptions relate to the model.</p>
+<p><span class="math display">\[ y_i = \beta_0 + \beta_1x_i + \epsilon_i \;\;\; \text{with} \;\;\; \epsilon_i \sim \text{Normal}(0, \sigma^2).\]</span></p>
+<p>The above simple statistical model models the <strong>linear relationship</strong> of <span class="math inline">\(y_i\)</span> against <span class="math inline">\(x_i\)</span>. The residuals (<span class="math inline">\(\epsilon\)</span>) are assumed to be <strong>normally distributed</strong> with a mean of zero and a constant (yet unknown) variance (<span class="math inline">\(\sigma\)</span>, <strong>homogeneity of variance</strong>). The residuals (and thus observations) are also assumed to all be <strong>independent</strong>.</p>
+<p>Homogeneity of variance and independence are encapsulated within the single symbol for variance (<span class="math inline">\(\sigma^2\)</span>). In assuming equal variances and independence, we are actually making an assumption about the variance-covariance structure of the populations (and thus residuals). Specifically, we assume that all populations are equally varied and thus can be represented well by a single variance term (all diagonal values in a <span class="math inline">\(N\times N\)</span> covariance matrix are the same, <span class="math inline">\(\sigma^2\)</span>) and the covariances between each population are zero (off diagonals). In simple regression, each observation (data point) represents a single observation drawn (sampled) from an entire population of possible observations. The above covariance structure thus assumes that the covariance between each population (observation) is zero - that is, each observation is completely independent of each other observation. Whilst it is mathematically convenient when data conform to these conditions (normality, homogeneity of variance, independence and linearity), data often violate one or more of these assumptions. In the following, I want to discuss and explore the causes and options for dealing with non-compliance to each of these conditions. By gaining a better understanding of how the various model fitting engines perform their task, we are better equipped to accommodate aspects of the data that don’t otherwise conform to the simple regression assumptions. In this tutorial we specifically focus on the topic of heterogeneity of the variance.</p>
+<p>In order that the estimated parameters represent the underlying populations in an unbiased manner, the residuals (and thus each each observation) must be independent. However, what if we were sampling a population over time and we were interested in investigating how changes in a response relate to changes in a predictor (such as rainfall). For any response that does not “reset” itself on a regular basis, the state of the population (the value of its response) at a given time is likely to be at least partly dependent on the state of the population at the sampling time before. We can further generalise the above into:</p>
+<p><span class="math display">\[ y_i \sim Dist(\mu_i),\]</span></p>
+<p>where <span class="math inline">\(\mu_i=\boldsymbol X \boldsymbol \beta + \boldsymbol Z \boldsymbol \gamma\)</span>, with <span class="math inline">\(\boldsymbol X\)</span> and <span class="math inline">\(\boldsymbol \beta\)</span> representing the <em>fixed data structure</em> and <em>fixed effects</em>, respectively, while with <span class="math inline">\(\boldsymbol Z\)</span> and <span class="math inline">\(\boldsymbol \gamma\)</span> represent the <em>varying data structure</em> and <em>varying effects</em>, respectively. In simple regression, there are no “varying” effects, and thus:</p>
+<p><span class="math display">\[ \boldsymbol \gamma \sim MVN(\boldsymbol 0, \boldsymbol \Sigma),\]</span></p>
+<p>where <span class="math inline">\(\boldsymbol \Sigma\)</span> is a variance-covariance matrix of the form</p>
+<p><span class="math display">\[ \boldsymbol \Sigma =  \frac{\sigma^2}{1-\rho^2}
+  \begin{bmatrix}
+   1 &amp; \rho^{\phi_{1,2}} &amp; \ldots &amp; \rho^{\phi_{1,n}} \\
+   \rho^{\phi_{2,1}} &amp; 1 &amp; \ldots &amp; \vdots\\
+   \vdots &amp; \ldots &amp; 1 &amp; \vdots\\
+   \rho^{\phi_{n,1}} &amp; \ldots &amp; \ldots &amp; 1
+   \end{bmatrix}. \]</span></p>
+<p>Notice that this introduces a very large number of additional parameters that require estimating: <span class="math inline">\(\sigma^2\)</span> (error variance), <span class="math inline">\(\rho\)</span> (base autocorrelation) and each of the individual covariances (<span class="math inline">\(\rho^{\phi_{n,n}}\)</span>). Hence, there are always going to be more parameters to estimate than there are date avaiable to use to estimate these paramters. We typically make one of a number of alternative assumptions so as to make this task more manageable.</p>
+<ul>
+<li>When we assume that all residuals are independent (regular regression), i.e. <span class="math inline">\(\rho=0\)</span>, <span class="math inline">\(\boldsymbol \Sigma\)</span> is essentially equal to <span class="math inline">\(\sigma^2 \boldsymbol I\)</span> and we simply use:</li>
+</ul>
+<p><span class="math display">\[ \boldsymbol \gamma \sim N( 0,\sigma^2).\]</span></p>
+<ul>
+<li>We could assume there is a reasonably simple pattern of correlation that declines over time. The simplest of these is a <em>first order autoregressive</em> (AR1) structure in which exponent on the correlation declines linearly according to the time lag (<span class="math inline">\(\mid t - s\mid\)</span>).</li>
+</ul>
+<p><span class="math display">\[ \boldsymbol \Sigma =  \frac{\sigma^2}{1-\rho^2}
+  \begin{bmatrix}
+   1 &amp; \rho &amp; \ldots &amp; \rho^{\mid t-s \mid} \\
+   \rho &amp; 1 &amp; \ldots &amp; \vdots\\
+   \vdots &amp; \ldots &amp; 1 &amp; \vdots\\
+   \rho^{\mid t-s \mid } &amp; \ldots &amp; \ldots &amp; 1
+   \end{bmatrix}. \]</span></p>
+<p>Note, in making this assumption, we are also assuming that the degree of correlation is dependent only on the lag and not on when the lag occurs (stationarity). That is all lag 1 residual pairs will have the same degree of correlation, all the lag <span class="math inline">\(2\)</span> pairs will have the same correlation and so on.</p>
+</div>
+</div>
+<div id="first-order-autocorrelation" class="section level1">
+<h1>First order autocorrelation</h1>
+<p>Consider an example, in which the number of individuals at time <span class="math inline">\(2\)</span> will be partly dependent on the number of individuals present at time <span class="math inline">\(1\)</span>. Clearly then, the observations (and thus residuals) are not fully independent - there is an auto-regressive correlation dependency structure. We could accommodate this lack of independence by fitting a model that incorporates a AR1 variance-covariance structure. Alternatively, we fit the following model:</p>
+<p><span class="math display">\[ y_{it} \sim Dist(\mu_{it}),\]</span></p>
+<p>where</p>
+<p><span class="math display">\[\mu_{it}=\boldsymbol X \boldsymbol \beta + \rho \epsilon_{i,t-1} + \gamma_{it},\]</span></p>
+<p>and where <span class="math inline">\(\gamma \sim N(0, \sigma^2)\)</span>. In this version of the model, we are stating that the expected value of an observation is equal to the regular linear predictor plus the autocorrelation parameter (<span class="math inline">\(\rho\)</span>) multipled by the residual associated with the previous observation plus the regular independently distributed noise (<span class="math inline">\(\sigma^2\)</span>). Such a model is substantially faster to fit, although along with stationarity assumes in estimating the autocorrelation parameter, only the smallest lags are used. To see this in action, we will first generate some temporally auto-correlated data.</p>
+<pre class="r"><code>&gt; set.seed(126)
+&gt; n = 50
+&gt; a &lt;- 20  #intercept
+&gt; b &lt;- 0.2  #slope
+&gt; x &lt;- round(runif(n, 1, n), 1)  #values of the year covariate
+&gt; year &lt;- 1:n
+&gt; sigma &lt;- 20
+&gt; rho &lt;- 0.8
+&gt; 
+&gt; library(nlme)
+&gt; ## define a constructor for a first-order
+&gt; ## correlation structure
+&gt; ar1 &lt;- corAR1(form = ~year, value = rho)
+&gt; ## initialize this constructor against our data
+&gt; AR1 &lt;- Initialize(ar1, data = data.frame(year))
+&gt; ## generate a correlation matrix
+&gt; V &lt;- corMatrix(AR1)
+&gt; ## Cholesky factorization of V
+&gt; Cv &lt;- chol(V)
+&gt; ## simulate AR1 errors
+&gt; e &lt;- t(Cv) %*% rnorm(n, 0, sigma)  # cov(e) = V * sig^2
+&gt; ## generate response
+&gt; y &lt;- a + b * x + e
+&gt; data.temporalCor = data.frame(y = y, x = x, year = year)
+&gt; write.table(data.temporalCor, file = &quot;data.temporalCor.csv&quot;,
++     sep = &quot;,&quot;, quote = F, row.names = FALSE)
+&gt; 
+&gt; pairs(data.temporalCor)</code></pre>
+<p><img src="/JAGS/autocorrelation-jags/2020-02-01-autocorrelation-jags_files/figure-html/generate_data-1.png" width="672" /></p>
+<p>We will now proceed to analyse these data via both of the above techniques for <code>JAGS</code>:</p>
+<ul>
+<li><p>incorporating AR1 residual autocorrelation structure</p></li>
+<li><p>incorporating lagged residuals into the model</p></li>
+</ul>
+</div>
+<div id="incorporating-lagged-residuals" class="section level1">
+<h1>Incorporating lagged residuals</h1>
+<div id="model-fitting" class="section level2">
+<h2>Model fitting</h2>
+<p>We proceed to code the model into <code>JAGS</code> (remember that in this software normal distribution are parameterised in terms of precisions <span class="math inline">\(\tau\)</span> rather than variances, where <span class="math inline">\(\tau=\frac{1}{\sigma^2}\)</span>). Define the model.</p>
+<pre class="r"><code>&gt; modelString = &quot; 
++   model {
++   #Likelihood
++   for (i in 1:n) {
++   fit[i] &lt;- inprod(beta[],X[i,])
++   y[i] ~ dnorm(mu[i],tau.cor)
++   }
++   e[1] &lt;- (y[1] - fit[1])
++   mu[1] &lt;- fit[1]
++   for (i in 2:n) {
++   e[i] &lt;- (y[i] - fit[i]) #- phi*e[i-1]
++   mu[i] &lt;- fit[i] + phi * e[i-1]
++   }
++   #Priors
++   phi ~ dunif(-1,1)
++   for (i in 1:nX) {
++   beta[i] ~ dnorm(0,1.0E-6)
++   }
++   sigma &lt;- z/sqrt(chSq)    # prior for sigma; cauchy = normal/sqrt(chi^2)
++   z ~ dnorm(0, 0.04)I(0,)
++   chSq ~ dgamma(0.5, 0.5)  # chi^2 with 1 d.f.
++   tau &lt;- pow(sigma, -2)
++   tau.cor &lt;- tau #* (1- phi*phi)
++   }
++   &quot;
+&gt; 
+&gt; ## write the model to a text file
+&gt; writeLines(modelString, con = &quot;tempModel.txt&quot;)</code></pre>
+<p>Arrange the data as a list (as required by <code>JAGS</code>). As input, <code>JAGS</code> will need to be supplied with: the response variable, the predictor matrix, the number of predictors, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.</p>
+<pre class="r"><code>&gt; Xmat = model.matrix(~x, data.temporalCor)
+&gt; data.temporalCor.list &lt;- with(data.temporalCor, list(y = y, X = Xmat,
++     n = nrow(data.temporalCor), nX = ncol(Xmat)))</code></pre>
+<p>Define the nodes (parameters and derivatives) to monitor and the chain parameters.</p>
+<pre class="r"><code>&gt; params &lt;- c(&quot;beta&quot;, &quot;sigma&quot;, &quot;phi&quot;)
+&gt; nChains = 2
+&gt; burnInSteps = 5000
+&gt; thinSteps = 1
+&gt; numSavedSteps = 10000  #across all chains
+&gt; nIter = ceiling(burnInSteps + (numSavedSteps * thinSteps)/nChains)
+&gt; nIter
+[1] 10000</code></pre>
+<p>Start the <code>JAGS</code> model (check the model, load data into the model, specify the number of chains and compile the model). Load the <code>R2jags</code> package.</p>
+<pre class="r"><code>&gt; library(R2jags)</code></pre>
+<p>Now run the <code>JAGS</code> code via the <code>R2jags</code> interface.</p>
+<pre class="r"><code>&gt; data.temporalCor.r2jags &lt;- jags(data = data.temporalCor.list, inits = NULL, parameters.to.save = params,
++     model.file = &quot;tempModel.txt&quot;, n.chains = nChains, n.iter = nIter,
++     n.burnin = burnInSteps, n.thin = thinSteps)
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 50
+   Unobserved stochastic nodes: 5
+   Total graph size: 413
+
+Initializing model
+&gt; 
+&gt; print(data.temporalCor.r2jags)
+Inference for Bugs model at &quot;tempModel.txt&quot;, fit using jags,
+ 2 chains, each with 10000 iterations (first 5000 discarded)
+ n.sims = 10000 iterations saved
+         mu.vect sd.vect    2.5%     25%     50%     75%   97.5%  Rhat n.eff
+beta[1]   30.841  11.858   8.852  22.556  30.505  38.559  55.177 1.001 10000
+beta[2]    0.225   0.100   0.028   0.159   0.225   0.292   0.422 1.001  3800
+phi        0.913   0.054   0.793   0.879   0.919   0.954   0.994 1.001  3400
+sigma     12.133   1.253   9.967  11.253  12.034  12.902  14.828 1.001  7300
+deviance 391.602   2.641 388.354 389.656 390.985 392.927 398.180 1.001  9200
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 3.5 and DIC = 395.1
+DIC is an estimate of expected predictive error (lower deviance is better).</code></pre>
+</div>
+<div id="mcmc-diagnostics" class="section level2">
+<h2>MCMC diagnostics</h2>
+<pre class="r"><code>&gt; library(mcmcplots)
+&gt; denplot(data.temporalCor.r2jags, parms = c(&quot;beta&quot;, &quot;sigma&quot;, &quot;phi&quot;))</code></pre>
+<p><img src="/JAGS/autocorrelation-jags/2020-02-01-autocorrelation-jags_files/figure-html/mcmc_diag-1.png" width="672" /></p>
+<pre class="r"><code>&gt; traplot(data.temporalCor.r2jags, parms = c(&quot;beta&quot;, &quot;sigma&quot;, &quot;phi&quot;))</code></pre>
+<p><img src="/JAGS/autocorrelation-jags/2020-02-01-autocorrelation-jags_files/figure-html/mcmc_diag-2.png" width="672" /></p>
+<pre class="r"><code>&gt; data.mcmc = as.mcmc(data.temporalCor.r2jags)
+&gt; #Raftery diagnostic
+&gt; raftery.diag(data.mcmc)
+[[1]]
+
+Quantile (q) = 0.025
+Accuracy (r) = +/- 0.005
+Probability (s) = 0.95 
+                                                
+          Burn-in  Total Lower bound  Dependence
+          (M)      (N)   (Nmin)       factor (I)
+ beta[1]  2        3930  3746         1.05      
+ beta[2]  2        3866  3746         1.03      
+ deviance 2        3866  3746         1.03      
+ phi      7        7397  3746         1.97      
+ sigma    4        4636  3746         1.24      
+
+
+[[2]]
+
+Quantile (q) = 0.025
+Accuracy (r) = +/- 0.005
+Probability (s) = 0.95 
+                                                
+          Burn-in  Total Lower bound  Dependence
+          (M)      (N)   (Nmin)       factor (I)
+ beta[1]  3        4062  3746         1.080     
+ beta[2]  2        3620  3746         0.966     
+ deviance 2        3803  3746         1.020     
+ phi      6        6878  3746         1.840     
+ sigma    4        4713  3746         1.260     </code></pre>
+<pre class="r"><code>&gt; #Autocorrelation diagnostic
+&gt; autocorr.diag(data.mcmc)
+           beta[1]      beta[2]     deviance          phi        sigma
+Lag 0  1.000000000  1.000000000  1.000000000  1.000000000  1.000000000
+Lag 1  0.174857318 -0.006205038  0.164212015  0.398270011  0.166634323
+Lag 5  0.017823932  0.002140092 -0.016470982  0.017851360  0.011892997
+Lag 10 0.004107514  0.010910488  0.020001216 -0.005693854  0.007020861
+Lag 50 0.002176470  0.016102607  0.008360988  0.002061169 -0.007663541</code></pre>
+<p>All diagnostics seem fine.</p>
+</div>
+<div id="model-validation" class="section level2">
+<h2>Model validation</h2>
+<p>Whenever we fit a model that incorporates changes to the variance-covariance structures, we need to explore modified standardized residuals. In this case, the raw residuals should be updated to reflect the autocorrelation (subtract residual from previous time weighted by the autocorrelation parameter) before standardising by <code>sigma</code>.</p>
+<p><span class="math display">\[ Res_i = Y_i - \mu_i\]</span></p>
+<p><span class="math display">\[ Res_{i+1} = Res_{i+1} - \rho Res_i\]</span></p>
+<p><span class="math display">\[ Res_i = \frac{Res_i}{\sigma} \]</span></p>
+<pre class="r"><code>&gt; mcmc = data.temporalCor.r2jags$BUGSoutput$sims.matrix
+&gt; # generate a model matrix
+&gt; newdata = data.temporalCor
+&gt; Xmat = model.matrix(~x, newdata)
+&gt; ## get median parameter estimates
+&gt; wch = grep(&quot;beta&quot;, colnames(mcmc))
+&gt; coefs = mcmc[, wch]
+&gt; fit = coefs %*% t(Xmat)
+&gt; resid = -1 * sweep(fit, 2, data.temporalCor$y, &quot;-&quot;)
+&gt; n = ncol(resid)
+&gt; resid[, -1] = resid[, -1] - (resid[, -n] * mcmc[, &quot;phi&quot;])
+&gt; resid = apply(resid, 2, median)/median(mcmc[, &quot;sigma&quot;])
+&gt; fit = apply(fit, 2, median)
+&gt; 
+&gt; library(ggplot2)
+&gt; ggplot() + geom_point(data = NULL, aes(y = resid, x = fit)) + theme_classic()</code></pre>
+<p><img src="/JAGS/autocorrelation-jags/2020-02-01-autocorrelation-jags_files/figure-html/mcmc_residuals-1.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; ggplot() + geom_point(data = NULL, aes(y = resid, x = data.temporalCor$x)) + theme_classic()</code></pre>
+<p><img src="/JAGS/autocorrelation-jags/2020-02-01-autocorrelation-jags_files/figure-html/mcmc_residuals-2.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; ggplot(data = NULL, aes(y = resid, x = data.temporalCor$year)) +
++     geom_point() + geom_line() + geom_hline(yintercept = 0, linetype = &quot;dashed&quot;)</code></pre>
+<p><img src="/JAGS/autocorrelation-jags/2020-02-01-autocorrelation-jags_files/figure-html/mcmc_residuals-3.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; plot(acf(resid, lag = 40))</code></pre>
+<p><img src="/JAGS/autocorrelation-jags/2020-02-01-autocorrelation-jags_files/figure-html/mcmc_residuals-4.png" width="672" /></p>
+<p>No obvious autocorrelation or other issues with residuals remaining.</p>
+</div>
+<div id="parameter-estimates" class="section level2">
+<h2>Parameter estimates</h2>
+<p>Explore parameter estimates.</p>
+<pre class="r"><code>&gt; library(broom)
+&gt; tidyMCMC(as.mcmc(data.temporalCor.r2jags), conf.int = TRUE, conf.method = &quot;HPDinterval&quot;)
+# A tibble: 5 x 5
+  term     estimate std.error conf.low conf.high
+  &lt;chr&gt;       &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+1 beta[1]    30.8     11.9      7.36      53.5  
+2 beta[2]     0.225    0.100    0.0321     0.425
+3 deviance  392.       2.64   388.       397.   
+4 phi         0.913    0.0537   0.813      1.000
+5 sigma      12.1      1.25     9.91      14.7  </code></pre>
+</div>
+</div>
+<div id="incorporating-ar1-residual-autocorrelation-structure" class="section level1">
+<h1>Incorporating AR1 residual autocorrelation structure</h1>
+<div id="model-fitting-1" class="section level2">
+<h2>Model fitting</h2>
+<p>We proceed to code the model into <code>JAGS</code> (remember that in this software normal distribution are parameterised in terms of precisions <span class="math inline">\(\tau\)</span> rather than variances, where <span class="math inline">\(\tau=\frac{1}{\sigma^2}\)</span>). Define the model.</p>
+<pre class="r"><code>&gt; modelString2 = &quot;
++   model {
++   #Likelihood
++   for (i in 1:n) {
++   mu[i] &lt;- inprod(beta[],X[i,])
++   }
++   y[1:n] ~ dmnorm(mu[1:n],Omega)
++   for (i in 1:n) {
++   for (j in 1:n) {
++   Sigma[i,j] &lt;- sigma2*(equals(i,j) + (1-equals(i,j))*pow(phi,abs(i-j))) 
++   }
++   }
++   Omega &lt;- inverse(Sigma)
++   
++   #Priors
++   phi ~ dunif(-1,1)
++   for (i in 1:nX) {
++   beta[i] ~ dnorm(0,1.0E-6)
++   }
++   sigma &lt;- z/sqrt(chSq)    # prior for sigma; cauchy = normal/sqrt(chi^2)
++   z ~ dnorm(0, 0.04)I(0,)
++   chSq ~ dgamma(0.5, 0.5)  # chi^2 with 1 d.f.
++   sigma2 = pow(sigma,2)
++   #tau.cor &lt;- tau #* (1- phi*phi)
++   }
++   &quot;
+&gt; 
+&gt; ## write the model to a text file
+&gt; writeLines(modelString2, con = &quot;tempModel2.txt&quot;)</code></pre>
+<p>Arrange the data as a list (as required by <code>JAGS</code>). As input, <code>JAGS</code> will need to be supplied with: the response variable, the predictor matrix, the number of predictors, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.</p>
+<pre class="r"><code>&gt; Xmat = model.matrix(~x, data.temporalCor)
+&gt; data.temporalCor.list &lt;- with(data.temporalCor, list(y = y, X = Xmat,
++     n = nrow(data.temporalCor), nX = ncol(Xmat)))</code></pre>
+<p>Define the nodes (parameters and derivatives) to monitor and the chain parameters.</p>
+<pre class="r"><code>&gt; params &lt;- c(&quot;beta&quot;, &quot;sigma&quot;, &quot;phi&quot;)
+&gt; nChains = 2
+&gt; burnInSteps = 5000
+&gt; thinSteps = 1
+&gt; numSavedSteps = 10000  #across all chains
+&gt; nIter = ceiling(burnInSteps + (numSavedSteps * thinSteps)/nChains)
+&gt; nIter
+[1] 10000</code></pre>
+<p>Now run the <code>JAGS</code> code via the <code>R2jags</code> interface.</p>
+<pre class="r"><code>&gt; data.temporalCor2.r2jags &lt;- jags(data = data.temporalCor.list, inits = NULL, parameters.to.save = params,
++     model.file = &quot;tempModel2.txt&quot;, n.chains = nChains, n.iter = nIter,
++     n.burnin = burnInSteps, n.thin = thinSteps)
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 1
+   Unobserved stochastic nodes: 5
+   Total graph size: 5566
+
+Initializing model
+&gt; 
+&gt; print(data.temporalCor2.r2jags)
+Inference for Bugs model at &quot;tempModel2.txt&quot;, fit using jags,
+ 2 chains, each with 10000 iterations (first 5000 discarded)
+ n.sims = 10000 iterations saved
+         mu.vect sd.vect    2.5%     25%     50%     75%   97.5%  Rhat n.eff
+beta[1]   19.926  24.597 -19.141   9.722  18.990  29.365  64.348 1.014 10000
+beta[2]    0.225   0.100   0.028   0.159   0.227   0.291   0.421 1.001 10000
+phi        0.890   0.055   0.773   0.854   0.895   0.930   0.980 1.011   160
+sigma     30.352  15.780  18.171  22.799  26.810  32.951  61.419 1.010   410
+deviance 392.642   2.706 389.232 390.628 392.029 394.019 399.490 1.001  2900
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 3.7 and DIC = 396.3
+DIC is an estimate of expected predictive error (lower deviance is better).</code></pre>
+</div>
+<div id="mcmc-diagnostics-1" class="section level2">
+<h2>MCMC diagnostics</h2>
+<pre class="r"><code>&gt; denplot(data.temporalCor2.r2jags, parms = c(&quot;beta&quot;, &quot;sigma&quot;, &quot;phi&quot;))</code></pre>
+<p><img src="/JAGS/autocorrelation-jags/2020-02-01-autocorrelation-jags_files/figure-html/mcmc_diag_ex2-1.png" width="672" /></p>
+<pre class="r"><code>&gt; traplot(data.temporalCor2.r2jags, parms = c(&quot;beta&quot;, &quot;sigma&quot;, &quot;phi&quot;))</code></pre>
+<p><img src="/JAGS/autocorrelation-jags/2020-02-01-autocorrelation-jags_files/figure-html/mcmc_diag_ex2-2.png" width="672" /></p>
+<pre class="r"><code>&gt; data.mcmc = as.mcmc(data.temporalCor2.r2jags)
+&gt; #Raftery diagnostic
+&gt; raftery.diag(data.mcmc)
+[[1]]
+
+Quantile (q) = 0.025
+Accuracy (r) = +/- 0.005
+Probability (s) = 0.95 
+                                                
+          Burn-in  Total Lower bound  Dependence
+          (M)      (N)   (Nmin)       factor (I)
+ beta[1]  15       14982 3746         4.00      
+ beta[2]  2        3866  3746         1.03      
+ deviance 2        3995  3746         1.07      
+ phi      9        9308  3746         2.48      
+ sigma    8        10294 3746         2.75      
+
+
+[[2]]
+
+Quantile (q) = 0.025
+Accuracy (r) = +/- 0.005
+Probability (s) = 0.95 
+                                                
+          Burn-in  Total Lower bound  Dependence
+          (M)      (N)   (Nmin)       factor (I)
+ beta[1]  4        4955  3746         1.320     
+ beta[2]  2        3620  3746         0.966     
+ deviance 2        3930  3746         1.050     
+ phi      12       12162 3746         3.250     
+ sigma    8        10644 3746         2.840     </code></pre>
+<pre class="r"><code>&gt; #Autocorrelation diagnostic
+&gt; autocorr.diag(data.mcmc)
+            beta[1]      beta[2]   deviance       phi      sigma
+Lag 0   1.000000000  1.000000000 1.00000000 1.0000000 1.00000000
+Lag 1   0.023745389 -0.007088969 0.19477040 0.8775299 0.95206712
+Lag 5   0.019171996  0.008569178 0.08589717 0.5774327 0.80961727
+Lag 10 -0.009155805  0.008682983 0.06468974 0.3677587 0.64495814
+Lag 50  0.012167974  0.014954099 0.01686647 0.0317406 0.04466731</code></pre>
+<p>All diagnostics seem fine.</p>
+</div>
+<div id="model-validation-1" class="section level2">
+<h2>Model validation</h2>
+<p>Whenever we fit a model that incorporates changes to the variance-covariance structures, we need to explore modified standardized residuals. In this case, the raw residuals should be updated to reflect the autocorrelation (subtract residual from previous time weighted by the autocorrelation parameter) before standardising by <code>sigma</code>.</p>
+<p><span class="math display">\[ Res_i = Y_i - \mu_i\]</span></p>
+<p><span class="math display">\[ Res_{i+1} = Res_{i+1} - \rho Res_i\]</span></p>
+<p><span class="math display">\[ Res_i = \frac{Res_i}{\sigma} \]</span></p>
+<pre class="r"><code>&gt; mcmc = data.temporalCor2.r2jags$BUGSoutput$sims.matrix
+&gt; # generate a model matrix
+&gt; newdata = data.temporalCor
+&gt; Xmat = model.matrix(~x, newdata)
+&gt; ## get median parameter estimates
+&gt; wch = grep(&quot;beta&quot;, colnames(mcmc))
+&gt; coefs = mcmc[, wch]
+&gt; fit = coefs %*% t(Xmat)
+&gt; resid = -1 * sweep(fit, 2, data.temporalCor$y, &quot;-&quot;)
+&gt; n = ncol(resid)
+&gt; resid[, -1] = resid[, -1] - (resid[, -n] * mcmc[, &quot;phi&quot;])
+&gt; resid = apply(resid, 2, median)/median(mcmc[, &quot;sigma&quot;])
+&gt; fit = apply(fit, 2, median)
+&gt; 
+&gt; ggplot() + geom_point(data = NULL, aes(y = resid, x = fit)) + theme_classic()</code></pre>
+<p><img src="/JAGS/autocorrelation-jags/2020-02-01-autocorrelation-jags_files/figure-html/mcmc_residuals_ex2-1.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; ggplot() + geom_point(data = NULL, aes(y = resid, x = data.temporalCor$x)) + theme_classic()</code></pre>
+<p><img src="/JAGS/autocorrelation-jags/2020-02-01-autocorrelation-jags_files/figure-html/mcmc_residuals_ex2-2.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; ggplot(data = NULL, aes(y = resid, x = data.temporalCor$year)) +
++     geom_point() + geom_line() + geom_hline(yintercept = 0, linetype = &quot;dashed&quot;)</code></pre>
+<p><img src="/JAGS/autocorrelation-jags/2020-02-01-autocorrelation-jags_files/figure-html/mcmc_residuals_ex2-3.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; plot(acf(resid, lag = 40))</code></pre>
+<p><img src="/JAGS/autocorrelation-jags/2020-02-01-autocorrelation-jags_files/figure-html/mcmc_residuals_ex2-4.png" width="672" /></p>
+<p>No obvious autocorrelation or other issues with residuals remaining</p>
+</div>
+<div id="parameter-estimates-1" class="section level2">
+<h2>Parameter estimates</h2>
+<p>Explore parameter estimates.</p>
+<pre class="r"><code>&gt; tidyMCMC(as.mcmc(data.temporalCor2.r2jags), conf.int = TRUE, conf.method = &quot;HPDinterval&quot;)
+# A tibble: 5 x 5
+  term     estimate std.error conf.low conf.high
+  &lt;chr&gt;       &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+1 beta[1]    19.9     24.6    -16.6       66.3  
+2 beta[2]     0.225    0.0997   0.0313     0.423
+3 deviance  393.       2.71   389.       398.   
+4 phi         0.890    0.0546   0.780      0.984
+5 sigma      30.4     15.8     16.2       51.2  </code></pre>
+</div>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references hanging-indent">
+<div id="ref-plummer2004jags">
+<p>Plummer, Martyn. 2004. “JAGS: Just Another Gibbs Sampler.”</p>
+</div>
+<div id="ref-su2015package">
+<p>Su, Yu-Sung, Masanao Yajima, Maintainer Yu-Sung Su, and JAGS SystemRequirements. 2015. “Package ‘R2jags’.” <em>R Package Version 0.03-08, URL Http://CRAN. R-Project. Org/Package= R2jags</em>.</p>
+</div>
+</div>
+</div>

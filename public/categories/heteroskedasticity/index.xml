@@ -1,0 +1,1465 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>heteroskedasticity on Andrea Gabrio</title>
+    <link>/categories/heteroskedasticity/</link>
+    <description>Recent content in heteroskedasticity on Andrea Gabrio</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 07 Feb 2020 21:13:14 -0500</lastBuildDate>
+    
+	    <atom:link href="/categories/heteroskedasticity/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Variance Heterogeneity - JAGS</title>
+      <link>/jags/heterogeneity-jags/heterogeneity-jags/</link>
+      <pubDate>Fri, 07 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/jags/heterogeneity-jags/heterogeneity-jags/</guid>
+      <description>
+&lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;p&gt;This tutorial will focus on the use of Bayesian estimation to fit simple linear regression models. &lt;code&gt;BUGS&lt;/code&gt; (Bayesian inference Using &lt;em&gt;Gibbs Sampling&lt;/em&gt;) is an algorithm and supporting language (resembling &lt;code&gt;R&lt;/code&gt;) dedicated to performing the Gibbs sampling implementation of &lt;em&gt;Markov Chain Monte Carlo&lt;/em&gt; (MCMC) method. Dialects of the &lt;code&gt;BUGS&lt;/code&gt; language are implemented within three main projects:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;OpenBUGS&lt;/strong&gt; - written in component pascal.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;JAGS&lt;/strong&gt; - (Just Another Gibbs Sampler) - written in &lt;code&gt;C++&lt;/code&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;STAN&lt;/strong&gt; - a dedicated Bayesian modelling framework written in &lt;code&gt;C++&lt;/code&gt; and implementing &lt;em&gt;Hamiltonian&lt;/em&gt; MCMC samplers.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Whilst the above programs can be used stand-alone, they do offer the rich data pre-processing and graphical capabilities of &lt;code&gt;R&lt;/code&gt;, and thus, they are best accessed from within &lt;code&gt;R&lt;/code&gt; itself. As such there are multiple packages devoted to interfacing with the various software implementations:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;R2OpenBUGS&lt;/em&gt; - interfaces with &lt;code&gt;OpenBUGS&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;R2jags&lt;/em&gt; - interfaces with &lt;code&gt;JAGS&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;rstan&lt;/em&gt; - interfaces with &lt;code&gt;STAN&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This tutorial will demonstrate how to fit models in &lt;code&gt;JAGS&lt;/code&gt; (&lt;span class=&#34;citation&#34;&gt;Plummer (2004)&lt;/span&gt;) using the package &lt;code&gt;R2jags&lt;/code&gt; (&lt;span class=&#34;citation&#34;&gt;Su et al. (2015)&lt;/span&gt;) as interface, which also requires to load some other packages.&lt;/p&gt;
+&lt;div id=&#34;overview&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Overview&lt;/h1&gt;
+&lt;div id=&#34;introduction&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;Up until now (in the proceeding tutorials), the focus has been on models that adhere to specific assumptions about the underlying populations (and data). Indeed, both before and immediately after fitting these models, I have stressed the importance of evaluating and validating the proposed and fitted models to ensure reliability of the models. It is now worth us revisiting those fundamental assumptions as well as exploring the options that are available when the populations (data) do not conform. Let’s explore a simple linear regression model to see how each of the assumptions relate to the model.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ y_i = \beta_0 + \beta_1x_i + \epsilon_i \;\;\; \text{with} \;\;\; \epsilon_i \sim \text{Normal}(0, \sigma^2).\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;The above simple statistical model models the &lt;strong&gt;linear relationship&lt;/strong&gt; of &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; against &lt;span class=&#34;math inline&#34;&gt;\(x_i\)&lt;/span&gt;. The residuals (&lt;span class=&#34;math inline&#34;&gt;\(\epsilon\)&lt;/span&gt;) are assumed to be &lt;strong&gt;normally distributed&lt;/strong&gt; with a mean of zero and a constant (yet unknown) variance (&lt;span class=&#34;math inline&#34;&gt;\(\sigma\)&lt;/span&gt;, &lt;strong&gt;homogeneity of variance&lt;/strong&gt;). The residuals (and thus observations) are also assumed to all be &lt;strong&gt;independent&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;Homogeneity of variance and independence are encapsulated within the single symbol for variance (&lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt;). In assuming equal variances and independence, we are actually making an assumption about the variance-covariance structure of the populations (and thus residuals). Specifically, we assume that all populations are equally varied and thus can be represented well by a single variance term (all diagonal values in a &lt;span class=&#34;math inline&#34;&gt;\(N\times N\)&lt;/span&gt; covariance matrix are the same, &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt;) and the covariances between each population are zero (off diagonals). In simple regression, each observation (data point) represents a single observation drawn (sampled) from an entire population of possible observations. The above covariance structure thus assumes that the covariance between each population (observation) is zero - that is, each observation is completely independent of each other observation. Whilst it is mathematically convenient when data conform to these conditions (normality, homogeneity of variance, independence and linearity), data often violate one or more of these assumptions. In the following, I want to discuss and explore the causes and options for dealing with non-compliance to each of these conditions. By gaining a better understanding of how the various model fitting engines perform their task, we are better equipped to accommodate aspects of the data that don’t otherwise conform to the simple regression assumptions. In this tutorial we specifically focus on the topic of heterogeneity of the variance.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;dealing-with-heterogeneity&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Dealing with heterogeneity&lt;/h1&gt;
+&lt;p&gt;The validity and reliability of the above linear models are very much dependent on variance homogeneity. In particular, variances that increase (or decrease) with a change in expected values are substantial violations. Whilst non-normality can also be a source of heterogeneity and therefore normalising can address both issues, heterogeneity can also be independent of normality. Similarly, generalised linear models (that accommodate alternative residual distributions - such as Poisson, Binomial, Gamma, etc) can be useful for more appropriate modelling of both the distribution and variance of a model. However, for Gaussian (normal) models in which there is evidence of heterogeneity of variance, yet no evidence of non-normality, it is also possible to specifically model in an alternative variance structure. For example, we can elect to allow variance to increase proportionally to a covariate. To assist us in the following demonstration, we will generate another data set - one that has heteroskedasticity (unequal variance) by design. Rather than draw each residual (and thus observation) from a normal distribution with a constant standard deviation), we will draw the residuals from normal distributions whose variance is proportional to the &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt; predictor.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; set.seed(126)
+&amp;gt; n &amp;lt;- 16
+&amp;gt; a &amp;lt;- 40  #intercept
+&amp;gt; b &amp;lt;- 1.5  #slope
+&amp;gt; x &amp;lt;- 1:n  #values of the year covariate
+&amp;gt; sigma &amp;lt;- 1.5 * x
+&amp;gt; sigma
+ [1]  1.5  3.0  4.5  6.0  7.5  9.0 10.5 12.0 13.5 15.0 16.5 18.0 19.5 21.0 22.5
+[16] 24.0
+&amp;gt; 
+&amp;gt; eps &amp;lt;- rnorm(n, mean = 0, sd = sigma)  #residuals
+&amp;gt; y &amp;lt;- a + b * x + eps  #response variable
+&amp;gt; # OR
+&amp;gt; y &amp;lt;- (model.matrix(~x) %*% c(a, b)) + eps
+&amp;gt; data.het &amp;lt;- data.frame(y = round(y, 1), x)  #dataset
+&amp;gt; head(data.het)  #print out the first six rows of the data set
+     y x
+1 42.1 1
+2 44.2 2
+3 41.2 3
+4 51.7 4
+5 43.5 5
+6 48.3 6
+&amp;gt; 
+&amp;gt; # scatterplot of y against x
+&amp;gt; library(car)
+&amp;gt; scatterplot(y ~ x, data.het)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/heterogeneity-jags/2020-02-01-heterogeneity-jags_files/figure-html/generate_data-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; 
+&amp;gt; # regular simple linear regression
+&amp;gt; data.het.lm &amp;lt;- lm(y ~ x, data.het)
+&amp;gt; 
+&amp;gt; # plot of standardised residuals
+&amp;gt; plot(rstandard(data.het.lm) ~ fitted(data.het.lm))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/heterogeneity-jags/2020-02-01-heterogeneity-jags_files/figure-html/generate_data-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; 
+&amp;gt; # plot of standardized residuals against the predictor
+&amp;gt; plot(rstandard(data.het.lm) ~ x)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/heterogeneity-jags/2020-02-01-heterogeneity-jags_files/figure-html/generate_data-3.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;The above scatterplot suggests that variance may increase with increasing &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt;. The residual plot (using standardised residuals) suggests that mean and variance could be related - there is a hint of a wedge-shaped pattern. Importantly, the plot of standardised residuals against the predictor shows the same pattern as the residual plot implying that heterogeneity is likely to be due a relationship between variance &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt;. That is, an increase in &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt; is associated with an increase in variance. In response to this, we could incorporate an alternative variance structure. The simple model we fit earlier assumed that the expected values were all drawn from normal distributions with the same level of precision &lt;span class=&#34;math inline&#34;&gt;\(\tau\)&lt;/span&gt; and therefore variance. This assumption is often summarised as:&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \boldsymbol V = \sigma^2 \times \boldsymbol I,\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\boldsymbol I\)&lt;/span&gt; is the &lt;span class=&#34;math inline&#34;&gt;\(N \times N\)&lt;/span&gt; identity matrix (elements on the main diagonal are one and zero outside) which multipled by the constant value &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt; produces the homoskedastic covariance matrix &lt;span class=&#34;math inline&#34;&gt;\(\boldsymbol V\)&lt;/span&gt; (elements on the main diagonal are &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt; and zero outside). If, instead, we consider an heteroskedastic covariance matrix then, for example, we could assume that the variance is proportional to the level of the covariate. This assumption can be summarised as:&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \boldsymbol V = \sigma^2 \times X \times \boldsymbol I,\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where the product of the identity matrix &lt;span class=&#34;math inline&#34;&gt;\(\boldsymbol I\)&lt;/span&gt; and the covariate-specific values &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2 \times X\)&lt;/span&gt; produces the heteroskedastic covariance matrix &lt;span class=&#34;math inline&#34;&gt;\(\boldsymbol V\)&lt;/span&gt; (elements on the main diagonal are &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2 \times X\)&lt;/span&gt; and zero outside). With a couple of small adjustments, we can modify the &lt;code&gt;JAGS&lt;/code&gt; code in order to accommodate a variance structure in which variance is proportional to the predictor variable. Note that since &lt;code&gt;JAGS&lt;/code&gt; works with precision (&lt;span class=&#34;math inline&#34;&gt;\(\tau=\frac{1}{\sigma^2}\)&lt;/span&gt;), I have elected to express the predictor as &lt;span class=&#34;math inline&#34;&gt;\(\frac{1}{x}\)&lt;/span&gt;. This way the weightings are compatible with precision rather than variance. In previous tutorials, we have used a flat, uniform distribution &lt;span class=&#34;math inline&#34;&gt;\([0,100]\)&lt;/span&gt; for variance priors. Whilst this is a reasonable choice for a non-informative prior, &lt;span class=&#34;citation&#34;&gt;Gelman and others (2006)&lt;/span&gt; suggest that half-cauchy priors are more appropriate when the number of groups is low.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;model-fitting&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Model fitting&lt;/h1&gt;
+&lt;p&gt;The observed response (&lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt;) are assumed to be drawn from a normal distribution with a given mean (&lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt;) and standard deviation weighted by &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt; on the value of the covariate (&lt;span class=&#34;math inline&#34;&gt;\(\sigma \times \omega\)&lt;/span&gt;). The expected values (&lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt;) are themselves determined by the linear predictor (&lt;span class=&#34;math inline&#34;&gt;\(\beta_0 + \beta_1x\)&lt;/span&gt;). In this case, &lt;span class=&#34;math inline&#34;&gt;\(\beta_0\)&lt;/span&gt; represents the mean of the first group and the set of &lt;span class=&#34;math inline&#34;&gt;\(\beta\)&lt;/span&gt;’s represent the differences between each other group and the first group. MCMC sampling requires priors on all parameters. We will employ weakly informative priors. Specifying ‘uninformative’ priors is always a bit of a balancing act. If the priors are too vague (wide) the MCMC sampler can wander off into nonscence areas of likelihood rather than concentrate around areas of highest likelihood (desired when wanting the outcomes to be largely driven by the data). On the other hand, if the priors are too strong, they may have an influence on the parameters. In such a simple model, this balance is very forgiving - it is for more complex models that prior choice becomes more important. For this simple model, we will go with zero-centered Gaussian (normal) priors with relatively large standard deviations (&lt;span class=&#34;math inline&#34;&gt;\(100\)&lt;/span&gt;) for both the intercept and the treatment effect and a wide half-cauchy (&lt;span class=&#34;math inline&#34;&gt;\(\text{scale}=5\)&lt;/span&gt;) for the standard deviation.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[y_i \sim N(\mu_i,\sigma \times \omega),  \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\mu_i=\beta_0 +\boldsymbol \beta \boldsymbol X\)&lt;/span&gt;. The assumed priors are: &lt;span class=&#34;math inline&#34;&gt;\(\beta \sim N(0,100)\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\sigma \sim \text{Cauchy}(0,5)\)&lt;/span&gt;. We note that we can also indirectly specify the prior on &lt;span class=&#34;math inline&#34;&gt;\(\sigma\)&lt;/span&gt; by expressing the standard deviation as the ratio between two variable: &lt;span class=&#34;math inline&#34;&gt;\(\sigma=\frac{z}{\sqrt{\chi}}\)&lt;/span&gt;. The numerator is a zero-truncated normally distributed variable &lt;span class=&#34;math inline&#34;&gt;\(z \sim N(0, 0.04) I(0,)\)&lt;/span&gt;, while the denominator is the square root of a variable distributed according to a Gamma distribution &lt;span class=&#34;math inline&#34;&gt;\(\chi \sim \text{Gamma}(0.5,0.5)\)&lt;/span&gt; (equivalent to a &lt;span class=&#34;math inline&#34;&gt;\(\chi^2\)&lt;/span&gt; distribution with &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt; degrees of freedom).&lt;/p&gt;
+&lt;p&gt;We proceed to code the model into &lt;code&gt;JAGS&lt;/code&gt; (remember that in this software normal distribution are parameterised in terms of precisions &lt;span class=&#34;math inline&#34;&gt;\(\tau\)&lt;/span&gt; rather than variances, where &lt;span class=&#34;math inline&#34;&gt;\(\tau=\frac{1}{\sigma^2}\)&lt;/span&gt;). Note the following example as group means calculated as derived posteriors.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; modelString = &amp;quot;
++   model {
++   #Likelihood
++   for (i in 1:n) {
++   y[i]~dnorm(mu[i],tau*(1/x[i]))
++   mu[i] &amp;lt;- beta0+beta1*x[i]
++   }
++ 
++   #Priors and derivatives
++   beta0 ~ dnorm(0,1.0E-6)
++   beta1 ~ dnorm(0,1.0E-6)
++ 
++   sigma &amp;lt;- z/sqrt(chSq)    # prior for sigma; cauchy = normal/sqrt(chi^2)
++   z ~ dnorm(0, 0.04)I(0,)
++   chSq ~ dgamma(0.5, 0.5)  # chi^2 with 1 d.f.
++   tau &amp;lt;- pow(sigma, -2)
++   }
++   &amp;quot;
+&amp;gt; 
+&amp;gt; ## write the model to a text file
+&amp;gt; writeLines(modelString, con = &amp;quot;heteroskModel.txt&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Arrange the data as a list (as required by &lt;code&gt;JAGS&lt;/code&gt;). As input, &lt;code&gt;JAGS&lt;/code&gt; will need to be supplied with: the response variable, the predictor matrix, the number of predictors, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; data.het.list &amp;lt;- with(data.het, list(y = y, x = x, n = nrow(data.het)))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Define the nodes (parameters and derivatives) to monitor and the chain parameters.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; params &amp;lt;- c(&amp;quot;beta0&amp;quot;, &amp;quot;beta1&amp;quot;, &amp;quot;sigma&amp;quot;)
+&amp;gt; nChains = 2
+&amp;gt; burnInSteps = 3000
+&amp;gt; thinSteps = 1
+&amp;gt; numSavedSteps = 15000  #across all chains
+&amp;gt; nIter = ceiling(burnInSteps + (numSavedSteps * thinSteps)/nChains)
+&amp;gt; nIter
+[1] 10500&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Start the &lt;code&gt;JAGS&lt;/code&gt; model (check the model, load data into the model, specify the number of chains and compile the model). Load the &lt;code&gt;R2jags&lt;/code&gt; package.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(R2jags)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now run the &lt;code&gt;JAGS&lt;/code&gt; code via the &lt;code&gt;R2jags&lt;/code&gt; interface. Note that the first time jags is run after the &lt;code&gt;R2jags&lt;/code&gt; package is loaded, it is often necessary to run any kind of randomization function just to initiate the .Random.seed variable.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; data.het.r2jags &amp;lt;- jags(data = data.het.list, inits = NULL, parameters.to.save = params,
++     model.file = &amp;quot;heteroskModel.txt&amp;quot;, n.chains = nChains, n.iter = nIter,
++     n.burnin = burnInSteps, n.thin = thinSteps)
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 16
+   Unobserved stochastic nodes: 4
+   Total graph size: 111
+
+Initializing model
+&amp;gt; 
+&amp;gt; print(data.het.r2jags)
+Inference for Bugs model at &amp;quot;heteroskModel.txt&amp;quot;, fit using jags,
+ 2 chains, each with 10500 iterations (first 3000 discarded)
+ n.sims = 15000 iterations saved
+         mu.vect sd.vect    2.5%     25%     50%     75%   97.5%  Rhat n.eff
+beta0     41.492   2.571  36.510  39.844  41.466  43.160  46.599 1.001 15000
+beta1      1.114   0.401   0.313   0.857   1.112   1.371   1.913 1.001 15000
+sigma      3.070   0.629   2.119   2.627   2.969   3.410   4.592 1.002  1300
+deviance 110.901   2.744 107.742 108.871 110.200 112.216 117.874 1.002  2800
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 3.8 and DIC = 114.7
+DIC is an estimate of expected predictive error (lower deviance is better).&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;mcmc-diagnostics&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;MCMC diagnostics&lt;/h1&gt;
+&lt;p&gt;In addition to the regular model diagnostic checks (such as residual plots), for Bayesian analyses, it is necessary to explore the characteristics of the MCMC chains and the sampler in general. Recall that the purpose of MCMC sampling is to replicate the posterior distribution of the model likelihood and priors by drawing a known number of samples from this posterior (thereby formulating a probability distribution). This is only reliable if the MCMC samples accurately reflect the posterior. Unfortunately, since we only know the posterior in the most trivial of circumstances, it is necessary to rely on indirect measures of how accurately the MCMC samples are likely to reflect the likelihood. I will briefly outline the most important diagnostics.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;Traceplots&lt;/em&gt; for each parameter illustrate the MCMC sample values after each successive iteration along the chain. Bad chain mixing (characterised by any sort of pattern) suggests that the MCMC sampling chains may not have completely traversed all features of the posterior distribution and that more iterations are required to ensure the distribution has been accurately represented.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;Autocorrelation&lt;/em&gt; plot for each parameter illustrate the degree of correlation between MCMC samples separated by different lags. For example, a lag of &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt; represents the degree of correlation between each MCMC sample and itself (obviously this will be a correlation of &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt;). A lag of &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt; represents the degree of correlation between each MCMC sample and the next sample along the chain and so on. In order to be able to generate unbiased estimates of parameters, the MCMC samples should be independent (uncorrelated).&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;Potential scale reduction factor&lt;/em&gt; (Rhat) statistic for each parameter provides a measure of sampling efficiency/effectiveness. Ideally, all values should be less than &lt;span class=&#34;math inline&#34;&gt;\(1.05\)&lt;/span&gt;. If there are values of &lt;span class=&#34;math inline&#34;&gt;\(1.05\)&lt;/span&gt; or greater it suggests that the sampler was not very efficient or effective. Not only does this mean that the sampler was potentially slower than it could have been but, more importantly, it could indicate that the sampler spent time sampling in a region of the likelihood that is less informative. Such a situation can arise from either a misspecified model or overly vague priors that permit sampling in otherwise nonscence parameter space.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Prior to examining the summaries, we should have explored the convergence diagnostics. We use the package &lt;code&gt;mcmcplots&lt;/code&gt; to obtain density and trace plots for the effects model as an example. When there are a lot of parameters, this can result in a very large number of traceplots. To focus on just certain parameters, e.g. &lt;span class=&#34;math inline&#34;&gt;\(\boldsymbol \beta\)&lt;/span&gt;.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(mcmcplots)
+&amp;gt; denplot(data.het.r2jags, parms = c(&amp;quot;beta0&amp;quot;, &amp;quot;beta1&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/heterogeneity-jags/2020-02-01-heterogeneity-jags_files/figure-html/mcmc_diag-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; traplot(data.het.r2jags, parms = c(&amp;quot;beta0&amp;quot;, &amp;quot;beta1&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/heterogeneity-jags/2020-02-01-heterogeneity-jags_files/figure-html/mcmc_diag-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Trace plots show no evidence that the chains have not reasonably traversed the entire multidimensional parameter space. When there are a lot of parameters, this can result in a very large number of traceplots. To focus on just certain parameters (such as &lt;span class=&#34;math inline&#34;&gt;\(\beta\)&lt;/span&gt;s).&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; data.mcmc = as.mcmc(data.het.r2jags)
+&amp;gt; #Raftery diagnostic
+&amp;gt; raftery.diag(data.mcmc)
+[[1]]
+
+Quantile (q) = 0.025
+Accuracy (r) = +/- 0.005
+Probability (s) = 0.95 
+                                                
+          Burn-in  Total Lower bound  Dependence
+          (M)      (N)   (Nmin)       factor (I)
+ beta0    2        3938  3746         1.050     
+ beta1    2        3729  3746         0.995     
+ deviance 2        3770  3746         1.010     
+ sigma    4        4643  3746         1.240     
+
+
+[[2]]
+
+Quantile (q) = 0.025
+Accuracy (r) = +/- 0.005
+Probability (s) = 0.95 
+                                                
+          Burn-in  Total Lower bound  Dependence
+          (M)      (N)   (Nmin)       factor (I)
+ beta0    2        3853  3746         1.030     
+ beta1    2        3895  3746         1.040     
+ deviance 2        3729  3746         0.995     
+ sigma    3        4346  3746         1.160     &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The Raftery diagnostics for each chain estimate that we would require no more than &lt;span class=&#34;math inline&#34;&gt;\(5000\)&lt;/span&gt; samples to reach the specified level of confidence in convergence. As we have &lt;span class=&#34;math inline&#34;&gt;\(10500\)&lt;/span&gt; samples, we can be confidence that convergence has occurred.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; #Autocorrelation diagnostic
+&amp;gt; autocorr.diag(data.mcmc)
+              beta0         beta1     deviance        sigma
+Lag 0   1.000000000  1.0000000000  1.000000000  1.000000000
+Lag 1   0.011777589  0.0071404620  0.229687388  0.247278554
+Lag 5   0.006349593  0.0032513419 -0.000699578  0.011972761
+Lag 10 -0.001248639 -0.0002634626 -0.010327446 -0.001271626
+Lag 50  0.018019858 -0.0055775204 -0.013066989  0.010275604&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;A lag of 10 appears to be sufficient to avoid autocorrelation (poor mixing).&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;model-validation&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Model validation&lt;/h1&gt;
+&lt;p&gt;Model validation involves exploring the model diagnostics and fit to ensure that the model is broadly appropriate for the data. As such, exploration of the residuals should be routine. For more complex models (those that contain multiple effects), it is also advisable to plot the residuals against each of the individual predictors. For sampling designs that involve sample collection over space or time, it is also a good idea to explore whether there are any temporal or spatial patterns in the residuals.&lt;/p&gt;
+&lt;p&gt;There are numerous situations (e.g. when applying specific variance-covariance structures to a model) where raw residuals do not reflect the interior workings of the model. Typically, this is because they do not take into account the variance-covariance matrix or assume a very simple variance-covariance matrix. Since the purpose of exploring residuals is to evaluate the model, for these cases, it is arguably better to draw conclusions based on standardized (or studentised) residuals. Unfortunately the definitions of standardised and studentised residuals appears to vary and the two terms get used interchangeably. I will adopt the following definitions:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;Standardised residuals&lt;/strong&gt;. The raw residuals divided by the true standard deviation of the residuals (which of course is rarely known).&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;Studentised residuals&lt;/strong&gt;. The raw residuals divided by the standard deviation of the residuals. Note that &lt;strong&gt;externally studentised residuals&lt;/strong&gt; are calculated by dividing the raw residuals by a unique standard deviation for each observation that is calculated from regressions having left each successive observation out.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;Pearson residuals&lt;/strong&gt;. The raw residuals divided by the standard deviation of the response variable.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;he mark of a good model is being able to predict well. In an ideal world, we would have sufficiently large sample size as to permit us to hold a fraction (such as &lt;span class=&#34;math inline&#34;&gt;\(25\)&lt;/span&gt;%) back thereby allowing us to train the model on &lt;span class=&#34;math inline&#34;&gt;\(75\)&lt;/span&gt;% of the data and then see how well the model can predict the withheld &lt;span class=&#34;math inline&#34;&gt;\(25\)&lt;/span&gt;%. Unfortunately, such a luxury is still rare. The next best option is to see how well the model can predict the observed data. Models tend to struggle most with the extremes of trends and have particular issues when the extremes approach logical boundaries (such as zero for count data and standard deviations). We can use the fitted model to generate random predicted observations and then explore some properties of these compared to the actual observed data.&lt;/p&gt;
+&lt;p&gt;Rather than dublicate this for both additive and multiplicative models, we will only explore the multiplicative model. Residuals are not computed directly within &lt;code&gt;JAGS&lt;/code&gt;. However, we can calculate them manually form the posteriors.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc = data.het.r2jags$BUGSoutput$sims.matrix[, c(&amp;quot;beta0&amp;quot;, &amp;quot;beta1&amp;quot;)]
+&amp;gt; # generate a model matrix
+&amp;gt; newdata = data.frame(x = data.het$x)
+&amp;gt; Xmat = model.matrix(~x, newdata)
+&amp;gt; ## get median parameter estimates
+&amp;gt; coefs = apply(mcmc, 2, median)
+&amp;gt; fit = as.vector(coefs %*% t(Xmat))
+&amp;gt; resid = data.het$y - fit
+&amp;gt; 
+&amp;gt; library(ggplot2)
+&amp;gt; ggplot() + geom_point(data = NULL, aes(y = resid, x = fit)) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/heterogeneity-jags/2020-02-01-heterogeneity-jags_files/figure-html/mcmc_residuals-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;The above residual plot would make us believe that we had a homogeneity of variance issue (which we thought we were addressing by defining a model that allowed the variance to be proportional to the predictor). This is because we have plotted the raw residuals rather than residuals that have been standardized by the variances. The above plot is also what the residual plot would look like if we had not made any attempt to define a model in which the variance was related to the predictor. Whenever we fit a model that incorporates changes to the variance-covariance structures, we should explore standardised residuals. In this case, we should divide the residuals by sigma and then divide by the square-root of the weights.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ Res_i = \frac{Y_i - \mu_i}{\sigma \times \sqrt{\omega}}\]&lt;/span&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(dplyr)
+&amp;gt; library(tidyr)
+&amp;gt; mcmc = data.het.r2jags$BUGSoutput$sims.matrix
+&amp;gt; coefs = mcmc[, c(&amp;quot;beta0&amp;quot;, &amp;quot;beta1&amp;quot;)]
+&amp;gt; Xmat = model.matrix(~x, data.het)
+&amp;gt; fit = coefs %*% t(Xmat)
+&amp;gt; resid = -1 * sweep(fit, 2, data.het$y, &amp;quot;-&amp;quot;)
+&amp;gt; resid = apply(resid, 2, median)/(median(mcmc[, &amp;quot;sigma&amp;quot;]) * sqrt(data.het$x))
+&amp;gt; fit = apply(fit, 2, median)
+&amp;gt; 
+&amp;gt; ggplot() + geom_point(data = NULL, aes(y = resid, x = fit)) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/heterogeneity-jags/2020-02-01-heterogeneity-jags_files/figure-html/mcmc_residuals2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;This is certainly an improvement. Nevertheless, there is still an indication of a relationship between mean and variance. We could attempt to further address this by refining &lt;span class=&#34;math inline&#34;&gt;\(\omega\)&lt;/span&gt; in the Bayesian model. That is, rather than indicate that variance is proportional to &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt;, we could indicate that variance is proportional to &lt;span class=&#34;math inline&#34;&gt;\(x^2\)&lt;/span&gt; (as an example) - we will leave this as an exercise for the reader. Residuals against predictors.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; ggplot() + geom_point(data = NULL, aes(y = resid, x = data.het$x)) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/heterogeneity-jags/2020-02-01-heterogeneity-jags_files/figure-html/mcmc_residuals3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Lets see how well data simulated from the model reflects the raw data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc = data.het.r2jags$BUGSoutput$sims.matrix
+&amp;gt; # generate a model matrix
+&amp;gt; Xmat = model.matrix(~x, data.het)
+&amp;gt; ## get median parameter estimates
+&amp;gt; coefs = mcmc[, c(&amp;quot;beta0&amp;quot;, &amp;quot;beta1&amp;quot;)]
+&amp;gt; fit = coefs %*% t(Xmat)
+&amp;gt; ## draw samples from this model
+&amp;gt; yRep = sapply(1:nrow(mcmc), function(i) rnorm(nrow(data.het), fit[i, ],
++     mcmc[i, &amp;quot;sigma&amp;quot;]))
+&amp;gt; ggplot() + geom_density(data = NULL, aes(x = as.vector(yRep), fill = &amp;quot;Model&amp;quot;),
++     alpha = 0.5) + geom_density(data = data.het, aes(x = y, fill = &amp;quot;Obs&amp;quot;),
++     alpha = 0.5) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/heterogeneity-jags/2020-02-01-heterogeneity-jags_files/figure-html/mcmc_rep-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;parameter-estimates&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Parameter estimates&lt;/h1&gt;
+&lt;p&gt;First, we look at the results from the model.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; print(data.het.r2jags)
+Inference for Bugs model at &amp;quot;heteroskModel.txt&amp;quot;, fit using jags,
+ 2 chains, each with 10500 iterations (first 3000 discarded)
+ n.sims = 15000 iterations saved
+         mu.vect sd.vect    2.5%     25%     50%     75%   97.5%  Rhat n.eff
+beta0     41.492   2.571  36.510  39.844  41.466  43.160  46.599 1.001 15000
+beta1      1.114   0.401   0.313   0.857   1.112   1.371   1.913 1.001 15000
+sigma      3.070   0.629   2.119   2.627   2.969   3.410   4.592 1.002  1300
+deviance 110.901   2.744 107.742 108.871 110.200 112.216 117.874 1.002  2800
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 3.8 and DIC = 114.7
+DIC is an estimate of expected predictive error (lower deviance is better).
+&amp;gt; 
+&amp;gt; # OR
+&amp;gt; library(broom)
+&amp;gt; tidyMCMC(as.mcmc(data.het.r2jags), conf.int = TRUE, conf.method = &amp;quot;HPDinterval&amp;quot;)
+# A tibble: 4 x 5
+  term     estimate std.error conf.low conf.high
+  &amp;lt;chr&amp;gt;       &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;
+1 beta0       41.5      2.57    36.5       46.6 
+2 beta1        1.11     0.401    0.338      1.94
+3 deviance   111.       2.74   108.       116.  
+4 sigma        3.07     0.629    2.00       4.35&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Conclusions&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;A one unit increase in &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt; is associated with a &lt;span class=&#34;math inline&#34;&gt;\(1.11\)&lt;/span&gt; change in &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;. That is, &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; declines at a rate of &lt;span class=&#34;math inline&#34;&gt;\(1.11\)&lt;/span&gt; per unit increase in &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt;. The &lt;span class=&#34;math inline&#34;&gt;\(95\)&lt;/span&gt;% confidence interval for the slope does not overlap with &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt; implying a significant effect of &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt; on &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;. While workers attempt to become comfortable with a new statistical framework, it is only natural that they like to evaluate and comprehend new structures and output alongside more familiar concepts. One way to facilitate this is via Bayesian p-values that are somewhat analogous to the frequentist p-values for investigating the hypothesis that a parameter is equal to zero.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmcpvalue &amp;lt;- function(samp) {
++     ## elementary version that creates an empirical p-value for the
++     ## hypothesis that the columns of samp have mean zero versus a general
++     ## multivariate distribution with elliptical contours.
++ 
++     ## differences from the mean standardized by the observed
++     ## variance-covariance factor
++ 
++     ## Note, I put in the bit for single terms
++     if (length(dim(samp)) == 0) {
++         std &amp;lt;- backsolve(chol(var(samp)), cbind(0, t(samp)) - mean(samp),
++             transpose = TRUE)
++         sqdist &amp;lt;- colSums(std * std)
++         sum(sqdist[-1] &amp;gt; sqdist[1])/length(samp)
++     } else {
++         std &amp;lt;- backsolve(chol(var(samp)), cbind(0, t(samp)) - colMeans(samp),
++             transpose = TRUE)
++         sqdist &amp;lt;- colSums(std * std)
++         sum(sqdist[-1] &amp;gt; sqdist[1])/nrow(samp)
++     }
++ 
++ }
+&amp;gt; ## since values are less than zero
+&amp;gt; mcmcpvalue(data.het.r2jags$BUGSoutput$sims.matrix[, c(&amp;quot;beta1&amp;quot;)])
+[1] 0.0092&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;With a p-value of essentially &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt;, we would conclude that there is almost no evidence that the slope was likely to be equal to zero, suggesting there is a relationship.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;graphical-summaries&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Graphical summaries&lt;/h1&gt;
+&lt;p&gt;A nice graphic is often a great accompaniment to a statistical analysis. Although there are no fixed assumptions associated with graphing (in contrast to statistical analyses), we often want the graphical summaries to reflect the associated statistical analyses. After all, the sample is just one perspective on the population(s). What we are more interested in is being able to estimate and depict likely population parameters/trends. Thus, whilst we could easily provide a plot displaying the raw data along with simple measures of location and spread, arguably, we should use estimates that reflect the fitted model. In this case, it would be appropriate to plot the credibility interval associated with each group.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc = data.het.r2jags$BUGSoutput$sims.matrix
+&amp;gt; ## Calculate the fitted values
+&amp;gt; newdata = data.frame(x = seq(min(data.het$x, na.rm = TRUE), max(data.het$x,
++     na.rm = TRUE), len = 1000))
+&amp;gt; Xmat = model.matrix(~x, newdata)
+&amp;gt; coefs = mcmc[, c(&amp;quot;beta0&amp;quot;, &amp;quot;beta1&amp;quot;)]
+&amp;gt; fit = coefs %*% t(Xmat)
+&amp;gt; newdata = newdata %&amp;gt;% cbind(tidyMCMC(fit, conf.int = TRUE, conf.method = &amp;quot;HPDinterval&amp;quot;))
+&amp;gt; ggplot(newdata, aes(y = estimate, x = x)) + geom_line() + geom_ribbon(aes(ymin = conf.low,
++     ymax = conf.high), fill = &amp;quot;blue&amp;quot;, alpha = 0.3) + scale_y_continuous(&amp;quot;Y&amp;quot;) +
++     scale_x_continuous(&amp;quot;X&amp;quot;) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/heterogeneity-jags/2020-02-01-heterogeneity-jags_files/figure-html/mcmc_post1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;If you wanted to represent sample data on the figure in such a simple example (single predictor) we could simply over- (or under-) lay the raw data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; ggplot(newdata, aes(y = estimate, x = x)) + geom_point(data = data.het,
++     aes(y = y, x = x), color = &amp;quot;gray&amp;quot;) + geom_line() + geom_ribbon(aes(ymin = conf.low,
++     ymax = conf.high), fill = &amp;quot;blue&amp;quot;, alpha = 0.3) + scale_y_continuous(&amp;quot;Y&amp;quot;) +
++     scale_x_continuous(&amp;quot;X&amp;quot;) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/heterogeneity-jags/2020-02-01-heterogeneity-jags_files/figure-html/mcmc_post2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;A more general solution would be to add the partial residuals to the figure. Partial residuals are the fitted values plus the residuals. In this simple case, that equates to exactly the same as the raw observations since &lt;span class=&#34;math inline&#34;&gt;\(\text{resid}=\text{obs}−\text{fitted}\)&lt;/span&gt; and the fitted values depend only on the single predictor we are interested in.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; ## Calculate partial residuals fitted values
+&amp;gt; fdata = rdata = data.het
+&amp;gt; fMat = rMat = model.matrix(~x, fdata)
+&amp;gt; fit = as.vector(apply(coefs, 2, median) %*% t(fMat))
+&amp;gt; resid = as.vector(data.het$y - apply(coefs, 2, median) %*% t(rMat))
+&amp;gt; rdata = rdata %&amp;gt;% mutate(partial.resid = resid + fit)
+&amp;gt; ggplot(newdata, aes(y = estimate, x = x)) + geom_point(data = rdata, aes(y = partial.resid),
++     color = &amp;quot;gray&amp;quot;) + geom_line() + geom_ribbon(aes(ymin = conf.low, ymax = conf.high),
++     fill = &amp;quot;blue&amp;quot;, alpha = 0.3) + scale_y_continuous(&amp;quot;Y&amp;quot;) + scale_x_continuous(&amp;quot;X&amp;quot;) +
++     theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/heterogeneity-jags/2020-02-01-heterogeneity-jags_files/figure-html/mcmc_post3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;r-squared&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;R squared&lt;/h1&gt;
+&lt;p&gt;In a frequentist context, the &lt;span class=&#34;math inline&#34;&gt;\(R^2\)&lt;/span&gt; value is seen as a useful indicator of goodness of fit. Whilst it has long been acknowledged that this measure is not appropriate for comparing models (for such purposes information criterion such as AIC are more appropriate), it is nevertheless useful for estimating the amount (percent) of variance explained by the model. In a frequentist context, &lt;span class=&#34;math inline&#34;&gt;\(R^2\)&lt;/span&gt; is calculated as the variance in predicted values divided by the variance in the observed (response) values. Unfortunately, this classical formulation does not translate simply into a Bayesian context since the equivalently calculated numerator can be larger than the an equivalently calculated denominator - thereby resulting in an &lt;span class=&#34;math inline&#34;&gt;\(R^2\)&lt;/span&gt; greater than &lt;span class=&#34;math inline&#34;&gt;\(100\)&lt;/span&gt;%. &lt;span class=&#34;citation&#34;&gt;Gelman et al. (2019)&lt;/span&gt; proposed an alternative formulation in which the denominator comprises the sum of the explained variance and the variance of the residuals.&lt;/p&gt;
+&lt;p&gt;So in the standard regression model notation of:&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ y_i \sim \text{Normal}(\boldsymbol X \boldsymbol \beta, \sigma),\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;the &lt;span class=&#34;math inline&#34;&gt;\(R^2\)&lt;/span&gt; could be formulated as&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ R^2 = \frac{\sigma^2_f}{\sigma^2_f + \sigma^2_e},\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2_f=\text{var}(\boldsymbol X \boldsymbol \beta)\)&lt;/span&gt;, and for normal models &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2_e=\text{var}(y-\boldsymbol X \boldsymbol \beta)\)&lt;/span&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc &amp;lt;- data.het.r2jags$BUGSoutput$sims.matrix
+&amp;gt; Xmat = model.matrix(~x, data.het)
+&amp;gt; coefs = mcmc[, c(&amp;quot;beta0&amp;quot;, &amp;quot;beta1&amp;quot;)]
+&amp;gt; fit = coefs %*% t(Xmat)
+&amp;gt; resid = sweep(fit, 2, data.het$y, &amp;quot;-&amp;quot;)
+&amp;gt; var_f = apply(fit, 1, var)
+&amp;gt; var_e = apply(resid, 1, var)
+&amp;gt; R2 = var_f/(var_f + var_e)
+&amp;gt; tidyMCMC(as.mcmc(R2), conf.int = TRUE, conf.method = &amp;quot;HPDinterval&amp;quot;)
+# A tibble: 1 x 5
+  term  estimate std.error conf.low conf.high
+  &amp;lt;chr&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;
+1 var1     0.244     0.108   0.0309     0.440
+&amp;gt; 
+&amp;gt; # for comparison with frequentist summary(lm(y ~ x, data.het))&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;heteroskedasticity-with-categorical-predictors&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Heteroskedasticity with categorical predictors&lt;/h1&gt;
+&lt;p&gt;For regression models that include a categorical variable (e.g. ANOVA), heterogeneity manifests as vastly different variances for different levels (treatment groups) of the categorical variable. Recall, that this is diagnosed from the relative size of boxplots. Whilst, the degree of group variability may not be related to the means of the groups, having wildly different variances does lead to an increase in standard errors and thus a lowering of power. In such cases, we would like to be able to indicate that the variances should be estimated separately for each group. That is the variance term is multiplied by a different number for each group. The appropriate matrix is referred to as an &lt;em&gt;Identity matrix&lt;/em&gt;. Again, to assist in the explanation some fabricated ANOVA data - data that has heteroscadasticity by design - will be useful.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; set.seed(126)
+&amp;gt; ngroups &amp;lt;- 5  #number of populations
+&amp;gt; nsample &amp;lt;- 10  #number of reps in each
+&amp;gt; pop.means &amp;lt;- c(40, 45, 55, 40, 30)  #population mean length
+&amp;gt; sigma &amp;lt;- rep(c(6, 4, 2, 0.5, 1), each = nsample)  #residual standard deviation
+&amp;gt; n &amp;lt;- ngroups * nsample  #total sample size
+&amp;gt; eps &amp;lt;- rnorm(n, 0, sigma)  #residuals
+&amp;gt; x &amp;lt;- gl(ngroups, nsample, n, lab = LETTERS[1:5])  #factor
+&amp;gt; means &amp;lt;- rep(pop.means, rep(nsample, ngroups))
+&amp;gt; X &amp;lt;- model.matrix(~x - 1)  #create a design matrix
+&amp;gt; y &amp;lt;- as.numeric(X %*% pop.means + eps)
+&amp;gt; data.het1 &amp;lt;- data.frame(y, x)
+&amp;gt; boxplot(y ~ x, data.het1)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/heterogeneity-jags/2020-02-01-heterogeneity-jags_files/figure-html/data_het_cat1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; 
+&amp;gt; plot(lm(y ~ x, data.het1), which = 3)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/heterogeneity-jags/2020-02-01-heterogeneity-jags_files/figure-html/data_het_cat1-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;It is clear that there is gross heteroskedasticity. The residuals are obviously more spread in some groups than others yet there is no real pattern with means (the residual plot does not show an obvious wedge). Note, for assessing homogeneity of variance, it is best to use the standardised residuals. It turns out that if we switch over to maximum (log) likelihood estimation methods, we can model in a within-group heteroskedasticity structure rather than just assume one very narrow form of variance structure. Lets take a step back and reflect on our simple ANOVA (regression) model that has five groups each with &lt;span class=&#34;math inline&#34;&gt;\(10\)&lt;/span&gt; observations:&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ y_i = \mu + \alpha_i + \epsilon, \;\;\; \text{with} \;\;\; \epsilon \sim N(0, \sigma^2). \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;This is shorthand notation to indicate that the response variable is being modelled against a specific linear predictor and that the residuals follow a normal distribution with a certain variance (that is the same for each group). Rather than assume that the variance of each group is the same, we could relax this a little so as to permit different levels of variance per group:&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \epsilon \sim N(0, \sigma^2_i).\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;To achieve this, we actually multiply the variance matrix by a weighting matrix, where the weights associated with each group are determined by the inverse of the ratio of each group to the first (reference) group:&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \epsilon \sim N(0, \sigma^2_i \times \omega).\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;So returning to our five groups of &lt;span class=&#34;math inline&#34;&gt;\(10\)&lt;/span&gt; observations example, the weights would be determined as:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; data.het1.sd &amp;lt;- with(data.het1, tapply(y, x, sd))
+&amp;gt; 1/(data.het1.sd[1]/data.het1.sd)
+        A         B         C         D         E 
+1.0000000 0.6909012 0.4140893 0.1426207 0.3012881 &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The weights determine the relative amount of each observation that goes into calculating variances. The basic premise is that those with lower variances are likely to be more precise and therefore should have greatest contribution to variance calculations.&lt;/p&gt;
+&lt;div id=&#34;model-fitting-1&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Model fitting&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; modelString2 = &amp;quot;
++   model {
++   #Likelihood
++   for (i in 1:n) {
++   y[i]~dnorm(mu[i],tau[x[i]])
++   mu[i] &amp;lt;- inprod(beta[],X[i,])
++   }
++   
++   #Priors and derivatives
++   for (i in 1:ngroups) {
++   beta[i] ~ dnorm(0,1.0E-6)
++   
++   sigma[i] &amp;lt;- z[i]/sqrt(chSq[i])
++   z[i] ~ dnorm(0, 0.04)I(0,)
++   chSq[i] ~ dgamma(0.5, 0.5)
++   tau[i] &amp;lt;- pow(sigma[i], -2)
++   }
++   }
++   &amp;quot;
+&amp;gt; 
+&amp;gt; ## write the model to a text file
+&amp;gt; writeLines(modelString2, con = &amp;quot;heteroskModel2.txt&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Arrange the data as a list (as required by &lt;code&gt;JAGS&lt;/code&gt;). As input, &lt;code&gt;JAGS&lt;/code&gt; will need to be supplied with: the response variable, the predictor matrix, the number of predictors, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; X = model.matrix(~x, data.het1)
+&amp;gt; data.het1.list &amp;lt;- with(data.het1, list(y = y, x = as.numeric(x), X = X,
++     n = nrow(data.het1), ngroups = ncol(X)))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Define the nodes (parameters and derivatives) to monitor and the chain parameters.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; params &amp;lt;- c(&amp;quot;beta&amp;quot;, &amp;quot;sigma&amp;quot;)
+&amp;gt; nChains = 2
+&amp;gt; burnInSteps = 3000
+&amp;gt; thinSteps = 1
+&amp;gt; numSavedSteps = 15000  #across all chains
+&amp;gt; nIter = ceiling(burnInSteps + (numSavedSteps * thinSteps)/nChains)
+&amp;gt; nIter
+[1] 10500&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now run the &lt;code&gt;JAGS&lt;/code&gt; code via the &lt;code&gt;R2jags&lt;/code&gt; interface. Note that the first time jags is run after the &lt;code&gt;R2jags&lt;/code&gt; package is loaded, it is often necessary to run any kind of randomization function just to initiate the .Random.seed variable.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; data.het1.r2jags &amp;lt;- jags(data = data.het1.list, inits = NULL, parameters.to.save = params,
++     model.file = &amp;quot;heteroskModel2.txt&amp;quot;, n.chains = nChains, n.iter = nIter,
++     n.burnin = burnInSteps, n.thin = thinSteps)
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 50
+   Unobserved stochastic nodes: 15
+   Total graph size: 444
+
+Initializing model
+&amp;gt; 
+&amp;gt; print(data.het1.r2jags)
+Inference for Bugs model at &amp;quot;heteroskModel2.txt&amp;quot;, fit using jags,
+ 2 chains, each with 10500 iterations (first 3000 discarded)
+ n.sims = 15000 iterations saved
+         mu.vect sd.vect    2.5%     25%     50%     75%   97.5%  Rhat n.eff
+beta[1]   40.282   1.227  37.861  39.518  40.278  41.044  42.731 1.001 11000
+beta[2]    4.088   1.508   1.063   3.115   4.095   5.059   7.063 1.001  5000
+beta[3]   14.553   1.336  11.874  13.714  14.566  15.402  17.177 1.001  5600
+beta[4]   -0.655   1.242  -3.118  -1.425  -0.656   0.118   1.804 1.001 11000
+beta[5]  -10.364   1.286 -12.875 -11.173 -10.353  -9.550  -7.830 1.001 12000
+sigma[1]   3.748   0.971   2.378   3.062   3.583   4.231   6.071 1.001 13000
+sigma[2]   2.647   0.729   1.640   2.143   2.504   2.995   4.461 1.001  5400
+sigma[3]   1.629   0.456   1.001   1.314   1.541   1.846   2.767 1.001  4000
+sigma[4]   0.570   0.169   0.346   0.454   0.537   0.647   1.001 1.001  3500
+sigma[5]   1.181   0.336   0.727   0.950   1.118   1.342   2.021 1.001  7100
+deviance 182.822   5.288 174.824 178.961 182.076 185.810 195.061 1.001 11000
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 14.0 and DIC = 196.8
+DIC is an estimate of expected predictive error (lower deviance is better).&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;mcmc-diagnostics-1&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;MCMC diagnostics&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(mcmcplots)
+&amp;gt; denplot(data.het1.r2jags, parms = c(&amp;quot;beta&amp;quot;, &amp;quot;sigma&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/heterogeneity-jags/2020-02-01-heterogeneity-jags_files/figure-html/mcmc_diag_ex2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; traplot(data.het1.r2jags, parms = c(&amp;quot;beta&amp;quot;, &amp;quot;sigma&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/heterogeneity-jags/2020-02-01-heterogeneity-jags_files/figure-html/mcmc_diag_ex2-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Trace plots show no evidence that the chains have not reasonably traversed the entire multidimensional parameter space. When there are a lot of parameters, this can result in a very large number of traceplots.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;model-validation-1&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Model validation&lt;/h1&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc = data.het1.r2jags$BUGSoutput$sims.matrix
+&amp;gt; wch = grep(&amp;quot;beta&amp;quot;, colnames(mcmc))
+&amp;gt; # generate a model matrix
+&amp;gt; newdata = data.frame(x = data.het1$x)
+&amp;gt; Xmat = model.matrix(~x, newdata)
+&amp;gt; ## get median parameter estimates
+&amp;gt; coefs = apply(mcmc[, wch], 2, median)
+&amp;gt; fit = as.vector(coefs %*% t(Xmat))
+&amp;gt; resid = data.het1$y - fit
+&amp;gt; ggplot() + geom_point(data = NULL, aes(y = resid, x = fit)) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/heterogeneity-jags/2020-02-01-heterogeneity-jags_files/figure-html/mcmc_residuals_ex2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;The above residual plot would make us believe that we had a homogeneity of variance issue (which we thought we were addressing by defining a model that allowed the variance to be proportional to the predictor). This is because we have plotted the raw residuals rather than residuals that have been standardized by the variances. The above plot is also what the residual plot would look like if we had not made any attempt to define a model in which the variance was related to the predictor. Whenever we fit a model that incorporates changes to the variance-covariance structures, we should explore standardized residuals. In this case, we should divide the residuals by the appropriate sigma for associated with that group (level of predictor).&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ Res_{ij} = \frac{Y_{ij} - \mu_j}{\sigma_j}\]&lt;/span&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc = data.het1.r2jags$BUGSoutput$sims.matrix
+&amp;gt; wch = grep(&amp;quot;beta&amp;quot;, colnames(mcmc))
+&amp;gt; coefs = mcmc[, wch]
+&amp;gt; Xmat = model.matrix(~x, data.het1)
+&amp;gt; fit = coefs %*% t(Xmat)
+&amp;gt; resid = -1 * sweep(fit, 2, data.het1$y, &amp;quot;-&amp;quot;)
+&amp;gt; wch = grep(&amp;quot;sigma&amp;quot;, colnames(mcmc))
+&amp;gt; resid = apply(resid, 2, median)/rep(apply(mcmc[, wch], 2, median), table(data.het1$x))
+&amp;gt; # resid = apply(resid,2,median)/(median(mcmc[,&amp;#39;sigma&amp;#39;]) * sqrt(data.het1$x))
+&amp;gt; fit = apply(fit, 2, median)
+&amp;gt; ggplot() + geom_point(data = NULL, aes(y = resid, x = fit)) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/heterogeneity-jags/2020-02-01-heterogeneity-jags_files/figure-html/mcmc_residuals2_ex2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;This is certainly an improvement. Nevertheless, there is still an indication of a relationship between mean and variance. We could attempt to further address this by refining &lt;span class=&#34;math inline&#34;&gt;\(\omega\)&lt;/span&gt; in the Bayesian model. That is, rather than indicate that variance is proportional to &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt;, we could indicate that variance is proportional to &lt;span class=&#34;math inline&#34;&gt;\(x^2\)&lt;/span&gt; (as an example) - we will leave this as an exercise for the reader. Residuals against predictors.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; ggplot() + geom_point(data = NULL, aes(y = resid, x = data.het1$x)) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/heterogeneity-jags/2020-02-01-heterogeneity-jags_files/figure-html/mcmc_residuals3_ex2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Lets see how well data simulated from the model reflects the raw data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc = data.het1.r2jags$BUGSoutput$sims.matrix
+&amp;gt; # generate a model matrix
+&amp;gt; Xmat = model.matrix(~x, data.het1)
+&amp;gt; ## get median parameter estimates
+&amp;gt; wch = grep(&amp;quot;beta&amp;quot;, colnames(mcmc))
+&amp;gt; coefs = mcmc[, wch]
+&amp;gt; fit = coefs %*% t(Xmat)
+&amp;gt; ## draw samples from this model
+&amp;gt; wch = grep(&amp;quot;sigma&amp;quot;, colnames(mcmc))
+&amp;gt; yRep = sapply(1:nrow(mcmc), function(i) rnorm(nrow(data.het1), fit[i, ],
++     mcmc[i, wch[as.numeric(data.het1$x[i])]]))
+&amp;gt; newdata = data.frame(x = data.het1$x, yRep) %&amp;gt;% gather(key = Sample, value = Value,
++     -x)
+&amp;gt; ggplot(newdata) + geom_violin(aes(y = Value, x = x, fill = &amp;quot;Model&amp;quot;), alpha = 0.5) +
++     geom_violin(data = data.het1, aes(y = y, x = x, fill = &amp;quot;Obs&amp;quot;), alpha = 0.5) +
++     geom_point(data = data.het1, aes(y = y, x = x), position = position_jitter(width = 0.1,
++         height = 0), color = &amp;quot;black&amp;quot;) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/heterogeneity-jags/2020-02-01-heterogeneity-jags_files/figure-html/mcmc_rep_ex2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;div id=&#34;parameter-estimates-1&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Parameter estimates&lt;/h2&gt;
+&lt;p&gt;First, we look at the results from the model.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; print(data.het1.r2jags)
+Inference for Bugs model at &amp;quot;heteroskModel2.txt&amp;quot;, fit using jags,
+ 2 chains, each with 10500 iterations (first 3000 discarded)
+ n.sims = 15000 iterations saved
+         mu.vect sd.vect    2.5%     25%     50%     75%   97.5%  Rhat n.eff
+beta[1]   40.282   1.227  37.861  39.518  40.278  41.044  42.731 1.001 11000
+beta[2]    4.088   1.508   1.063   3.115   4.095   5.059   7.063 1.001  5000
+beta[3]   14.553   1.336  11.874  13.714  14.566  15.402  17.177 1.001  5600
+beta[4]   -0.655   1.242  -3.118  -1.425  -0.656   0.118   1.804 1.001 11000
+beta[5]  -10.364   1.286 -12.875 -11.173 -10.353  -9.550  -7.830 1.001 12000
+sigma[1]   3.748   0.971   2.378   3.062   3.583   4.231   6.071 1.001 13000
+sigma[2]   2.647   0.729   1.640   2.143   2.504   2.995   4.461 1.001  5400
+sigma[3]   1.629   0.456   1.001   1.314   1.541   1.846   2.767 1.001  4000
+sigma[4]   0.570   0.169   0.346   0.454   0.537   0.647   1.001 1.001  3500
+sigma[5]   1.181   0.336   0.727   0.950   1.118   1.342   2.021 1.001  7100
+deviance 182.822   5.288 174.824 178.961 182.076 185.810 195.061 1.001 11000
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 14.0 and DIC = 196.8
+DIC is an estimate of expected predictive error (lower deviance is better).
+&amp;gt; 
+&amp;gt; # OR
+&amp;gt; tidyMCMC(as.mcmc(data.het1.r2jags), conf.int = TRUE, conf.method = &amp;quot;HPDinterval&amp;quot;)
+# A tibble: 11 x 5
+   term     estimate std.error conf.low conf.high
+   &amp;lt;chr&amp;gt;       &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;
+ 1 beta[1]    40.3       1.23    37.9      42.7  
+ 2 beta[2]     4.09      1.51     0.980     6.97 
+ 3 beta[3]    14.6       1.34    12.0      17.3  
+ 4 beta[4]    -0.655     1.24    -3.15      1.76 
+ 5 beta[5]   -10.4       1.29   -12.9      -7.86 
+ 6 deviance  183.        5.29   174.      194.   
+ 7 sigma[1]    3.75      0.971    2.23      5.72 
+ 8 sigma[2]    2.65      0.729    1.53      4.12 
+ 9 sigma[3]    1.63      0.456    0.906     2.54 
+10 sigma[4]    0.570     0.169    0.313     0.905
+11 sigma[5]    1.18      0.336    0.656     1.82 &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Conclusions&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;the mean of the first group (A) is &lt;span class=&#34;math inline&#34;&gt;\(40.3\)&lt;/span&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;the mean of the second group (B) is &lt;span class=&#34;math inline&#34;&gt;\(4.12\)&lt;/span&gt; units greater than (A)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;the mean of the third group (C) is &lt;span class=&#34;math inline&#34;&gt;\(14.6\)&lt;/span&gt; units greater than (A)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;the mean of the forth group (D) is &lt;span class=&#34;math inline&#34;&gt;\(-0.637\)&lt;/span&gt; units greater (i.e. less) than (A)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;the mean of the fifth group (E) is &lt;span class=&#34;math inline&#34;&gt;\(-10.3\)&lt;/span&gt; units greater (i.e. less) than (A)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The &lt;span class=&#34;math inline&#34;&gt;\(95\)&lt;/span&gt;% confidence interval for the effects of B, C and E do not overlap with &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt; implying a significant difference between group A and groups B, C and E. While workers attempt to become comfortable with a new statistical framework, it is only natural that they like to evaluate and comprehend new structures and output alongside more familiar concepts. One way to facilitate this is via Bayesian p-values that are somewhat analogous to the frequentist p-values for investigating the hypothesis that a parameter is equal to zero.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmcpvalue &amp;lt;- function(samp) {
++     ## elementary version that creates an empirical p-value for the
++     ## hypothesis that the columns of samp have mean zero versus a general
++     ## multivariate distribution with elliptical contours.
++ 
++     ## differences from the mean standardized by the observed
++     ## variance-covariance factor
++ 
++     ## Note, I put in the bit for single terms
++     if (length(dim(samp)) == 0) {
++         std &amp;lt;- backsolve(chol(var(samp)), cbind(0, t(samp)) - mean(samp),
++             transpose = TRUE)
++         sqdist &amp;lt;- colSums(std * std)
++         sum(sqdist[-1] &amp;gt; sqdist[1])/length(samp)
++     } else {
++         std &amp;lt;- backsolve(chol(var(samp)), cbind(0, t(samp)) - colMeans(samp),
++             transpose = TRUE)
++         sqdist &amp;lt;- colSums(std * std)
++         sum(sqdist[-1] &amp;gt; sqdist[1])/nrow(samp)
++     }
++ 
++ }
+&amp;gt; ## since values are less than zero
+&amp;gt; mcmc = data.het1.r2jags$BUGSoutput$sims.matrix
+&amp;gt; for (i in grep(&amp;quot;beta&amp;quot;, colnames(mcmc), value = TRUE)) print(paste(i, mcmcpvalue(mcmc[,i])))
+[1] &amp;quot;beta[1] 0&amp;quot;
+[1] &amp;quot;beta[2] 0.0116&amp;quot;
+[1] &amp;quot;beta[3] 0&amp;quot;
+[1] &amp;quot;beta[4] 0.567133333333333&amp;quot;
+[1] &amp;quot;beta[5] 0&amp;quot;
+&amp;gt; mcmcpvalue(mcmc[, grep(&amp;quot;beta&amp;quot;, colnames(mcmc))])
+[1] 0&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;With a p-value of essentially &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt;, we would conclude that there is almost no evidence that the slope was likely to be equal to zero, suggesting there is a relationship.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;graphical-summaries-1&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Graphical summaries&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc = data.het1.r2jags$BUGSoutput$sims.matrix
+&amp;gt; ## Calculate the fitted values
+&amp;gt; newdata = data.frame(x = levels(data.het1$x))
+&amp;gt; Xmat = model.matrix(~x, newdata)
+&amp;gt; wch = grep(&amp;quot;beta&amp;quot;, colnames(mcmc))
+&amp;gt; coefs = mcmc[, wch]
+&amp;gt; fit = coefs %*% t(Xmat)
+&amp;gt; newdata = newdata %&amp;gt;% cbind(tidyMCMC(fit, conf.int = TRUE, conf.method = &amp;quot;HPDinterval&amp;quot;))
+&amp;gt; ggplot(newdata, aes(y = estimate, x = x)) + geom_pointrange(aes(ymin = conf.low,
++     ymax = conf.high)) + scale_y_continuous(&amp;quot;Y&amp;quot;) + scale_x_discrete(&amp;quot;X&amp;quot;) +
++     theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/heterogeneity-jags/2020-02-01-heterogeneity-jags_files/figure-html/mcmc_post1_ex2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;If you wanted to represent sample data on the figure in such a simple example (single predictor) we could simply over- (or under-) lay the raw data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; ggplot(newdata, aes(y = estimate, x = x)) + geom_point(data = data.het1,
++     aes(y = y, x = x), color = &amp;quot;gray&amp;quot;) + geom_pointrange(aes(ymin = conf.low,
++     ymax = conf.high)) + scale_y_continuous(&amp;quot;Y&amp;quot;) + scale_x_discrete(&amp;quot;X&amp;quot;) +
++     theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/heterogeneity-jags/2020-02-01-heterogeneity-jags_files/figure-html/mcmc_post2_ex2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;A more general solution would be to add the partial residuals to the figure. Partial residuals are the fitted values plus the residuals. In this simple case, that equates to exactly the same as the raw observations since &lt;span class=&#34;math inline&#34;&gt;\(\text{resid}=\text{obs}−\text{fitted}\)&lt;/span&gt; and the fitted values depend only on the single predictor we are interested in.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; ## Calculate partial residuals fitted values
+&amp;gt; fdata = rdata = data.het1
+&amp;gt; fMat = rMat = model.matrix(~x, fdata)
+&amp;gt; fit = as.vector(apply(coefs, 2, median) %*% t(fMat))
+&amp;gt; resid = as.vector(data.het1$y - apply(coefs, 2, median) %*% t(rMat))
+&amp;gt; rdata = rdata %&amp;gt;% mutate(partial.resid = resid + fit)
+&amp;gt; ggplot(newdata, aes(y = estimate, x = x)) + geom_point(data = rdata, aes(y = partial.resid),
++     color = &amp;quot;gray&amp;quot;) + geom_pointrange(aes(ymin = conf.low, ymax = conf.high)) +
++     scale_y_continuous(&amp;quot;Y&amp;quot;) + scale_x_discrete(&amp;quot;X&amp;quot;) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/heterogeneity-jags/2020-02-01-heterogeneity-jags_files/figure-html/mcmc_post3_ex2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
+&lt;h1&gt;References&lt;/h1&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references hanging-indent&#34;&gt;
+&lt;div id=&#34;ref-gelman2019r&#34;&gt;
+&lt;p&gt;Gelman, Andrew, Ben Goodrich, Jonah Gabry, and Aki Vehtari. 2019. “R-Squared for Bayesian Regression Models.” &lt;em&gt;The American Statistician&lt;/em&gt; 73 (3): 307–9.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-gelman2006prior&#34;&gt;
+&lt;p&gt;Gelman, Andrew, and others. 2006. “Prior Distributions for Variance Parameters in Hierarchical Models (Comment on Article by Browne and Draper).” &lt;em&gt;Bayesian Analysis&lt;/em&gt; 1 (3): 515–34.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-plummer2004jags&#34;&gt;
+&lt;p&gt;Plummer, Martyn. 2004. “JAGS: Just Another Gibbs Sampler.”&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-su2015package&#34;&gt;
+&lt;p&gt;Su, Yu-Sung, Masanao Yajima, Maintainer Yu-Sung Su, and JAGS SystemRequirements. 2015. “Package ‘R2jags’.” &lt;em&gt;R Package Version 0.03-08, URL Http://CRAN. R-Project. Org/Package= R2jags&lt;/em&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Variance Heterogeneity - STAN</title>
+      <link>/stan/heterogeneity-stan/heterogeneity-stan/</link>
+      <pubDate>Fri, 07 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/stan/heterogeneity-stan/heterogeneity-stan/</guid>
+      <description>
+&lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;p&gt;This tutorial will focus on the use of Bayesian estimation to fit simple linear regression models. &lt;code&gt;BUGS&lt;/code&gt; (Bayesian inference Using &lt;em&gt;Gibbs Sampling&lt;/em&gt;) is an algorithm and supporting language (resembling &lt;code&gt;R&lt;/code&gt;) dedicated to performing the Gibbs sampling implementation of &lt;em&gt;Markov Chain Monte Carlo&lt;/em&gt; (MCMC) method. Dialects of the &lt;code&gt;BUGS&lt;/code&gt; language are implemented within three main projects:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;OpenBUGS&lt;/strong&gt; - written in component pascal.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;JAGS&lt;/strong&gt; - (Just Another Gibbs Sampler) - written in &lt;code&gt;C++&lt;/code&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;STAN&lt;/strong&gt; - a dedicated Bayesian modelling framework written in &lt;code&gt;C++&lt;/code&gt; and implementing &lt;em&gt;Hamiltonian&lt;/em&gt; MCMC samplers.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Whilst the above programs can be used stand-alone, they do offer the rich data pre-processing and graphical capabilities of &lt;code&gt;R&lt;/code&gt;, and thus, they are best accessed from within &lt;code&gt;R&lt;/code&gt; itself. As such there are multiple packages devoted to interfacing with the various software implementations:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;R2OpenBUGS&lt;/em&gt; - interfaces with &lt;code&gt;OpenBUGS&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;R2jags&lt;/em&gt; - interfaces with &lt;code&gt;JAGS&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;rstan&lt;/em&gt; - interfaces with &lt;code&gt;STAN&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This tutorial will demonstrate how to fit models in &lt;code&gt;STAN&lt;/code&gt; (&lt;span class=&#34;citation&#34;&gt;Gelman, Lee, and Guo (2015)&lt;/span&gt;) using the package &lt;code&gt;rstan&lt;/code&gt; (&lt;span class=&#34;citation&#34;&gt;Stan Development Team (2018)&lt;/span&gt;) as interface, which also requires to load some other packages.&lt;/p&gt;
+&lt;div id=&#34;overview&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Overview&lt;/h1&gt;
+&lt;div id=&#34;introduction&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;Up until now (in the proceeding tutorials), the focus has been on models that adhere to specific assumptions about the underlying populations (and data). Indeed, both before and immediately after fitting these models, I have stressed the importance of evaluating and validating the proposed and fitted models to ensure reliability of the models. It is now worth us revisiting those fundamental assumptions as well as exploring the options that are available when the populations (data) do not conform. Let’s explore a simple linear regression model to see how each of the assumptions relate to the model.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ y_i = \beta_0 + \beta_1x_i + \epsilon_i \;\;\; \text{with} \;\;\; \epsilon_i \sim \text{Normal}(0, \sigma^2).\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;The above simple statistical model models the &lt;strong&gt;linear relationship&lt;/strong&gt; of &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; against &lt;span class=&#34;math inline&#34;&gt;\(x_i\)&lt;/span&gt;. The residuals (&lt;span class=&#34;math inline&#34;&gt;\(\epsilon\)&lt;/span&gt;) are assumed to be &lt;strong&gt;normally distributed&lt;/strong&gt; with a mean of zero and a constant (yet unknown) variance (&lt;span class=&#34;math inline&#34;&gt;\(\sigma\)&lt;/span&gt;, &lt;strong&gt;homogeneity of variance&lt;/strong&gt;). The residuals (and thus observations) are also assumed to all be &lt;strong&gt;independent&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;Homogeneity of variance and independence are encapsulated within the single symbol for variance (&lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt;). In assuming equal variances and independence, we are actually making an assumption about the variance-covariance structure of the populations (and thus residuals). Specifically, we assume that all populations are equally varied and thus can be represented well by a single variance term (all diagonal values in a &lt;span class=&#34;math inline&#34;&gt;\(N\times N\)&lt;/span&gt; covariance matrix are the same, &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt;) and the covariances between each population are zero (off diagonals). In simple regression, each observation (data point) represents a single observation drawn (sampled) from an entire population of possible observations. The above covariance structure thus assumes that the covariance between each population (observation) is zero - that is, each observation is completely independent of each other observation. Whilst it is mathematically convenient when data conform to these conditions (normality, homogeneity of variance, independence and linearity), data often violate one or more of these assumptions. In the following, I want to discuss and explore the causes and options for dealing with non-compliance to each of these conditions. By gaining a better understanding of how the various model fitting engines perform their task, we are better equipped to accommodate aspects of the data that don’t otherwise conform to the simple regression assumptions. In this tutorial we specifically focus on the topic of heterogeneity of the variance.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;dealing-with-heterogeneity&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Dealing with heterogeneity&lt;/h1&gt;
+&lt;p&gt;The validity and reliability of the above linear models are very much dependent on variance homogeneity. In particular, variances that increase (or decrease) with a change in expected values are substantial violations. Whilst non-normality can also be a source of heterogeneity and therefore normalising can address both issues, heterogeneity can also be independent of normality. Similarly, generalised linear models (that accommodate alternative residual distributions - such as Poisson, Binomial, Gamma, etc) can be useful for more appropriate modelling of both the distribution and variance of a model. However, for Gaussian (normal) models in which there is evidence of heterogeneity of variance, yet no evidence of non-normality, it is also possible to specifically model in an alternative variance structure. For example, we can elect to allow variance to increase proportionally to a covariate. To assist us in the following demonstration, we will generate another data set - one that has heteroskedasticity (unequal variance) by design. Rather than draw each residual (and thus observation) from a normal distribution with a constant standard deviation), we will draw the residuals from normal distributions whose variance is proportional to the &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt; predictor.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; set.seed(126)
+&amp;gt; n &amp;lt;- 16
+&amp;gt; a &amp;lt;- 40  #intercept
+&amp;gt; b &amp;lt;- 1.5  #slope
+&amp;gt; x &amp;lt;- 1:n  #values of the year covariate
+&amp;gt; sigma &amp;lt;- 1.5 * x
+&amp;gt; sigma
+ [1]  1.5  3.0  4.5  6.0  7.5  9.0 10.5 12.0 13.5 15.0 16.5 18.0 19.5 21.0 22.5
+[16] 24.0
+&amp;gt; 
+&amp;gt; eps &amp;lt;- rnorm(n, mean = 0, sd = sigma)  #residuals
+&amp;gt; y &amp;lt;- a + b * x + eps  #response variable
+&amp;gt; # OR
+&amp;gt; y &amp;lt;- (model.matrix(~x) %*% c(a, b)) + eps
+&amp;gt; data.het &amp;lt;- data.frame(y = round(y, 1), x)  #dataset
+&amp;gt; head(data.het)  #print out the first six rows of the data set
+     y x
+1 42.1 1
+2 44.2 2
+3 41.2 3
+4 51.7 4
+5 43.5 5
+6 48.3 6
+&amp;gt; 
+&amp;gt; # scatterplot of y against x
+&amp;gt; library(car)
+&amp;gt; scatterplot(y ~ x, data.het)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/heterogeneity-stan/2020-02-01-heterogeneity-stan_files/figure-html/generate_data-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; 
+&amp;gt; # regular simple linear regression
+&amp;gt; data.het.lm &amp;lt;- lm(y ~ x, data.het)
+&amp;gt; 
+&amp;gt; # plot of standardised residuals
+&amp;gt; plot(rstandard(data.het.lm) ~ fitted(data.het.lm))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/heterogeneity-stan/2020-02-01-heterogeneity-stan_files/figure-html/generate_data-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; 
+&amp;gt; # plot of standardized residuals against the predictor
+&amp;gt; plot(rstandard(data.het.lm) ~ x)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/heterogeneity-stan/2020-02-01-heterogeneity-stan_files/figure-html/generate_data-3.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;The above scatterplot suggests that variance may increase with increasing &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt;. The residual plot (using standardised residuals) suggests that mean and variance could be related - there is a hint of a wedge-shaped pattern. Importantly, the plot of standardised residuals against the predictor shows the same pattern as the residual plot implying that heterogeneity is likely to be due a relationship between variance &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt;. That is, an increase in &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt; is associated with an increase in variance. In response to this, we could incorporate an alternative variance structure. The simple model we fit earlier assumed that the expected values were all drawn from normal distributions with the same level of precision &lt;span class=&#34;math inline&#34;&gt;\(\tau\)&lt;/span&gt; and therefore variance. This assumption is often summarised as:&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \boldsymbol V = \sigma^2 \times \boldsymbol I,\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\boldsymbol I\)&lt;/span&gt; is the &lt;span class=&#34;math inline&#34;&gt;\(N \times N\)&lt;/span&gt; identity matrix (elements on the main diagonal are one and zero outside) which multipled by the constant value &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt; produces the homoskedastic covariance matrix &lt;span class=&#34;math inline&#34;&gt;\(\boldsymbol V\)&lt;/span&gt; (elements on the main diagonal are &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt; and zero outside). If, instead, we consider an heteroskedastic covariance matrix then, for example, we could assume that the variance is proportional to the level of the covariate. This assumption can be summarised as:&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \boldsymbol V = \sigma^2 \times X \times \boldsymbol I,\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where the product of the identity matrix &lt;span class=&#34;math inline&#34;&gt;\(\boldsymbol I\)&lt;/span&gt; and the covariate-specific values &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2 \times X\)&lt;/span&gt; produces the heteroskedastic covariance matrix &lt;span class=&#34;math inline&#34;&gt;\(\boldsymbol V\)&lt;/span&gt; (elements on the main diagonal are &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2 \times X\)&lt;/span&gt; and zero outside). With a couple of small adjustments, we can modify the &lt;code&gt;JAGS&lt;/code&gt; code in order to accommodate a variance structure in which variance is proportional to the predictor variable. Note that since &lt;code&gt;JAGS&lt;/code&gt; works with precision (&lt;span class=&#34;math inline&#34;&gt;\(\tau=\frac{1}{\sigma^2}\)&lt;/span&gt;), I have elected to express the predictor as &lt;span class=&#34;math inline&#34;&gt;\(\frac{1}{x}\)&lt;/span&gt;. This way the weightings are compatible with precision rather than variance. In previous tutorials, we have used a flat, uniform distribution &lt;span class=&#34;math inline&#34;&gt;\([0,100]\)&lt;/span&gt; for variance priors. Whilst this is a reasonable choice for a non-informative prior, &lt;span class=&#34;citation&#34;&gt;Gelman and others (2006)&lt;/span&gt; suggest that half-cauchy priors are more appropriate when the number of groups is low.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;model-fitting&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Model fitting&lt;/h1&gt;
+&lt;p&gt;The observed response (&lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt;) are assumed to be drawn from a normal distribution with a given mean (&lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt;) and standard deviation weighted by &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt; on the value of the covariate (&lt;span class=&#34;math inline&#34;&gt;\(\sigma \times \omega\)&lt;/span&gt;). The expected values (&lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt;) are themselves determined by the linear predictor (&lt;span class=&#34;math inline&#34;&gt;\(\beta_0 + \beta_1x\)&lt;/span&gt;). In this case, &lt;span class=&#34;math inline&#34;&gt;\(\beta_0\)&lt;/span&gt; represents the mean of the first group and the set of &lt;span class=&#34;math inline&#34;&gt;\(\beta\)&lt;/span&gt;’s represent the differences between each other group and the first group. MCMC sampling requires priors on all parameters. We will employ weakly informative priors. Specifying ‘uninformative’ priors is always a bit of a balancing act. If the priors are too vague (wide) the MCMC sampler can wander off into nonscence areas of likelihood rather than concentrate around areas of highest likelihood (desired when wanting the outcomes to be largely driven by the data). On the other hand, if the priors are too strong, they may have an influence on the parameters. In such a simple model, this balance is very forgiving - it is for more complex models that prior choice becomes more important. For this simple model, we will go with zero-centered Gaussian (normal) priors with relatively large standard deviations (&lt;span class=&#34;math inline&#34;&gt;\(100\)&lt;/span&gt;) for both the intercept and the treatment effect and a wide half-cauchy (&lt;span class=&#34;math inline&#34;&gt;\(\text{scale}=5\)&lt;/span&gt;) for the standard deviation.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[y_i \sim N(\mu_i,\sigma \times \omega),  \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\mu_i=\beta_0 +\boldsymbol \beta \boldsymbol X\)&lt;/span&gt;. The assumed priors are: &lt;span class=&#34;math inline&#34;&gt;\(\beta \sim N(0,100)\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\sigma \sim \text{Cauchy}(0,5)\)&lt;/span&gt;. We proceed to code the model into &lt;code&gt;STAN&lt;/code&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; modelString = &amp;quot;
++   data {
++   int&amp;lt;lower=1&amp;gt; n;
++   int&amp;lt;lower=1&amp;gt; nX;
++   vector [n] y;
++   matrix [n,nX] X;
++   vector [n] w;
++   }
++   parameters {
++   vector[nX] beta;
++   real&amp;lt;lower=0&amp;gt; sigma;
++   }
++   transformed parameters {
++   vector[n] mu;
++ 
++   mu = X*beta;
++   }
++   model {
++   // Likelihood
++   y~normal(mu,sigma*w);
++   
++   // Priors
++   beta ~ normal(0,1000);
++   sigma~cauchy(0,5);
++   }
++   generated quantities {
++   vector[n] log_lik;
++   
++   for (i in 1:n) {
++   log_lik[i] = normal_lpdf(y[i] | mu[i], sigma*w[i]); 
++   }
++   }
++   
++   &amp;quot;
+&amp;gt; ## write the model to a stan file 
+&amp;gt; writeLines(modelString, con = &amp;quot;heteroskModel.stan&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Arrange the data as a list (as required by &lt;code&gt;STAN&lt;/code&gt;). As input, &lt;code&gt;STAN&lt;/code&gt; will need to be supplied with: the response variable, the predictor variable, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; Xmat &amp;lt;- model.matrix(~x, data.het)
+&amp;gt; data.het.list &amp;lt;- with(data.het, list(y = y, X = Xmat, w = sqrt(data.het$x),
++     n = nrow(data.het), nX = ncol(Xmat)))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Define the nodes (parameters and derivatives) to monitor and chain parameters.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; params &amp;lt;- c(&amp;quot;beta&amp;quot;, &amp;quot;sigma&amp;quot;, &amp;quot;log_lik&amp;quot;)
+&amp;gt; nChains = 2
+&amp;gt; burnInSteps = 500
+&amp;gt; thinSteps = 1
+&amp;gt; numSavedSteps = 2000  #across all chains
+&amp;gt; nIter = ceiling(burnInSteps + (numSavedSteps * thinSteps)/nChains)
+&amp;gt; nIter
+[1] 1500&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now compile and run the Stan code via the &lt;code&gt;rstan&lt;/code&gt; interface. Note that the first time &lt;code&gt;stan&lt;/code&gt; is run after the &lt;code&gt;rstan&lt;/code&gt; package is loaded, it is often necessary to run any kind of randomization function just to initiate the .Random.seed variable.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(rstan)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;During the warmup stage, the No-U-Turn sampler (NUTS) attempts to determine the optimum stepsize - the stepsize that achieves the target acceptance rate (&lt;span class=&#34;math inline&#34;&gt;\(0.8\)&lt;/span&gt; or &lt;span class=&#34;math inline&#34;&gt;\(80\)&lt;/span&gt;% by default) without divergence (occurs when the stepsize is too large relative to the curvature of the log posterior and results in approximations that are likely to diverge and be biased) - and without hitting the maximum treedepth (&lt;span class=&#34;math inline&#34;&gt;\(10\)&lt;/span&gt;). At each iteration of the NUTS algorithm, the number of leapfrog steps doubles (as it increases the treedepth) and only terminates when either the NUTS criterion are satisfied or the tree depth reaches the maximum (&lt;span class=&#34;math inline&#34;&gt;\(10\)&lt;/span&gt; by default).&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; data.het.rstan &amp;lt;- stan(data = data.het.list, file = &amp;quot;heteroskModel.stan&amp;quot;, chains = nChains, pars = params, iter = nIter, warmup = burnInSteps, thin = thinSteps)
+
+SAMPLING FOR MODEL &amp;#39;heteroskModel&amp;#39; NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 0 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 1500 [  0%]  (Warmup)
+Chain 1: Iteration:  150 / 1500 [ 10%]  (Warmup)
+Chain 1: Iteration:  300 / 1500 [ 20%]  (Warmup)
+Chain 1: Iteration:  450 / 1500 [ 30%]  (Warmup)
+Chain 1: Iteration:  501 / 1500 [ 33%]  (Sampling)
+Chain 1: Iteration:  650 / 1500 [ 43%]  (Sampling)
+Chain 1: Iteration:  800 / 1500 [ 53%]  (Sampling)
+Chain 1: Iteration:  950 / 1500 [ 63%]  (Sampling)
+Chain 1: Iteration: 1100 / 1500 [ 73%]  (Sampling)
+Chain 1: Iteration: 1250 / 1500 [ 83%]  (Sampling)
+Chain 1: Iteration: 1400 / 1500 [ 93%]  (Sampling)
+Chain 1: Iteration: 1500 / 1500 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.058 seconds (Warm-up)
+Chain 1:                0.077 seconds (Sampling)
+Chain 1:                0.135 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL &amp;#39;heteroskModel&amp;#39; NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 0 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 1500 [  0%]  (Warmup)
+Chain 2: Iteration:  150 / 1500 [ 10%]  (Warmup)
+Chain 2: Iteration:  300 / 1500 [ 20%]  (Warmup)
+Chain 2: Iteration:  450 / 1500 [ 30%]  (Warmup)
+Chain 2: Iteration:  501 / 1500 [ 33%]  (Sampling)
+Chain 2: Iteration:  650 / 1500 [ 43%]  (Sampling)
+Chain 2: Iteration:  800 / 1500 [ 53%]  (Sampling)
+Chain 2: Iteration:  950 / 1500 [ 63%]  (Sampling)
+Chain 2: Iteration: 1100 / 1500 [ 73%]  (Sampling)
+Chain 2: Iteration: 1250 / 1500 [ 83%]  (Sampling)
+Chain 2: Iteration: 1400 / 1500 [ 93%]  (Sampling)
+Chain 2: Iteration: 1500 / 1500 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.057 seconds (Warm-up)
+Chain 2:                0.079 seconds (Sampling)
+Chain 2:                0.136 seconds (Total)
+Chain 2: 
+&amp;gt; 
+&amp;gt; print(data.het.rstan, par = c(&amp;quot;beta&amp;quot;, &amp;quot;sigma&amp;quot;))
+Inference for Stan model: heteroskModel.
+2 chains, each with iter=1500; warmup=500; thin=1; 
+post-warmup draws per chain=1000, total post-warmup draws=2000.
+
+         mean se_mean   sd  2.5%   25%   50%   75% 97.5% n_eff Rhat
+beta[1] 41.43    0.09 2.57 36.19 39.83 41.49 43.09 46.48   855    1
+beta[2]  1.13    0.01 0.41  0.31  0.87  1.13  1.39  1.98   806    1
+sigma    3.06    0.02 0.62  2.13  2.63  2.98  3.36  4.57   934    1
+
+Samples were drawn using NUTS(diag_e) at Tue Feb 18 15:33:02 2020.
+For each parameter, n_eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor on split chains (at 
+convergence, Rhat=1).&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;mcmc-diagnostics&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;MCMC diagnostics&lt;/h1&gt;
+&lt;p&gt;In addition to the regular model diagnostic checks (such as residual plots), for Bayesian analyses, it is necessary to explore the characteristics of the MCMC chains and the sampler in general. Recall that the purpose of MCMC sampling is to replicate the posterior distribution of the model likelihood and priors by drawing a known number of samples from this posterior (thereby formulating a probability distribution). This is only reliable if the MCMC samples accurately reflect the posterior. Unfortunately, since we only know the posterior in the most trivial of circumstances, it is necessary to rely on indirect measures of how accurately the MCMC samples are likely to reflect the likelihood. I will briefly outline the most important diagnostics.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;Traceplots&lt;/em&gt; for each parameter illustrate the MCMC sample values after each successive iteration along the chain. Bad chain mixing (characterised by any sort of pattern) suggests that the MCMC sampling chains may not have completely traversed all features of the posterior distribution and that more iterations are required to ensure the distribution has been accurately represented.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;Autocorrelation&lt;/em&gt; plot for each parameter illustrate the degree of correlation between MCMC samples separated by different lags. For example, a lag of &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt; represents the degree of correlation between each MCMC sample and itself (obviously this will be a correlation of &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt;). A lag of &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt; represents the degree of correlation between each MCMC sample and the next sample along the chain and so on. In order to be able to generate unbiased estimates of parameters, the MCMC samples should be independent (uncorrelated).&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;Potential scale reduction factor&lt;/em&gt; (Rhat) statistic for each parameter provides a measure of sampling efficiency/effectiveness. Ideally, all values should be less than &lt;span class=&#34;math inline&#34;&gt;\(1.05\)&lt;/span&gt;. If there are values of &lt;span class=&#34;math inline&#34;&gt;\(1.05\)&lt;/span&gt; or greater it suggests that the sampler was not very efficient or effective. Not only does this mean that the sampler was potentially slower than it could have been but, more importantly, it could indicate that the sampler spent time sampling in a region of the likelihood that is less informative. Such a situation can arise from either a misspecified model or overly vague priors that permit sampling in otherwise nonscence parameter space.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Prior to examining the summaries, we should have explored the convergence diagnostics. We use the package &lt;code&gt;mcmcplots&lt;/code&gt; to obtain density and trace plots.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(mcmcplots)
+&amp;gt; mcmc = As.mcmc.list(data.het.rstan)
+&amp;gt; denplot(mcmc, parms = c(&amp;quot;beta&amp;quot;, &amp;quot;sigma&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/heterogeneity-stan/2020-02-01-heterogeneity-stan_files/figure-html/mcmc_diag-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; traplot(mcmc, parms = c(&amp;quot;beta&amp;quot;, &amp;quot;sigma&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/heterogeneity-stan/2020-02-01-heterogeneity-stan_files/figure-html/mcmc_diag-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;These plots show no evidence that the chains have not reasonably traversed the entire multidimensional parameter space.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; #Raftery diagnostic
+&amp;gt; raftery.diag(mcmc)
+[[1]]
+
+Quantile (q) = 0.025
+Accuracy (r) = +/- 0.005
+Probability (s) = 0.95 
+
+You need a sample size of at least 3746 with these values of q, r and s
+
+[[2]]
+
+Quantile (q) = 0.025
+Accuracy (r) = +/- 0.005
+Probability (s) = 0.95 
+
+You need a sample size of at least 3746 with these values of q, r and s&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The Raftery diagnostics for each chain estimate that we would require no more than &lt;span class=&#34;math inline&#34;&gt;\(5000\)&lt;/span&gt; samples to reach the specified level of confidence in convergence. As we have &lt;span class=&#34;math inline&#34;&gt;\(10500\)&lt;/span&gt; samples, we can be confidence that convergence has occurred.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; #Autocorrelation diagnostic
+&amp;gt; stan_ac(data.het.rstan, pars = c(&amp;quot;beta&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/heterogeneity-stan/2020-02-01-heterogeneity-stan_files/figure-html/mcmc_diag3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;A lag of 10 appears to be sufficient to avoid autocorrelation (poor mixing).&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; stan_rhat(data.het.rstan, pars = c(&amp;quot;beta&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/heterogeneity-stan/2020-02-01-heterogeneity-stan_files/figure-html/mcmc_diag4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; stan_ess(data.het.rstan, pars = c(&amp;quot;beta&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/heterogeneity-stan/2020-02-01-heterogeneity-stan_files/figure-html/mcmc_diag4-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Rhat and effective sample size. In this instance, most of the parameters have reasonably high effective samples and thus there is likely to be a good range of values from which to estimate paramter properties.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;model-validation&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Model validation&lt;/h1&gt;
+&lt;p&gt;Model validation involves exploring the model diagnostics and fit to ensure that the model is broadly appropriate for the data. As such, exploration of the residuals should be routine. Ideally, a good model should also be able to predict the data used to fit the model. Residuals are not computed directly within &lt;code&gt;rstan&lt;/code&gt; However, we can calculate them manually form the posteriors.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc = as.matrix(data.het.rstan)[, c(&amp;quot;beta[1]&amp;quot;, &amp;quot;beta[2]&amp;quot;)]
+&amp;gt; # generate a model matrix
+&amp;gt; newdata = data.frame(x = data.het$x)
+&amp;gt; Xmat = model.matrix(~x, newdata)
+&amp;gt; ## get median parameter estimates
+&amp;gt; coefs = apply(mcmc, 2, median)
+&amp;gt; fit = as.vector(coefs %*% t(Xmat))
+&amp;gt; resid = data.het$y - fit
+&amp;gt; 
+&amp;gt; library(ggplot2)
+&amp;gt; ggplot() + geom_point(data = NULL, aes(y = resid, x = fit)) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/heterogeneity-stan/2020-02-01-heterogeneity-stan_files/figure-html/mcmc_residuals-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;The above residual plot would make us believe that we had a homogeneity of variance issue (which we thought we were addressing by defining a model that allowed the variance to be proportional to the predictor). This is because we have plotted the raw residuals rather than residuals that have been standardized by the variances. The above plot is also what the residual plot would look like if we had not made any attempt to define a model in which the variance was related to the predictor. Whenever we fit a model that incorporates changes to the variance-covariance structures, we should explore standardised residuals. In this case, we should divide the residuals by sigma and then divide by the square-root of the weights.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ Res_i = \frac{Y_i - \mu_i}{\sigma \times \sqrt{\omega}}\]&lt;/span&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(dplyr)
+&amp;gt; library(tidyr)
+&amp;gt; mcmc = as.matrix(data.het.rstan)
+&amp;gt; coefs = mcmc[, c(&amp;quot;beta[1]&amp;quot;, &amp;quot;beta[2]&amp;quot;)]
+&amp;gt; Xmat = model.matrix(~x, data.het)
+&amp;gt; fit = coefs %*% t(Xmat)
+&amp;gt; resid = -1 * sweep(fit, 2, data.het$y, &amp;quot;-&amp;quot;)
+&amp;gt; resid = apply(resid, 2, median)/(median(mcmc[, &amp;quot;sigma&amp;quot;]) * sqrt(data.het$x))
+&amp;gt; fit = apply(fit, 2, median)
+&amp;gt; ggplot() + geom_point(data = NULL, aes(y = resid, x = fit)) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/heterogeneity-stan/2020-02-01-heterogeneity-stan_files/figure-html/mcmc_residuals2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;This is certainly an improvement. Nevertheless, there is still an indication of a relationship between mean and variance. We could attempt to further address this by refining &lt;span class=&#34;math inline&#34;&gt;\(\omega\)&lt;/span&gt; in the Bayesian model. That is, rather than indicate that variance is proportional to &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt;, we could indicate that variance is proportional to &lt;span class=&#34;math inline&#34;&gt;\(x^2\)&lt;/span&gt; (as an example) - we will leave this as an exercise for the reader. Residuals against predictors.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; ggplot() + geom_point(data = NULL, aes(y = resid, x = data.het$x)) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/heterogeneity-stan/2020-02-01-heterogeneity-stan_files/figure-html/mcmc_residuals3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Lets see how well data simulated from the model reflects the raw data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc = as.matrix(data.het.rstan)
+&amp;gt; # generate a model matrix
+&amp;gt; Xmat = model.matrix(~x, data.het)
+&amp;gt; ## get median parameter estimates
+&amp;gt; coefs = mcmc[, c(&amp;quot;beta[1]&amp;quot;, &amp;quot;beta[2]&amp;quot;)]
+&amp;gt; fit = coefs %*% t(Xmat)
+&amp;gt; ## draw samples from this model
+&amp;gt; yRep = sapply(1:nrow(mcmc), function(i) rnorm(nrow(data.het), fit[i, ],
++     mcmc[i, &amp;quot;sigma&amp;quot;]))
+&amp;gt; ggplot() + geom_density(data = NULL, aes(x = as.vector(yRep), fill = &amp;quot;Model&amp;quot;),
++     alpha = 0.5) + geom_density(data = data.het, aes(x = y, fill = &amp;quot;Obs&amp;quot;),
++     alpha = 0.5) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/heterogeneity-stan/2020-02-01-heterogeneity-stan_files/figure-html/mcmc_rep-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;parameter-estimates&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Parameter estimates&lt;/h1&gt;
+&lt;p&gt;First, we look at the results from the model.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; print(data.het.rstan, pars = c(&amp;quot;beta&amp;quot;, &amp;quot;sigma&amp;quot;))
+Inference for Stan model: heteroskModel.
+2 chains, each with iter=1500; warmup=500; thin=1; 
+post-warmup draws per chain=1000, total post-warmup draws=2000.
+
+         mean se_mean   sd  2.5%   25%   50%   75% 97.5% n_eff Rhat
+beta[1] 41.43    0.09 2.57 36.19 39.83 41.49 43.09 46.48   855    1
+beta[2]  1.13    0.01 0.41  0.31  0.87  1.13  1.39  1.98   806    1
+sigma    3.06    0.02 0.62  2.13  2.63  2.98  3.36  4.57   934    1
+
+Samples were drawn using NUTS(diag_e) at Tue Feb 18 15:33:02 2020.
+For each parameter, n_eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor on split chains (at 
+convergence, Rhat=1).
+&amp;gt; 
+&amp;gt; # OR
+&amp;gt; library(broom)
+&amp;gt; tidyMCMC(data.het.rstan, conf.int = TRUE, conf.method = &amp;quot;HPDinterval&amp;quot;, pars = c(&amp;quot;beta&amp;quot;, &amp;quot;sigma&amp;quot;))
+# A tibble: 3 x 5
+  term    estimate std.error conf.low conf.high
+  &amp;lt;chr&amp;gt;      &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;
+1 beta[1]    41.4      2.57    36.6       46.8 
+2 beta[2]     1.13     0.410    0.277      1.92
+3 sigma       3.06     0.624    2.07       4.40&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Conclusions&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;A one unit increase in &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt; is associated with a &lt;span class=&#34;math inline&#34;&gt;\(1.11\)&lt;/span&gt; change in &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;. That is, &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; declines at a rate of &lt;span class=&#34;math inline&#34;&gt;\(1.11\)&lt;/span&gt; per unit increase in &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt;. The &lt;span class=&#34;math inline&#34;&gt;\(95\)&lt;/span&gt;% confidence interval for the slope does not overlap with &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt; implying a significant effect of &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt; on &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;. While workers attempt to become comfortable with a new statistical framework, it is only natural that they like to evaluate and comprehend new structures and output alongside more familiar concepts. One way to facilitate this is via Bayesian p-values that are somewhat analogous to the frequentist p-values for investigating the hypothesis that a parameter is equal to zero.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmcpvalue &amp;lt;- function(samp) {
++     ## elementary version that creates an empirical p-value for the
++     ## hypothesis that the columns of samp have mean zero versus a general
++     ## multivariate distribution with elliptical contours.
++ 
++     ## differences from the mean standardized by the observed
++     ## variance-covariance factor
++ 
++     ## Note, I put in the bit for single terms
++     if (length(dim(samp)) == 0) {
++         std &amp;lt;- backsolve(chol(var(samp)), cbind(0, t(samp)) - mean(samp),
++             transpose = TRUE)
++         sqdist &amp;lt;- colSums(std * std)
++         sum(sqdist[-1] &amp;gt; sqdist[1])/length(samp)
++     } else {
++         std &amp;lt;- backsolve(chol(var(samp)), cbind(0, t(samp)) - colMeans(samp),
++             transpose = TRUE)
++         sqdist &amp;lt;- colSums(std * std)
++         sum(sqdist[-1] &amp;gt; sqdist[1])/nrow(samp)
++     }
++ 
++ }
+&amp;gt; ## since values are less than zero
+&amp;gt; mcmcpvalue(as.matrix(data.het.rstan)[, c(&amp;quot;beta[2]&amp;quot;)])
+[1] 0.0105&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;With a p-value of essentially &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt;, we would conclude that there is almost no evidence that the slope was likely to be equal to zero, suggesting there is a relationship.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;graphical-summaries&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Graphical summaries&lt;/h1&gt;
+&lt;p&gt;A nice graphic is often a great accompaniment to a statistical analysis. Although there are no fixed assumptions associated with graphing (in contrast to statistical analyses), we often want the graphical summaries to reflect the associated statistical analyses. After all, the sample is just one perspective on the population(s). What we are more interested in is being able to estimate and depict likely population parameters/trends. Thus, whilst we could easily provide a plot displaying the raw data along with simple measures of location and spread, arguably, we should use estimates that reflect the fitted model. In this case, it would be appropriate to plot the credibility interval associated with each group.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc = as.matrix(data.het.rstan)
+&amp;gt; ## Calculate the fitted values
+&amp;gt; newdata = data.frame(x = seq(min(data.het$x, na.rm = TRUE), max(data.het$x,
++     na.rm = TRUE), len = 1000))
+&amp;gt; Xmat = model.matrix(~x, newdata)
+&amp;gt; coefs = mcmc[, c(&amp;quot;beta[1]&amp;quot;, &amp;quot;beta[2]&amp;quot;)]
+&amp;gt; fit = coefs %*% t(Xmat)
+&amp;gt; newdata = newdata %&amp;gt;% cbind(tidyMCMC(fit, conf.int = TRUE, conf.method = &amp;quot;HPDinterval&amp;quot;))
+&amp;gt; ggplot(newdata, aes(y = estimate, x = x)) + geom_line() + geom_ribbon(aes(ymin = conf.low,
++     ymax = conf.high), fill = &amp;quot;blue&amp;quot;, alpha = 0.3) + scale_y_continuous(&amp;quot;Y&amp;quot;) +
++     scale_x_continuous(&amp;quot;X&amp;quot;) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/heterogeneity-stan/2020-02-01-heterogeneity-stan_files/figure-html/mcmc_post1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;If you wanted to represent sample data on the figure in such a simple example (single predictor) we could simply over- (or under-) lay the raw data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; ggplot(newdata, aes(y = estimate, x = x)) + geom_point(data = data.het,
++     aes(y = y, x = x), color = &amp;quot;gray&amp;quot;) + geom_line() + geom_ribbon(aes(ymin = conf.low,
++     ymax = conf.high), fill = &amp;quot;blue&amp;quot;, alpha = 0.3) + scale_y_continuous(&amp;quot;Y&amp;quot;) +
++     scale_x_continuous(&amp;quot;X&amp;quot;) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/heterogeneity-stan/2020-02-01-heterogeneity-stan_files/figure-html/mcmc_post2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;A more general solution would be to add the partial residuals to the figure. Partial residuals are the fitted values plus the residuals. In this simple case, that equates to exactly the same as the raw observations since &lt;span class=&#34;math inline&#34;&gt;\(\text{resid}=\text{obs}−\text{fitted}\)&lt;/span&gt; and the fitted values depend only on the single predictor we are interested in.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; ## Calculate partial residuals fitted values
+&amp;gt; fdata = rdata = data.het
+&amp;gt; fMat = rMat = model.matrix(~x, fdata)
+&amp;gt; fit = as.vector(apply(coefs, 2, median) %*% t(fMat))
+&amp;gt; resid = as.vector(data.het$y - apply(coefs, 2, median) %*% t(rMat))
+&amp;gt; rdata = rdata %&amp;gt;% mutate(partial.resid = resid + fit)
+&amp;gt; ggplot(newdata, aes(y = estimate, x = x)) + geom_point(data = rdata, aes(y = partial.resid),
++     color = &amp;quot;gray&amp;quot;) + geom_line() + geom_ribbon(aes(ymin = conf.low, ymax = conf.high),
++     fill = &amp;quot;blue&amp;quot;, alpha = 0.3) + scale_y_continuous(&amp;quot;Y&amp;quot;) + scale_x_continuous(&amp;quot;X&amp;quot;) +
++     theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/heterogeneity-stan/2020-02-01-heterogeneity-stan_files/figure-html/mcmc_post3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;r-squared&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;R squared&lt;/h1&gt;
+&lt;p&gt;In a frequentist context, the &lt;span class=&#34;math inline&#34;&gt;\(R^2\)&lt;/span&gt; value is seen as a useful indicator of goodness of fit. Whilst it has long been acknowledged that this measure is not appropriate for comparing models (for such purposes information criterion such as AIC are more appropriate), it is nevertheless useful for estimating the amount (percent) of variance explained by the model. In a frequentist context, &lt;span class=&#34;math inline&#34;&gt;\(R^2\)&lt;/span&gt; is calculated as the variance in predicted values divided by the variance in the observed (response) values. Unfortunately, this classical formulation does not translate simply into a Bayesian context since the equivalently calculated numerator can be larger than the an equivalently calculated denominator - thereby resulting in an &lt;span class=&#34;math inline&#34;&gt;\(R^2\)&lt;/span&gt; greater than &lt;span class=&#34;math inline&#34;&gt;\(100\)&lt;/span&gt;%. &lt;span class=&#34;citation&#34;&gt;Gelman et al. (2019)&lt;/span&gt; proposed an alternative formulation in which the denominator comprises the sum of the explained variance and the variance of the residuals.&lt;/p&gt;
+&lt;p&gt;So in the standard regression model notation of:&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ y_i \sim \text{Normal}(\boldsymbol X \boldsymbol \beta, \sigma),\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;the &lt;span class=&#34;math inline&#34;&gt;\(R^2\)&lt;/span&gt; could be formulated as&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ R^2 = \frac{\sigma^2_f}{\sigma^2_f + \sigma^2_e},\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2_f=\text{var}(\boldsymbol X \boldsymbol \beta)\)&lt;/span&gt;, and for normal models &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2_e=\text{var}(y-\boldsymbol X \boldsymbol \beta)\)&lt;/span&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc &amp;lt;- as.matrix(data.het.rstan)
+&amp;gt; Xmat = model.matrix(~x, data.het)
+&amp;gt; coefs = mcmc[, c(&amp;quot;beta[1]&amp;quot;,&amp;quot;beta[2]&amp;quot;)]
+&amp;gt; fit = coefs %*% t(Xmat)
+&amp;gt; resid = sweep(fit, 2, data.het$y, &amp;quot;-&amp;quot;)
+&amp;gt; var_f = apply(fit, 1, var)
+&amp;gt; var_e = apply(resid, 1, var)
+&amp;gt; R2 = var_f/(var_f + var_e)
+&amp;gt; tidyMCMC(as.mcmc(R2), conf.int = TRUE, conf.method = &amp;quot;HPDinterval&amp;quot;)
+# A tibble: 1 x 5
+  term  estimate std.error conf.low conf.high
+  &amp;lt;chr&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;
+1 var1     0.248     0.109   0.0101     0.424
+&amp;gt; 
+&amp;gt; # for comparison with frequentist summary(lm(y ~ x, data.het))&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;heteroskedasticity-with-categorical-predictors&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Heteroskedasticity with categorical predictors&lt;/h1&gt;
+&lt;p&gt;For regression models that include a categorical variable (e.g. ANOVA), heterogeneity manifests as vastly different variances for different levels (treatment groups) of the categorical variable. Recall, that this is diagnosed from the relative size of boxplots. Whilst, the degree of group variability may not be related to the means of the groups, having wildly different variances does lead to an increase in standard errors and thus a lowering of power. In such cases, we would like to be able to indicate that the variances should be estimated separately for each group. That is the variance term is multiplied by a different number for each group. The appropriate matrix is referred to as an &lt;em&gt;Identity matrix&lt;/em&gt;. Again, to assist in the explanation some fabricated ANOVA data - data that has heteroscadasticity by design - will be useful.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; set.seed(126)
+&amp;gt; ngroups &amp;lt;- 5  #number of populations
+&amp;gt; nsample &amp;lt;- 10  #number of reps in each
+&amp;gt; pop.means &amp;lt;- c(40, 45, 55, 40, 30)  #population mean length
+&amp;gt; sigma &amp;lt;- rep(c(6, 4, 2, 0.5, 1), each = nsample)  #residual standard deviation
+&amp;gt; n &amp;lt;- ngroups * nsample  #total sample size
+&amp;gt; eps &amp;lt;- rnorm(n, 0, sigma)  #residuals
+&amp;gt; x &amp;lt;- gl(ngroups, nsample, n, lab = LETTERS[1:5])  #factor
+&amp;gt; means &amp;lt;- rep(pop.means, rep(nsample, ngroups))
+&amp;gt; X &amp;lt;- model.matrix(~x - 1)  #create a design matrix
+&amp;gt; y &amp;lt;- as.numeric(X %*% pop.means + eps)
+&amp;gt; data.het1 &amp;lt;- data.frame(y, x)
+&amp;gt; boxplot(y ~ x, data.het1)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/heterogeneity-stan/2020-02-01-heterogeneity-stan_files/figure-html/data_het_cat1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; 
+&amp;gt; plot(lm(y ~ x, data.het1), which = 3)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/heterogeneity-stan/2020-02-01-heterogeneity-stan_files/figure-html/data_het_cat1-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;It is clear that there is gross heteroskedasticity. The residuals are obviously more spread in some groups than others yet there is no real pattern with means (the residual plot does not show an obvious wedge). Note, for assessing homogeneity of variance, it is best to use the standardised residuals. It turns out that if we switch over to maximum (log) likelihood estimation methods, we can model in a within-group heteroskedasticity structure rather than just assume one very narrow form of variance structure. Lets take a step back and reflect on our simple ANOVA (regression) model that has five groups each with &lt;span class=&#34;math inline&#34;&gt;\(10\)&lt;/span&gt; observations:&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ y_i = \mu + \alpha_i + \epsilon, \;\;\; \text{with} \;\;\; \epsilon \sim N(0, \sigma^2). \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;This is shorthand notation to indicate that the response variable is being modelled against a specific linear predictor and that the residuals follow a normal distribution with a certain variance (that is the same for each group). Rather than assume that the variance of each group is the same, we could relax this a little so as to permit different levels of variance per group:&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \epsilon \sim N(0, \sigma^2_i).\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;To achieve this, we actually multiply the variance matrix by a weighting matrix, where the weights associated with each group are determined by the inverse of the ratio of each group to the first (reference) group:&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \epsilon \sim N(0, \sigma^2_i \times \omega).\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;So returning to our five groups of &lt;span class=&#34;math inline&#34;&gt;\(10\)&lt;/span&gt; observations example, the weights would be determined as:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; data.het1.sd &amp;lt;- with(data.het1, tapply(y, x, sd))
+&amp;gt; 1/(data.het1.sd[1]/data.het1.sd)
+        A         B         C         D         E 
+1.0000000 0.6909012 0.4140893 0.1426207 0.3012881 &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The weights determine the relative amount of each observation that goes into calculating variances. The basic premise is that those with lower variances are likely to be more precise and therefore should have greatest contribution to variance calculations.&lt;/p&gt;
+&lt;div id=&#34;model-fitting-1&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Model fitting&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; modelString2 = &amp;quot;
++   data {
++   int&amp;lt;lower=1&amp;gt; n;
++   int&amp;lt;lower=1&amp;gt; nX;
++   vector [n] y;
++   matrix [n,nX] X;
++   }
++   parameters {
++   vector[nX] beta;
++   vector&amp;lt;lower=0&amp;gt;[nX] sigma;
++   }
++   transformed parameters {
++   vector[n] mu;
++   vector&amp;lt;lower=0&amp;gt;[n] sig;
++ 
++   mu = X*beta;
++   sig = X*sigma;
++   }
++   model {
++   // Likelihood
++   y~normal(mu,sig);
++   
++   // Priors
++   beta ~ normal(0,1000);
++   sigma~cauchy(0,5);
++   }
++   generated quantities {
++   vector[n] log_lik;
++   
++   for (i in 1:n) {
++   log_lik[i] = normal_lpdf(y[i] | mu[i], sig[i]); 
++   }
++   }
++   
++   &amp;quot;
+&amp;gt; 
+&amp;gt; ## write the model to a text file
+&amp;gt; writeLines(modelString2, con = &amp;quot;heteroskModel2.stan&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Arrange the data as a list (as required by &lt;code&gt;STAN&lt;/code&gt;). As input, &lt;code&gt;STAN&lt;/code&gt; will need to be supplied with: the response variable, the predictor matrix, the number of predictors, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; Xmat &amp;lt;- model.matrix(~x, data.het1)
+&amp;gt; data.het1.list &amp;lt;- with(data.het1, list(y = y, X = Xmat, n = nrow(data.het1),
++     nX = ncol(Xmat)))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Define the nodes (parameters and derivatives) to monitor and the chain parameters.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; params &amp;lt;- c(&amp;quot;beta&amp;quot;, &amp;quot;sigma&amp;quot;, &amp;quot;log_lik&amp;quot;)
+&amp;gt; nChains = 2
+&amp;gt; burnInSteps = 500
+&amp;gt; thinSteps = 1
+&amp;gt; numSavedSteps = 2000  #across all chains
+&amp;gt; nIter = ceiling(burnInSteps + (numSavedSteps * thinSteps)/nChains)
+&amp;gt; nIter
+[1] 1500&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now run the &lt;code&gt;STAN&lt;/code&gt; code via the &lt;code&gt;rstan&lt;/code&gt; interface. Note that the first time STAN is run after the &lt;code&gt;rstan&lt;/code&gt; package is loaded, it is often necessary to run any kind of randomization function just to initiate the .Random.seed variable.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; data.het1.rstan &amp;lt;- stan(data = data.het1.list, file = &amp;quot;heteroskModel2.stan&amp;quot;,
++     chains = nChains, iter = numSavedSteps, warmup = burnInSteps, thin = thinSteps)
+
+SAMPLING FOR MODEL &amp;#39;heteroskModel2&amp;#39; NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 0 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 1: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 1: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 1: Iteration:  501 / 2000 [ 25%]  (Sampling)
+Chain 1: Iteration:  700 / 2000 [ 35%]  (Sampling)
+Chain 1: Iteration:  900 / 2000 [ 45%]  (Sampling)
+Chain 1: Iteration: 1100 / 2000 [ 55%]  (Sampling)
+Chain 1: Iteration: 1300 / 2000 [ 65%]  (Sampling)
+Chain 1: Iteration: 1500 / 2000 [ 75%]  (Sampling)
+Chain 1: Iteration: 1700 / 2000 [ 85%]  (Sampling)
+Chain 1: Iteration: 1900 / 2000 [ 95%]  (Sampling)
+Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.127 seconds (Warm-up)
+Chain 1:                0.275 seconds (Sampling)
+Chain 1:                0.402 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL &amp;#39;heteroskModel2&amp;#39; NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 0 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 2: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 2: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 2: Iteration:  501 / 2000 [ 25%]  (Sampling)
+Chain 2: Iteration:  700 / 2000 [ 35%]  (Sampling)
+Chain 2: Iteration:  900 / 2000 [ 45%]  (Sampling)
+Chain 2: Iteration: 1100 / 2000 [ 55%]  (Sampling)
+Chain 2: Iteration: 1300 / 2000 [ 65%]  (Sampling)
+Chain 2: Iteration: 1500 / 2000 [ 75%]  (Sampling)
+Chain 2: Iteration: 1700 / 2000 [ 85%]  (Sampling)
+Chain 2: Iteration: 1900 / 2000 [ 95%]  (Sampling)
+Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.122 seconds (Warm-up)
+Chain 2:                0.253 seconds (Sampling)
+Chain 2:                0.375 seconds (Total)
+Chain 2: 
+&amp;gt; 
+&amp;gt; print(data.het1.rstan, par = c(&amp;quot;beta&amp;quot;, &amp;quot;sigma&amp;quot;))
+Inference for Stan model: heteroskModel2.
+2 chains, each with iter=2000; warmup=500; thin=1; 
+post-warmup draws per chain=1500, total post-warmup draws=3000.
+
+           mean se_mean   sd   2.5%    25%    50%   75% 97.5% n_eff Rhat
+beta[1]   40.28    0.02 0.63  39.06  39.87  40.28 40.71 41.53  1429    1
+beta[2]    4.10    0.03 1.14   1.82   3.35   4.10  4.86  6.33  1903    1
+beta[3]   14.55    0.02 0.99  12.57  13.91  14.56 15.22 16.45  1810    1
+beta[4]   -0.66    0.02 0.95  -2.54  -1.29  -0.64 -0.01  1.17  1931    1
+beta[5]  -10.35    0.02 0.97 -12.32 -10.97 -10.32 -9.72 -8.51  1806    1
+sigma[1]   1.99    0.01 0.24   1.58   1.83   1.96  2.13  2.53  2072    1
+sigma[2]   0.89    0.01 0.72   0.05   0.37   0.72  1.22  2.68  3042    1
+sigma[3]   0.41    0.01 0.43   0.01   0.12   0.28  0.57  1.60  2468    1
+sigma[4]   0.30    0.01 0.33   0.01   0.08   0.20  0.39  1.18  2654    1
+sigma[5]   0.35    0.01 0.37   0.01   0.10   0.24  0.47  1.36  3076    1
+
+Samples were drawn using NUTS(diag_e) at Tue Feb 18 15:33:49 2020.
+For each parameter, n_eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor on split chains (at 
+convergence, Rhat=1).&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;mcmc-diagnostics-1&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;MCMC diagnostics&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(mcmcplots)
+&amp;gt; mcmc&amp;lt;-As.mcmc.list(data.het1.rstan)
+&amp;gt; denplot(mcmc, parms = c(&amp;quot;beta&amp;quot;, &amp;quot;sigma&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/heterogeneity-stan/2020-02-01-heterogeneity-stan_files/figure-html/mcmc_diag_ex2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; traplot(mcmc, parms = c(&amp;quot;beta&amp;quot;, &amp;quot;sigma&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/heterogeneity-stan/2020-02-01-heterogeneity-stan_files/figure-html/mcmc_diag_ex2-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Trace plots show no evidence that the chains have not reasonably traversed the entire multidimensional parameter space. When there are a lot of parameters, this can result in a very large number of traceplots.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;model-validation-1&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Model validation&lt;/h1&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc = as.matrix(data.het.rstan)[, c(&amp;quot;beta[1]&amp;quot;, &amp;quot;beta[2]&amp;quot;)]
+&amp;gt; # generate a model matrix
+&amp;gt; newdata = data.frame(x = data.het$x)
+&amp;gt; Xmat = model.matrix(~x, newdata)
+&amp;gt; ## get median parameter estimates
+&amp;gt; coefs = apply(mcmc, 2, median)
+&amp;gt; fit = as.vector(coefs %*% t(Xmat))
+&amp;gt; resid = data.het$y - fit
+&amp;gt; ggplot() + geom_point(data = NULL, aes(y = resid, x = fit)) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/heterogeneity-stan/2020-02-01-heterogeneity-stan_files/figure-html/mcmc_residuals_ex2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;The above residual plot would make us believe that we had a homogeneity of variance issue (which we thought we were addressing by defining a model that allowed the variance to be proportional to the predictor). This is because we have plotted the raw residuals rather than residuals that have been standardized by the variances. The above plot is also what the residual plot would look like if we had not made any attempt to define a model in which the variance was related to the predictor. Whenever we fit a model that incorporates changes to the variance-covariance structures, we should explore standardized residuals. In this case, we should divide the residuals by the appropriate sigma for associated with that group (level of predictor).&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ Res_{ij} = \frac{Y_{ij} - \mu_j}{\sigma_j}\]&lt;/span&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc = as.matrix(data.het1.rstan)
+&amp;gt; wch = grep(&amp;quot;beta&amp;quot;, colnames(mcmc))
+&amp;gt; # generate a model matrix
+&amp;gt; newdata = data.frame(x = data.het1$x)
+&amp;gt; Xmat = model.matrix(~x, newdata)
+&amp;gt; ## get median parameter estimates
+&amp;gt; coefs = apply(mcmc[, wch], 2, median)
+&amp;gt; fit = as.vector(coefs %*% t(Xmat))
+&amp;gt; resid = data.het1$y - fit
+&amp;gt; ggplot() + geom_point(data = NULL, aes(y = resid, x = fit)) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/heterogeneity-stan/2020-02-01-heterogeneity-stan_files/figure-html/mcmc_residuals2_ex2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;This is certainly an improvement. Nevertheless, there is still an indication of a relationship between mean and variance. We could attempt to further address this by refining &lt;span class=&#34;math inline&#34;&gt;\(\omega\)&lt;/span&gt; in the Bayesian model. That is, rather than indicate that variance is proportional to &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt;, we could indicate that variance is proportional to &lt;span class=&#34;math inline&#34;&gt;\(x^2\)&lt;/span&gt; (as an example) - we will leave this as an exercise for the reader. Residuals against predictors.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; ggplot() + geom_point(data = NULL, aes(y = resid, x = data.het1$x)) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/heterogeneity-stan/2020-02-01-heterogeneity-stan_files/figure-html/mcmc_residuals3_ex2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Lets see how well data simulated from the model reflects the raw data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc = as.matrix(data.het1.rstan)
+&amp;gt; # generate a model matrix
+&amp;gt; Xmat = model.matrix(~x, data.het1)
+&amp;gt; ## get median parameter estimates
+&amp;gt; wch = grep(&amp;quot;beta&amp;quot;, colnames(mcmc))
+&amp;gt; coefs = mcmc[, wch]
+&amp;gt; fit = coefs %*% t(Xmat)
+&amp;gt; ## draw samples from this model
+&amp;gt; wch = grep(&amp;quot;sigma&amp;quot;, colnames(mcmc))
+&amp;gt; yRep = sapply(1:nrow(mcmc), function(i) rnorm(nrow(data.het1), fit[i, ],
++     mcmc[i, wch[as.numeric(data.het1$x[i])]]))
+&amp;gt; newdata = data.frame(x = data.het1$x, yRep) %&amp;gt;% gather(key = Sample, value = Value,
++     -x)
+&amp;gt; ggplot(newdata) + geom_violin(aes(y = Value, x = x, fill = &amp;quot;Model&amp;quot;), alpha = 0.5) +
++     geom_violin(data = data.het1, aes(y = y, x = x, fill = &amp;quot;Obs&amp;quot;), alpha = 0.5) +
++     geom_point(data = data.het1, aes(y = y, x = x), position = position_jitter(width = 0.1,
++         height = 0), color = &amp;quot;black&amp;quot;) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/heterogeneity-stan/2020-02-01-heterogeneity-stan_files/figure-html/mcmc_rep_ex2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;div id=&#34;parameter-estimates-1&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Parameter estimates&lt;/h2&gt;
+&lt;p&gt;First, we look at the results from the model.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; print(data.het1.rstan, pars = c(&amp;quot;beta&amp;quot;, &amp;quot;sigma&amp;quot;))
+Inference for Stan model: heteroskModel2.
+2 chains, each with iter=2000; warmup=500; thin=1; 
+post-warmup draws per chain=1500, total post-warmup draws=3000.
+
+           mean se_mean   sd   2.5%    25%    50%   75% 97.5% n_eff Rhat
+beta[1]   40.28    0.02 0.63  39.06  39.87  40.28 40.71 41.53  1429    1
+beta[2]    4.10    0.03 1.14   1.82   3.35   4.10  4.86  6.33  1903    1
+beta[3]   14.55    0.02 0.99  12.57  13.91  14.56 15.22 16.45  1810    1
+beta[4]   -0.66    0.02 0.95  -2.54  -1.29  -0.64 -0.01  1.17  1931    1
+beta[5]  -10.35    0.02 0.97 -12.32 -10.97 -10.32 -9.72 -8.51  1806    1
+sigma[1]   1.99    0.01 0.24   1.58   1.83   1.96  2.13  2.53  2072    1
+sigma[2]   0.89    0.01 0.72   0.05   0.37   0.72  1.22  2.68  3042    1
+sigma[3]   0.41    0.01 0.43   0.01   0.12   0.28  0.57  1.60  2468    1
+sigma[4]   0.30    0.01 0.33   0.01   0.08   0.20  0.39  1.18  2654    1
+sigma[5]   0.35    0.01 0.37   0.01   0.10   0.24  0.47  1.36  3076    1
+
+Samples were drawn using NUTS(diag_e) at Tue Feb 18 15:33:49 2020.
+For each parameter, n_eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor on split chains (at 
+convergence, Rhat=1).
+&amp;gt; 
+&amp;gt; # OR
+&amp;gt; tidyMCMC(data.het1.rstan, pars = c(&amp;quot;beta&amp;quot;, &amp;quot;sigma&amp;quot;), conf.int = TRUE, conf.method = &amp;quot;HPDinterval&amp;quot;,
++     rhat = TRUE, ess = TRUE)
+# A tibble: 10 x 7
+   term     estimate std.error     conf.low conf.high  rhat   ess
+   &amp;lt;chr&amp;gt;       &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;        &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt; &amp;lt;dbl&amp;gt; &amp;lt;int&amp;gt;
+ 1 beta[1]    40.3       0.629  39.1           41.5   1.00   1429
+ 2 beta[2]     4.10      1.14    1.82           6.33  1.00   1903
+ 3 beta[3]    14.6       0.985  12.7           16.5   1.00   1810
+ 4 beta[4]    -0.663     0.953  -2.54           1.17  1.000  1931
+ 5 beta[5]   -10.4       0.973 -12.3           -8.53  1.00   1806
+ 6 sigma[1]    1.99      0.242   1.56           2.50  1.00   2072
+ 7 sigma[2]    0.887     0.719   0.000922       2.30  1.000  3042
+ 8 sigma[3]    0.414     0.429   0.000139       1.29  1.000  2468
+ 9 sigma[4]    0.295     0.325   0.00000841     0.914 1.00   2654
+10 sigma[5]    0.350     0.369   0.000149       1.07  1.00   3076&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Conclusions&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;the mean of the first group (A) is &lt;span class=&#34;math inline&#34;&gt;\(40.3\)&lt;/span&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;the mean of the second group (B) is &lt;span class=&#34;math inline&#34;&gt;\(4.12\)&lt;/span&gt; units greater than (A)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;the mean of the third group (C) is &lt;span class=&#34;math inline&#34;&gt;\(14.6\)&lt;/span&gt; units greater than (A)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;the mean of the forth group (D) is &lt;span class=&#34;math inline&#34;&gt;\(-0.637\)&lt;/span&gt; units greater (i.e. less) than (A)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;the mean of the fifth group (E) is &lt;span class=&#34;math inline&#34;&gt;\(-10.3\)&lt;/span&gt; units greater (i.e. less) than (A)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The &lt;span class=&#34;math inline&#34;&gt;\(95\)&lt;/span&gt;% confidence interval for the effects of B, C and E do not overlap with &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt; implying a significant difference between group A and groups B, C and E. While workers attempt to become comfortable with a new statistical framework, it is only natural that they like to evaluate and comprehend new structures and output alongside more familiar concepts. One way to facilitate this is via Bayesian p-values that are somewhat analogous to the frequentist p-values for investigating the hypothesis that a parameter is equal to zero.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmcpvalue &amp;lt;- function(samp) {
++     ## elementary version that creates an empirical p-value for the
++     ## hypothesis that the columns of samp have mean zero versus a general
++     ## multivariate distribution with elliptical contours.
++ 
++     ## differences from the mean standardized by the observed
++     ## variance-covariance factor
++ 
++     ## Note, I put in the bit for single terms
++     if (length(dim(samp)) == 0) {
++         std &amp;lt;- backsolve(chol(var(samp)), cbind(0, t(samp)) - mean(samp),
++             transpose = TRUE)
++         sqdist &amp;lt;- colSums(std * std)
++         sum(sqdist[-1] &amp;gt; sqdist[1])/length(samp)
++     } else {
++         std &amp;lt;- backsolve(chol(var(samp)), cbind(0, t(samp)) - colMeans(samp),
++             transpose = TRUE)
++         sqdist &amp;lt;- colSums(std * std)
++         sum(sqdist[-1] &amp;gt; sqdist[1])/nrow(samp)
++     }
++ 
++ }
+&amp;gt; ## since values are less than zero
+&amp;gt; mcmc = as.matrix(data.het1.rstan)
+&amp;gt; for (i in grep(&amp;quot;beta&amp;quot;, colnames(mcmc), value = TRUE)) print(paste(i, mcmcpvalue(mcmc[,
++     i])))
+[1] &amp;quot;beta[1] 0&amp;quot;
+[1] &amp;quot;beta[2] 0.001&amp;quot;
+[1] &amp;quot;beta[3] 0&amp;quot;
+[1] &amp;quot;beta[4] 0.487666666666667&amp;quot;
+[1] &amp;quot;beta[5] 0&amp;quot;
+&amp;gt; mcmcpvalue(mcmc[, grep(&amp;quot;beta&amp;quot;, colnames(mcmc))])
+[1] 0&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;With a p-value of essentially &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt;, we would conclude that there is almost no evidence that the slope was likely to be equal to zero, suggesting there is a relationship.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;graphical-summaries-1&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Graphical summaries&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc = as.matrix(data.het1.rstan)
+&amp;gt; ## Calculate the fitted values
+&amp;gt; newdata = data.frame(x = levels(data.het1$x))
+&amp;gt; Xmat = model.matrix(~x, newdata)
+&amp;gt; wch = grep(&amp;quot;beta&amp;quot;, colnames(mcmc))
+&amp;gt; coefs = mcmc[, wch]
+&amp;gt; fit = coefs %*% t(Xmat)
+&amp;gt; newdata = newdata %&amp;gt;% cbind(tidyMCMC(fit, conf.int = TRUE, conf.method = &amp;quot;HPDinterval&amp;quot;))
+&amp;gt; ggplot(newdata, aes(y = estimate, x = x)) + geom_pointrange(aes(ymin = conf.low,
++     ymax = conf.high)) + scale_y_continuous(&amp;quot;Y&amp;quot;) + scale_x_discrete(&amp;quot;X&amp;quot;) +
++     theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/heterogeneity-stan/2020-02-01-heterogeneity-stan_files/figure-html/mcmc_post1_ex2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;If you wanted to represent sample data on the figure in such a simple example (single predictor) we could simply over- (or under-) lay the raw data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; ggplot(newdata, aes(y = estimate, x = x)) + geom_point(data = data.het1,
++     aes(y = y, x = x), color = &amp;quot;gray&amp;quot;) + geom_pointrange(aes(ymin = conf.low,
++     ymax = conf.high)) + scale_y_continuous(&amp;quot;Y&amp;quot;) + scale_x_discrete(&amp;quot;X&amp;quot;) +
++     theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/heterogeneity-stan/2020-02-01-heterogeneity-stan_files/figure-html/mcmc_post2_ex2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;A more general solution would be to add the partial residuals to the figure. Partial residuals are the fitted values plus the residuals. In this simple case, that equates to exactly the same as the raw observations since &lt;span class=&#34;math inline&#34;&gt;\(\text{resid}=\text{obs}−\text{fitted}\)&lt;/span&gt; and the fitted values depend only on the single predictor we are interested in.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; ## Calculate partial residuals fitted values
+&amp;gt; fdata = rdata = data.het1
+&amp;gt; fMat = rMat = model.matrix(~x, fdata)
+&amp;gt; fit = as.vector(apply(coefs, 2, median) %*% t(fMat))
+&amp;gt; resid = as.vector(data.het1$y - apply(coefs, 2, median) %*% t(rMat))
+&amp;gt; rdata = rdata %&amp;gt;% mutate(partial.resid = resid + fit)
+&amp;gt; ggplot(newdata, aes(y = estimate, x = x)) + geom_point(data = rdata, aes(y = partial.resid),
++     color = &amp;quot;gray&amp;quot;) + geom_pointrange(aes(ymin = conf.low, ymax = conf.high)) +
++     scale_y_continuous(&amp;quot;Y&amp;quot;) + scale_x_discrete(&amp;quot;X&amp;quot;) + theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/heterogeneity-stan/2020-02-01-heterogeneity-stan_files/figure-html/mcmc_post3_ex2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
+&lt;h1&gt;References&lt;/h1&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references hanging-indent&#34;&gt;
+&lt;div id=&#34;ref-gelman2019r&#34;&gt;
+&lt;p&gt;Gelman, Andrew, Ben Goodrich, Jonah Gabry, and Aki Vehtari. 2019. “R-Squared for Bayesian Regression Models.” &lt;em&gt;The American Statistician&lt;/em&gt; 73 (3): 307–9.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-gelman2015stan&#34;&gt;
+&lt;p&gt;Gelman, Andrew, Daniel Lee, and Jiqiang Guo. 2015. “Stan: A Probabilistic Programming Language for Bayesian Inference and Optimization.” &lt;em&gt;Journal of Educational and Behavioral Statistics&lt;/em&gt; 40 (5): 530–43.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-gelman2006prior&#34;&gt;
+&lt;p&gt;Gelman, Andrew, and others. 2006. “Prior Distributions for Variance Parameters in Hierarchical Models (Comment on Article by Browne and Draper).” &lt;em&gt;Bayesian Analysis&lt;/em&gt; 1 (3): 515–34.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-rstanpackage&#34;&gt;
+&lt;p&gt;Stan Development Team. 2018. “RStan: The R Interface to Stan.” &lt;a href=&#34;http://mc-stan.org/&#34;&gt;http://mc-stan.org/&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
