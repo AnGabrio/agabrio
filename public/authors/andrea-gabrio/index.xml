@@ -1032,6 +1032,1347 @@ R2.conditional 0.8737814 0.8766904 0.8092460 0.9353977&lt;/code&gt;&lt;/pre&gt;
     </item>
     
     <item>
+      <title>Nested Anova - STAN</title>
+      <link>/stan/nested-anova-stan/nested-anova-stan/</link>
+      <pubDate>Sun, 09 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/stan/nested-anova-stan/nested-anova-stan/</guid>
+      <description>
+
+
+&lt;p&gt;This tutorial will focus on the use of Bayesian estimation to fit simple linear regression models. &lt;code&gt;BUGS&lt;/code&gt; (Bayesian inference Using &lt;em&gt;Gibbs Sampling&lt;/em&gt;) is an algorithm and supporting language (resembling &lt;code&gt;R&lt;/code&gt;) dedicated to performing the Gibbs sampling implementation of &lt;em&gt;Markov Chain Monte Carlo&lt;/em&gt; (MCMC) method. Dialects of the &lt;code&gt;BUGS&lt;/code&gt; language are implemented within three main projects:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;OpenBUGS&lt;/strong&gt; - written in component pascal.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;JAGS&lt;/strong&gt; - (Just Another Gibbs Sampler) - written in &lt;code&gt;C++&lt;/code&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;STAN&lt;/strong&gt; - a dedicated Bayesian modelling framework written in &lt;code&gt;C++&lt;/code&gt; and implementing &lt;em&gt;Hamiltonian&lt;/em&gt; MCMC samplers.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Whilst the above programs can be used stand-alone, they do offer the rich data pre-processing and graphical capabilities of &lt;code&gt;R&lt;/code&gt;, and thus, they are best accessed from within &lt;code&gt;R&lt;/code&gt; itself. As such there are multiple packages devoted to interfacing with the various software implementations:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;R2OpenBUGS&lt;/em&gt; - interfaces with &lt;code&gt;OpenBUGS&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;R2jags&lt;/em&gt; - interfaces with &lt;code&gt;JAGS&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;rstan&lt;/em&gt; - interfaces with &lt;code&gt;STAN&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This tutorial will demonstrate how to fit models in &lt;code&gt;STAN&lt;/code&gt; (&lt;span class=&#34;citation&#34;&gt;Gelman, Lee, and Guo (2015)&lt;/span&gt;) using the package &lt;code&gt;rstan&lt;/code&gt; (&lt;span class=&#34;citation&#34;&gt;Stan Development Team (2018)&lt;/span&gt;) as interface, which also requires to load some other packages.&lt;/p&gt;
+&lt;div id=&#34;overview&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Overview&lt;/h1&gt;
+&lt;div id=&#34;introduction&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;When single sampling units are selected amongst highly heterogeneous conditions, it is unlikely that these single units will adequately represent the populations and repeated sampling is likely to yield very different outcomes. For example, if we were investigating the impacts of fuel reduction burning across a highly heterogeneous landscape, our ability to replicate adequately might be limited by the number of burn sites available.&lt;/p&gt;
+&lt;p&gt;Alternatively, sub-replicates within each of the sampling units (e.g. sites) can be collected (and averaged) so as to provided better representatives for each of the units and ultimately reduce the unexplained variability of the test of treatments. In essence, the sub-replicates are the replicates of an additional nested factor whose levels are nested within the main treatment factor. A nested factor refers to a factor whose levels are unique within each level of the factor it is nested within and each level is only represented once. For example, the fuel reduction burn study design could consist of three burnt sites and three un-burnt (control) sites each containing four quadrats (replicates of site and sub-replicates of the burn treatment). Each site represents a unique level of a random factor (any given site cannot be both burnt and un-burnt) that is nested within the fire treatment (burned or not).&lt;/p&gt;
+&lt;p&gt;A nested design can be thought of as a hierarchical arrangement of factors (hence the alternative name hierarchical designs) whereby a treatment is progressively sub-replicated. As an additional example, imagine an experiment designed to comparing the leaf toughness of a number of tree species. Working down the hierarchy, five individual trees were randomly selected within (nested within) each species, three branches were randomly selected within each tree, two leaves were randomly selected within each branch and the force required to shear the leaf material in half (transversely) was measured in four random locations along the leaf. Clearly any given leaf can only be from a single branch, tree and species. Each level of sub-replication is introduced to further reduce the amount of unexplained variation and thereby increasing the power of the test for the main treatment effect. Additionally, it is possible to investigate which scale has the greatest (or least, etc) degree of variability - the level of the species, individual tree, branch, leaf, leaf region etc.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Nested factors are typically random factors, of which the levels are randomly selected to represent all possible levels (e.g. sites). When the main treatment effect (often referred to as Factor A) is a fixed factor, such designs are referred to as a &lt;em&gt;mixed model nested ANOVA&lt;/em&gt;, whereas when Factor A is random, the design is referred to as a &lt;em&gt;Model II nested ANOVA&lt;/em&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Fixed nested factors are also possible. For example, specific dates (corresponding to particular times during a season) could be nested within season. When all factors are fixed, the design is referred to as a &lt;em&gt;Model I mixed model&lt;/em&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Fully nested designs (the topic of this chapter) differ from other multi-factor designs in that all factors within (below) the main treatment factor are nested and thus interactions are un-replicated and cannot be tested. Indeed, interaction effects (interaction between Factor A and site) are assumed to be zero.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div id=&#34;linear-models-frequentist&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Linear models (frequentist)&lt;/h2&gt;
+&lt;p&gt;The linear models for two and three factor nested design are:&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ y_{ijk} = \mu + \alpha_i + \beta_{j(i)} + \epsilon_{ijk},\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ y_{ijkl} = \mu + \alpha_i + \beta_{j(i)} + gamma_{k(j(i))}  + \epsilon_{ijkl},\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; is the overall mean, &lt;span class=&#34;math inline&#34;&gt;\(\alpha\)&lt;/span&gt; is the effect of Factor A, &lt;span class=&#34;math inline&#34;&gt;\(\beta\)&lt;/span&gt; is the effect of Factor B, &lt;span class=&#34;math inline&#34;&gt;\(\gamma\)&lt;/span&gt; is the effect of Factor C and &lt;span class=&#34;math inline&#34;&gt;\(\epsilon\)&lt;/span&gt; is the random unexplained or residual component.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;linear-models-bayesian&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Linear models (Bayesian)&lt;/h2&gt;
+&lt;p&gt;So called “random effects” are modelled differently from “fixed effects” in that rather than estimate their individual effects, we instead estimate the variability due to these “random effects”. Since technically all variables in a Bayesian framework are random, some prefer to use the terms ‘fixed effects’ and ‘varying effects’. As random factors typically represent “random” selections of levels (such as a set of randomly selected sites), incorporated in order to account for the dependency structure (observations within sites are more likely to be correlated to one another - not strickly independent) to the data, we are not overly interested in the individual differences between levels of the ‘varying’ (random) factor. Instead (in addition to imposing a separate correlation structure within each nest), we want to know how much variability is attributed to this level of the design. The linear models for two and three factor nested design are:&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ y_{ijk} = \mu + \alpha_i + \beta_{j(i)} + \epsilon_{ijk}, \;\;\; \epsilon_{ijk} \sim N(0, \sigma^2), \;\;\; \beta_{j(i)} \sim N(0, \sigma^2_{B}) \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ y_{ijkl} = \mu + \alpha_i + \beta_{j(i)} + \gamma_{k(j(i))} + \epsilon_{ijkl}, \;\;\; \epsilon_{ijkl} \sim N(0, \sigma^2), \;\;\; \beta_{j(i)} \sim N(0, \sigma^2_{B}) \;\;\; \gamma_{k(j(i))} \sim N(0, \sigma^2_C) \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; is the overall mean, &lt;span class=&#34;math inline&#34;&gt;\(\alpha\)&lt;/span&gt; is the effect of Factor A, &lt;span class=&#34;math inline&#34;&gt;\(\beta\)&lt;/span&gt; is the variability of Factor B (nested within Factor A), &lt;span class=&#34;math inline&#34;&gt;\(\gamma\)&lt;/span&gt; is the variability of Factor C (nested within Factor B) and &lt;span class=&#34;math inline&#34;&gt;\(\epsilon\)&lt;/span&gt; is the random unexplained or residual component that is assumed to be normally distributed with a mean of zero and a constant amount of standard deviation (&lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt;). The subscripts are iterators. For example, the &lt;span class=&#34;math inline&#34;&gt;\(i\)&lt;/span&gt; represents the number of effects to be estimated for Factor A. Thus the first formula can be read as the &lt;span class=&#34;math inline&#34;&gt;\(k\)&lt;/span&gt;-th observation of &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; is drawn from a normal distribution (with a specific level of variability) and mean proposed to be determined by a base mean (&lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; - mean of the first treatment across all nests) plus the effect of the &lt;span class=&#34;math inline&#34;&gt;\(i\)&lt;/span&gt;-th treatment effect plus the variabilitythe model proposes that, given a base mean (&lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt;) and knowing the effect of the &lt;span class=&#34;math inline&#34;&gt;\(i\)&lt;/span&gt;-th treatment (factor A) and which of the &lt;span class=&#34;math inline&#34;&gt;\(j\)&lt;/span&gt;-th nests within the treatment the &lt;span class=&#34;math inline&#34;&gt;\(k\)&lt;/span&gt;-th observation from Block &lt;span class=&#34;math inline&#34;&gt;\(j\)&lt;/span&gt; (factor B) within treatment effect.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;null-hypotheses&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Null hypotheses&lt;/h2&gt;
+&lt;p&gt;Separate null hypotheses are associated with each of the factors, however, nested factors are typically only added to absorb some of the unexplained variability and thus, specific hypotheses tests associated with nested factors are of lesser biological importance. Hence, rather than estimate the effects of random effects, we instead estimate how much variability they contribute.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Factor A: the main treatment effect (fixed)&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;span class=&#34;math inline&#34;&gt;\(H_0(A): \mu_1=\mu_2=\ldots=\mu_i=\mu\)&lt;/span&gt; (the population group means are all equal). That is, that the mean of population &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt; is equal to that of population &lt;span class=&#34;math inline&#34;&gt;\(2\)&lt;/span&gt; and so on, and thus all population means are equal to one another - no effect of the factor on the response. If the effect of the &lt;span class=&#34;math inline&#34;&gt;\(i\)&lt;/span&gt;-th group is the difference between the &lt;span class=&#34;math inline&#34;&gt;\(i\)&lt;/span&gt;-th group mean and the mean of the first group (&lt;span class=&#34;math inline&#34;&gt;\(\alpha_i=\mu_i-\mu_1\)&lt;/span&gt;) then the &lt;span class=&#34;math inline&#34;&gt;\(H_0\)&lt;/span&gt; can alternatively be written as:&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;span class=&#34;math inline&#34;&gt;\(H_0(A) : \alpha_1=\alpha_2=\ldots=\alpha_i=0\)&lt;/span&gt; (the effect of each group equals zero). If one or more of the &lt;span class=&#34;math inline&#34;&gt;\(\alpha_i\)&lt;/span&gt; are different from zero (the response mean for this treatment differs from the overall response mean), there is evidence that the null hypothesis is not true indicating that the factor does affect the response variable.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Factor A: the main treatment effect (random)&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;span class=&#34;math inline&#34;&gt;\(H_0(A) : \sigma^2_{\alpha}=0\)&lt;/span&gt; (population variance equals zero). There is no added variance due to all possible levels of A.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Factor B: the nested effect (random)&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;span class=&#34;math inline&#34;&gt;\(H_0(B) : \sigma^2_{\beta}=0\)&lt;/span&gt; (population variance equals zero). There is no added variance due to all possible levels of B within the (set or all possible) levels of A.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Factor B: the nested effect (fixed)&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;span class=&#34;math inline&#34;&gt;\(H_0(B): \mu_{1(1)}=\mu_{2(1)}=\ldots=\mu_{j(i)}=\mu\)&lt;/span&gt; (the population group means of B (within A) are all equal).&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;span class=&#34;math inline&#34;&gt;\(H_0(B): \beta_{1(1)}=\beta_{2(1)}=\ldots=\beta_{j(i)}=0\)&lt;/span&gt; (the effect of each chosen B group equals zero).&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div id=&#34;analysis-of-variance&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Analysis of variance&lt;/h2&gt;
+&lt;p&gt;Analysis of variance sequentially partitions the total variability in the response variable into components explained by each of the factors (starting with the factors lowest down in the hierarchy - the most deeply nested) and the components unexplained by each factor. Explained variability is calculated by subtracting the amount unexplained by the factor from the amount unexplained by a reduced model that does not contain the factor. When the null hypothesis for a factor is true (no effect or added variability), the ratio of explained and unexplained components for that factor (F-ratio) should follow a theoretical F-distribution with an expected value less than 1. The appropriate unexplained residuals and therefore the appropriate F-ratios for each factor differ according to the different null hypotheses associated with different combinations of fixed and random factors in a nested linear model (see Table below).&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; fact_anova_table
+      df        MS         F-ratio (B random)    Var comp (B random)        
+A     &amp;quot;a-1&amp;quot;     &amp;quot;MS A&amp;quot;     &amp;quot;(MS A)/(MS B&amp;#39;(A))&amp;quot;   &amp;quot;((MS A) - (MS B&amp;#39;(A)))/nb&amp;quot; 
+B&amp;#39;(A) &amp;quot;(b-1)a&amp;quot;  &amp;quot;MS B&amp;#39;(A)&amp;quot; &amp;quot;(MS B&amp;#39;(A))/(MS res)&amp;quot; &amp;quot;((MS B&amp;#39;(A)) - (MS res))/n&amp;quot;
+Res   &amp;quot;(n-1)ba&amp;quot; &amp;quot;MS res&amp;quot;   &amp;quot;&amp;quot;                    &amp;quot;&amp;quot;                         
+      F-ratio (B fixed)     Var comp (B fixed)         
+A     &amp;quot;(MS A)/(MS res)&amp;quot;     &amp;quot;((MS A) - (MS res))/nb&amp;quot;   
+B&amp;#39;(A) &amp;quot;(MS B&amp;#39;(A))/(MS res)&amp;quot; &amp;quot;((MS B&amp;#39;(A)) - (MS res))/n&amp;quot;
+Res   &amp;quot;&amp;quot;                    &amp;quot;&amp;quot;                         &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The corresponding &lt;code&gt;R&lt;/code&gt; syntax is given below.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; #A fixed/random, B random (balanced)
+&amp;gt; summary(aov(y~A+Error(B), data))
+&amp;gt; VarCorr(lme(y~A,random=1|B, data))
+&amp;gt; 
+&amp;gt; #A fixed/random, B random (unbalanced)
+&amp;gt; anova(lme(y~A,random=1|B, data), type=&amp;#39;marginal&amp;#39;)
+&amp;gt; 
+&amp;gt; #A fixed/random, B fixed(balanced)
+&amp;gt; summary(aov(y~A+B, data))
+&amp;gt; 
+&amp;gt; #A fixed/random, B fixed (unbalanced)
+&amp;gt; contrasts(data$B) &amp;lt;- contr.sum
+&amp;gt; Anova(aov(y~A/B, data), type=&amp;#39;III&amp;#39;)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;variance-components&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Variance components&lt;/h2&gt;
+&lt;p&gt;As previously alluded to, it can often be useful to determine the relative contribution (to explaining the unexplained variability) of each of the factors as this provides insights into the variability at each different scales. These contributions are known as &lt;strong&gt;Variance components&lt;/strong&gt; and are estimates of the added variances due to each of the factors. For consistency with leading texts on this topic, I have included estimated variance components for various balanced nested ANOVA designs in the above table. However, variance components based on a modified version of the maximum likelihood iterative model fitting procedure (&lt;em&gt;REML&lt;/em&gt;) is generally recommended as this accommodates both balanced and unbalanced designs. While there are no numerical differences in the calculations of variance components for fixed and random factors, fixed factors are interpreted very differently and arguably have little clinical meaning (other to infer relative contribution). For fixed factors, variance components estimate the variance between the means of the specific populations that are represented by the selected levels of the factor and therefore represent somewhat arbitrary and artificial populations. For random factors, variance components estimate the variance between means of all possible populations that could have been selected and thus represents the true population variance.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;assumptions&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Assumptions&lt;/h2&gt;
+&lt;p&gt;An F-distribution represents the relative frequencies of all the possible F-ratio’s when a given null hypothesis is true and certain assumptions about the residuals (denominator in the F-ratio calculation) hold. Consequently, it is also important that diagnostics associated with a particular hypothesis test reflect the denominator for the appropriate F-ratio. For example, when testing the null hypothesis that there is no effect of Factor A (&lt;span class=&#34;math inline&#34;&gt;\(H_0(A):\alpha_i=0\)&lt;/span&gt;) in a mixed nested ANOVA, the means of each level of Factor B are used as the replicates of Factor A. As with single factor anova, hypothesis testing for nested ANOVA assumes the residuals are:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;normally distributed. Factors higher up in the hierarchy of a nested model are based on means (or means of means) of lower factors and thus the &lt;em&gt;Central Limit Theory&lt;/em&gt; would predict that normality will usually be satisfied for the higher level factors. Nevertheless, boxplots using the appropriate scale of replication should be used to explore normality. Scale transformations are often useful.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;equally varied. Boxplots and plots of means against variance (using the appropriate scale of replication) should be used to explore the spread of values. Residual plots should reveal no patterns. Scale transformations are often useful.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;independent of one another - this requires special consideration so as to ensure that the scale at which sub-replicates are measured is still great enough to enable observations to be independent.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div id=&#34;unbalanced-nested-designs&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Unbalanced nested designs&lt;/h2&gt;
+&lt;p&gt;Designs that incorporate fixed and random factors (either nested or factorial), involve F-ratio calculations in which the denominators are themselves random factors other than the overall residuals. Many statisticians argue that when such denominators are themselves not statistically significant (at the &lt;span class=&#34;math inline&#34;&gt;\(0.25\)&lt;/span&gt; level), there are substantial power benefits from pooling together successive non-significant denominator terms. Thus an F-ratio for a particular factor might be recalculated after pooling together its original denominator with its denominators denominator and so on. The conservative &lt;span class=&#34;math inline&#34;&gt;\(0.25\)&lt;/span&gt; is used instead of the usual 0.05 to reduce further the likelihood of Type II errors (falsely concluding an effect is non-significant - that might result from insufficient power).&lt;/p&gt;
+&lt;p&gt;For a simple completely balanced nested ANOVA, it is possible to pool together (calculate their mean) each of the sub-replicates within each nest (site) and then perform single factor ANOVA on those aggregates. Indeed, for a &lt;em&gt;balanced design&lt;/em&gt;, the estimates and hypothesis for Factor A will be identical to that produced via nested ANOVA. However, if there are an unequal number of sub-replicates within each nest, then the single factor ANOVA will be less powerful that a proper nested ANOVA. &lt;em&gt;Unbalanced designs&lt;/em&gt; are those designs in which sample (subsample) sizes for each level of one or more factors differ. These situations are relatively common in biological research, however such imbalance has some important implications for nested designs.&lt;/p&gt;
+&lt;p&gt;Firstly, hypothesis tests are more robust to the assumptions of normality and equal variance when the design is balanced. Secondly (and arguably, more importantly), the model contrasts are not orthogonal (independent) and the sums of squares component attributed to each of the model terms cannot be calculated by simple additive partitioning of the total sums of squares. In such situations, exact F-ratios cannot be constructed (at least in theory), variance components calculations are more complicated and significance tests cannot be computed. The denominator MS in an &lt;em&gt;F-ratio&lt;/em&gt; is determined by examining the expected value of the mean squares of each term in a model. Unequal sample sizes result in expected means squares for which there are no obvious logical comparators that enable the impact of an individual model term to be isolated. The severity of this issue depends on which scale of the sub-sampling hierarchy the unbalance(s) occurs as well whether the unbalance occurs in the replication of a fixed or random factor. For example, whilst unequal levels of the first nesting factor (e.g. unequal number of burn vs un-burnt sites) has no effect on F-ratio construction or hypothesis testing for the top level factor (irrespective of whether either of the factors are fixed or random), unequal sub-sampling (replication) at the level of a random (but not fixed) nesting factor will impact on the ability to construct F-ratios and variance components of all terms above it in the hierarchy. There are a number of alternative ways of dealing with unbalanced nested designs. All alternatives assume that the imbalance is not a direct result of the treatments themselves. Such outcomes are more appropriately analysed by modelling the counts of surviving observations via frequency analysis.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Split the analysis up into separate smaller simple ANOVA’s each using the means of the nesting factor to reflect the appropriate scale of replication. As the resulting sums of squares components are thereby based on an aggregated dataset the analyses then inherit the procedures and requirements of single ANOVA.&lt;/li&gt;
+&lt;li&gt;Adopt mixed-modelling techniques.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;We note that, in a Bayesian framework, issues of design balance essentially evaporate.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;linear-mixed-effects-models&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Linear mixed effects models&lt;/h2&gt;
+&lt;p&gt;Although the term “mixed-effects” can be used to refer to any design that incorporates both fixed and random predictors, its use is more commonly restricted to designs in which factors are nested or grouped within other factors. Typical examples include nested, longitudinal (measurements repeated over time) data, repeated measures and blocking designs. Furthermore, rather than basing parameter estimations on observed and expected mean squares or error strata (as outline above), mixed-effects models estimate parameters via &lt;strong&gt;maximum likelihood&lt;/strong&gt; (ML) or &lt;strong&gt;residual maximum likelihood&lt;/strong&gt; (REML). In so doing, mixed-effects models more appropriately handle estimation of parameters, effects and variance components of unbalanced designs (particularly for random effects). Resulting fitted (or expected) values of each level of a factor (for example, the expected population site means) are referred to as &lt;em&gt;Best Linear Unbiased Predictors&lt;/em&gt; (BLUP’s). As an acknowledgement that most estimated site means will be more extreme than the underlying true population means they estimate (based on the principle that smaller sample sizes result in greater chances of more extreme observations and that nested sub-replicates are also likely to be highly intercorrelated), BLUP’s are less spread from the overall mean than are simple site means. In addition, mixed-effects models naturally model the “within-block” correlation structure that complicates many longitudinal designs.&lt;/p&gt;
+&lt;p&gt;Whilst the basic concepts of mixed-effects models have been around for a long time, recent computing advances and adoptions have greatly boosted the popularity of these procedures. Linear mixed effects models are currently at the forefront of statistical development, and as such, are very much a work in progress - both in theory and in practice. Recent developments have seen a further shift away from the traditional practices associated with degrees of freedom, probability distribution and p-value calculations. The traditional approach to inference testing is to compare the fit of an alternative (full) model to a null (reduced) model (via an F-ratio). When assumptions of normality and homogeneity of variance apply, the degrees of freedom are easily computed and the F-ratio has an exact F-distribution to which it can be compared. However, this approach introduces two additional problematic assumptions when estimating fixed effects in a mixed effects model. Firstly, when estimating the effects of one factor, the parameter estimates associated with other factor(s) are assumed to be the true values of those parameters (not estimates). Whilst this assumption is reasonable when all factors are fixed, as random factors are selected such that they represent one possible set of levels drawn from an entire population of possible levels for the random factor, it is unlikely that the associated parameter estimates accurately reflect the true values. Consequently, there is not necessarily an appropriate F-distribution. Furthermore, determining the appropriate degrees of freedom (nominally, the number of independent observations on which estimates are based) for models that incorporate a hierarchical structure is only possible under very specific circumstances (such as completely balanced designs). Degrees of freedom is a somewhat arbitrary defined concept used primarily to select a theoretical probability distribution on which a statistic can be compared. Arguably, however, it is a concept that is overly simplistic for complex hierarchical designs. Most statistical applications continue to provide the “approximate” solutions (as did earlier versions within &lt;code&gt;R&lt;/code&gt;). However, &lt;code&gt;R&lt;/code&gt; linear mixed effects development leaders argue strenuously that given the above shortcomings, such approximations are variably inappropriate and are thus omitted.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Markov chain Monte Carlo&lt;/strong&gt; (MCMC) sampling methods provide a Bayesian-like alternative for inference testing. Markov chains use the mixed model parameter estimates to generate posterior probability distributions of each parameter from which Monte Carlo sampling methods draw a large set of parameter samples. These parameter samples can then be used to calculate &lt;em&gt;highest posterior density&lt;/em&gt; (HPD) intervals (also known as Bayesian credible intervals). Such intervals indicate the interval in which there is a specified probability (typically &lt;span class=&#34;math inline&#34;&gt;\(95\)&lt;/span&gt;%) that the true population parameter lies. Furthermore, whilst technically against the spirit of the Bayesian philosophy, it is also possible to generate P values on which to base inferences.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;data-generation&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Data generation&lt;/h1&gt;
+&lt;p&gt;Imagine we has designed an experiment in which we intend to measure a response (&lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;) to one of treatments (three levels; “a1”, “a2” and “a3”). The treatments occur at a spatial scale (over an area) that far exceeds the logistical scale of sampling units (it would take too long to sample at the scale at which the treatments were applied). The treatments occurred at the scale of hectares whereas it was only feasible to sample y using 1m quadrats. Given that the treatments were naturally occurring (such as soil type), it was not possible to have more than five sites of each treatment type, yet prior experience suggested that the sites in which you intended to sample were very uneven and patchy with respect to &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;. In an attempt to account for this inter-site variability (and thus maximize the power of the test for the effect of treatment, you decided to employ a nested design in which 10 quadrats were randomly located within each of the five replicate sites per three treatments. As this section is mainly about the generation of artificial data (and not specifically about what to do with the data), understanding the actual details are optional and can be safely skipped.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(plyr)
+&amp;gt; set.seed(123)
+&amp;gt; nTreat &amp;lt;- 3
+&amp;gt; nSites &amp;lt;- 15
+&amp;gt; nSitesPerTreat &amp;lt;- nSites/nTreat
+&amp;gt; nQuads &amp;lt;- 10
+&amp;gt; site.sigma &amp;lt;- 12
+&amp;gt; sigma &amp;lt;- 5
+&amp;gt; n &amp;lt;- nSites * nQuads
+&amp;gt; sites &amp;lt;- gl(n=nSites,k=nQuads, lab=paste0(&amp;#39;S&amp;#39;,1:nSites))
+&amp;gt; A &amp;lt;- gl(nTreat, nSitesPerTreat*nQuads, n, labels=c(&amp;#39;a1&amp;#39;,&amp;#39;a2&amp;#39;,&amp;#39;a3&amp;#39;))
+&amp;gt; a.means &amp;lt;- c(40,70,80)
+&amp;gt; ## the site means (treatment effects) are drawn from normal distributions
+&amp;gt; ## with means of 40, 70 and 80 and standard deviations of 12
+&amp;gt; A.effects &amp;lt;- rnorm(nSites, rep(a.means,each=nSitesPerTreat),site.sigma)
+&amp;gt; #A.effects &amp;lt;- a.means %*% t(model.matrix(~A, data.frame(A=gl(nTreat,nSitesPerTreat,nSites))))+rnorm(nSites,0,site.sigma)
+&amp;gt; Xmat &amp;lt;- model.matrix(~sites -1)
+&amp;gt; lin.pred &amp;lt;- Xmat %*% c(A.effects)
+&amp;gt; ## the quadrat observations (within sites) are drawn from
+&amp;gt; ## normal distributions with means according to the site means
+&amp;gt; ## and standard deviations of 5
+&amp;gt; y &amp;lt;- rnorm(n,lin.pred,sigma)
+&amp;gt; data.nest &amp;lt;- data.frame(y=y, A=A, Sites=sites,Quads=1:length(y))
+&amp;gt; head(data.nest)  #print out the first six rows of the data set
+         y  A Sites Quads
+1 42.20886 a1    S1     1
+2 35.76354 a1    S1     2
+3 23.44121 a1    S1     3
+4 36.78107 a1    S1     4
+5 30.91034 a1    S1     5
+6 27.93517 a1    S1     6
+&amp;gt; 
+&amp;gt; library(ggplot2)
+&amp;gt; ggplot(data.nest, aes(y=y, x=1)) + geom_boxplot() + facet_grid(.~Sites)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/nested-anova-stan/2020-02-01-nested-anova-stan_files/figure-html/generate_data-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;div id=&#34;exploratory-data-analysis&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Exploratory data analysis&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Normality and Homogeneity of variance&lt;/strong&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; #Effects of treatment
+&amp;gt; boxplot(y~A, ddply(data.nest, ~A+Sites,numcolwise(mean, na.rm=T)))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/nested-anova-stan/2020-02-01-nested-anova-stan_files/figure-html/exp1_data-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; 
+&amp;gt; #Site effects
+&amp;gt; boxplot(y~Sites, ddply(data.nest, ~A+Sites+Quads,numcolwise(mean, na.rm=T)))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/nested-anova-stan/2020-02-01-nested-anova-stan_files/figure-html/exp1_data-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; 
+&amp;gt; ## with ggplot2
+&amp;gt; ggplot(ddply(data.nest, ~A+Sites,numcolwise(mean, na.rm=T)), aes(y=y, x=A)) +
++   geom_boxplot()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/nested-anova-stan/2020-02-01-nested-anova-stan_files/figure-html/exp1_data-3.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Conclusions&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;there is no evidence that the response variable is consistently non-normal across all populations - each boxplot is approximately symmetrical.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;there is no evidence that variance (as estimated by the height of the boxplots) differs between the five populations. More importantly, there is no evidence of a relationship between mean and variance - the height of boxplots does not increase with increasing position along the y-axis. Hence it there is no evidence of non-homogeneity.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Obvious violations could be addressed either by:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;transform the scale of the response variables (to address normality, etc). Note transformations should be applied to the entire response variable (not just those populations that are skewed).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;model-fitting&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Model fitting&lt;/h1&gt;
+&lt;p&gt;For non-hierarchical linear models, uniform priors on variance (standard deviation) parameters seem to work reasonably well. &lt;span class=&#34;citation&#34;&gt;Gelman and others (2006)&lt;/span&gt; warns that the use of the inverse-gamma family of non-informative priors are very sensitive to ϵ particularly when variance is close to zero and this may lead to unintentionally informative priors. When the number of groups (treatments or varying/random effects) is large (more than &lt;span class=&#34;math inline&#34;&gt;\(5\)&lt;/span&gt;), &lt;span class=&#34;citation&#34;&gt;Gelman and others (2006)&lt;/span&gt; advocated the use of either uniform or half-cauchy priors. Yet when the number of groups is low, &lt;span class=&#34;citation&#34;&gt;Gelman and others (2006)&lt;/span&gt; indicates that uniform priors have a tendency to result in inflated variance estimates. Consequently, half-cauchy priors are generally recommended for variances.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Full parameterisation&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ y_{ijk} \sim N(\mu_{ij}, \sigma^2), \;\;\; \mu_{ij}=\alpha_0 + \alpha_i + \beta_{j(i)}, \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\beta_{ij)} \sim N(0, \sigma^2_B)\)&lt;/span&gt;, &lt;span class=&#34;math inline&#34;&gt;\(\alpha_0, \alpha_i \sim N(0, 1000000)\)&lt;/span&gt;, and &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2, \sigma^2_B \sim \text{Cauchy(0, 25)}\)&lt;/span&gt;. The &lt;em&gt;full parameterisation&lt;/em&gt;, shows the effects parameterisation in which there is an intercept (&lt;span class=&#34;math inline&#34;&gt;\(\alpha_0\)&lt;/span&gt;) and two treatment effects (&lt;span class=&#34;math inline&#34;&gt;\(\alpha_i\)&lt;/span&gt;, where &lt;span class=&#34;math inline&#34;&gt;\(i\)&lt;/span&gt; is &lt;span class=&#34;math inline&#34;&gt;\(1,2\)&lt;/span&gt;).&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Matrix parameterisation&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ y_{ijk} \sim N(\mu_{ij}, \sigma^2), \;\;\; \mu_{ij}=\boldsymbol \alpha \boldsymbol X + \beta_{j(i)}, \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\beta_{ij} \sim N(0, \sigma^2_B)\)&lt;/span&gt;, &lt;span class=&#34;math inline&#34;&gt;\(\boldsymbol \alpha \sim MVN(0, 1000000)\)&lt;/span&gt;, and &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2, \sigma^2_B \sim \text{Cauchy(0, 25)}\)&lt;/span&gt;. The full parameterisation, shows the effects parameterisation in which there is an intercept (&lt;span class=&#34;math inline&#34;&gt;\(\alpha_0\)&lt;/span&gt;) and two treatment effects (&lt;span class=&#34;math inline&#34;&gt;\(\alpha_i\)&lt;/span&gt;, where &lt;span class=&#34;math inline&#34;&gt;\(i\)&lt;/span&gt; is &lt;span class=&#34;math inline&#34;&gt;\(1,2\)&lt;/span&gt;). The &lt;em&gt;matrix parameterisation&lt;/em&gt; is a compressed notation, In this parameterisation, there are three alpha parameters (one representing the mean of treatment a1, and the other two representing the treatment effects (differences between a2 and a1 and a3 and a1). In generating priors for each of these three alpha parameters, we could loop through each and define a non-informative normal prior to each (as in the Full parameterisation version). However, it turns out that it is more efficient (in terms of mixing and thus the number of necessary iterations) to define the priors from a multivariate normal distribution. This has as many means as there are parameters to estimate (&lt;span class=&#34;math inline&#34;&gt;\(3\)&lt;/span&gt;) and a &lt;span class=&#34;math inline&#34;&gt;\(3\times3\)&lt;/span&gt; matrix of zeros and &lt;span class=&#34;math inline&#34;&gt;\(100\)&lt;/span&gt; in the diagonals.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \boldsymbol \mu =
+  \begin{bmatrix} 0  \\ 0  \\ 0 \end{bmatrix}, \;\;\; \sigma^2 \sim   
+  \begin{bmatrix}
+   1000000 &amp;amp; 0 &amp;amp; 0 \\
+   0 &amp;amp; 1000000 &amp;amp; 0 \\
+   0 &amp;amp; 0 &amp;amp; 1000000
+   \end{bmatrix}. \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Hierarchical parameterisation&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ y_{ijk} \sim N(\beta_{i(j)}, \sigma^2), \;\;\; \beta_{i(j)}\sim N(\mu_i, \sigma^2_B), \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\mu_i = \boldsymbol \alpha \boldsymbol X\)&lt;/span&gt;, &lt;span class=&#34;math inline&#34;&gt;\(\alpha_i \sim N(0, 1000000)\)&lt;/span&gt;, and &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2, \sigma^2_B \sim \text{Cauchy(0, 25)}\)&lt;/span&gt;. In the &lt;em&gt;heirarchical parameterisation&lt;/em&gt;, we are indicating two residual layers - one representing the variability in the observed data between individual observations (within sites) and the second representing the variability between site means (within the three treatments).&lt;/p&gt;
+&lt;div id=&#34;full-means-parameterisation&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Full means parameterisation&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; rstanString=&amp;quot;
++ data{
++    int n;
++    int nA;
++    int nB;
++    vector [n] y;
++    int A[n];
++    int B[n];
++ }
++ 
++ parameters{
++   real alpha[nA];
++   real&amp;lt;lower=0&amp;gt; sigma;
++   vector [nB] beta;
++   real&amp;lt;lower=0&amp;gt; sigma_B;
++ }
++  
++ model{
++     real mu[n];
++ 
++     // Priors
++     alpha ~ normal( 0 , 100 );
++     beta ~ normal( 0 , sigma_B );
++     sigma_B ~ cauchy( 0 , 25 );
++     sigma ~ cauchy( 0 , 25 );
++     
++     for ( i in 1:n ) {
++         mu[i] = alpha[A[i]] + beta[B[i]];
++     }
++     y ~ normal( mu , sigma );
++ }
++ 
++ &amp;quot;
+&amp;gt; 
+&amp;gt; ## write the model to a text file
+&amp;gt; writeLines(rstanString, con = &amp;quot;fullModel.stan&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Arrange the data as a list (as required by &lt;code&gt;STAN&lt;/code&gt;). As input, &lt;code&gt;STAN&lt;/code&gt; will need to be supplied with: the response variable, the predictor matrix, the number of predictors, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; data.nest.list &amp;lt;- with(data.nest, list(y=y, A=as.numeric(A), B=as.numeric(Sites),
++   n=nrow(data.nest), nB=length(levels(Sites)),nA=length(levels(A))))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Define the nodes (parameters and derivatives) to monitor and the chain parameters.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; params &amp;lt;- c(&amp;quot;alpha&amp;quot;,&amp;quot;sigma&amp;quot;,&amp;quot;sigma_B&amp;quot;)
+&amp;gt; burnInSteps = 3000
+&amp;gt; nChains = 2
+&amp;gt; numSavedSteps = 3000
+&amp;gt; thinSteps = 1
+&amp;gt; nIter = burnInSteps+ceiling((numSavedSteps * thinSteps)/nChains)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Start the &lt;code&gt;STAN&lt;/code&gt; model (check the model, load data into the model, specify the number of chains and compile the model). Load the &lt;code&gt;rstan&lt;/code&gt; package.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(rstan)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now run the &lt;code&gt;STAN&lt;/code&gt; code via the &lt;code&gt;rstan&lt;/code&gt; interface.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; data.nest.rstan.c &amp;lt;- stan(data = data.nest.list, file = &amp;quot;fullModel.stan&amp;quot;, chains = nChains, pars = params, iter = nIter, warmup = burnInSteps, thin = thinSteps)
+
+SAMPLING FOR MODEL &amp;#39;fullModel&amp;#39; NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 0 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 4500 [  0%]  (Warmup)
+Chain 1: Iteration:  450 / 4500 [ 10%]  (Warmup)
+Chain 1: Iteration:  900 / 4500 [ 20%]  (Warmup)
+Chain 1: Iteration: 1350 / 4500 [ 30%]  (Warmup)
+Chain 1: Iteration: 1800 / 4500 [ 40%]  (Warmup)
+Chain 1: Iteration: 2250 / 4500 [ 50%]  (Warmup)
+Chain 1: Iteration: 2700 / 4500 [ 60%]  (Warmup)
+Chain 1: Iteration: 3001 / 4500 [ 66%]  (Sampling)
+Chain 1: Iteration: 3450 / 4500 [ 76%]  (Sampling)
+Chain 1: Iteration: 3900 / 4500 [ 86%]  (Sampling)
+Chain 1: Iteration: 4350 / 4500 [ 96%]  (Sampling)
+Chain 1: Iteration: 4500 / 4500 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 1 seconds (Warm-up)
+Chain 1:                0.532 seconds (Sampling)
+Chain 1:                1.532 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL &amp;#39;fullModel&amp;#39; NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 0 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 4500 [  0%]  (Warmup)
+Chain 2: Iteration:  450 / 4500 [ 10%]  (Warmup)
+Chain 2: Iteration:  900 / 4500 [ 20%]  (Warmup)
+Chain 2: Iteration: 1350 / 4500 [ 30%]  (Warmup)
+Chain 2: Iteration: 1800 / 4500 [ 40%]  (Warmup)
+Chain 2: Iteration: 2250 / 4500 [ 50%]  (Warmup)
+Chain 2: Iteration: 2700 / 4500 [ 60%]  (Warmup)
+Chain 2: Iteration: 3001 / 4500 [ 66%]  (Sampling)
+Chain 2: Iteration: 3450 / 4500 [ 76%]  (Sampling)
+Chain 2: Iteration: 3900 / 4500 [ 86%]  (Sampling)
+Chain 2: Iteration: 4350 / 4500 [ 96%]  (Sampling)
+Chain 2: Iteration: 4500 / 4500 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 1.046 seconds (Warm-up)
+Chain 2:                0.515 seconds (Sampling)
+Chain 2:                1.561 seconds (Total)
+Chain 2: 
+&amp;gt; 
+&amp;gt; print(data.nest.rstan.c, par = c(&amp;quot;alpha&amp;quot;, &amp;quot;sigma&amp;quot;, &amp;quot;sigma_B&amp;quot;))
+Inference for Stan model: fullModel.
+2 chains, each with iter=4500; warmup=3000; thin=1; 
+post-warmup draws per chain=1500, total post-warmup draws=3000.
+
+          mean se_mean   sd  2.5%   25%   50%   75% 97.5% n_eff Rhat
+alpha[1] 42.13    0.17 5.42 31.72 38.59 42.04 45.54 52.73  1058    1
+alpha[2] 69.78    0.16 5.18 58.88 66.67 70.02 73.13 79.77  1031    1
+alpha[3] 83.44    0.16 5.32 73.39 80.08 83.32 86.79 93.71  1128    1
+sigma     5.04    0.01 0.31  4.49  4.82  5.03  5.24  5.71  1681    1
+sigma_B  11.53    0.07 2.64  7.64  9.65 11.05 13.00 17.73  1347    1
+
+Samples were drawn using NUTS(diag_e) at Wed Feb 19 18:54:36 2020.
+For each parameter, n_eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor on split chains (at 
+convergence, Rhat=1).
+&amp;gt; 
+&amp;gt; data.nest.rstan.c.df &amp;lt;-as.data.frame(extract(data.nest.rstan.c))
+&amp;gt; head(data.nest.rstan.c.df)
+   alpha.1  alpha.2  alpha.3    sigma   sigma_B      lp__
+1 39.90783 67.92721 85.21329 5.001354 10.311217 -356.3867
+2 43.82811 70.24443 84.04493 5.063975  8.728672 -355.7535
+3 40.70837 86.85136 68.64037 5.418739 17.424519 -364.8486
+4 44.81747 68.68533 81.60515 5.133029 11.324690 -356.2288
+5 36.25821 69.65002 79.77226 5.401904 11.885382 -358.2225
+6 39.98730 75.26225 83.81045 5.215396 10.654035 -355.1518&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;full-effect-parameterisation&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Full effect parameterisation&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; rstan2String=&amp;quot;
++ data{
++    int n;
++    int nB;
++    vector [n] y;
++    int A2[n];
++    int A3[n];
++    int B[n];
++ }
++ 
++ parameters{
++   real alpha0;
++   real alpha2;
++   real alpha3;
++   real&amp;lt;lower=0&amp;gt; sigma;
++   vector [nB] beta;
++   real&amp;lt;lower=0&amp;gt; sigma_B;
++ }
++  
++ model{
++     real mu[n];
++ 
++     // Priors
++     alpha0 ~ normal( 0 , 100 );
++     alpha2 ~ normal( 0 , 100 );
++     alpha3 ~ normal( 0 , 100 );
++     beta ~ normal( 0 , sigma_B );
++     sigma_B ~ cauchy( 0 , 25 );
++     sigma ~ cauchy( 0 , 25 );
++     
++     for ( i in 1:n ) {
++         mu[i] = alpha0 + alpha2*A2[i] + 
++                alpha3*A3[i] + beta[B[i]];
++     }
++     y ~ normal( mu , sigma );
++ }
++ 
++ &amp;quot;
+&amp;gt; 
+&amp;gt; ## write the model to a text file
+&amp;gt; writeLines(rstan2String, con = &amp;quot;full2Model.stan&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Arrange the data as a list (as required by &lt;code&gt;STAN&lt;/code&gt;). As input, &lt;code&gt;STAN&lt;/code&gt; will need to be supplied with: the response variable, the predictor matrix, the number of predictors, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; A2 &amp;lt;- ifelse(data.nest$A==&amp;#39;a2&amp;#39;,1,0)
+&amp;gt; A3 &amp;lt;- ifelse(data.nest$A==&amp;#39;a3&amp;#39;,1,0)
+&amp;gt; data.nest.list &amp;lt;- with(data.nest, list(y=y, A2=A2, A3=A3, B=as.numeric(Sites),
++    n=nrow(data.nest), nB=length(levels(Sites))))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Define the nodes (parameters and derivatives) to monitor and the chain parameters.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; params &amp;lt;- c(&amp;quot;alpha0&amp;quot;,&amp;quot;alpha2&amp;quot;,&amp;quot;alpha3&amp;quot;,&amp;quot;sigma&amp;quot;,&amp;quot;sigma_B&amp;quot;)
+&amp;gt; burnInSteps = 3000
+&amp;gt; nChains = 2
+&amp;gt; numSavedSteps = 3000
+&amp;gt; thinSteps = 1
+&amp;gt; nIter = burnInSteps+ceiling((numSavedSteps * thinSteps)/nChains)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now run the &lt;code&gt;STAN&lt;/code&gt; code via the &lt;code&gt;rstan&lt;/code&gt; interface.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; data.nest.rstan.c2 &amp;lt;- stan(data = data.nest.list, file = &amp;quot;full2Model.stan&amp;quot;, chains = nChains, pars = params, iter = nIter, warmup = burnInSteps, thin = thinSteps)
+
+SAMPLING FOR MODEL &amp;#39;full2Model&amp;#39; NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 0 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 4500 [  0%]  (Warmup)
+Chain 1: Iteration:  450 / 4500 [ 10%]  (Warmup)
+Chain 1: Iteration:  900 / 4500 [ 20%]  (Warmup)
+Chain 1: Iteration: 1350 / 4500 [ 30%]  (Warmup)
+Chain 1: Iteration: 1800 / 4500 [ 40%]  (Warmup)
+Chain 1: Iteration: 2250 / 4500 [ 50%]  (Warmup)
+Chain 1: Iteration: 2700 / 4500 [ 60%]  (Warmup)
+Chain 1: Iteration: 3001 / 4500 [ 66%]  (Sampling)
+Chain 1: Iteration: 3450 / 4500 [ 76%]  (Sampling)
+Chain 1: Iteration: 3900 / 4500 [ 86%]  (Sampling)
+Chain 1: Iteration: 4350 / 4500 [ 96%]  (Sampling)
+Chain 1: Iteration: 4500 / 4500 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 2.155 seconds (Warm-up)
+Chain 1:                1.313 seconds (Sampling)
+Chain 1:                3.468 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL &amp;#39;full2Model&amp;#39; NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 0 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 4500 [  0%]  (Warmup)
+Chain 2: Iteration:  450 / 4500 [ 10%]  (Warmup)
+Chain 2: Iteration:  900 / 4500 [ 20%]  (Warmup)
+Chain 2: Iteration: 1350 / 4500 [ 30%]  (Warmup)
+Chain 2: Iteration: 1800 / 4500 [ 40%]  (Warmup)
+Chain 2: Iteration: 2250 / 4500 [ 50%]  (Warmup)
+Chain 2: Iteration: 2700 / 4500 [ 60%]  (Warmup)
+Chain 2: Iteration: 3001 / 4500 [ 66%]  (Sampling)
+Chain 2: Iteration: 3450 / 4500 [ 76%]  (Sampling)
+Chain 2: Iteration: 3900 / 4500 [ 86%]  (Sampling)
+Chain 2: Iteration: 4350 / 4500 [ 96%]  (Sampling)
+Chain 2: Iteration: 4500 / 4500 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 2.344 seconds (Warm-up)
+Chain 2:                1.687 seconds (Sampling)
+Chain 2:                4.031 seconds (Total)
+Chain 2: 
+&amp;gt; 
+&amp;gt; print(data.nest.rstan.c2, par = c(&amp;quot;alpha0&amp;quot;, &amp;quot;alpha2&amp;quot;, &amp;quot;alpha3&amp;quot;, &amp;quot;sigma&amp;quot;, &amp;quot;sigma_B&amp;quot;))
+Inference for Stan model: full2Model.
+2 chains, each with iter=4500; warmup=3000; thin=1; 
+post-warmup draws per chain=1500, total post-warmup draws=3000.
+
+         mean se_mean   sd  2.5%   25%   50%   75% 97.5% n_eff Rhat
+alpha0  42.24    0.19 5.22 32.07 38.86 42.23 45.49 52.71   754    1
+alpha2  27.74    0.24 7.22 12.83 23.19 27.95 32.39 41.86   930    1
+alpha3  41.08    0.26 7.57 26.40 36.24 40.91 45.91 56.62   832    1
+sigma    5.06    0.01 0.31  4.49  4.84  5.04  5.26  5.70  1614    1
+sigma_B 11.50    0.07 2.62  7.48  9.61 11.18 12.87 17.56  1473    1
+
+Samples were drawn using NUTS(diag_e) at Wed Feb 19 18:55:27 2020.
+For each parameter, n_eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor on split chains (at 
+convergence, Rhat=1).
+&amp;gt; 
+&amp;gt; data.nest.rstan.c2.df &amp;lt;-as.data.frame(extract(data.nest.rstan.c2))
+&amp;gt; head(data.nest.rstan.c2.df)
+    alpha0   alpha2   alpha3    sigma   sigma_B      lp__
+1 43.44920 25.05917 38.82597 4.987000  8.342916 -352.4477
+2 37.88972 26.37229 52.49395 5.060172 14.993315 -359.3865
+3 44.42550 31.08944 44.58649 4.560923 12.629643 -356.8136
+4 44.91839 23.67947 47.86579 5.243758 11.344471 -360.4625
+5 36.77499 30.43252 49.29206 4.755335 12.472457 -360.6371
+6 41.89213 22.74346 43.71447 5.184679 10.054922 -356.3188&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;matrix-parameterisation&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Matrix parameterisation&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; rstanString2=&amp;quot;
++ data{
++    int n;
++    int nB;
++    int nA;
++    vector [n] y;
++    matrix [n,nA] X;
++    int B[n];
++    vector [nA] a0;
++    matrix [nA,nA] A0;
++ }
++ 
++ parameters{
++   vector [nA] alpha;
++   real&amp;lt;lower=0&amp;gt; sigma;
++   vector [nB] beta;
++   real&amp;lt;lower=0&amp;gt; sigma_B;
++ }
++  
++ model{
++     real mu[n];
++ 
++     // Priors
++     //alpha ~ normal( 0 , 100 );
++     alpha ~ multi_normal(a0,A0);
++     beta ~ normal( 0 , sigma_B );
++     sigma_B ~ cauchy( 0 , 25);
++     sigma ~ cauchy( 0 , 25 );
++     
++     for ( i in 1:n ) {
++         mu[i] = dot_product(X[i],alpha) + beta[B[i]];
++     }
++     y ~ normal( mu , sigma );
++ }
++ 
++ &amp;quot;
+&amp;gt; 
+&amp;gt; ## write the model to a text file
+&amp;gt; writeLines(rstanString2, con = &amp;quot;matrixModel.stan&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Arrange the data as a list (as required by &lt;code&gt;STAN&lt;/code&gt;). As input, &lt;code&gt;STAN&lt;/code&gt; will need to be supplied with: the response variable, the predictor matrix, the number of predictors, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; X &amp;lt;- model.matrix(~A, data.nest)
+&amp;gt; nA &amp;lt;- ncol(X)
+&amp;gt; data.nest.list &amp;lt;- with(data.nest, list(y=y, X=X, B=as.numeric(Sites),
++    n=nrow(data.nest), nB=length(levels(Sites)), nA=nA,
++    a0=rep(0,nA), A0=diag(100000,nA)))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Define the nodes (parameters and derivatives) to monitor and the chain parameters.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; params &amp;lt;- c(&amp;quot;alpha&amp;quot;,&amp;quot;sigma&amp;quot;,&amp;quot;sigma_B&amp;quot;)
+&amp;gt; burnInSteps = 3000
+&amp;gt; nChains = 2
+&amp;gt; numSavedSteps = 3000
+&amp;gt; thinSteps = 1
+&amp;gt; nIter = burnInSteps+ceiling((numSavedSteps * thinSteps)/nChains)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now run the &lt;code&gt;STAN&lt;/code&gt; code via the &lt;code&gt;rstan&lt;/code&gt; interface.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; data.nest.rstan.m &amp;lt;- stan(data = data.nest.list, file = &amp;quot;matrixModel.stan&amp;quot;, chains = nChains, pars = params, iter = nIter, warmup = burnInSteps, thin = thinSteps)
+
+SAMPLING FOR MODEL &amp;#39;matrixModel&amp;#39; NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 0 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 4500 [  0%]  (Warmup)
+Chain 1: Iteration:  450 / 4500 [ 10%]  (Warmup)
+Chain 1: Iteration:  900 / 4500 [ 20%]  (Warmup)
+Chain 1: Iteration: 1350 / 4500 [ 30%]  (Warmup)
+Chain 1: Iteration: 1800 / 4500 [ 40%]  (Warmup)
+Chain 1: Iteration: 2250 / 4500 [ 50%]  (Warmup)
+Chain 1: Iteration: 2700 / 4500 [ 60%]  (Warmup)
+Chain 1: Iteration: 3001 / 4500 [ 66%]  (Sampling)
+Chain 1: Iteration: 3450 / 4500 [ 76%]  (Sampling)
+Chain 1: Iteration: 3900 / 4500 [ 86%]  (Sampling)
+Chain 1: Iteration: 4350 / 4500 [ 96%]  (Sampling)
+Chain 1: Iteration: 4500 / 4500 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 8.409 seconds (Warm-up)
+Chain 1:                6.17 seconds (Sampling)
+Chain 1:                14.579 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL &amp;#39;matrixModel&amp;#39; NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 0 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 4500 [  0%]  (Warmup)
+Chain 2: Iteration:  450 / 4500 [ 10%]  (Warmup)
+Chain 2: Iteration:  900 / 4500 [ 20%]  (Warmup)
+Chain 2: Iteration: 1350 / 4500 [ 30%]  (Warmup)
+Chain 2: Iteration: 1800 / 4500 [ 40%]  (Warmup)
+Chain 2: Iteration: 2250 / 4500 [ 50%]  (Warmup)
+Chain 2: Iteration: 2700 / 4500 [ 60%]  (Warmup)
+Chain 2: Iteration: 3001 / 4500 [ 66%]  (Sampling)
+Chain 2: Iteration: 3450 / 4500 [ 76%]  (Sampling)
+Chain 2: Iteration: 3900 / 4500 [ 86%]  (Sampling)
+Chain 2: Iteration: 4350 / 4500 [ 96%]  (Sampling)
+Chain 2: Iteration: 4500 / 4500 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 9.595 seconds (Warm-up)
+Chain 2:                6.436 seconds (Sampling)
+Chain 2:                16.031 seconds (Total)
+Chain 2: 
+&amp;gt; 
+&amp;gt; print(data.nest.rstan.m, par = c(&amp;quot;alpha&amp;quot;, &amp;quot;sigma&amp;quot;, &amp;quot;sigma_B&amp;quot;))
+Inference for Stan model: matrixModel.
+2 chains, each with iter=4500; warmup=3000; thin=1; 
+post-warmup draws per chain=1500, total post-warmup draws=3000.
+
+          mean se_mean   sd  2.5%   25%   50%   75% 97.5% n_eff Rhat
+alpha[1] 42.36    0.16 5.19 31.70 39.08 42.45 45.71 52.79  1069    1
+alpha[2] 27.59    0.23 7.45 13.12 22.64 27.47 32.31 43.07  1037    1
+alpha[3] 41.00    0.23 7.53 25.73 36.29 41.13 45.57 55.83  1083    1
+sigma     5.04    0.01 0.31  4.48  4.83  5.02  5.22  5.69  2053    1
+sigma_B  11.51    0.07 2.61  7.71  9.66 11.09 12.97 17.82  1545    1
+
+Samples were drawn using NUTS(diag_e) at Wed Feb 19 18:56:43 2020.
+For each parameter, n_eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor on split chains (at 
+convergence, Rhat=1).
+&amp;gt; 
+&amp;gt; data.nest.rstan.m.df &amp;lt;-as.data.frame(extract(data.nest.rstan.m))
+&amp;gt; head(data.nest.rstan.m.df)
+   alpha.1  alpha.2  alpha.3    sigma   sigma_B      lp__
+1 41.40841 32.47143 57.93674 4.737729 11.199844 -364.6446
+2 39.59351 24.92710 43.71482 5.359000  9.763771 -358.0532
+3 51.54847 28.01489 31.29953 5.424494 10.611593 -357.9738
+4 33.53023 43.54390 53.51006 4.879110 12.370616 -351.2236
+5 41.44793 19.43188 41.36733 5.279320 10.059042 -360.4873
+6 31.05092 29.80598 56.34603 4.882690 15.141476 -358.0164&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;hierarchical-parameterisation&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Hierarchical parameterisation&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; rstanString3=&amp;quot;
++ data{
++    int n;
++    int nA;
++    int nSites;
++    vector [n] y;
++    matrix [nSites,nA] X;
++    matrix [n,nSites] Z;
++ }
++ 
++ parameters{
++    vector[nA] beta;
++    vector[nSites] gamma;
++    real&amp;lt;lower=0&amp;gt; sigma;
++    real&amp;lt;lower=0&amp;gt; sigma_S;
++    
++ }
++  
++ model{
++     vector [n] mu_site;
++     vector [nSites] mu;
++ 
++     // Priors
++     beta ~ normal( 0 , 1000 );
++     gamma ~ normal( 0 , 1000 );
++     sigma ~ cauchy( 0 , 25 );
++     sigma_S~ cauchy( 0 , 25 );
++ 
++     mu_site = Z*gamma;
++     y ~ normal( mu_site , sigma );
++     mu = X*beta;
++     gamma ~ normal(mu, sigma_S);
++ }
++ 
++ &amp;quot;
+&amp;gt; 
+&amp;gt; ## write the model to a text file
+&amp;gt; writeLines(rstanString3, con = &amp;quot;hierarchicalModel.stan&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Arrange the data as a list (as required by &lt;code&gt;STAN&lt;/code&gt;). As input, &lt;code&gt;STAN&lt;/code&gt; will need to be supplied with: the response variable, the predictor matrix, the number of predictors, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; dt.A &amp;lt;- ddply(data.nest,~Sites,catcolwise(unique))
+&amp;gt; X&amp;lt;-model.matrix(~A, dt.A)
+&amp;gt; Z&amp;lt;-model.matrix(~Sites-1, data.nest)
+&amp;gt; data.nest.list &amp;lt;- list(y=data.nest$y, X=X, Z=Z, n=nrow(data.nest),
++   nSites=nrow(X),nA=ncol(X))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Define the nodes (parameters and derivatives) to monitor and the chain parameters.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; params &amp;lt;- c(&amp;quot;beta&amp;quot;,&amp;quot;sigma&amp;quot;,&amp;quot;sigma_S&amp;quot;)
+&amp;gt; burnInSteps = 3000
+&amp;gt; nChains = 2
+&amp;gt; numSavedSteps = 3000
+&amp;gt; thinSteps = 1
+&amp;gt; nIter = burnInSteps+ceiling((numSavedSteps * thinSteps)/nChains)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now run the &lt;code&gt;STAN&lt;/code&gt; code via the &lt;code&gt;rstan&lt;/code&gt; interface.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; data.nest.rstan.h &amp;lt;- stan(data = data.nest.list, file = &amp;quot;hierarchicalModel.stan&amp;quot;, chains = nChains, pars = params, iter = nIter, warmup = burnInSteps, thin = thinSteps)
+
+SAMPLING FOR MODEL &amp;#39;hierarchicalModel&amp;#39; NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 0 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 4500 [  0%]  (Warmup)
+Chain 1: Iteration:  450 / 4500 [ 10%]  (Warmup)
+Chain 1: Iteration:  900 / 4500 [ 20%]  (Warmup)
+Chain 1: Iteration: 1350 / 4500 [ 30%]  (Warmup)
+Chain 1: Iteration: 1800 / 4500 [ 40%]  (Warmup)
+Chain 1: Iteration: 2250 / 4500 [ 50%]  (Warmup)
+Chain 1: Iteration: 2700 / 4500 [ 60%]  (Warmup)
+Chain 1: Iteration: 3001 / 4500 [ 66%]  (Sampling)
+Chain 1: Iteration: 3450 / 4500 [ 76%]  (Sampling)
+Chain 1: Iteration: 3900 / 4500 [ 86%]  (Sampling)
+Chain 1: Iteration: 4350 / 4500 [ 96%]  (Sampling)
+Chain 1: Iteration: 4500 / 4500 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.668 seconds (Warm-up)
+Chain 1:                0.234 seconds (Sampling)
+Chain 1:                0.902 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL &amp;#39;hierarchicalModel&amp;#39; NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 0 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 4500 [  0%]  (Warmup)
+Chain 2: Iteration:  450 / 4500 [ 10%]  (Warmup)
+Chain 2: Iteration:  900 / 4500 [ 20%]  (Warmup)
+Chain 2: Iteration: 1350 / 4500 [ 30%]  (Warmup)
+Chain 2: Iteration: 1800 / 4500 [ 40%]  (Warmup)
+Chain 2: Iteration: 2250 / 4500 [ 50%]  (Warmup)
+Chain 2: Iteration: 2700 / 4500 [ 60%]  (Warmup)
+Chain 2: Iteration: 3001 / 4500 [ 66%]  (Sampling)
+Chain 2: Iteration: 3450 / 4500 [ 76%]  (Sampling)
+Chain 2: Iteration: 3900 / 4500 [ 86%]  (Sampling)
+Chain 2: Iteration: 4350 / 4500 [ 96%]  (Sampling)
+Chain 2: Iteration: 4500 / 4500 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.703 seconds (Warm-up)
+Chain 2:                0.328 seconds (Sampling)
+Chain 2:                1.031 seconds (Total)
+Chain 2: 
+&amp;gt; 
+&amp;gt; print(data.nest.rstan.h, par = c(&amp;quot;beta&amp;quot;, &amp;quot;sigma&amp;quot;, &amp;quot;sigma_S&amp;quot;))
+Inference for Stan model: hierarchicalModel.
+2 chains, each with iter=4500; warmup=3000; thin=1; 
+post-warmup draws per chain=1500, total post-warmup draws=3000.
+
+         mean se_mean   sd  2.5%   25%   50%   75% 97.5% n_eff Rhat
+beta[1] 42.00    0.12 5.42 31.11 38.53 41.97 45.38 52.92  1950    1
+beta[2] 27.78    0.16 7.78 12.51 22.96 27.60 32.61 43.48  2223    1
+beta[3] 41.25    0.16 7.60 25.98 36.43 41.22 46.13 56.47  2297    1
+sigma    5.05    0.01 0.31  4.51  4.83  5.03  5.24  5.69  3535    1
+sigma_S 11.60    0.06 2.77  7.65  9.69 11.12 13.00 18.21  2293    1
+
+Samples were drawn using NUTS(diag_e) at Wed Feb 19 18:57:31 2020.
+For each parameter, n_eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor on split chains (at 
+convergence, Rhat=1).
+&amp;gt; 
+&amp;gt; data.nest.rstan.h.df &amp;lt;-as.data.frame(extract(data.nest.rstan.h))
+&amp;gt; head(data.nest.rstan.h.df)
+    beta.1   beta.2   beta.3    sigma   sigma_S      lp__
+1 46.23354 28.84100 35.42376 5.036956 11.894690 -358.2262
+2 45.88700 23.99846 40.07971 5.376392 10.841072 -354.2937
+3 49.82263 21.87036 29.82862 5.212592 13.817988 -356.6391
+4 52.75362 19.51831 26.12392 5.023215 11.063866 -357.1474
+5 49.27716 26.58538 25.05783 5.633089 13.477152 -357.9141
+6 46.81798 29.23605 31.25244 4.968886  8.497519 -353.4571&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If you want to include finite-population standard deviations in the model you can use the following code.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; rstanString4=&amp;quot;
++ data{
++    int n;
++    int nA;
++    int nSites;
++    vector [n] y;
++    matrix [nSites,nA] X;
++    matrix [n,nSites] Z;
++ }
++ 
++ parameters{
++    vector[nA] beta;
++    vector[nSites] gamma;
++    real&amp;lt;lower=0&amp;gt; sigma;
++    real&amp;lt;lower=0&amp;gt; sigma_S;
++    
++ }
++ 
++ model{
++     vector [n] mu_site;
++     vector [nSites] mu;
++ 
++     // Priors
++     beta ~ normal( 0 , 1000 );
++     gamma ~ normal( 0 , 1000 );
++     sigma ~ cauchy( 0 , 25 );
++     sigma_S~ cauchy( 0 , 25 );
++ 
++     mu_site = Z*gamma;
++     y ~ normal( mu_site , sigma );
++     mu = X*beta;
++     gamma ~ normal(mu, sigma_S);
++ }
++ 
++ generated quantities {
++     vector [n] mu_site;
++     vector [nSites] mu;
++     vector [n] y_err;
++     real sd_y;
++     vector [nSites] mu_site_err;
++     real sd_site;
++     real sd_A;
++     
++     mu_site = Z*gamma;
++     y_err = mu_site - y;
++     sd_y = sd(y_err);
++ 
++     mu = X*beta;
++     mu_site_err = mu - gamma;
++     sd_site = sd(mu_site_err);
++ 
++     sd_A = sd(beta);
++ }
++ 
++ &amp;quot;
+&amp;gt; 
+&amp;gt; ## write the model to a text file
+&amp;gt; writeLines(rstanString4, con = &amp;quot;SDModel.stan&amp;quot;)
+&amp;gt; 
+&amp;gt; #data list
+&amp;gt; dt.A &amp;lt;- ddply(data.nest,~Sites,catcolwise(unique))
+&amp;gt; X&amp;lt;-model.matrix(~A, dt.A)
+&amp;gt; Z&amp;lt;-model.matrix(~Sites-1, data.nest)
+&amp;gt; data.nest.list &amp;lt;- list(y=data.nest$y, X=X, Z=Z, n=nrow(data.nest),
++    nSites=nrow(X),nA=ncol(X))
+&amp;gt; 
+&amp;gt; #parameters and chain details
+&amp;gt; params &amp;lt;- c(&amp;#39;beta&amp;#39;,&amp;#39;sigma&amp;#39;,&amp;#39;sigma_S&amp;#39;,&amp;#39;sd_A&amp;#39;,&amp;#39;sd_site&amp;#39;,&amp;#39;sd_y&amp;#39;)
+&amp;gt; adaptSteps = 1000
+&amp;gt; burnInSteps = 3000
+&amp;gt; nChains = 2
+&amp;gt; numSavedSteps = 3000
+&amp;gt; thinSteps = 1
+&amp;gt; nIter = burnInSteps+ceiling((numSavedSteps * thinSteps)/nChains)
+&amp;gt; 
+&amp;gt; data.nest.rstan.SD &amp;lt;- stan(data = data.nest.list, file = &amp;quot;SDModel.stan&amp;quot;, chains = nChains, pars = params, iter = nIter, warmup = burnInSteps, thin = thinSteps)
+
+SAMPLING FOR MODEL &amp;#39;SDModel&amp;#39; NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 0 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 4500 [  0%]  (Warmup)
+Chain 1: Iteration:  450 / 4500 [ 10%]  (Warmup)
+Chain 1: Iteration:  900 / 4500 [ 20%]  (Warmup)
+Chain 1: Iteration: 1350 / 4500 [ 30%]  (Warmup)
+Chain 1: Iteration: 1800 / 4500 [ 40%]  (Warmup)
+Chain 1: Iteration: 2250 / 4500 [ 50%]  (Warmup)
+Chain 1: Iteration: 2700 / 4500 [ 60%]  (Warmup)
+Chain 1: Iteration: 3001 / 4500 [ 66%]  (Sampling)
+Chain 1: Iteration: 3450 / 4500 [ 76%]  (Sampling)
+Chain 1: Iteration: 3900 / 4500 [ 86%]  (Sampling)
+Chain 1: Iteration: 4350 / 4500 [ 96%]  (Sampling)
+Chain 1: Iteration: 4500 / 4500 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.853 seconds (Warm-up)
+Chain 1:                0.344 seconds (Sampling)
+Chain 1:                1.197 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL &amp;#39;SDModel&amp;#39; NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 0 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 4500 [  0%]  (Warmup)
+Chain 2: Iteration:  450 / 4500 [ 10%]  (Warmup)
+Chain 2: Iteration:  900 / 4500 [ 20%]  (Warmup)
+Chain 2: Iteration: 1350 / 4500 [ 30%]  (Warmup)
+Chain 2: Iteration: 1800 / 4500 [ 40%]  (Warmup)
+Chain 2: Iteration: 2250 / 4500 [ 50%]  (Warmup)
+Chain 2: Iteration: 2700 / 4500 [ 60%]  (Warmup)
+Chain 2: Iteration: 3001 / 4500 [ 66%]  (Sampling)
+Chain 2: Iteration: 3450 / 4500 [ 76%]  (Sampling)
+Chain 2: Iteration: 3900 / 4500 [ 86%]  (Sampling)
+Chain 2: Iteration: 4350 / 4500 [ 96%]  (Sampling)
+Chain 2: Iteration: 4500 / 4500 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.703 seconds (Warm-up)
+Chain 2:                0.433 seconds (Sampling)
+Chain 2:                1.136 seconds (Total)
+Chain 2: 
+&amp;gt; 
+&amp;gt; print(data.nest.rstan.SD, par = c(&amp;#39;beta&amp;#39;,&amp;#39;sigma&amp;#39;,&amp;#39;sigma_S&amp;#39;,&amp;#39;sd_A&amp;#39;,&amp;#39;sd_site&amp;#39;,&amp;#39;sd_y&amp;#39;))
+Inference for Stan model: SDModel.
+2 chains, each with iter=4500; warmup=3000; thin=1; 
+post-warmup draws per chain=1500, total post-warmup draws=3000.
+
+         mean se_mean   sd  2.5%   25%   50%   75% 97.5% n_eff Rhat
+beta[1] 42.04    0.13 5.72 29.86 38.36 42.12 45.76 53.10  2010    1
+beta[2] 27.62    0.16 8.05 12.00 22.54 27.60 32.69 43.90  2627    1
+beta[3] 41.07    0.17 8.06 25.43 36.00 41.02 46.12 57.14  2344    1
+sigma    5.04    0.00 0.31  4.48  4.82  5.02  5.24  5.69  4394    1
+sigma_S 11.70    0.06 2.81  7.63  9.75 11.25 13.12 18.91  2345    1
+sd_A    10.44    0.10 4.59  2.83  7.28  9.90 13.05 21.10  1968    1
+sd_site 10.77    0.03 1.22  9.20  9.99 10.50 11.24 13.94  1343    1
+sd_y     5.00    0.00 0.10  4.85  4.93  4.98  5.05  5.21  1220    1
+
+Samples were drawn using NUTS(diag_e) at Wed Feb 19 18:58:19 2020.
+For each parameter, n_eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor on split chains (at 
+convergence, Rhat=1).
+&amp;gt; 
+&amp;gt; data.nest.rstan.SD.df &amp;lt;-as.data.frame(extract(data.nest.rstan.SD))
+&amp;gt; head(data.nest.rstan.SD.df)
+    beta.1   beta.2   beta.3    sigma   sigma_S      sd_A   sd_site     sd_y
+1 36.80986 28.70439 51.46066 5.609824  7.880194 11.533954 10.530131 4.955827
+2 43.21227 24.45470 36.88674 4.686372 12.168378  9.543014  9.421704 4.951786
+3 44.79516 23.02770 33.81295 5.312964 13.073682 10.883877  9.541595 5.250076
+4 37.08413 32.27076 52.57465 4.924647 13.462061 10.609527 10.778432 5.041660
+5 47.78030 20.76704 31.80325 4.758630 11.249078 13.581725 11.035733 4.947235
+6 47.58350 19.70850 37.81088 5.630886 12.222762 14.143406 10.171348 5.088340
+       lp__
+1 -356.9475
+2 -354.0613
+3 -361.8290
+4 -357.0632
+5 -353.8392
+6 -360.0825&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;data-generation---second-example&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Data generation - second example&lt;/h1&gt;
+&lt;p&gt;Now imagine a similar experiment in which we intend to measure a response (&lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;) to one of treatments (three levels; “a1”, “a2” and “a3”). As with the previous design, we decided to establish a nested design in which there are sub-replicate (&lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt;m Quadrats) within each Site. In the current design, we have decided to further sub-replicate. Within each of the &lt;span class=&#34;math inline&#34;&gt;\(5\)&lt;/span&gt; Quadrats, we are going to randomly place &lt;span class=&#34;math inline&#34;&gt;\(2\times10\)&lt;/span&gt;cm pit traps. Now we have Sites nested within Treatments, Quadrats nested within Sites AND, Pits nested within Sites. The latter of these (Pits nested within Sites) are the observations (&lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;). As this section is mainly about the generation of artificial data (and not specifically about what to do with the data), understanding the actual details are optional and can be safely skipped.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; set.seed(123)
+&amp;gt; nTreat &amp;lt;- 3
+&amp;gt; nSites &amp;lt;- 15
+&amp;gt; nSitesPerTreat &amp;lt;- nSites/nTreat
+&amp;gt; nQuads &amp;lt;- 5
+&amp;gt; nPits &amp;lt;- 2
+&amp;gt; site.sigma &amp;lt;- 10 # sd within between sites within treatment
+&amp;gt; quad.sigma &amp;lt;- 10
+&amp;gt; sigma &amp;lt;- 7.5
+&amp;gt; n &amp;lt;- nSites * nQuads * nPits
+&amp;gt; sites &amp;lt;- gl(n=nSites,n/nSites,n, lab=paste(&amp;quot;site&amp;quot;,1:nSites))
+&amp;gt; A &amp;lt;- gl(nTreat, n/nTreat, n, labels=c(&amp;#39;a1&amp;#39;,&amp;#39;a2&amp;#39;,&amp;#39;a3&amp;#39;))
+&amp;gt; a.means &amp;lt;- c(40,70,80)
+&amp;gt; 
+&amp;gt; #A&amp;lt;-gl(nTreat,nSites/nTreat,nSites,labels=c(&amp;#39;a1&amp;#39;,&amp;#39;a2&amp;#39;,&amp;#39;a3&amp;#39;))
+&amp;gt; a&amp;lt;-gl(nTreat,1,nTreat,labels=c(&amp;#39;a1&amp;#39;,&amp;#39;a2&amp;#39;,&amp;#39;a3&amp;#39;))
+&amp;gt; a.X &amp;lt;- model.matrix(~a, expand.grid(a))
+&amp;gt; a.eff &amp;lt;- as.vector(solve(a.X,a.means))
+&amp;gt; site.means &amp;lt;- rnorm(nSites,a.X %*% a.eff,site.sigma)
+&amp;gt; 
+&amp;gt; A &amp;lt;- gl(nTreat,nSites/nTreat,nSites,labels=c(&amp;#39;a1&amp;#39;,&amp;#39;a2&amp;#39;,&amp;#39;a3&amp;#39;))
+&amp;gt; A.X &amp;lt;- model.matrix(~A, expand.grid(A))
+&amp;gt; #a.X &amp;lt;- model.matrix(~A, expand.grid(A=gl(nTreat,nSites/nTreat,nSites,labels=c(&amp;#39;a1&amp;#39;,&amp;#39;a2&amp;#39;,&amp;#39;a3&amp;#39;))))
+&amp;gt; site.means &amp;lt;- rnorm(nSites,A.X %*% a.eff,site.sigma)
+&amp;gt; 
+&amp;gt; SITES &amp;lt;- gl(nSites,(nSites*nQuads)/nSites,nSites*nQuads,labels=paste(&amp;#39;site&amp;#39;,1:nSites))
+&amp;gt; sites.X &amp;lt;- model.matrix(~SITES-1)
+&amp;gt; quad.means &amp;lt;- rnorm(nSites*nQuads,sites.X %*% site.means,quad.sigma)
+&amp;gt; 
+&amp;gt; #SITES &amp;lt;- gl(nSites,1,nSites,labels=paste(&amp;#39;site&amp;#39;,1:nSites))
+&amp;gt; #sites.X &amp;lt;- model.matrix(~SITES-1)
+&amp;gt; #quad.means &amp;lt;- rnorm(nSites*nQuads,sites.X %*% site.means,quad.sigma)
+&amp;gt; 
+&amp;gt; QUADS &amp;lt;- gl(nSites*nQuads,n/(nSites*nQuads),n,labels=paste(&amp;#39;quad&amp;#39;,1:(nSites*nQuads)))
+&amp;gt; quads.X &amp;lt;- model.matrix(~QUADS-1)
+&amp;gt; #quads.eff &amp;lt;- as.vector(solve(quads.X,quad.means))
+&amp;gt; #pit.means &amp;lt;- rnorm(n,quads.eff %*% t(quads.X),sigma)
+&amp;gt; pit.means &amp;lt;- rnorm(n,quads.X %*% quad.means,sigma)
+&amp;gt; 
+&amp;gt; PITS &amp;lt;- gl(nPits*nSites*nQuads,1, n, labels=paste(&amp;#39;pit&amp;#39;,1:(nPits*nSites*nQuads)))
+&amp;gt; data.nest1&amp;lt;-data.frame(Pits=PITS,Quads=QUADS,Sites=rep(SITES,each=2), A=rep(A,each=nQuads*nPits),y=pit.means)
+&amp;gt; #data.nest1&amp;lt;-data.nest1[order(data.nest1$A,data.nest1$Sites,data.nest1$Quads),]
+&amp;gt; head(data.nest1)  #print out the first six rows of the data set
+   Pits  Quads  Sites  A        y
+1 pit 1 quad 1 site 1 a1 61.79607
+2 pit 2 quad 1 site 1 a1 56.24699
+3 pit 3 quad 2 site 1 a1 42.40885
+4 pit 4 quad 2 site 1 a1 52.06672
+5 pit 5 quad 3 site 1 a1 73.71286
+6 pit 6 quad 3 site 1 a1 62.50529
+&amp;gt; 
+&amp;gt; ggplot(data.nest1, aes(y=y, x=1)) + geom_boxplot() + facet_grid(.~Quads)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/nested-anova-stan/2020-02-01-nested-anova-stan_files/figure-html/generate_data_ex2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;div id=&#34;exploratory-data-analysis-1&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Exploratory data analysis&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Normality and Homogeneity of variance&lt;/strong&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; #Effects of treatment
+&amp;gt; boxplot(y~A, ddply(data.nest1, ~A+Sites,numcolwise(mean, na.rm=T)))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/nested-anova-stan/2020-02-01-nested-anova-stan_files/figure-html/exp1_data_ex2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; 
+&amp;gt; #Site effects
+&amp;gt; boxplot(y~Sites, ddply(data.nest1, ~A+Sites+Quads,numcolwise(mean, na.rm=T)))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/nested-anova-stan/2020-02-01-nested-anova-stan_files/figure-html/exp1_data_ex2-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; 
+&amp;gt; #Quadrat effects
+&amp;gt; boxplot(y~Quads, ddply(data.nest1, ~A+Sites+Quads+Pits,numcolwise(mean, na.rm=T)))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/nested-anova-stan/2020-02-01-nested-anova-stan_files/figure-html/exp1_data_ex2-3.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Conclusions&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;there is no evidence that the response variable is consistently non-normal across all populations - each boxplot is approximately symmetrical.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;there is no evidence that variance (as estimated by the height of the boxplots) differs between the five populations. More importantly, there is no evidence of a relationship between mean and variance - the height of boxplots does not increase with increasing position along the &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;-axis. Hence it there is no evidence of non-homogeneity.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;it is a little difficult to assess normality/homogeneity of variance of quadrats since there are only two pits per quadrat. Nevertheless, there is no suggestion that variance increases with increasing mean.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Obvious violations could be addressed either by:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;transform the scale of the response variables (to address normality, etc). Note transformations should be applied to the entire response variable (not just those populations that are skewed).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;model-fitting-1&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Model fitting&lt;/h1&gt;
+&lt;div id=&#34;frequentist-for-comparison&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Frequentist for comparison&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(nlme)
+&amp;gt; d.lme &amp;lt;- lme(y ~ A, random=~1|Sites/Quads,data=data.nest1)
+&amp;gt; summary(d.lme)
+Linear mixed-effects model fit by REML
+ Data: data.nest1 
+       AIC      BIC   logLik
+  1137.994 1155.937 -562.997
+
+Random effects:
+ Formula: ~1 | Sites
+        (Intercept)
+StdDev:    10.38248
+
+ Formula: ~1 | Quads %in% Sites
+        (Intercept) Residual
+StdDev:    8.441615 7.161178
+
+Fixed effects: y ~ A 
+               Value Std.Error DF  t-value p-value
+(Intercept) 41.38646   5.04334 75 8.206160  0.0000
+Aa2         21.36271   7.13236 12 2.995181  0.0112
+Aa3         39.14584   7.13236 12 5.488483  0.0001
+ Correlation: 
+    (Intr) Aa2   
+Aa2 -0.707       
+Aa3 -0.707  0.500
+
+Standardized Within-Group Residuals:
+        Min          Q1         Med          Q3         Max 
+-2.11852493 -0.54600763 -0.03428569  0.53382444  2.26256381 
+
+Number of Observations: 150
+Number of Groups: 
+           Sites Quads %in% Sites 
+              15               75 
+&amp;gt; 
+&amp;gt; anova(d.lme)
+            numDF denDF  F-value p-value
+(Intercept)     1    75 446.9152  &amp;lt;.0001
+A               2    12  15.1037   5e-04&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;full-effect-parameterisation-1&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Full effect parameterisation&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; rstanString=&amp;quot;
++ data{
++    int n;
++    int nSite;
++    int nQuad;
++    vector [n] y;
++    int A2[n];
++    int A3[n];
++    int Site[n];
++    int Quad[n];
++ }
++ 
++ parameters{
++   real alpha0;
++   real alpha2;
++   real alpha3;
++   real&amp;lt;lower=0&amp;gt; sigma;
++   vector [nSite] beta_Site;
++   real&amp;lt;lower=0&amp;gt; sigma_Site;
++   vector [nQuad] beta_Quad;
++   real&amp;lt;lower=0&amp;gt; sigma_Quad;
++ }
++  
++ model{
++     real mu[n];
++ 
++     // Priors
++     alpha0 ~ normal( 0 , 100 );
++     alpha2 ~ normal( 0 , 100 );
++     alpha3 ~ normal( 0 , 100 );
++     beta_Site~ normal( 0 , sigma_Site );
++     sigma_Site ~ cauchy( 0 , 25 );
++     beta_Quad~ normal( 0 , sigma_Quad );
++     sigma_Quad ~ cauchy( 0 , 25 );
++     sigma ~ cauchy( 0 , 25 );
++     
++     for ( i in 1:n ) {
++         mu[i] = alpha0 + alpha2*A2[i] + 
++                alpha3*A3[i] + beta_Site[Site[i]] + beta_Quad[Quad[i]];
++     }
++     y ~ normal( mu , sigma );
++ }
++ 
++ &amp;quot;
+&amp;gt; 
+&amp;gt; ## write the model to a text file
+&amp;gt; writeLines(rstanString, con = &amp;quot;fullModel2.stan&amp;quot;)
+&amp;gt; 
+&amp;gt; A2 &amp;lt;- ifelse(data.nest1$A==&amp;#39;a2&amp;#39;,1,0)
+&amp;gt; A3 &amp;lt;- ifelse(data.nest1$A==&amp;#39;a3&amp;#39;,1,0)
+&amp;gt; data.nest.list &amp;lt;- with(data.nest1, list(y=y, A2=A2, A3=A3, Site=as.numeric(Sites),
++    n=nrow(data.nest1), nSite=length(levels(Sites)),
++    nQuad=length(levels(Quads)), Quad=as.numeric(Quads)))
+&amp;gt; 
+&amp;gt; params &amp;lt;- c(&amp;#39;alpha0&amp;#39;,&amp;#39;alpha2&amp;#39;,&amp;#39;alpha3&amp;#39;,&amp;#39;sigma&amp;#39;,&amp;#39;sigma_Site&amp;#39;, &amp;#39;sigma_Quad&amp;#39;)
+&amp;gt; burnInSteps = 3000
+&amp;gt; nChains = 2
+&amp;gt; numSavedSteps = 3000
+&amp;gt; thinSteps = 1
+&amp;gt; nIter = burnInSteps+ceiling((numSavedSteps * thinSteps)/nChains)
+&amp;gt; 
+&amp;gt; data.nest1.rstan.f &amp;lt;- stan(data = data.nest.list, file = &amp;quot;fullModel2.stan&amp;quot;, chains = nChains, pars = params, iter = nIter, warmup = burnInSteps, thin = thinSteps)
+
+SAMPLING FOR MODEL &amp;#39;fullModel2&amp;#39; NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 0 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 4500 [  0%]  (Warmup)
+Chain 1: Iteration:  450 / 4500 [ 10%]  (Warmup)
+Chain 1: Iteration:  900 / 4500 [ 20%]  (Warmup)
+Chain 1: Iteration: 1350 / 4500 [ 30%]  (Warmup)
+Chain 1: Iteration: 1800 / 4500 [ 40%]  (Warmup)
+Chain 1: Iteration: 2250 / 4500 [ 50%]  (Warmup)
+Chain 1: Iteration: 2700 / 4500 [ 60%]  (Warmup)
+Chain 1: Iteration: 3001 / 4500 [ 66%]  (Sampling)
+Chain 1: Iteration: 3450 / 4500 [ 76%]  (Sampling)
+Chain 1: Iteration: 3900 / 4500 [ 86%]  (Sampling)
+Chain 1: Iteration: 4350 / 4500 [ 96%]  (Sampling)
+Chain 1: Iteration: 4500 / 4500 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 3.327 seconds (Warm-up)
+Chain 1:                4.345 seconds (Sampling)
+Chain 1:                7.672 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL &amp;#39;fullModel2&amp;#39; NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 0 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 4500 [  0%]  (Warmup)
+Chain 2: Iteration:  450 / 4500 [ 10%]  (Warmup)
+Chain 2: Iteration:  900 / 4500 [ 20%]  (Warmup)
+Chain 2: Iteration: 1350 / 4500 [ 30%]  (Warmup)
+Chain 2: Iteration: 1800 / 4500 [ 40%]  (Warmup)
+Chain 2: Iteration: 2250 / 4500 [ 50%]  (Warmup)
+Chain 2: Iteration: 2700 / 4500 [ 60%]  (Warmup)
+Chain 2: Iteration: 3001 / 4500 [ 66%]  (Sampling)
+Chain 2: Iteration: 3450 / 4500 [ 76%]  (Sampling)
+Chain 2: Iteration: 3900 / 4500 [ 86%]  (Sampling)
+Chain 2: Iteration: 4350 / 4500 [ 96%]  (Sampling)
+Chain 2: Iteration: 4500 / 4500 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 4.045 seconds (Warm-up)
+Chain 2:                4.161 seconds (Sampling)
+Chain 2:                8.206 seconds (Total)
+Chain 2: 
+&amp;gt; 
+&amp;gt; print(data.nest1.rstan.f, par = c(&amp;#39;alpha0&amp;#39;,&amp;#39;alpha2&amp;#39;,&amp;#39;alpha3&amp;#39;,&amp;#39;sigma&amp;#39;,&amp;#39;sigma_Site&amp;#39;, &amp;#39;sigma_Quad&amp;#39;))
+Inference for Stan model: fullModel2.
+2 chains, each with iter=4500; warmup=3000; thin=1; 
+post-warmup draws per chain=1500, total post-warmup draws=3000.
+
+            mean se_mean   sd  2.5%   25%   50%   75% 97.5% n_eff Rhat
+alpha0     41.21    0.12 5.53 30.40 37.59 41.13 44.76 52.32  2302    1
+alpha2     21.55    0.17 7.92  5.66 16.63 21.47 26.71 37.38  2167    1
+alpha3     38.98    0.16 7.60 23.46 34.19 39.32 43.83 53.42  2249    1
+sigma       7.29    0.02 0.61  6.19  6.86  7.25  7.67  8.59  1527    1
+sigma_Site 11.26    0.08 3.03  6.67  9.13 10.87 12.93 18.76  1571    1
+sigma_Quad  8.58    0.03 1.14  6.51  7.81  8.53  9.32 11.04  1656    1
+
+Samples were drawn using NUTS(diag_e) at Wed Feb 19 18:59:26 2020.
+For each parameter, n_eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor on split chains (at 
+convergence, Rhat=1).
+&amp;gt; 
+&amp;gt; data.nest1.rstan.f.df &amp;lt;-as.data.frame(extract(data.nest1.rstan.f))
+&amp;gt; head(data.nest1.rstan.f.df)
+    alpha0     alpha2   alpha3    sigma sigma_Site sigma_Quad      lp__
+1 40.99894 18.4408136 42.31045 7.968007   8.827050   8.460864 -613.2249
+2 53.13787  0.7837646 25.07146 7.354129  20.331472   7.205399 -607.1231
+3 37.57365 19.9305037 39.18817 7.851311   6.937956   9.572309 -607.2551
+4 44.25290 26.5530610 41.77012 7.238055  11.726263  10.298161 -608.2911
+5 43.04766 30.5539155 30.54624 7.949620   9.587351   9.579669 -615.0313
+6 45.62270 15.5490676 23.57169 7.407616  15.972144   7.886300 -610.6864&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;matrix-parameterisation-1&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Matrix parameterisation&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; rstanString2=&amp;quot;
++ data{
++    int n;
++    int nSite;
++    int nQuad;
++    int nA;
++    vector [n] y;
++    matrix [n,nA] X;
++    int Site[n];
++    int Quad[n];
++    vector [nA] a0;
++    matrix [nA,nA] A0;
++ }
++ 
++ parameters{
++   vector [nA] alpha;
++   real&amp;lt;lower=0&amp;gt; sigma;
++   vector [nSite] beta_Site;
++   real&amp;lt;lower=0&amp;gt; sigma_Site;
++   vector [nQuad] beta_Quad;
++   real&amp;lt;lower=0&amp;gt; sigma_Quad;
++ }
++  
++ model{
++     real mu[n];
++ 
++     // Priors
++     //alpha ~ normal( 0 , 100 );
++     alpha ~ multi_normal(a0,A0);
++     beta_Site ~ normal( 0 , sigma_Site );
++     sigma_Site ~ cauchy( 0 , 25);
++   beta_Quad ~ normal( 0 , sigma_Quad );
++     sigma_Quad ~ cauchy( 0 , 25);
++     sigma ~ cauchy( 0 , 25 );
++     
++     for ( i in 1:n ) {
++         mu[i] = dot_product(X[i],alpha) + beta_Site[Site[i]] + beta_Quad[Quad[i]];
++     }
++     y ~ normal( mu , sigma );
++ }
++ 
++ &amp;quot;
+&amp;gt; 
+&amp;gt; ## write the model to a text file
+&amp;gt; writeLines(rstanString2, con = &amp;quot;matrixModel2.stan&amp;quot;)
+&amp;gt; 
+&amp;gt; X &amp;lt;- model.matrix(~A, data.nest)
+&amp;gt; nA &amp;lt;- ncol(X)
+&amp;gt; data.nest.list &amp;lt;- with(data.nest1, list(y=y, X=X, Site=as.numeric(Sites),
++    Quad=as.numeric(Quads),
++    n=nrow(data.nest1), nSite=length(levels(Sites)),
++    nQuad=length(levels(Quads)),
++    nA=nA,
++    a0=rep(0,nA), A0=diag(100000,nA)))
+&amp;gt; 
+&amp;gt; params &amp;lt;- c(&amp;#39;alpha&amp;#39;,&amp;#39;sigma&amp;#39;,&amp;#39;sigma_Site&amp;#39;, &amp;#39;sigma_Quad&amp;#39;)
+&amp;gt; burnInSteps = 3000
+&amp;gt; nChains = 2
+&amp;gt; numSavedSteps = 3000
+&amp;gt; thinSteps = 1
+&amp;gt; nIter = burnInSteps+ceiling((numSavedSteps * thinSteps)/nChains)
+&amp;gt; 
+&amp;gt; data.nest1.rstan.m2 &amp;lt;- stan(data = data.nest.list, file = &amp;quot;matrixModel2.stan&amp;quot;, chains = nChains, pars = params, iter = nIter, warmup = burnInSteps, thin = thinSteps)
+
+SAMPLING FOR MODEL &amp;#39;matrixModel2&amp;#39; NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 0 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 4500 [  0%]  (Warmup)
+Chain 1: Iteration:  450 / 4500 [ 10%]  (Warmup)
+Chain 1: Iteration:  900 / 4500 [ 20%]  (Warmup)
+Chain 1: Iteration: 1350 / 4500 [ 30%]  (Warmup)
+Chain 1: Iteration: 1800 / 4500 [ 40%]  (Warmup)
+Chain 1: Iteration: 2250 / 4500 [ 50%]  (Warmup)
+Chain 1: Iteration: 2700 / 4500 [ 60%]  (Warmup)
+Chain 1: Iteration: 3001 / 4500 [ 66%]  (Sampling)
+Chain 1: Iteration: 3450 / 4500 [ 76%]  (Sampling)
+Chain 1: Iteration: 3900 / 4500 [ 86%]  (Sampling)
+Chain 1: Iteration: 4350 / 4500 [ 96%]  (Sampling)
+Chain 1: Iteration: 4500 / 4500 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 10.174 seconds (Warm-up)
+Chain 1:                14.97 seconds (Sampling)
+Chain 1:                25.144 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL &amp;#39;matrixModel2&amp;#39; NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 0 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 4500 [  0%]  (Warmup)
+Chain 2: Iteration:  450 / 4500 [ 10%]  (Warmup)
+Chain 2: Iteration:  900 / 4500 [ 20%]  (Warmup)
+Chain 2: Iteration: 1350 / 4500 [ 30%]  (Warmup)
+Chain 2: Iteration: 1800 / 4500 [ 40%]  (Warmup)
+Chain 2: Iteration: 2250 / 4500 [ 50%]  (Warmup)
+Chain 2: Iteration: 2700 / 4500 [ 60%]  (Warmup)
+Chain 2: Iteration: 3001 / 4500 [ 66%]  (Sampling)
+Chain 2: Iteration: 3450 / 4500 [ 76%]  (Sampling)
+Chain 2: Iteration: 3900 / 4500 [ 86%]  (Sampling)
+Chain 2: Iteration: 4350 / 4500 [ 96%]  (Sampling)
+Chain 2: Iteration: 4500 / 4500 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 13.182 seconds (Warm-up)
+Chain 2:                10.54 seconds (Sampling)
+Chain 2:                23.722 seconds (Total)
+Chain 2: 
+&amp;gt; 
+&amp;gt; print(data.nest1.rstan.m2, par = c(&amp;#39;alpha&amp;#39;,&amp;#39;sigma&amp;#39;,&amp;#39;sigma_Site&amp;#39;, &amp;#39;sigma_Quad&amp;#39;))
+Inference for Stan model: matrixModel2.
+2 chains, each with iter=4500; warmup=3000; thin=1; 
+post-warmup draws per chain=1500, total post-warmup draws=3000.
+
+            mean se_mean   sd  2.5%   25%   50%   75% 97.5% n_eff Rhat
+alpha[1]   41.39    0.13 5.70 30.15 37.79 41.38 44.91 52.83  1882    1
+alpha[2]   21.32    0.17 7.96  5.50 16.25 21.52 26.33 36.79  2123    1
+alpha[3]   39.34    0.17 7.90 23.39 34.35 39.23 44.45 54.87  2103    1
+sigma       7.31    0.01 0.61  6.23  6.87  7.27  7.70  8.60  1917    1
+sigma_Site 11.43    0.07 3.03  6.65  9.35 11.01 13.05 18.81  1720    1
+sigma_Quad  8.54    0.03 1.13  6.44  7.76  8.52  9.28 10.89  1786    1
+
+Samples were drawn using NUTS(diag_e) at Wed Feb 19 19:01:01 2020.
+For each parameter, n_eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor on split chains (at 
+convergence, Rhat=1).
+&amp;gt; 
+&amp;gt; data.nest1.rstan.m2.df &amp;lt;-as.data.frame(extract(data.nest1.rstan.m2))
+&amp;gt; head(data.nest1.rstan.m2.df)
+   alpha.1  alpha.2  alpha.3    sigma sigma_Site sigma_Quad      lp__
+1 44.95385 11.48209 37.04594 7.045977  17.024677  10.216341 -616.7436
+2 34.74513 32.79135 44.50707 7.688600   9.246435   8.342615 -604.2742
+3 39.99199 21.01827 41.38576 7.014567  13.747544  10.353393 -606.2766
+4 41.24520 30.12204 36.86309 6.652121  10.653882   8.080439 -588.9044
+5 47.31591 14.78743 29.89851 6.686367   8.986245   9.646120 -610.5245
+6 41.36124 16.08883 34.86754 6.258581  12.465772  10.688584 -606.7448&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
+&lt;h1&gt;References&lt;/h1&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references&#34;&gt;
+&lt;div id=&#34;ref-gelman2015stan&#34;&gt;
+&lt;p&gt;Gelman, Andrew, Daniel Lee, and Jiqiang Guo. 2015. “Stan: A Probabilistic Programming Language for Bayesian Inference and Optimization.” &lt;em&gt;Journal of Educational and Behavioral Statistics&lt;/em&gt; 40 (5): 530–43.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-gelman2006prior&#34;&gt;
+&lt;p&gt;Gelman, Andrew, and others. 2006. “Prior Distributions for Variance Parameters in Hierarchical Models (Comment on Article by Browne and Draper).” &lt;em&gt;Bayesian Analysis&lt;/em&gt; 1 (3): 515–34.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-rstanpackage&#34;&gt;
+&lt;p&gt;Stan Development Team. 2018. “RStan: The R Interface to Stan.” &lt;a href=&#34;http://mc-stan.org/&#34;&gt;http://mc-stan.org/&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Temporal Autocorrelation - JAGS</title>
       <link>/jags/autocorrelation-jags/autocorrelation-jags/</link>
       <pubDate>Sat, 08 Feb 2020 21:13:14 -0500</pubDate>
@@ -13877,166 +15218,196 @@ convergence, Rhat=1).&lt;/code&gt;&lt;/pre&gt;
     
     <item>
       <title>Finally here ...</title>
-      <link>/post/update-february/</link>
+      <link>/post/update-february/update-february/</link>
       <pubDate>Sat, 01 Feb 2020 00:00:00 +0000</pubDate>
       
-      <guid>/post/update-february/</guid>
-      <description>&lt;p&gt;The new year is finally taking off for me and I have a couple of updates. First, I would like to remind everyone about the exciting new course &amp;ldquo;understanding health economics in clinical trials&amp;rdquo; that me and 
-the rest of our research team &lt;a href=&#34;https://hearteam.blogspot.com/&#34;&gt;HEART&lt;/a&gt; have put together to support the dissemination of health economics among all people involved in the design and analysis of clinical trials.
-I look forward to deliver this one-day short course together with my colleagues from the &lt;a href=&#34;https://www.ucl.ac.uk/epidemiology-health-care/research/pcph&#34;&gt;UCL PCPH department&lt;/a&gt; which will be structured into different sessions
-during the day of Feb 11th at the &lt;a href=&#34;https://www.ucl.ac.uk/comprehensive-clinical-trials-unit/contact-us&#34;&gt;UCL CCTU&lt;/a&gt; - 2nd Floor, 90 High Holborn, London. The course is specifically intended for those who would like to know more 
+      <guid>/post/update-february/update-february/</guid>
+      <description>&lt;p&gt;The new year is finally taking off for me and I have a couple of updates. First, I would like to remind everyone about the exciting new course &amp;ldquo;understanding health economics in clinical trials&amp;rdquo; that me and
+the rest of our research team &lt;a href=&#34;https://hearteam.blogspot.com/&#34; target=&#34;_blank&#34;&gt;HEART&lt;/a&gt; have put together to support the dissemination of health economics among all people involved in the design and analysis of clinical trials.
+I look forward to deliver this one-day short course together with my colleagues from the &lt;a href=&#34;https://www.ucl.ac.uk/epidemiology-health-care/research/pcph&#34; target=&#34;_blank&#34;&gt;UCL PCPH department&lt;/a&gt; which will be structured into different sessions
+during the day of Feb 11th at the &lt;a href=&#34;https://www.ucl.ac.uk/comprehensive-clinical-trials-unit/contact-us&#34; target=&#34;_blank&#34;&gt;UCL CCTU&lt;/a&gt; - 2nd Floor, 90 High Holborn, London. The course is specifically intended for those who would like to know more
 about health economics, which has become an important component in the design, analysis and most crucially, for the funding approval of clinical trials. The course will focus on the following aspects:&lt;/p&gt;
+
 &lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;A short intorduction to the basic concepts of health economics and why these can be relevent to different people&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;A review of different types of intruments and tools used to collect health economic data in clinical trials&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;A quick look at decision models with some examples&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;A summary of the typical results from health economic analyses and how to interpret them&lt;/p&gt;
-&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;A short intorduction to the basic concepts of health economics and why these can be relevent to different people&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;A review of different types of intruments and tools used to collect health economic data in clinical trials&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;A quick look at decision models with some examples&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;A summary of the typical results from health economic analyses and how to interpret them&lt;/p&gt;&lt;/li&gt;
 &lt;/ol&gt;
+
 &lt;p&gt;The course is still in its pilot form and therfore it is free of charge. If there are still places available, you are very welcome to join and give us your feedback!.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/RMTQiRYAuvvJb1k6al/giphy.gif&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Second, I am happy to announce that my recent paper about the use of &lt;a href=&#34;https://www.tandfonline.com/doi/full/10.1080/02664763.2020.1723506&#34;&gt;Bayesian Hierarchical Models for the Prediction of Volleyball Results&lt;/a&gt; has finally 
-been published on the &lt;a href=&#34;https://www.tandfonline.com/loi/cjas20&#34;&gt;Journal of Applied Statistics&lt;/a&gt;. I am really proud of this paper as it is my first solo paper publiched and because I have always been very invested in the general topic of 
+
+&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/RMTQiRYAuvvJb1k6al/giphy.gif&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Second, I am happy to announce that my recent paper about the use of &lt;a href=&#34;https://www.tandfonline.com/doi/full/10.1080/02664763.2020.1723506&#34; target=&#34;_blank&#34;&gt;Bayesian Hierarchical Models for the Prediction of Volleyball Results&lt;/a&gt; has finally
+been published on the &lt;a href=&#34;https://www.tandfonline.com/loi/cjas20&#34; target=&#34;_blank&#34;&gt;Journal of Applied Statistics&lt;/a&gt;. I am really proud of this paper as it is my first solo paper publiched and because I have always been very invested in the general topic of
 predicting sport results using probability models. To be able to publish something about this based on my own efforts is very rewarding in terms of the (small) contribution to research that I hope I was able to provide.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/l0He0cVv8lGggpruo/giphy.gif&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Finally, I have submitted an abstract to the &lt;a href=&#34;https://euhea.eu/welcome_conference_2020.html&#34;&gt;2020 European Health Economics Association Conference&lt;/a&gt;, which this year will be held in Oslo, Norway.&lt;br&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/l0He0cVv8lGggpruo/giphy.gif&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Finally, I have submitted an abstract to the &lt;a href=&#34;https://euhea.eu/welcome_conference_2020.html&#34; target=&#34;_blank&#34;&gt;2020 European Health Economics Association Conference&lt;/a&gt;, which this year will be held in Oslo, Norway.&lt;br /&gt;
 I have now to patiently wait for the review of the abstracts and see if my work made it, either as an oral presenation or as a poster. Fingers crossed!.&lt;/p&gt;
 </description>
     </item>
     
     <item>
       <title>Let us do some work</title>
-      <link>/post/update-january2/</link>
+      <link>/post/update2-january/update-january2/</link>
       <pubDate>Thu, 09 Jan 2020 00:00:00 +0000</pubDate>
       
-      <guid>/post/update-january2/</guid>
-      <description>&lt;p&gt;After the terrible start of this year, things are going ok now and I am quite busy with different projects that I left a bit behind. First, I can confirm that me and my colleagues from the &lt;a href=&#34;https://hearteam.blogspot.com/&#34;&gt;HEART group&lt;/a&gt;
+      <guid>/post/update2-january/update-january2/</guid>
+      <description>&lt;p&gt;After the terrible start of this year, things are going ok now and I am quite busy with different projects that I left a bit behind. First, I can confirm that me and my colleagues from the &lt;a href=&#34;https://hearteam.blogspot.com/&#34; target=&#34;_blank&#34;&gt;HEART group&lt;/a&gt;
 are going to give an introductory course to health economic evaluations next month for different groups of people from academia and clinical trial units. The course has been generally structured based on our &amp;ldquo;pilot&amp;rdquo; we gave last year (which went really well by the way)
 and involves many different topics that will cover the entire day of February 11th. The attending list is already full and thw waiting list is also quite big; happy to see so much interest in economic evaluations.&lt;/p&gt;
-&lt;p&gt;Second, I will give a talk at the PRIMENT statistics and health economics and methodology seminar about an on-going project on missing data in trial-based analysis on Tuesday 28th, at UCL &lt;a href=&#34;https://www.ucl.ac.uk/priment/&#34;&gt;PRIMENT CTU&lt;/a&gt;.
-I am really happy to be back at these seminars which I feel I really nice and where you have the opportunity to interact with people from different backgrounds and job positions who may give some useful feedback on my work. Hopefully, 
-people will find my research interesting!. I would also like to mention the fact that one of my HEART colleague, &lt;a href=&#34;https://iris.ucl.ac.uk/iris/browse/profile?upi=MCCLE13&#34;&gt;Marie&lt;/a&gt;, will give another talk at the same seminar just before me.
+
+&lt;p&gt;Second, I will give a talk at the PRIMENT statistics and health economics and methodology seminar about an on-going project on missing data in trial-based analysis on Tuesday 28th, at UCL &lt;a href=&#34;https://www.ucl.ac.uk/priment/&#34; target=&#34;_blank&#34;&gt;PRIMENT CTU&lt;/a&gt;.
+I am really happy to be back at these seminars which I feel I really nice and where you have the opportunity to interact with people from different backgrounds and job positions who may give some useful feedback on my work. Hopefully,
+people will find my research interesting!. I would also like to mention the fact that one of my HEART colleague, &lt;a href=&#34;https://iris.ucl.ac.uk/iris/browse/profile?upi=MCCLE13&#34; target=&#34;_blank&#34;&gt;Marie&lt;/a&gt;, will give another talk at the same seminar just before me.
 Her topic is the economic analysis plan for a trial she has been involved with and I think she is really good, so may worth check her presentaiton out.&lt;/p&gt;
-&lt;p&gt;Third, I have finalised a long-waited submission for a paper which has been discussed, written and re-written many times. I really hope we can get some useful feedback on it as 
+
+&lt;p&gt;Third, I have finalised a long-waited submission for a paper which has been discussed, written and re-written many times. I really hope we can get some useful feedback on it as
 I personally worked very hard to keep this work alive. Let see if my efforts have not been in vain and fingers crossed!&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/4KxeicCUTvhrW/giphy.gif&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Fourth, as a side note, I have recently bought a new book on missing data called &lt;a href=&#34;https://www.springer.com/gp/book/9780387324487&#34;&gt;Semiparametric Thoery and Missing Data&lt;/a&gt; by Tsiatis, which looks very interesting.
-To be honest, the book is quite technical with many theoretical concpets and proofs which sometimes I find hard to follow. However, so far it gives a nice introduction to semiparametric models and I look forward to see 
+
+&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/4KxeicCUTvhrW/giphy.gif&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Fourth, as a side note, I have recently bought a new book on missing data called &lt;a href=&#34;https://www.springer.com/gp/book/9780387324487&#34; target=&#34;_blank&#34;&gt;Semiparametric Thoery and Missing Data&lt;/a&gt; by Tsiatis, which looks very interesting.
+To be honest, the book is quite technical with many theoretical concpets and proofs which sometimes I find hard to follow. However, so far it gives a nice introduction to semiparametric models and I look forward to see
 how it approaches the missing data topic from a non likelihood-based approach. If you are into non/semiparametric statistics and want to find out more about this, I recommend the reading.&lt;/p&gt;
+
 &lt;p&gt;Finally, more work is also coming up in the next weeks and some of this is not going to be very enjoyable, I think. Anyway, let us go through this busy period at our best and see how things will go.&lt;/p&gt;
 </description>
     </item>
     
     <item>
       <title>Not a very good start...</title>
-      <link>/post/update-january/</link>
+      <link>/post/update-january/update-january/</link>
       <pubDate>Mon, 09 Dec 2019 00:00:00 +0000</pubDate>
       
-      <guid>/post/update-january/</guid>
-      <description>&lt;p&gt;After some nice holiday break, I came back to work ready for an exciting 2020 &amp;hellip; or so I thought. Unfortunately, I have recently been caught by a terrible flu which forced me to postpone my flight back to London of a week. 
+      <guid>/post/update-january/update-january/</guid>
+      <description>&lt;p&gt;After some nice holiday break, I came back to work ready for an exciting 2020 &amp;hellip; or so I thought. Unfortunately, I have recently been caught by a terrible flu which forced me to postpone my flight back to London of a week.
 The worst part is that I was basically a dead corpse moving around with high fever and an awful condition for more than 4 days. It was quite a bad experience which I rarely had in my life. I am just glad I survived this.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/12Eo3WBLbH9HRS/giphy.gif&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Going back to more interesting news. Before my cursed period, I was smart enough to work on different things and I am happy to announce a new update for my &lt;code&gt;missingHE&lt;/code&gt; package, which is available both on my &lt;a href=&#34;https://github.com/AnGabrio/missingHE&#34;&gt;GitHub page&lt;/a&gt; and on the &lt;a href=&#34;https://cran.r-project.org/web/packages/missingHE&#34;&gt;CRAN repository&lt;/a&gt;. 
+
+&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/12Eo3WBLbH9HRS/giphy.gif&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Going back to more interesting news. Before my cursed period, I was smart enough to work on different things and I am happy to announce a new update for my &lt;code&gt;missingHE&lt;/code&gt; package, which is available both on my &lt;a href=&#34;https://github.com/AnGabrio/missingHE&#34; target=&#34;_blank&#34;&gt;GitHub page&lt;/a&gt; and on the &lt;a href=&#34;https://cran.r-project.org/web/packages/missingHE&#34; target=&#34;_blank&#34;&gt;CRAN repository&lt;/a&gt;.
 Its new version is 1.3.2 and has the nice addition of making available more choices for the parametric distributions that can be selected in all main functions of the package to handle missing data in trial-based economic evaluations. In particular, it is now possible
 to choose among new probability distributions for the health outcomes, including continuous (Gamma, Weibull, Exponential, Logistic), discrete (Poisson, Negative Binomial) and binary (Bernoulli) distributions. These may be useful when the analysis is not based on utilities scores but some other
 types of effects, such as survival time, number of events or binary outcomes. I have also included some examples for each type of outcome in the MenSS dataset (available directly once installed the package on your machine) so that people can play around with the new distributions.&lt;/p&gt;
-&lt;p&gt;Another good news is that the last paper written with &lt;a href=&#34;http://users.stat.ufl.edu/~daniels/&#34;&gt;Michael&lt;/a&gt; about missing data handling in economic evaluations will soon be publiched in the February issue of JRSSA, which will make the final and official version of the article that can be cited, I think.&lt;/p&gt;
-&lt;p&gt;Finally, an announcement about the one-day course I am holding together with my mates from the &lt;a href=&#34;https://hearteam.blogspot.com/&#34;&gt;HEART group&lt;/a&gt; about an introduction to economic evaluations to people who are not familiar with health economics. The course will take place next month, I believe on Feb 11th, 
+
+&lt;p&gt;Another good news is that the last paper written with &lt;a href=&#34;http://users.stat.ufl.edu/~daniels/&#34; target=&#34;_blank&#34;&gt;Michael&lt;/a&gt; about missing data handling in economic evaluations will soon be publiched in the February issue of JRSSA, which will make the final and official version of the article that can be cited, I think.&lt;/p&gt;
+
+&lt;p&gt;Finally, an announcement about the one-day course I am holding together with my mates from the &lt;a href=&#34;https://hearteam.blogspot.com/&#34; target=&#34;_blank&#34;&gt;HEART group&lt;/a&gt; about an introduction to economic evaluations to people who are not familiar with health economics. The course will take place next month, I believe on Feb 11th,
 in central London (soon an update about the exact location) and, as the previous edition, I am happy to see that all spots have been taken and everything is sold out (well, to be precise the course is free &amp;hellip;). Need to meet up with the others to make the last changes and prepare the slides but I am quite excited about this, given also the good response we got last time.&lt;/p&gt;
+
 &lt;p&gt;Now I am (hopefully) ready to start the new year and there are many things already piling up on my list of things to do in the next days. Let&amp;rsquo;s try again 2020.&lt;/p&gt;
 </description>
     </item>
     
     <item>
       <title>Too many things, again....</title>
-      <link>/post/update-november/</link>
+      <link>/post/update-november/update-november/</link>
       <pubDate>Sat, 09 Nov 2019 00:00:00 +0000</pubDate>
       
-      <guid>/post/update-november/</guid>
+      <guid>/post/update-november/update-november/</guid>
       <description>&lt;p&gt;I did not have much time to post anything this month until now as it has been a quite busy period. I have been involved in many different works and I have also involved other people in what I think could be some very interesting new projects. Not that I complain about having many different things to do (most of them are actually cool) but doing everything in a short period is not the best.&lt;/p&gt;
+
 &lt;p&gt;A couple of things have come/are coming up. First, I have seriously started working on the coding of a decision model for some health economic evaluation project I have been involved in since last year. Everything seems ok after I spent lots of days and time fixing some small bugs in my code. I am about half way through the model and I hope I will be able to finish it before Christmas (I doubt it though).&lt;/p&gt;
+
 &lt;p&gt;Second, I have finished reviewing an interesting paper about some new methods for improving current practice for dealing with missing data, which I kinda enjoy reading (very good!).&lt;/p&gt;
-&lt;p&gt;Third, I would like to quickly summarise my first experience at &lt;a href=&#34;https://www.ispor.org/conferences-education/conferences/past-conferences/ispor-europe-2019&#34;&gt;ISPOR Europe&lt;/a&gt; in Copenhagen. I was really excited to attend this conference which, as expected, revealed itself as huge with people coming from all over the world and with many interesting sessions and discussion topics. I had the chance to meet new and old people, such as professor &lt;a href=&#34;https://www.york.ac.uk/che/staff/research/andrea-manca/&#34;&gt;Andrea Manca&lt;/a&gt; and the always very kind &lt;a href=&#34;https://www.ohe.org/about-us/meet-team/chris-sampson&#34;&gt;Chris Sampson&lt;/a&gt; for whom I was like a stalker asking for more and more information about himself and his work. I also met some of my old collegues from MapiGroup, now under &lt;a href=&#34;https://iconplc.com/&#34;&gt;ICON plc&lt;/a&gt;. It was very fun to hang out with these old friends and see what they have been up to during this time. Among them, I gladly caught up with my dear friend &lt;a href=&#34;https://www.iqce.uni-hamburg.de/people/iqce-fellows/ryan-pulleyblank.html&#34;&gt;Ryan Pulleyblank&lt;/a&gt;, now doing a PhD at the University of Southern Denmark. My poster was a success with (unexpectedly) many people stopping by and asking for more information on my work. I was genuinely surprised by this as ISPOR is mostly a conference dedicated to companies rather than academic works and networking. To sum up, it was a very nice and fun experience and despite the level of statistical methodology was not particularly high I enjoyed my time there and I also had the chance to visit Copenhagen for the first time.&lt;/p&gt;
-&lt;p&gt;Finally, as a side note, I have found the time to upload on my arXiv page a nice application of &lt;a href=&#34;https://arxiv.org/abs/1911.08791&#34;&gt;Bayesian hierarchical models for the prediction of volleyball matches&lt;/a&gt; which I have been working on the past summer, taking inspiration from the work of Gianluca about &lt;a href=&#34;https://www.tandfonline.com/doi/abs/10.1080/02664760802684177?journalCode=cjas20&#34;&gt;predicting football macthes&lt;/a&gt;. I hope my work can turn out in something cool as well.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/oWA8lD03GUew8/giphy.gif&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+
+&lt;p&gt;Third, I would like to quickly summarise my first experience at &lt;a href=&#34;https://www.ispor.org/conferences-education/conferences/past-conferences/ispor-europe-2019&#34; target=&#34;_blank&#34;&gt;ISPOR Europe&lt;/a&gt; in Copenhagen. I was really excited to attend this conference which, as expected, revealed itself as huge with people coming from all over the world and with many interesting sessions and discussion topics. I had the chance to meet new and old people, such as professor &lt;a href=&#34;https://www.york.ac.uk/che/staff/research/andrea-manca/&#34; target=&#34;_blank&#34;&gt;Andrea Manca&lt;/a&gt; and the always very kind &lt;a href=&#34;https://www.ohe.org/about-us/meet-team/chris-sampson&#34; target=&#34;_blank&#34;&gt;Chris Sampson&lt;/a&gt; for whom I was like a stalker asking for more and more information about himself and his work. I also met some of my old collegues from MapiGroup, now under &lt;a href=&#34;https://iconplc.com/&#34; target=&#34;_blank&#34;&gt;ICON plc&lt;/a&gt;. It was very fun to hang out with these old friends and see what they have been up to during this time. Among them, I gladly caught up with my dear friend &lt;a href=&#34;https://www.iqce.uni-hamburg.de/people/iqce-fellows/ryan-pulleyblank.html&#34; target=&#34;_blank&#34;&gt;Ryan Pulleyblank&lt;/a&gt;, now doing a PhD at the University of Southern Denmark. My poster was a success with (unexpectedly) many people stopping by and asking for more information on my work. I was genuinely surprised by this as ISPOR is mostly a conference dedicated to companies rather than academic works and networking. To sum up, it was a very nice and fun experience and despite the level of statistical methodology was not particularly high I enjoyed my time there and I also had the chance to visit Copenhagen for the first time.&lt;/p&gt;
+
+&lt;p&gt;Finally, as a side note, I have found the time to upload on my arXiv page a nice application of &lt;a href=&#34;https://arxiv.org/abs/1911.08791&#34; target=&#34;_blank&#34;&gt;Bayesian hierarchical models for the prediction of volleyball matches&lt;/a&gt; which I have been working on the past summer, taking inspiration from the work of Gianluca about &lt;a href=&#34;https://www.tandfonline.com/doi/abs/10.1080/02664760802684177?journalCode=cjas20&#34; target=&#34;_blank&#34;&gt;predicting football macthes&lt;/a&gt;. I hope my work can turn out in something cool as well.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/oWA8lD03GUew8/giphy.gif&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
 &lt;p&gt;This is all for the moment but soon I will be heading back to another quite busy period for me. I hope this will be the last for some time, especially given that Christmas is coming and I would like to have some free time to properly enjoy this period, which I really like, even more than Christmas itself.&lt;/p&gt;
 </description>
     </item>
     
     <item>
       <title>Copenhagen, I am coming ...</title>
-      <link>/post/update3-october/</link>
+      <link>/post/update3-october/update3-october/</link>
       <pubDate>Mon, 28 Oct 2019 00:00:00 +0000</pubDate>
       
-      <guid>/post/update3-october/</guid>
-      <description>&lt;p&gt;Finally the time of &lt;a href=&#34;https://www.ispor.org/conferences-education/conferences/upcoming-conferences/ispor-europe-2019&#34;&gt;ISPOR Europe 2019&lt;/a&gt; has arrived and I will depart in a few days for 
+      <guid>/post/update3-october/update3-october/</guid>
+      <description>&lt;p&gt;Finally the time of &lt;a href=&#34;https://www.ispor.org/conferences-education/conferences/upcoming-conferences/ispor-europe-2019&#34; target=&#34;_blank&#34;&gt;ISPOR Europe 2019&lt;/a&gt; has arrived and I will depart in a few days for
 Copenhagen, where the conference is held this year. I am actually looking forward to this as I am curious to see what type of conference ISPOR is, that is, whether I will be able to find
-some interesting works and have some &amp;ldquo;applied statistics&amp;rdquo;-related discussions or the attention is more placed on &amp;ldquo;economics and clinical&amp;rdquo; matters. From what I heard by other people who 
+some interesting works and have some &amp;ldquo;applied statistics&amp;rdquo;-related discussions or the attention is more placed on &amp;ldquo;economics and clinical&amp;rdquo; matters. From what I heard by other people who
 routinely attend the conference, there should be a bit of both sides, even though I really hope I will be able to see some intersting methods and engage in discussion with some authors.&lt;/p&gt;
+
 &lt;p&gt;I know the conference is mainly related to address the needs of pharmaceutical and consultancy companies, but I hope I will be able to see some familiar faces there. Well, to be
-honest I know that some people I already know are going, which is good considering that their work is really cool. As for me, I will present the same work that I showed at ICTMC 2019 (some slides available &lt;a href=&#34;https://www.luminpdf.com/viewer/5dbd43939a40480018633f2e&#34;&gt;here&lt;/a&gt;),
+honest I know that some people I already know are going, which is good considering that their work is really cool. As for me, I will present the same work that I showed at ICTMC 2019 (some slides available &lt;a href=&#34;https://www.luminpdf.com/viewer/5dbd43939a40480018633f2e&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt;),
 but this time in the format of a poster, of which I am kind of very proud in terms of the final output, if I may say so.&lt;/p&gt;
+
 &lt;p&gt;Apart from this nice event, there are many things coming up when I will be back from the conference, which I really need to start working on. Mostly, these are related to some
-routine work for some trial analyses at &lt;a href=&#34;https://www.ucl.ac.uk/priment/&#34;&gt;PRIMENT&lt;/a&gt;, which by the way is advertising a new health economist &lt;a href=&#34;https://www.jobs.ac.uk/job/BWK840/research-fellow-in-health-economics&#34;&gt;job vacancy&lt;/a&gt; for those who might be interested. 
-Other tasks include writing down and code a decision model on which I have been working since ages, papers review, other collaborations with different people, starting my co-supervison for a new PhD student at stats and, after I can find some free time, do some reasearch work on my beloved missing data. 
+routine work for some trial analyses at &lt;a href=&#34;https://www.ucl.ac.uk/priment/&#34; target=&#34;_blank&#34;&gt;PRIMENT&lt;/a&gt;, which by the way is advertising a new health economist &lt;a href=&#34;https://www.jobs.ac.uk/job/BWK840/research-fellow-in-health-economics&#34; target=&#34;_blank&#34;&gt;job vacancy&lt;/a&gt; for those who might be interested.
+Other tasks include writing down and code a decision model on which I have been working since ages, papers review, other collaborations with different people, starting my co-supervison for a new PhD student at stats and, after I can find some free time, do some reasearch work on my beloved missing data.
 Am I ready? not sure about that &amp;hellip;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/fy0gLJtIkZj8I/giphy.gif&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/fy0gLJtIkZj8I/giphy.gif&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
 </description>
     </item>
     
     <item>
       <title>Conferences updates and news</title>
-      <link>/post/update2-october/</link>
+      <link>/post/update2-october/update2-october/</link>
       <pubDate>Tue, 15 Oct 2019 00:00:00 +0000</pubDate>
       
-      <guid>/post/update2-october/</guid>
-      <description>&lt;p&gt;Just a quick update about some talks I gave/am about to give to advertise my research work. The one in Brighton, which I gave a couple of weeks a go at &lt;a href=&#34;https://ictmc2019.com/&#34;&gt;ICTMC&lt;/a&gt;, went really well and I was glad to hear that some people were very interested in what I presented. For more info, here a &lt;a href=&#34;https://www.luminpdf.com/viewer/5daad5f7ad8625001932b9a4&#34;&gt;link&lt;/a&gt; to my presentation about missing data methods for trial-based economic evaluations that I discussed.
+      <guid>/post/update2-october/update2-october/</guid>
+      <description>&lt;p&gt;Just a quick update about some talks I gave/am about to give to advertise my research work. The one in Brighton, which I gave a couple of weeks a go at &lt;a href=&#34;https://ictmc2019.com/&#34; target=&#34;_blank&#34;&gt;ICTMC&lt;/a&gt;, went really well and I was glad to hear that some people were very interested in what I presented. For more info, here a &lt;a href=&#34;https://www.luminpdf.com/viewer/5daad5f7ad8625001932b9a4&#34; target=&#34;_blank&#34;&gt;link&lt;/a&gt; to my presentation about missing data methods for trial-based economic evaluations that I discussed.
 Honestly, since the conference was mainly directed towards people working in clinical trials, I did not expect a huge interest in the use of Bayesian methods for economic evaluations, but apparently (and I am happy about that) I was wrong.&lt;/p&gt;
-&lt;p&gt;I had the chance to chat a bit with few people that I did not know, including &lt;a href=&#34;http://www.bristol.ac.uk/social-community-medicine/people/william-hollingworth/overview.html&#34;&gt;William Hollingworth&lt;/a&gt; from Bristol and &lt;a href=&#34;https://www.ndorms.ox.ac.uk/team/ines-rombach&#34;&gt;Ines Rombach&lt;/a&gt; from Oxford, with whom I had very nice conversations about my work and other interesting topics.
-I was also glad to meet some known faces, including the always lovely &lt;a href=&#34;https://cheme.bangor.ac.uk/CatrinPlumptonBiography.php&#34;&gt;Catrin Plumpton&lt;/a&gt; from Bangor University, who I met for the first time at HESG this summer and with whom I share the interest in missing data methods (even though she is a STATA and multiple imputation user, sadly). 
-I am also glad that I met my previous PhD secondary supervisor, &lt;a href=&#34;https://www.lshtm.ac.uk/aboutus/people/mason.alexina&#34;&gt;Alexina Mason&lt;/a&gt;, with whom it is always a pleasure to talk with. Unfortunately, we both missed the talk of each other becuase of time problems but it was good to catch up with her again. I am also sad that I could
-not attend &lt;a href=&#34;https://www.lshtm.ac.uk/aboutus/people/leurent.baptiste&#34;&gt;Baptiste&lt;/a&gt;&amp;lsquo;s presentation which was the last day of the conference (I had to leave the same day of my talk, the first day) and I was not also able to actually meet him. I hope we will be able to see him soon at some other conference in the near future.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/YATNr2oXRo0IE/giphy.gif&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Given this past experience, I am now looking forward to meet new people at my next conference at the Bella Center in Copenhagen (thumbnail) where this year &lt;a href=&#34;https://www.ispor.org/conferences-education/conferences/upcoming-conferences/ispor-europe-2019&#34;&gt;ISPOR Europe 2019&lt;/a&gt; will be held. However, I believe this will be a much larger conference and therefore I will probably not have many chances to talk with people as I did at ICTMC.
+
+&lt;p&gt;I had the chance to chat a bit with few people that I did not know, including &lt;a href=&#34;http://www.bristol.ac.uk/social-community-medicine/people/william-hollingworth/overview.html&#34; target=&#34;_blank&#34;&gt;William Hollingworth&lt;/a&gt; from Bristol and &lt;a href=&#34;https://www.ndorms.ox.ac.uk/team/ines-rombach&#34; target=&#34;_blank&#34;&gt;Ines Rombach&lt;/a&gt; from Oxford, with whom I had very nice conversations about my work and other interesting topics.
+I was also glad to meet some known faces, including the always lovely &lt;a href=&#34;https://cheme.bangor.ac.uk/CatrinPlumptonBiography.php&#34; target=&#34;_blank&#34;&gt;Catrin Plumpton&lt;/a&gt; from Bangor University, who I met for the first time at HESG this summer and with whom I share the interest in missing data methods (even though she is a STATA and multiple imputation user, sadly).
+I am also glad that I met my previous PhD secondary supervisor, &lt;a href=&#34;https://www.lshtm.ac.uk/aboutus/people/mason.alexina&#34; target=&#34;_blank&#34;&gt;Alexina Mason&lt;/a&gt;, with whom it is always a pleasure to talk with. Unfortunately, we both missed the talk of each other becuase of time problems but it was good to catch up with her again. I am also sad that I could
+not attend &lt;a href=&#34;https://www.lshtm.ac.uk/aboutus/people/leurent.baptiste&#34; target=&#34;_blank&#34;&gt;Baptiste&lt;/a&gt;&amp;rsquo;s presentation which was the last day of the conference (I had to leave the same day of my talk, the first day) and I was not also able to actually meet him. I hope we will be able to see him soon at some other conference in the near future.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/YATNr2oXRo0IE/giphy.gif&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Given this past experience, I am now looking forward to meet new people at my next conference at the Bella Center in Copenhagen (thumbnail) where this year &lt;a href=&#34;https://www.ispor.org/conferences-education/conferences/upcoming-conferences/ispor-europe-2019&#34; target=&#34;_blank&#34;&gt;ISPOR Europe 2019&lt;/a&gt; will be held. However, I believe this will be a much larger conference and therefore I will probably not have many chances to talk with people as I did at ICTMC.
 Plus I am only preseting a poster this time, so it will be less likely that some people will actually notice my work, especially given the typically huge amount of presenters of this type of conferences. In the wrost case, I will enjoy Copenhagen and meet up with some old friends who live in Denmark and who will come at ISPOR to present some other work.&lt;/p&gt;
 </description>
     </item>
     
     <item>
       <title>More good news...</title>
-      <link>/post/update-october/</link>
+      <link>/post/update-october/update-october/</link>
       <pubDate>Tue, 01 Oct 2019 00:00:00 +0000</pubDate>
       
-      <guid>/post/update-october/</guid>
-      <description>&lt;p&gt;I have got two news coming up. First, the paper I wrote with Michael and Gianluca on Bayesian methdos for longitudinal data in trial-based economic evaluations has finally been published as early view on &lt;a href=&#34;https://rss.onlinelibrary.wiley.com/doi/abs/10.1111/rssa.12522&#34;&gt;JRSSA&lt;/a&gt;. As I said in some earlier posts, I am super happy about this collaboration and I hope I can continue working on similar projects in the future.&lt;/p&gt;
-&lt;p&gt;Second, I will soon give a talk about this work at the &lt;a href=&#34;https://ictmc2019.com/&#34;&gt;ICTMC&lt;/a&gt; conference in Brighton, next Monday. This will be the first time at this conference and unfortunately I will only be able to remain around for one day as I need to go back to London pretty soon. I hope I will be able to enjoy my day at the conference, even though I will miss the talks of &lt;a href=&#34;https://www.lshtm.ac.uk/aboutus/people/leurent.baptiste&#34;&gt;Baptiste&lt;/a&gt; and &lt;a href=&#34;https://www.lshtm.ac.uk/aboutus/people/mason.alexina&#34;&gt;Alexina&lt;/a&gt; which are scheduled for the last day of the conference. I hope I can at least have a quick chat with them the day I am around.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/efDT7dqlF5N2LVHG8C/giphy.gif&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;p&gt;I am also excited to visit &lt;a href=&#34;https://en.wikipedia.org/wiki/Brighton&#34;&gt;Brighton&lt;/a&gt;, since many people keep telling me that I should go and visit this sort of british version of &amp;ldquo;Rimini&amp;rdquo;. To be honest, I do not expect to find a nice wheather, given that in this period it is raining a lot in London, but I hope I will be lucky and get the only sunny day of the week.&lt;/p&gt;
-&lt;p&gt;Finally, I have started a rubric called &lt;a href=&#34;https://agabrioblog.onrender.com/missingdata/&#34;&gt;missing data&lt;/a&gt; on my website, where I try to describe some of the most popular methods to handle missing data and to provide some references for anyone who could be interested in this field. I am really fascinated by statistical methods for dealing with missingness, perhaps because it was the main focus of my PhD, but I am eager to review different methods and see if I can find something really interesting. Of course, to complete this it will take more time, which I hope I will be able to find in the next months.&lt;/p&gt;
+      <guid>/post/update-october/update-october/</guid>
+      <description>&lt;p&gt;I have got two news coming up. First, the paper I wrote with Michael and Gianluca on Bayesian methdos for longitudinal data in trial-based economic evaluations has finally been published as early view on &lt;a href=&#34;https://rss.onlinelibrary.wiley.com/doi/abs/10.1111/rssa.12522&#34; target=&#34;_blank&#34;&gt;JRSSA&lt;/a&gt;. As I said in some earlier posts, I am super happy about this collaboration and I hope I can continue working on similar projects in the future.&lt;/p&gt;
+
+&lt;p&gt;Second, I will soon give a talk about this work at the &lt;a href=&#34;https://ictmc2019.com/&#34; target=&#34;_blank&#34;&gt;ICTMC&lt;/a&gt; conference in Brighton, next Monday. This will be the first time at this conference and unfortunately I will only be able to remain around for one day as I need to go back to London pretty soon. I hope I will be able to enjoy my day at the conference, even though I will miss the talks of &lt;a href=&#34;https://www.lshtm.ac.uk/aboutus/people/leurent.baptiste&#34; target=&#34;_blank&#34;&gt;Baptiste&lt;/a&gt; and &lt;a href=&#34;https://www.lshtm.ac.uk/aboutus/people/mason.alexina&#34; target=&#34;_blank&#34;&gt;Alexina&lt;/a&gt; which are scheduled for the last day of the conference. I hope I can at least have a quick chat with them the day I am around.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/efDT7dqlF5N2LVHG8C/giphy.gif&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;I am also excited to visit &lt;a href=&#34;https://en.wikipedia.org/wiki/Brighton&#34; target=&#34;_blank&#34;&gt;Brighton&lt;/a&gt;, since many people keep telling me that I should go and visit this sort of british version of &amp;ldquo;Rimini&amp;rdquo;. To be honest, I do not expect to find a nice wheather, given that in this period it is raining a lot in London, but I hope I will be lucky and get the only sunny day of the week.&lt;/p&gt;
+
+&lt;p&gt;Finally, I have started a rubric called &lt;a href=&#34;https://agabrioblog.onrender.com/missingdata/&#34; target=&#34;_blank&#34;&gt;missing data&lt;/a&gt; on my website, where I try to describe some of the most popular methods to handle missing data and to provide some references for anyone who could be interested in this field. I am really fascinated by statistical methods for dealing with missingness, perhaps because it was the main focus of my PhD, but I am eager to review different methods and see if I can find something really interesting. Of course, to complete this it will take more time, which I hope I will be able to find in the next months.&lt;/p&gt;
 </description>
     </item>
     
     <item>
       <title>MissingHE 1.2.1</title>
-      <link>/post/missinghe-version121/</link>
+      <link>/post/missinghe-121/missinghe-version121/</link>
       <pubDate>Wed, 25 Sep 2019 00:00:00 +0000</pubDate>
       
-      <guid>/post/missinghe-version121/</guid>
-      <description>&lt;p&gt;I have finally found some time to update the version for my R package &lt;a href=&#34;https://agabrioblog.onrender.com/missingHE/&#34;&gt;missingHE&lt;/a&gt;, for which version 1.2.1 is now available on &lt;a href=&#34;https://cran.r-project.org/web/packages/missingHE/&#34;&gt;CRAN&lt;/a&gt;. 
+      <guid>/post/missinghe-121/missinghe-version121/</guid>
+      <description>&lt;p&gt;I have finally found some time to update the version for my R package &lt;a href=&#34;https://agabrioblog.onrender.com/missingHE/&#34; target=&#34;_blank&#34;&gt;missingHE&lt;/a&gt;, for which version 1.2.1 is now available on &lt;a href=&#34;https://cran.r-project.org/web/packages/missingHE/&#34; target=&#34;_blank&#34;&gt;CRAN&lt;/a&gt;.
 I included two main features to the previous version of the package.&lt;/p&gt;
+
 &lt;p&gt;First, I have added a new type of identifying restriction when fitting pattern mixture models through the function &amp;ldquo;pattern&amp;rdquo;. Before, only the complete case
-restriction was available, which identifies the distributions of the missing data with those from the completers. Now the alternative available case restriction is can also be selected, which relies on the distributions that can be identified 
+restriction was available, which identifies the distributions of the missing data with those from the completers. Now the alternative available case restriction is can also be selected, which relies on the distributions that can be identified
 among the non-completers to identify the distributions of the missing data. In this way, people can choose among at least two options for the type of restrictions and compare how this choice may affect the final estimates.&lt;/p&gt;
+
 &lt;p&gt;Second, I added a new accessory function called &amp;ldquo;ppc&amp;rdquo;, which allows to perform posterior predictive checks using the conditional parameters saved from the fitted model to generate replications of the data at each posterior iteration of the model.
-The function implements a relatively large number of checks, mostly taken from the R package &lt;a href=&#34;https://cran.r-project.org/web/packages/bayesplot/&#34;&gt;bayesplot&lt;/a&gt;, which allow to assess the fit of the model to the observed data by type of outcome (effects and costs) and treatment group (control and intervention).
+The function implements a relatively large number of checks, mostly taken from the R package &lt;a href=&#34;https://cran.r-project.org/web/packages/bayesplot/&#34; target=&#34;_blank&#34;&gt;bayesplot&lt;/a&gt;, which allow to assess the fit of the model to the observed data by type of outcome (effects and costs) and treatment group (control and intervention).
 For example, overalyed density plots can be generated to compare the empirical and replicated densities of the data to detect possible failures of the model.&lt;/p&gt;
+
 
 
 
@@ -14058,11 +15429,14 @@ For example, overalyed density plots can be generated to compare the empirical a
 
 &lt;/figure&gt;
 
-&lt;p&gt;I feel this is very important as when fitting a Bayesian model it is crucial to assess whether the model seems to adequately capture the different characteristics of the observed data (e.g. skewness, structural values, etc.). 
+
+&lt;p&gt;I feel this is very important as when fitting a Bayesian model it is crucial to assess whether the model seems to adequately capture the different characteristics of the observed data (e.g. skewness, structural values, etc.).
 A wide range of predictive checks are available, including histograms (see thumbnail pciture), scatterplots, error intervals, empirical cumulative distribution fucntions, statistcis of interest and many others. In addition ,
 these checks can be performed for each type of missingness model and parametric distribution chosen within missingHE.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/NEvPzZ8bd1V4Y/giphy.gif&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Of course, it is important to remember that, when dealing with missing data the fit of the model can only be checked with respect to the observed values and therefore this 
+
+&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/NEvPzZ8bd1V4Y/giphy.gif&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Of course, it is important to remember that, when dealing with missing data the fit of the model can only be checked with respect to the observed values and therefore this
 check is only partial since the fit to the unibserved values can never be checked. This is also why it is not meaningful to assess the fit of a model fitted under a missing not at random assumption
 because this is based on information which is not directly available from the data at hand and thus impossible to check.&lt;/p&gt;
 </description>
@@ -14070,48 +15444,65 @@ because this is based on information which is not directly available from the da
     
     <item>
       <title>Discussing my thesis</title>
-      <link>/post/update-interview/</link>
+      <link>/post/update-interview/update-interview/</link>
       <pubDate>Sun, 15 Sep 2019 00:00:00 +0000</pubDate>
       
-      <guid>/post/update-interview/</guid>
-      <description>&lt;p&gt;I have been kindly invited by the amazing person &lt;a href=&#34;https://www.ohe.org/about-us/meet-team/chris-sampson&#34;&gt;Chris Sampson&lt;/a&gt; to talk about the work I inlcuded in my PhD thesis for his monthly rubric entitled  &amp;ldquo;Thesis Thursday&amp;rdquo; on the &lt;a href=&#34;https://aheblog.com/&#34;&gt;The Academic Health Economists blog&lt;/a&gt;.&lt;/p&gt;
+      <guid>/post/update-interview/update-interview/</guid>
+      <description>&lt;p&gt;I have been kindly invited by the amazing person &lt;a href=&#34;https://www.ohe.org/about-us/meet-team/chris-sampson&#34; target=&#34;_blank&#34;&gt;Chris Sampson&lt;/a&gt; to talk about the work I inlcuded in my PhD thesis for his monthly rubric entitled  &amp;ldquo;Thesis Thursday&amp;rdquo; on the &lt;a href=&#34;https://aheblog.com/&#34; target=&#34;_blank&#34;&gt;The Academic Health Economists blog&lt;/a&gt;.&lt;/p&gt;
+
 &lt;p&gt;I happily accepted Chris&amp;rsquo;s invitation as I beleive this initiative is really interesting and represents a nice way for newly graduated PhD students to advertise their work while also giving the chance to people interested in health economics to read about some academic work which is typically freely available to everyone.&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://aheblog.com/2019/09/19/thesis-thursday-andrea-gabrio/&#34;&gt;Here&lt;/a&gt; you can find the full interview, which is not very long and resolves around 5 questions that Chris asked me about my work. I already new this blog but I have never had a proper chance to read through its posts carefully, which is a shame.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/13lTgtSUmqMrlu/giphy.gif&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://aheblog.com/2019/09/19/thesis-thursday-andrea-gabrio/&#34; target=&#34;_blank&#34;&gt;Here&lt;/a&gt; you can find the full interview, which is not very long and resolves around 5 questions that Chris asked me about my work. I already new this blog but I have never had a proper chance to read through its posts carefully, which is a shame.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/13lTgtSUmqMrlu/giphy.gif&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
 &lt;p&gt;I shall promise myself to try to check it more often from now on, using this interview as a nice motivation to do so.
-In fact, there are not many blogs around health economics matters (here a &lt;a href=&#34;https://blog.feedspot.com/health_economics_blogs/&#34;&gt;non-comprehensive list&lt;/a&gt;), among which The Academic Health Economists and &lt;a href=&#34;http://www.statistica.it/gianluca/blog/&#34;&gt;Gianluca&amp;rsquo;s blog&lt;/a&gt; are my favourites.&lt;/p&gt;
-&lt;p&gt;I hope I will be able to find some time to write some nice posts about some health economic applications of my work in the next future as this is still the most interesting field for me at the moment. I am also the maintainer of another small blog called the &lt;a href=&#34;https://hearteam.blogspot.com/&#34;&gt;Health Economics Analysis and Research Methods Team (HEART) blog&lt;/a&gt;, where I occasionally write some posts on health economics together with my colleagues from the UCL department of &lt;a href=&#34;https://www.ucl.ac.uk/epidemiology-health-care/research/pcph&#34;&gt;Primary Care and Population Health&lt;/a&gt;. The blog is still new but I hope it can become more active in the next months.&lt;/p&gt;
+In fact, there are not many blogs around health economics matters (here a &lt;a href=&#34;https://blog.feedspot.com/health_economics_blogs/&#34; target=&#34;_blank&#34;&gt;non-comprehensive list&lt;/a&gt;), among which The Academic Health Economists and &lt;a href=&#34;http://www.statistica.it/gianluca/blog/&#34; target=&#34;_blank&#34;&gt;Gianluca&amp;rsquo;s blog&lt;/a&gt; are my favourites.&lt;/p&gt;
+
+&lt;p&gt;I hope I will be able to find some time to write some nice posts about some health economic applications of my work in the next future as this is still the most interesting field for me at the moment. I am also the maintainer of another small blog called the &lt;a href=&#34;https://hearteam.blogspot.com/&#34; target=&#34;_blank&#34;&gt;Health Economics Analysis and Research Methods Team (HEART) blog&lt;/a&gt;, where I occasionally write some posts on health economics together with my colleagues from the UCL department of &lt;a href=&#34;https://www.ucl.ac.uk/epidemiology-health-care/research/pcph&#34; target=&#34;_blank&#34;&gt;Primary Care and Population Health&lt;/a&gt;. The blog is still new but I hope it can become more active in the next months.&lt;/p&gt;
 </description>
     </item>
     
     <item>
       <title>Some good news...</title>
-      <link>/post/update-september/</link>
+      <link>/post/update-september/update-september/</link>
       <pubDate>Sun, 01 Sep 2019 00:00:00 +0000</pubDate>
       
-      <guid>/post/update-september/</guid>
-      <description>&lt;p&gt;With the approaching of the new academic here I have received some good news for my most recently submitted paper on Bayesian parametric modelling in health economics for missing longitudinal data, which at the moment is only available on &lt;a href=&#34;https://arxiv.org/abs/1805.07147&#34;&gt;arXiv&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;I am happy to announce that, after a couple of rounds of reviews, the paper has been finally accepted for publication in &lt;a href=&#34;https://rss.onlinelibrary.wiley.com/journal/1467985X&#34;&gt;JSS: Series A&lt;/a&gt;. I believe that the reviewers provided a very nice feedback for improving the work and I am quite satisfied with the final version of the article which, I hope, will be of interest for anyone involved in the analsysi of partially-observed longitudinal data. I hope the pre-print of the paper will be available soon and I will &amp;ldquo;advertise&amp;rdquo; my work in two conferences in the next couple of months, where I will present the content of the paper, namely &lt;a href=&#34;https://ictmc2019.com/&#34;&gt;ICTMC&lt;/a&gt; this October in Brighton, and &lt;a href=&#34;http://www.ispor.org/conferences-education/conferences/upcoming-conferences/ispor-europe-2019&#34;&gt;ISPOR Europe&lt;/a&gt; this November in Copenhagen.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/vMEjhlxsBR7Fe/giphy.gif&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;p&gt;I am really excited about this paper which represented the last part of my PhD thesis and on which I worked really hard in the last year of my studies. &lt;a href=&#34;https://agabrioblog.onrender.com/project/missing-data/&#34;&gt;Here&lt;/a&gt; you can find a general summary of the content of the article, while &lt;a href=&#34;https://www.ucl.ac.uk/statistics/sites/statistics/files/presentation_priment_1.pdf&#34;&gt;here&lt;/a&gt; there are some slides that describe the main idea behind the proposed model.&lt;/p&gt;
-&lt;p&gt;I just want to conlcude with some thanks with my co-authors of the paper, &lt;a href=&#34;http://users.stat.ufl.edu/~daniels/&#34;&gt;Michael&lt;/a&gt; and &lt;a href=&#34;https://www.ucl.ac.uk/statistics/people/gianlucabaio&#34;&gt;Ginaluca&lt;/a&gt;, without whom I would have not been able to write this paper. This was my first work with Mike, with whom I had a wonderful collaboration and I was able to visit the beatiful city of &lt;a href=&#34;https://en.wikipedia.org/wiki/Gainesville,_Florida&#34;&gt;Gainesville&lt;/a&gt; (FL) during my first visiting period at the &lt;a href=&#34;https://www.ufl.edu/&#34;&gt;University of Florida&lt;/a&gt; (see thumbnail picture). I hope this will be the first of many works together in the furture!.&lt;/p&gt;
+      <guid>/post/update-september/update-september/</guid>
+      <description>&lt;p&gt;With the approaching of the new academic here I have received some good news for my most recently submitted paper on Bayesian parametric modelling in health economics for missing longitudinal data, which at the moment is only available on &lt;a href=&#34;https://arxiv.org/abs/1805.07147&#34; target=&#34;_blank&#34;&gt;arXiv&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;I am happy to announce that, after a couple of rounds of reviews, the paper has been finally accepted for publication in &lt;a href=&#34;https://rss.onlinelibrary.wiley.com/journal/1467985X&#34; target=&#34;_blank&#34;&gt;JSS: Series A&lt;/a&gt;. I believe that the reviewers provided a very nice feedback for improving the work and I am quite satisfied with the final version of the article which, I hope, will be of interest for anyone involved in the analsysi of partially-observed longitudinal data. I hope the pre-print of the paper will be available soon and I will &amp;ldquo;advertise&amp;rdquo; my work in two conferences in the next couple of months, where I will present the content of the paper, namely &lt;a href=&#34;https://ictmc2019.com/&#34; target=&#34;_blank&#34;&gt;ICTMC&lt;/a&gt; this October in Brighton, and &lt;a href=&#34;http://www.ispor.org/conferences-education/conferences/upcoming-conferences/ispor-europe-2019&#34; target=&#34;_blank&#34;&gt;ISPOR Europe&lt;/a&gt; this November in Copenhagen.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/vMEjhlxsBR7Fe/giphy.gif&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;I am really excited about this paper which represented the last part of my PhD thesis and on which I worked really hard in the last year of my studies. &lt;a href=&#34;https://agabrioblog.onrender.com/project/missing-data/&#34; target=&#34;_blank&#34;&gt;Here&lt;/a&gt; you can find a general summary of the content of the article, while &lt;a href=&#34;https://www.ucl.ac.uk/statistics/sites/statistics/files/presentation_priment_1.pdf&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt; there are some slides that describe the main idea behind the proposed model.&lt;/p&gt;
+
+&lt;p&gt;I just want to conlcude with some thanks with my co-authors of the paper, &lt;a href=&#34;http://users.stat.ufl.edu/~daniels/&#34; target=&#34;_blank&#34;&gt;Michael&lt;/a&gt; and &lt;a href=&#34;https://www.ucl.ac.uk/statistics/people/gianlucabaio&#34; target=&#34;_blank&#34;&gt;Ginaluca&lt;/a&gt;, without whom I would have not been able to write this paper. This was my first work with Mike, with whom I had a wonderful collaboration and I was able to visit the beatiful city of &lt;a href=&#34;https://en.wikipedia.org/wiki/Gainesville,_Florida&#34; target=&#34;_blank&#34;&gt;Gainesville&lt;/a&gt; (FL) during my first visiting period at the &lt;a href=&#34;https://www.ufl.edu/&#34; target=&#34;_blank&#34;&gt;University of Florida&lt;/a&gt; (see thumbnail picture). I hope this will be the first of many works together in the furture!.&lt;/p&gt;
 </description>
     </item>
     
     <item>
       <title>The P value fallacy</title>
-      <link>/post/p-value-fallacy/</link>
+      <link>/post/p-value-fallacy/p-value-fallacy/</link>
       <pubDate>Sat, 03 Aug 2019 00:00:00 +0000</pubDate>
       
-      <guid>/post/p-value-fallacy/</guid>
-      <description>&lt;p&gt;Today, I would like to briefly comment an interesting research article written by &lt;a href=&#34;https://jhu.pure.elsevier.com/en/publications/toward-evidence-based-medical-statistics-1-the-p-value-fallacy-4&#34;&gt;Goodman&lt;/a&gt;, who provided a clear and exemplary discussion about the typical incorrect interpretation of a standard frequentist analysis in the field of medical research. I will now briefly summarise the main argument of the paper and then add some personal comments.&lt;/p&gt;
-&lt;p&gt;Essentially, the article describes the characteristics of the dominant school of medical statistics and highlights the logical fallacy at the heart of the typical frequentist analysis in clinical studies. This is based on a &lt;em&gt;deductive&lt;/em&gt; inferential approach, which starts with a given hypothesis and makes conclusions under the assumption that the hypothesis is true. This is in contrast with a &lt;em&gt;inductive&lt;/em&gt; approach, which uses the observed evidence to evaluate what hypothesis is most tenable. The two most popular methods of the frequentist paradigm are the &lt;em&gt;P value&lt;/em&gt; proposed by &lt;a href=&#34;https://link.springer.com/chapter/10.1007/978-1-4612-4380-9_6&#34;&gt;Fisher&lt;/a&gt; and the &lt;em&gt;hypothesis testing&lt;/em&gt; developed by &lt;a href=&#34;https://royalsocietypublishing.org/doi/abs/10.1098/rsta.1933.0009?casa_token=sbSkualIaPYAAAAA%3ACxPsFTFEUK7vaxMPi5dJwUr4HoUWjrkxNh7Hl2q0owjtcU2wJHnakG-Xug7y95v1Tyqbbc8Mymaq_Q&amp;amp;&#34;&gt;Neyman and Pearson&lt;/a&gt;.&lt;/p&gt;
+      <guid>/post/p-value-fallacy/p-value-fallacy/</guid>
+      <description>&lt;p&gt;Today, I would like to briefly comment an interesting research article written by &lt;a href=&#34;https://jhu.pure.elsevier.com/en/publications/toward-evidence-based-medical-statistics-1-the-p-value-fallacy-4&#34; target=&#34;_blank&#34;&gt;Goodman&lt;/a&gt;, who provided a clear and exemplary discussion about the typical incorrect interpretation of a standard frequentist analysis in the field of medical research. I will now briefly summarise the main argument of the paper and then add some personal comments.&lt;/p&gt;
+
+&lt;p&gt;Essentially, the article describes the characteristics of the dominant school of medical statistics and highlights the logical fallacy at the heart of the typical frequentist analysis in clinical studies. This is based on a &lt;em&gt;deductive&lt;/em&gt; inferential approach, which starts with a given hypothesis and makes conclusions under the assumption that the hypothesis is true. This is in contrast with a &lt;em&gt;inductive&lt;/em&gt; approach, which uses the observed evidence to evaluate what hypothesis is most tenable. The two most popular methods of the frequentist paradigm are the &lt;em&gt;P value&lt;/em&gt; proposed by &lt;a href=&#34;https://link.springer.com/chapter/10.1007/978-1-4612-4380-9_6&#34; target=&#34;_blank&#34;&gt;Fisher&lt;/a&gt; and the &lt;em&gt;hypothesis testing&lt;/em&gt; developed by &lt;a href=&#34;https://royalsocietypublishing.org/doi/abs/10.1098/rsta.1933.0009?casa_token=sbSkualIaPYAAAAA%3ACxPsFTFEUK7vaxMPi5dJwUr4HoUWjrkxNh7Hl2q0owjtcU2wJHnakG-Xug7y95v1Tyqbbc8Mymaq_Q&amp;amp;&#34; target=&#34;_blank&#34;&gt;Neyman and Pearson&lt;/a&gt;.&lt;/p&gt;
+
 &lt;p&gt;The P value is defined as the probability, under the assumption of no effect (null hypothesis), of obtaining a result equal to or more extreme than what was actually observed. Fisher proposed it as an informal index to be used as a measure of discrepancy between the data and the null hypothesis and therefore should not be interpreted as a formal inferential method. For example, since the P value can only be calculated on the assumption that the null hypothesis is true, it cannot be a direct measure of the probability that the null hypothesis is false. However, the main criticism to the P value is perhaps that it does not take into account the size of the observed effect, i.e. a small effect in a study with a large sample size can have the same P value as a large effect in a small study.&lt;/p&gt;
+
 &lt;p&gt;Hypothesis testing was proposed by Neyman and Pearson as an alternative approach to the P value, which assumes the existence of a null hypothesis (e.g. no effect) and an alternative hypothesis (e.g. nonzero effect). The outcome of the test is then simply to reject one hypothesis in favour of the other, solely based on the data. This exposes the researcher to two types of errors: type I error or false-positive ($\alpha$) and type II error or false-negative ($\beta$) result. Rather than focussing on single experiments, like the P value, hypothesis testing is effectively based on a deductive approach to minimise the errors over a large number of experiments. However, the price to pay to obtain this &lt;em&gt;objectivity&lt;/em&gt; is the impossibility to make any inferential statement about a single experiment. The procedure only guarantees that in the long run, i.e. after considering many experiments, we shall not often be wrong.&lt;/p&gt;
+
 &lt;p&gt;Over time a combination between the P value and hypothesis testing was developed under the assumption that the two approaches can be complementary. The idea was that the P value could be used to measure evidence in a single experiment while not violating the long run logic of hypothesis testing. The combined method is characterized by setting $\alpha$ and power $\beta$ before the experiment, then calculating a P value and rejecting the null hypothesis if the P value is less than the preset type I error rate. This means that the P value is considered a false-positive error rate specific to the data and also a measure of evidence against the null hypothesis. The &lt;strong&gt;P value fallacy&lt;/strong&gt; is born from this statement, which assumes that an event can be seen simultaneously from a long run perspective (where the observed results are put together with other results that might have occurred in hypothetical repetitions of the experiment) and from a short run perspective (where the observed results are interpreted only with respect to the single experiment). However, these views are not reconcilable since a result cannot be at the same time an interchangeable (long-run) and unique (short-run) member of a group of results.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/JszzkKOlV6gTK/giphy.gif&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/JszzkKOlV6gTK/giphy.gif&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
 &lt;p&gt;I personally find this discussion fascinating and I believe that it is important to recognise the inconsistencies between the two alternative approaches to inference. The original authors of the two paradigms were well aware of the implications of their methods and never supported the combination of these. However, the combined approach has somehow become widely accepted in practice while its internal inconsistencies and conceptual limitations are hardly recognised.&lt;/p&gt;
+
 &lt;p&gt;I feel that, since the two methods are perceived as &amp;ldquo;objective&amp;rdquo;, it is generally accepted that, if combined, they can produce reliable conclusions. This, however, is not necessarily true. Accepting at face value the significance result as a binary indicator of whether or not a relation is real is dangeroues and potentially misleading. This practice wants to show that conclusions are being drawn directly from the data, without any external influence, because direct inference from data to hypothesis is thought to result in mistaken conclusions only rarely and is therefore regarded as &amp;ldquo;scientific&amp;rdquo;.&lt;/p&gt;
+
 &lt;p&gt;This misguided approach has led to a much stronger emphasis towards the quantitative results alone (without any external input). In contrast, I believe that such perspective has the serious drawback of ignoring potentially useful information which is available (e.g. relevant medical knowledge or historical data) and which should be included in the analysis. Of course, I am aware of the potential issues that may arise from the selection and incorporation of external evidence, but I believe this should not be considered as &amp;ldquo;less reliable&amp;rdquo; or &amp;ldquo;more prone to mistakes&amp;rdquo; compared with the evidence from the available data. It is important that an agreement is reached about the selection of the type of evidence and methods to be used to perform the analysis solely based on their relevance with respect to the context analysed.&lt;/p&gt;
 </description>
     </item>
@@ -14443,18 +15834,20 @@ deviance 278.8 2.439 276.00 277.1 278.2 280.0 285.2    1  2000&lt;/code&gt;&lt;/
     
     <item>
       <title>HESG Summer Meeting 2019</title>
-      <link>/post/hesg-summer-meeting-2019/</link>
+      <link>/post/hesg-norwich-2019/hesg-summer-meeting-2019/</link>
       <pubDate>Wed, 03 Jul 2019 00:00:00 +0000</pubDate>
       
-      <guid>/post/hesg-summer-meeting-2019/</guid>
-      <description>&lt;p&gt;I have just come back form my first Health Economists&amp;rsquo; Study Group (&lt;a href=&#34;https://hesg.org.uk/meetings/summer-2019-university-of-east-anglia/&#34;&gt;HESG&lt;/a&gt;) meeting, which this year was held at the &lt;a href=&#34;https://www.uea.ac.uk/&#34;&gt;University of East Anglia&lt;/a&gt; in the beautiful city of Norwich, 
-south east of England, and where I presented some preliminary results from one of my on-going works. I have to say, it was a remarkable experience which 
-I really liked thanks to a wonderful and welcoming environment. I had the pleasure to talk to many people from different research areas involved in 
+      <guid>/post/hesg-norwich-2019/hesg-summer-meeting-2019/</guid>
+      <description>&lt;p&gt;I have just come back form my first Health Economists&amp;rsquo; Study Group (&lt;a href=&#34;https://hesg.org.uk/meetings/summer-2019-university-of-east-anglia/&#34; target=&#34;_blank&#34;&gt;HESG&lt;/a&gt;) meeting, which this year was held at the &lt;a href=&#34;https://www.uea.ac.uk/&#34; target=&#34;_blank&#34;&gt;University of East Anglia&lt;/a&gt; in the beautiful city of Norwich,
+south east of England, and where I presented some preliminary results from one of my on-going works. I have to say, it was a remarkable experience which
+I really liked thanks to a wonderful and welcoming environment. I had the pleasure to talk to many people from different research areas involved in
 health economics (both from academia and industry) and to see many different projects and works.&lt;/p&gt;
-&lt;p&gt;I particularly enjoy the structure of the meeting, which requires some chair and discussant who have to present and discuss the paper of the authors, 
-who are only allowed to provide some clarification if needed. At first I thought this structure of the sessions was strange, but after attending many 
-sessions and experiencing this for my own paper, I feel that it is a very good way to encourage discussion about works from different people rather than 
+
+&lt;p&gt;I particularly enjoy the structure of the meeting, which requires some chair and discussant who have to present and discuss the paper of the authors,
+who are only allowed to provide some clarification if needed. At first I thought this structure of the sessions was strange, but after attending many
+sessions and experiencing this for my own paper, I feel that it is a very good way to encourage discussion about works from different people rather than
 just focussing on your own presentation. Plus, the weather and always sunny, it felt like Italy for a few days.&lt;/p&gt;
+
 
 
 
@@ -14476,34 +15869,42 @@ just focussing on your own presentation. Plus, the weather and always sunny, it 
 
 &lt;/figure&gt;
 
-&lt;p&gt;Other nice people and colleagues from HEART and other UCL department came to HESG with me, including &lt;a href=&#34;https://iris.ucl.ac.uk/iris/browse/profile?upi=CSCLA53&#34;&gt;Caroline&lt;/a&gt; and &lt;a href=&#34;https://www.ucl.ac.uk/comprehensive-clinical-trials-unit/meet-team/health-economics/junior-health-economist-ekaterina-kuznetsova&#34;&gt;Ekaterina&lt;/a&gt; (aka Katia), 
-you can see them in thumbnail of this post. I was also pleased to meet &lt;a href=&#34;https://www.lshtm.ac.uk/aboutus/people/leurent.baptiste&#34;&gt;Baptiste&lt;/a&gt; from &lt;a href=&#34;https://www.lshtm.ac.uk/&#34;&gt;LSHTM&lt;/a&gt;, who shares with me the interest in missing data 
-methods for cost-effectiveness analysis and who presented some very nice work on that. I had the chance to give some feedback to him and he did the same for me. 
-It felt so nice when we started discussing about some aspects of our analyses and after some minutes we simply lost track of time and everyone else disappeared. 
-I also had the opportunity to talk about my work with the discussant of my session, &lt;a href=&#34;https://cheme.bangor.ac.uk/CatrinPlumptonBiography.php&#34;&gt;Catrin Plumpton&lt;/a&gt; from the &lt;a href=&#34;https://cheme.bangor.ac.uk/&#34;&gt;Centre for Health Economics and Medicines Evaluation&lt;/a&gt;, 
+
+&lt;p&gt;Other nice people and colleagues from HEART and other UCL department came to HESG with me, including &lt;a href=&#34;https://iris.ucl.ac.uk/iris/browse/profile?upi=CSCLA53&#34; target=&#34;_blank&#34;&gt;Caroline&lt;/a&gt; and &lt;a href=&#34;https://www.ucl.ac.uk/comprehensive-clinical-trials-unit/meet-team/health-economics/junior-health-economist-ekaterina-kuznetsova&#34; target=&#34;_blank&#34;&gt;Ekaterina&lt;/a&gt; (aka Katia),
+you can see them in thumbnail of this post. I was also pleased to meet &lt;a href=&#34;https://www.lshtm.ac.uk/aboutus/people/leurent.baptiste&#34; target=&#34;_blank&#34;&gt;Baptiste&lt;/a&gt; from &lt;a href=&#34;https://www.lshtm.ac.uk/&#34; target=&#34;_blank&#34;&gt;LSHTM&lt;/a&gt;, who shares with me the interest in missing data
+methods for cost-effectiveness analysis and who presented some very nice work on that. I had the chance to give some feedback to him and he did the same for me.
+It felt so nice when we started discussing about some aspects of our analyses and after some minutes we simply lost track of time and everyone else disappeared.
+I also had the opportunity to talk about my work with the discussant of my session, &lt;a href=&#34;https://cheme.bangor.ac.uk/CatrinPlumptonBiography.php&#34; target=&#34;_blank&#34;&gt;Catrin Plumpton&lt;/a&gt; from the &lt;a href=&#34;https://cheme.bangor.ac.uk/&#34; target=&#34;_blank&#34;&gt;Centre for Health Economics and Medicines Evaluation&lt;/a&gt;,
 who gave me some nice feedback which I really appreciated, especially given her mathematical background.&lt;/p&gt;
-&lt;p&gt;An important contribution to the success of the meeting was also given by the wonderful organisation of the event, including an accommodation located very closely 
-to the main building of the meeting, plenty of food provided during each day, a nice bus tour of the city and a wonderful conference dinner. I must thank all the people, 
-who organised the event who were very extremely nice to us and who were always ready to help us for whatever need we had, with a special mention for &lt;a href=&#34;https://people.uea.ac.uk/emma_mcmanus&#34;&gt;Emma Mcmanus&lt;/a&gt; who 
+
+&lt;p&gt;An important contribution to the success of the meeting was also given by the wonderful organisation of the event, including an accommodation located very closely
+to the main building of the meeting, plenty of food provided during each day, a nice bus tour of the city and a wonderful conference dinner. I must thank all the people,
+who organised the event who were very extremely nice to us and who were always ready to help us for whatever need we had, with a special mention for &lt;a href=&#34;https://people.uea.ac.uk/emma_mcmanus&#34; target=&#34;_blank&#34;&gt;Emma Mcmanus&lt;/a&gt; who
 was amazing.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/cWnICjtVkJJsgGKhyX/giphy.gif&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;p&gt;In summary, everything was good. Well, almost. Going back to the works presented, as usual, the only less positive note that I would like to make 
-is the almost total absence of Bayesian applications. Some authors mentioned that they used some popular Bayesian program, such as &lt;a href=&#34;https://www.mrc-bsu.cam.ac.uk/software/bugs/the-bugs-project-winbugs/&#34;&gt;WinBUGS&lt;/a&gt;, but this was 
+
+&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/cWnICjtVkJJsgGKhyX/giphy.gif&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;In summary, everything was good. Well, almost. Going back to the works presented, as usual, the only less positive note that I would like to make
+is the almost total absence of Bayesian applications. Some authors mentioned that they used some popular Bayesian program, such as &lt;a href=&#34;https://www.mrc-bsu.cam.ac.uk/software/bugs/the-bugs-project-winbugs/&#34; target=&#34;_blank&#34;&gt;WinBUGS&lt;/a&gt;, but this was
 mainly related to the usual meta-analysis stuff which is pretty standardised. I hope next time I will be able to see more people going Bayesian as this is what I am.&lt;/p&gt;
 </description>
     </item>
     
     <item>
       <title>Understanding health economics in clinical trials</title>
-      <link>/post/understanding-health-economics-in-clinical-trials/</link>
+      <link>/post/introduction-to-health-economics/understanding-health-economics-in-clinical-trials/</link>
       <pubDate>Wed, 03 Jul 2019 00:00:00 +0000</pubDate>
       
-      <guid>/post/understanding-health-economics-in-clinical-trials/</guid>
-      <description>&lt;p&gt;As member of the Health Economics Analysis and Research Methods Team (&lt;a href=&#34;https://hearteam.blogspot.com/&#34;&gt;HEART&lt;/a&gt;), together with my colleagues, on Tuesday 2 July I took part in a 1-day introductory short course entitled “Understanding health economics in clinical trials”, which was designed and delivered by the team. HEART is a new group of health economists who are based in UCL’s Institute of Clinical Trials and Methodology (ICTM), led by &lt;a href=&#34;https://iris.ucl.ac.uk/iris/browse/profile?upi=RMHUN48&#34;&gt;Rachael Hunter&lt;/a&gt;, and is involved at different levels in the economic components of clinical trials in different trial units at UCL. This short course was aimed at ICTM staff who are not health economists (e.g. trial managers, CIs/PIs, statisticians, data managers, research assistants, etc.) and was designed in response to the need we have identified over the last few years in working on trials as well as in response to colleagues across ICTM. This course was unique as it was intended specifically for non health economists working in trials, who wish to better understand the health economics in their study, and/or the health economist on their study. The course used a mix of lectures, group discussions and practical exercises to help participants consolidate their learning and see how to apply information from the sessions to real studies. No prior knowledge of health economics was assumed.&lt;/p&gt;
-&lt;p&gt;I believe the course was a success both in terms of the quality/quantity of the material covered during the six sessions throughout the day, as well as in terms of the positive feedback we received from the participants (almost entirely women, with the exception of two men). Many key and typically not well understood economic topics were discussed during the day, e.g. what are and how QALYs and costs are calculated, the potential limitations and issues of an economic analysis within a trial, or the role played by the protocol and analysis plan in the economic evaluation. My session was related to reporting and interpreting health economic results and I realised that most people who do not routinely deal with health economics may find difficult to grasp certain concepts or tools used in the economic analysis (e.g. what is a cost-effectiveness acceptability curve and how it can be computed). Nevertheless, I must admit that I was surprised by how many people were very motivated to learn these concepts and these &amp;ldquo;difficult&amp;rdquo; methods, often asking questions and making good comments (despite the fact that my session was the last of the course at the end of the day).   &lt;br&gt;
+      <guid>/post/introduction-to-health-economics/understanding-health-economics-in-clinical-trials/</guid>
+      <description>&lt;p&gt;As member of the Health Economics Analysis and Research Methods Team (&lt;a href=&#34;https://hearteam.blogspot.com/&#34; target=&#34;_blank&#34;&gt;HEART&lt;/a&gt;), together with my colleagues, on Tuesday 2 July I took part in a 1-day introductory short course entitled “Understanding health economics in clinical trials”, which was designed and delivered by the team. HEART is a new group of health economists who are based in UCL’s Institute of Clinical Trials and Methodology (ICTM), led by &lt;a href=&#34;https://iris.ucl.ac.uk/iris/browse/profile?upi=RMHUN48&#34; target=&#34;_blank&#34;&gt;Rachael Hunter&lt;/a&gt;, and is involved at different levels in the economic components of clinical trials in different trial units at UCL. This short course was aimed at ICTM staff who are not health economists (e.g. trial managers, CIs/PIs, statisticians, data managers, research assistants, etc.) and was designed in response to the need we have identified over the last few years in working on trials as well as in response to colleagues across ICTM. This course was unique as it was intended specifically for non health economists working in trials, who wish to better understand the health economics in their study, and/or the health economist on their study. The course used a mix of lectures, group discussions and practical exercises to help participants consolidate their learning and see how to apply information from the sessions to real studies. No prior knowledge of health economics was assumed.&lt;/p&gt;
+
+&lt;p&gt;I believe the course was a success both in terms of the quality/quantity of the material covered during the six sessions throughout the day, as well as in terms of the positive feedback we received from the participants (almost entirely women, with the exception of two men). Many key and typically not well understood economic topics were discussed during the day, e.g. what are and how QALYs and costs are calculated, the potential limitations and issues of an economic analysis within a trial, or the role played by the protocol and analysis plan in the economic evaluation. My session was related to reporting and interpreting health economic results and I realised that most people who do not routinely deal with health economics may find difficult to grasp certain concepts or tools used in the economic analysis (e.g. what is a cost-effectiveness acceptability curve and how it can be computed). Nevertheless, I must admit that I was surprised by how many people were very motivated to learn these concepts and these &amp;ldquo;difficult&amp;rdquo; methods, often asking questions and making good comments (despite the fact that my session was the last of the course at the end of the day).&lt;br /&gt;
 We ran this course as a trial as we did not have clear ideas of what an optimal design should be or the number of topics that should be covered for this type of course. We are now confident that the course has a solid structure and that there is a clear demand to learn the basic concepts of health economics, at least among people involved in trial analyses. Following the successful delivery of the course, we are planning to replicate the experience in the future, improving certain aspects of the sessions based on the feedback we received and also considering to open the course to meet the demand of a wider audience.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/bQrVMr3CO3QaY/giphy.gif&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;p&gt;I have to say that this was an extremely positive experience for me as it was the first time I was involved in this type of projects. Me and my colleagues worked hard to design and prepare the different sessions of the course over the last few months, find the best way to link the arguments across the sessions, provide interesting group activities and materials for the practicals, etc. I have to thank all my colleagues who contributed to the promotion and realisation of this project, with a special mention for &lt;a href=&#34;https://iris.ucl.ac.uk/iris/browse/profile?upi=CSCLA53&#34;&gt;Caroline Clarke&lt;/a&gt;, who spent a lot of time and effort to organise the course and who personally contributed in giving one of the session of the course. Finally, I would also like to thank my colleague and health economist &lt;a href=&#34;https://www.ucl.ac.uk/comprehensive-clinical-trials-unit/meet-team/health-economics/junior-health-economist-ekaterina-kuznetsova&#34;&gt;Ekaterina&lt;/a&gt;, with whom I had the pleasure to share the presentation and practical of my session in the course.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/bQrVMr3CO3QaY/giphy.gif&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;I have to say that this was an extremely positive experience for me as it was the first time I was involved in this type of projects. Me and my colleagues worked hard to design and prepare the different sessions of the course over the last few months, find the best way to link the arguments across the sessions, provide interesting group activities and materials for the practicals, etc. I have to thank all my colleagues who contributed to the promotion and realisation of this project, with a special mention for &lt;a href=&#34;https://iris.ucl.ac.uk/iris/browse/profile?upi=CSCLA53&#34; target=&#34;_blank&#34;&gt;Caroline Clarke&lt;/a&gt;, who spent a lot of time and effort to organise the course and who personally contributed in giving one of the session of the course. Finally, I would also like to thank my colleague and health economist &lt;a href=&#34;https://www.ucl.ac.uk/comprehensive-clinical-trials-unit/meet-team/health-economics/junior-health-economist-ekaterina-kuznetsova&#34; target=&#34;_blank&#34;&gt;Ekaterina&lt;/a&gt;, with whom I had the pleasure to share the presentation and practical of my session in the course.&lt;/p&gt;
+
 &lt;p&gt;Perhaps the only true negative aspect of the course was the absence of a Bayesian perspective, especially related to the interpretation of the results and the statistical methods that can be used to perform the analysis. Given the generally low familiarity of the people attending the course with statistics, I believe it was reasonable not to further confuse them with another new element into the picture. However, I truly hope that people will become more and more familiar with the importance of using tailored statistical methods in economic evaluations to avoid biased results, and from that point to justify a Bayesian approach, well, at least for me, the step is straightforward!.&lt;/p&gt;
 </description>
     </item>
