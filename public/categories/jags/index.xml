@@ -6,10 +6,1030 @@
     <description>Recent content in JAGS on Andrea Gabrio</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 08 Feb 2020 21:13:14 -0500</lastBuildDate>
+    <lastBuildDate>Sun, 09 Feb 2020 21:13:14 -0500</lastBuildDate>
     
 	    <atom:link href="/categories/jags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Nested Anova - JAGS</title>
+      <link>/jags/nested-anova-jags/netsed-anova-jags/</link>
+      <pubDate>Sun, 09 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/jags/nested-anova-jags/netsed-anova-jags/</guid>
+      <description>
+&lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;p&gt;This tutorial will focus on the use of Bayesian estimation to fit simple linear regression models. &lt;code&gt;BUGS&lt;/code&gt; (Bayesian inference Using &lt;em&gt;Gibbs Sampling&lt;/em&gt;) is an algorithm and supporting language (resembling &lt;code&gt;R&lt;/code&gt;) dedicated to performing the Gibbs sampling implementation of &lt;em&gt;Markov Chain Monte Carlo&lt;/em&gt; (MCMC) method. Dialects of the &lt;code&gt;BUGS&lt;/code&gt; language are implemented within three main projects:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;OpenBUGS&lt;/strong&gt; - written in component pascal.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;JAGS&lt;/strong&gt; - (Just Another Gibbs Sampler) - written in &lt;code&gt;C++&lt;/code&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;STAN&lt;/strong&gt; - a dedicated Bayesian modelling framework written in &lt;code&gt;C++&lt;/code&gt; and implementing &lt;em&gt;Hamiltonian&lt;/em&gt; MCMC samplers.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Whilst the above programs can be used stand-alone, they do offer the rich data pre-processing and graphical capabilities of &lt;code&gt;R&lt;/code&gt;, and thus, they are best accessed from within &lt;code&gt;R&lt;/code&gt; itself. As such there are multiple packages devoted to interfacing with the various software implementations:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;R2OpenBUGS&lt;/em&gt; - interfaces with &lt;code&gt;OpenBUGS&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;R2jags&lt;/em&gt; - interfaces with &lt;code&gt;JAGS&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;rstan&lt;/em&gt; - interfaces with &lt;code&gt;STAN&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This tutorial will demonstrate how to fit models in &lt;code&gt;JAGS&lt;/code&gt; (&lt;span class=&#34;citation&#34;&gt;Plummer (2004)&lt;/span&gt;) using the package &lt;code&gt;R2jags&lt;/code&gt; (&lt;span class=&#34;citation&#34;&gt;Su et al. (2015)&lt;/span&gt;) as interface, which also requires to load some other packages.&lt;/p&gt;
+&lt;div id=&#34;overview&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Overview&lt;/h1&gt;
+&lt;div id=&#34;introduction&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;When single sampling units are selected amongst highly heterogeneous conditions, it is unlikely that these single units will adequately represent the populations and repeated sampling is likely to yield very different outcomes. For example, if we were investigating the impacts of fuel reduction burning across a highly heterogeneous landscape, our ability to replicate adequately might be limited by the number of burn sites available.&lt;/p&gt;
+&lt;p&gt;Alternatively, sub-replicates within each of the sampling units (e.g. sites) can be collected (and averaged) so as to provided better representatives for each of the units and ultimately reduce the unexplained variability of the test of treatments. In essence, the sub-replicates are the replicates of an additional nested factor whose levels are nested within the main treatment factor. A nested factor refers to a factor whose levels are unique within each level of the factor it is nested within and each level is only represented once. For example, the fuel reduction burn study design could consist of three burnt sites and three un-burnt (control) sites each containing four quadrats (replicates of site and sub-replicates of the burn treatment). Each site represents a unique level of a random factor (any given site cannot be both burnt and un-burnt) that is nested within the fire treatment (burned or not).&lt;/p&gt;
+&lt;p&gt;A nested design can be thought of as a hierarchical arrangement of factors (hence the alternative name hierarchical designs) whereby a treatment is progressively sub-replicated. As an additional example, imagine an experiment designed to comparing the leaf toughness of a number of tree species. Working down the hierarchy, five individual trees were randomly selected within (nested within) each species, three branches were randomly selected within each tree, two leaves were randomly selected within each branch and the force required to shear the leaf material in half (transversely) was measured in four random locations along the leaf. Clearly any given leaf can only be from a single branch, tree and species. Each level of sub-replication is introduced to further reduce the amount of unexplained variation and thereby increasing the power of the test for the main treatment effect. Additionally, it is possible to investigate which scale has the greatest (or least, etc) degree of variability - the level of the species, individual tree, branch, leaf, leaf region etc.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Nested factors are typically random factors, of which the levels are randomly selected to represent all possible levels (e.g. sites). When the main treatment effect (often referred to as Factor A) is a fixed factor, such designs are referred to as a &lt;em&gt;mixed model nested ANOVA&lt;/em&gt;, whereas when Factor A is random, the design is referred to as a &lt;em&gt;Model II nested ANOVA&lt;/em&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Fixed nested factors are also possible. For example, specific dates (corresponding to particular times during a season) could be nested within season. When all factors are fixed, the design is referred to as a &lt;em&gt;Model I mixed model&lt;/em&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Fully nested designs (the topic of this chapter) differ from other multi-factor designs in that all factors within (below) the main treatment factor are nested and thus interactions are un-replicated and cannot be tested. Indeed, interaction effects (interaction between Factor A and site) are assumed to be zero.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div id=&#34;linear-models-frequentist&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Linear models (frequentist)&lt;/h2&gt;
+&lt;p&gt;The linear models for two and three factor nested design are:&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ y_{ijk} = \mu + \alpha_i + \beta_{j(i)} + \epsilon_{ijk},\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ y_{ijkl} = \mu + \alpha_i + \beta_{j(i)} + gamma_{k(j(i))}  + \epsilon_{ijkl},\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; is the overall mean, &lt;span class=&#34;math inline&#34;&gt;\(\alpha\)&lt;/span&gt; is the effect of Factor A, &lt;span class=&#34;math inline&#34;&gt;\(\beta\)&lt;/span&gt; is the effect of Factor B, &lt;span class=&#34;math inline&#34;&gt;\(\gamma\)&lt;/span&gt; is the effect of Factor C and &lt;span class=&#34;math inline&#34;&gt;\(\epsilon\)&lt;/span&gt; is the random unexplained or residual component.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;linear-models-bayesian&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Linear models (Bayesian)&lt;/h2&gt;
+&lt;p&gt;So called “random effects” are modelled differently from “fixed effects” in that rather than estimate their individual effects, we instead estimate the variability due to these “random effects”. Since technically all variables in a Bayesian framework are random, some prefer to use the terms ‘fixed effects’ and ‘varying effects’. As random factors typically represent “random” selections of levels (such as a set of randomly selected sites), incorporated in order to account for the dependency structure (observations within sites are more likely to be correlated to one another - not strickly independent) to the data, we are not overly interested in the individual differences between levels of the ‘varying’ (random) factor. Instead (in addition to imposing a separate correlation structure within each nest), we want to know how much variability is attributed to this level of the design. The linear models for two and three factor nested design are:&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ y_{ijk} = \mu + \alpha_i + \beta_{j(i)} + \epsilon_{ijk}, \;\;\; \epsilon_{ijk} \sim N(0, \sigma^2), \;\;\; \beta_{j(i)} \sim N(0, \sigma^2_{B}) \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ y_{ijkl} = \mu + \alpha_i + \beta_{j(i)} + \gamma_{k(j(i))} + \epsilon_{ijkl}, \;\;\; \epsilon_{ijkl} \sim N(0, \sigma^2), \;\;\; \beta_{j(i)} \sim N(0, \sigma^2_{B}) \;\;\; \gamma_{k(j(i))} \sim N(0, \sigma^2_C) \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; is the overall mean, &lt;span class=&#34;math inline&#34;&gt;\(\alpha\)&lt;/span&gt; is the effect of Factor A, &lt;span class=&#34;math inline&#34;&gt;\(\beta\)&lt;/span&gt; is the variability of Factor B (nested within Factor A), &lt;span class=&#34;math inline&#34;&gt;\(\gamma\)&lt;/span&gt; is the variability of Factor C (nested within Factor B) and &lt;span class=&#34;math inline&#34;&gt;\(\epsilon\)&lt;/span&gt; is the random unexplained or residual component that is assumed to be normally distributed with a mean of zero and a constant amount of standard deviation (&lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt;). The subscripts are iterators. For example, the &lt;span class=&#34;math inline&#34;&gt;\(i\)&lt;/span&gt; represents the number of effects to be estimated for Factor A. Thus the first formula can be read as the &lt;span class=&#34;math inline&#34;&gt;\(k\)&lt;/span&gt;-th observation of &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; is drawn from a normal distribution (with a specific level of variability) and mean proposed to be determined by a base mean (&lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; - mean of the first treatment across all nests) plus the effect of the &lt;span class=&#34;math inline&#34;&gt;\(i\)&lt;/span&gt;-th treatment effect plus the variabilitythe model proposes that, given a base mean (&lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt;) and knowing the effect of the &lt;span class=&#34;math inline&#34;&gt;\(i\)&lt;/span&gt;-th treatment (factor A) and which of the &lt;span class=&#34;math inline&#34;&gt;\(j\)&lt;/span&gt;-th nests within the treatment the &lt;span class=&#34;math inline&#34;&gt;\(k\)&lt;/span&gt;-th observation from Block &lt;span class=&#34;math inline&#34;&gt;\(j\)&lt;/span&gt; (factor B) within treatment effect.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;null-hypotheses&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Null hypotheses&lt;/h2&gt;
+&lt;p&gt;Separate null hypotheses are associated with each of the factors, however, nested factors are typically only added to absorb some of the unexplained variability and thus, specific hypotheses tests associated with nested factors are of lesser biological importance. Hence, rather than estimate the effects of random effects, we instead estimate how much variability they contribute.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Factor A: the main treatment effect (fixed)&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;span class=&#34;math inline&#34;&gt;\(H_0(A): \mu_1=\mu_2=\ldots=\mu_i=\mu\)&lt;/span&gt; (the population group means are all equal). That is, that the mean of population &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt; is equal to that of population &lt;span class=&#34;math inline&#34;&gt;\(2\)&lt;/span&gt; and so on, and thus all population means are equal to one another - no effect of the factor on the response. If the effect of the &lt;span class=&#34;math inline&#34;&gt;\(i\)&lt;/span&gt;-th group is the difference between the &lt;span class=&#34;math inline&#34;&gt;\(i\)&lt;/span&gt;-th group mean and the mean of the first group (&lt;span class=&#34;math inline&#34;&gt;\(\alpha_i=\mu_i-\mu_1\)&lt;/span&gt;) then the &lt;span class=&#34;math inline&#34;&gt;\(H_0\)&lt;/span&gt; can alternatively be written as:&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;span class=&#34;math inline&#34;&gt;\(H_0(A) : \alpha_1=\alpha_2=\ldots=\alpha_i=0\)&lt;/span&gt; (the effect of each group equals zero). If one or more of the &lt;span class=&#34;math inline&#34;&gt;\(\alpha_i\)&lt;/span&gt; are different from zero (the response mean for this treatment differs from the overall response mean), there is evidence that the null hypothesis is not true indicating that the factor does affect the response variable.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Factor A: the main treatment effect (random)&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;span class=&#34;math inline&#34;&gt;\(H_0(A) : \sigma^2_{\alpha}=0\)&lt;/span&gt; (population variance equals zero). There is no added variance due to all possible levels of A.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Factor B: the nested effect (random)&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;span class=&#34;math inline&#34;&gt;\(H_0(B) : \sigma^2_{\beta}=0\)&lt;/span&gt; (population variance equals zero). There is no added variance due to all possible levels of B within the (set or all possible) levels of A.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Factor B: the nested effect (fixed)&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;span class=&#34;math inline&#34;&gt;\(H_0(B): \mu_{1(1)}=\mu_{2(1)}=\ldots=\mu_{j(i)}=\mu\)&lt;/span&gt; (the population group means of B (within A) are all equal).&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;span class=&#34;math inline&#34;&gt;\(H_0(B): \beta_{1(1)}=\beta_{2(1)}=\ldots=\beta_{j(i)}=0\)&lt;/span&gt; (the effect of each chosen B group equals zero).&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div id=&#34;analysis-of-variance&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Analysis of variance&lt;/h2&gt;
+&lt;p&gt;Analysis of variance sequentially partitions the total variability in the response variable into components explained by each of the factors (starting with the factors lowest down in the hierarchy - the most deeply nested) and the components unexplained by each factor. Explained variability is calculated by subtracting the amount unexplained by the factor from the amount unexplained by a reduced model that does not contain the factor. When the null hypothesis for a factor is true (no effect or added variability), the ratio of explained and unexplained components for that factor (F-ratio) should follow a theoretical F-distribution with an expected value less than 1. The appropriate unexplained residuals and therefore the appropriate F-ratios for each factor differ according to the different null hypotheses associated with different combinations of fixed and random factors in a nested linear model (see Table below).&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; fact_anova_table
+      df        MS         F-ratio (B random)    Var comp (B random)        
+A     &amp;quot;a-1&amp;quot;     &amp;quot;MS A&amp;quot;     &amp;quot;(MS A)/(MS B&amp;#39;(A))&amp;quot;   &amp;quot;((MS A) - (MS B&amp;#39;(A)))/nb&amp;quot; 
+B&amp;#39;(A) &amp;quot;(b-1)a&amp;quot;  &amp;quot;MS B&amp;#39;(A)&amp;quot; &amp;quot;(MS B&amp;#39;(A))/(MS res)&amp;quot; &amp;quot;((MS B&amp;#39;(A)) - (MS res))/n&amp;quot;
+Res   &amp;quot;(n-1)ba&amp;quot; &amp;quot;MS res&amp;quot;   &amp;quot;&amp;quot;                    &amp;quot;&amp;quot;                         
+      F-ratio (B fixed)     Var comp (B fixed)         
+A     &amp;quot;(MS A)/(MS res)&amp;quot;     &amp;quot;((MS A) - (MS res))/nb&amp;quot;   
+B&amp;#39;(A) &amp;quot;(MS B&amp;#39;(A))/(MS res)&amp;quot; &amp;quot;((MS B&amp;#39;(A)) - (MS res))/n&amp;quot;
+Res   &amp;quot;&amp;quot;                    &amp;quot;&amp;quot;                         &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The corresponding &lt;code&gt;R&lt;/code&gt; syntax is given below.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; #A fixed/random, B random (balanced)
+&amp;gt; summary(aov(y~A+Error(B), data))
+&amp;gt; VarCorr(lme(y~A,random=1|B, data))
+&amp;gt; 
+&amp;gt; #A fixed/random, B random (unbalanced)
+&amp;gt; anova(lme(y~A,random=1|B, data), type=&amp;#39;marginal&amp;#39;)
+&amp;gt; 
+&amp;gt; #A fixed/random, B fixed(balanced)
+&amp;gt; summary(aov(y~A+B, data))
+&amp;gt; 
+&amp;gt; #A fixed/random, B fixed (unbalanced)
+&amp;gt; contrasts(data$B) &amp;lt;- contr.sum
+&amp;gt; Anova(aov(y~A/B, data), type=&amp;#39;III&amp;#39;)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;variance-components&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Variance components&lt;/h2&gt;
+&lt;p&gt;As previously alluded to, it can often be useful to determine the relative contribution (to explaining the unexplained variability) of each of the factors as this provides insights into the variability at each different scales. These contributions are known as &lt;strong&gt;Variance components&lt;/strong&gt; and are estimates of the added variances due to each of the factors. For consistency with leading texts on this topic, I have included estimated variance components for various balanced nested ANOVA designs in the above table. However, variance components based on a modified version of the maximum likelihood iterative model fitting procedure (&lt;em&gt;REML&lt;/em&gt;) is generally recommended as this accommodates both balanced and unbalanced designs. While there are no numerical differences in the calculations of variance components for fixed and random factors, fixed factors are interpreted very differently and arguably have little clinical meaning (other to infer relative contribution). For fixed factors, variance components estimate the variance between the means of the specific populations that are represented by the selected levels of the factor and therefore represent somewhat arbitrary and artificial populations. For random factors, variance components estimate the variance between means of all possible populations that could have been selected and thus represents the true population variance.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;assumptions&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Assumptions&lt;/h2&gt;
+&lt;p&gt;An F-distribution represents the relative frequencies of all the possible F-ratio’s when a given null hypothesis is true and certain assumptions about the residuals (denominator in the F-ratio calculation) hold. Consequently, it is also important that diagnostics associated with a particular hypothesis test reflect the denominator for the appropriate F-ratio. For example, when testing the null hypothesis that there is no effect of Factor A (&lt;span class=&#34;math inline&#34;&gt;\(H_0(A):\alpha_i=0\)&lt;/span&gt;) in a mixed nested ANOVA, the means of each level of Factor B are used as the replicates of Factor A. As with single factor anova, hypothesis testing for nested ANOVA assumes the residuals are:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;normally distributed. Factors higher up in the hierarchy of a nested model are based on means (or means of means) of lower factors and thus the &lt;em&gt;Central Limit Theory&lt;/em&gt; would predict that normality will usually be satisfied for the higher level factors. Nevertheless, boxplots using the appropriate scale of replication should be used to explore normality. Scale transformations are often useful.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;equally varied. Boxplots and plots of means against variance (using the appropriate scale of replication) should be used to explore the spread of values. Residual plots should reveal no patterns. Scale transformations are often useful.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;independent of one another - this requires special consideration so as to ensure that the scale at which sub-replicates are measured is still great enough to enable observations to be independent.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div id=&#34;unbalanced-nested-designs&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Unbalanced nested designs&lt;/h2&gt;
+&lt;p&gt;Designs that incorporate fixed and random factors (either nested or factorial), involve F-ratio calculations in which the denominators are themselves random factors other than the overall residuals. Many statisticians argue that when such denominators are themselves not statistically significant (at the &lt;span class=&#34;math inline&#34;&gt;\(0.25\)&lt;/span&gt; level), there are substantial power benefits from pooling together successive non-significant denominator terms. Thus an F-ratio for a particular factor might be recalculated after pooling together its original denominator with its denominators denominator and so on. The conservative &lt;span class=&#34;math inline&#34;&gt;\(0.25\)&lt;/span&gt; is used instead of the usual 0.05 to reduce further the likelihood of Type II errors (falsely concluding an effect is non-significant - that might result from insufficient power).&lt;/p&gt;
+&lt;p&gt;For a simple completely balanced nested ANOVA, it is possible to pool together (calculate their mean) each of the sub-replicates within each nest (site) and then perform single factor ANOVA on those aggregates. Indeed, for a &lt;em&gt;balanced design&lt;/em&gt;, the estimates and hypothesis for Factor A will be identical to that produced via nested ANOVA. However, if there are an unequal number of sub-replicates within each nest, then the single factor ANOVA will be less powerful that a proper nested ANOVA. &lt;em&gt;Unbalanced designs&lt;/em&gt; are those designs in which sample (subsample) sizes for each level of one or more factors differ. These situations are relatively common in biological research, however such imbalance has some important implications for nested designs.&lt;/p&gt;
+&lt;p&gt;Firstly, hypothesis tests are more robust to the assumptions of normality and equal variance when the design is balanced. Secondly (and arguably, more importantly), the model contrasts are not orthogonal (independent) and the sums of squares component attributed to each of the model terms cannot be calculated by simple additive partitioning of the total sums of squares. In such situations, exact F-ratios cannot be constructed (at least in theory), variance components calculations are more complicated and significance tests cannot be computed. The denominator MS in an &lt;em&gt;F-ratio&lt;/em&gt; is determined by examining the expected value of the mean squares of each term in a model. Unequal sample sizes result in expected means squares for which there are no obvious logical comparators that enable the impact of an individual model term to be isolated. The severity of this issue depends on which scale of the sub-sampling hierarchy the unbalance(s) occurs as well whether the unbalance occurs in the replication of a fixed or random factor. For example, whilst unequal levels of the first nesting factor (e.g. unequal number of burn vs un-burnt sites) has no effect on F-ratio construction or hypothesis testing for the top level factor (irrespective of whether either of the factors are fixed or random), unequal sub-sampling (replication) at the level of a random (but not fixed) nesting factor will impact on the ability to construct F-ratios and variance components of all terms above it in the hierarchy. There are a number of alternative ways of dealing with unbalanced nested designs. All alternatives assume that the imbalance is not a direct result of the treatments themselves. Such outcomes are more appropriately analysed by modelling the counts of surviving observations via frequency analysis.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Split the analysis up into separate smaller simple ANOVA’s each using the means of the nesting factor to reflect the appropriate scale of replication. As the resulting sums of squares components are thereby based on an aggregated dataset the analyses then inherit the procedures and requirements of single ANOVA.&lt;/li&gt;
+&lt;li&gt;Adopt mixed-modelling techniques.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;We note that, in a Bayesian framework, issues of design balance essentially evaporate.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;linear-mixed-effects-models&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Linear mixed effects models&lt;/h2&gt;
+&lt;p&gt;Although the term “mixed-effects” can be used to refer to any design that incorporates both fixed and random predictors, its use is more commonly restricted to designs in which factors are nested or grouped within other factors. Typical examples include nested, longitudinal (measurements repeated over time) data, repeated measures and blocking designs. Furthermore, rather than basing parameter estimations on observed and expected mean squares or error strata (as outline above), mixed-effects models estimate parameters via &lt;strong&gt;maximum likelihood&lt;/strong&gt; (ML) or &lt;strong&gt;residual maximum likelihood&lt;/strong&gt; (REML). In so doing, mixed-effects models more appropriately handle estimation of parameters, effects and variance components of unbalanced designs (particularly for random effects). Resulting fitted (or expected) values of each level of a factor (for example, the expected population site means) are referred to as &lt;em&gt;Best Linear Unbiased Predictors&lt;/em&gt; (BLUP’s). As an acknowledgement that most estimated site means will be more extreme than the underlying true population means they estimate (based on the principle that smaller sample sizes result in greater chances of more extreme observations and that nested sub-replicates are also likely to be highly intercorrelated), BLUP’s are less spread from the overall mean than are simple site means. In addition, mixed-effects models naturally model the “within-block” correlation structure that complicates many longitudinal designs.&lt;/p&gt;
+&lt;p&gt;Whilst the basic concepts of mixed-effects models have been around for a long time, recent computing advances and adoptions have greatly boosted the popularity of these procedures. Linear mixed effects models are currently at the forefront of statistical development, and as such, are very much a work in progress - both in theory and in practice. Recent developments have seen a further shift away from the traditional practices associated with degrees of freedom, probability distribution and p-value calculations. The traditional approach to inference testing is to compare the fit of an alternative (full) model to a null (reduced) model (via an F-ratio). When assumptions of normality and homogeneity of variance apply, the degrees of freedom are easily computed and the F-ratio has an exact F-distribution to which it can be compared. However, this approach introduces two additional problematic assumptions when estimating fixed effects in a mixed effects model. Firstly, when estimating the effects of one factor, the parameter estimates associated with other factor(s) are assumed to be the true values of those parameters (not estimates). Whilst this assumption is reasonable when all factors are fixed, as random factors are selected such that they represent one possible set of levels drawn from an entire population of possible levels for the random factor, it is unlikely that the associated parameter estimates accurately reflect the true values. Consequently, there is not necessarily an appropriate F-distribution. Furthermore, determining the appropriate degrees of freedom (nominally, the number of independent observations on which estimates are based) for models that incorporate a hierarchical structure is only possible under very specific circumstances (such as completely balanced designs). Degrees of freedom is a somewhat arbitrary defined concept used primarily to select a theoretical probability distribution on which a statistic can be compared. Arguably, however, it is a concept that is overly simplistic for complex hierarchical designs. Most statistical applications continue to provide the “approximate” solutions (as did earlier versions within &lt;code&gt;R&lt;/code&gt;). However, &lt;code&gt;R&lt;/code&gt; linear mixed effects development leaders argue strenuously that given the above shortcomings, such approximations are variably inappropriate and are thus omitted.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Markov chain Monte Carlo&lt;/strong&gt; (MCMC) sampling methods provide a Bayesian-like alternative for inference testing. Markov chains use the mixed model parameter estimates to generate posterior probability distributions of each parameter from which Monte Carlo sampling methods draw a large set of parameter samples. These parameter samples can then be used to calculate &lt;em&gt;highest posterior density&lt;/em&gt; (HPD) intervals (also known as Bayesian credible intervals). Such intervals indicate the interval in which there is a specified probability (typically &lt;span class=&#34;math inline&#34;&gt;\(95\)&lt;/span&gt;%) that the true population parameter lies. Furthermore, whilst technically against the spirit of the Bayesian philosophy, it is also possible to generate P values on which to base inferences.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;data-generation&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Data generation&lt;/h1&gt;
+&lt;p&gt;Imagine we has designed an experiment in which we intend to measure a response (&lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;) to one of treatments (three levels; “a1”, “a2” and “a3”). The treatments occur at a spatial scale (over an area) that far exceeds the logistical scale of sampling units (it would take too long to sample at the scale at which the treatments were applied). The treatments occurred at the scale of hectares whereas it was only feasible to sample y using 1m quadrats. Given that the treatments were naturally occurring (such as soil type), it was not possible to have more than five sites of each treatment type, yet prior experience suggested that the sites in which you intended to sample were very uneven and patchy with respect to &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;. In an attempt to account for this inter-site variability (and thus maximize the power of the test for the effect of treatment, you decided to employ a nested design in which 10 quadrats were randomly located within each of the five replicate sites per three treatments. As this section is mainly about the generation of artificial data (and not specifically about what to do with the data), understanding the actual details are optional and can be safely skipped.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(plyr)
+&amp;gt; set.seed(123)
+&amp;gt; nTreat &amp;lt;- 3
+&amp;gt; nSites &amp;lt;- 15
+&amp;gt; nSitesPerTreat &amp;lt;- nSites/nTreat
+&amp;gt; nQuads &amp;lt;- 10
+&amp;gt; site.sigma &amp;lt;- 12
+&amp;gt; sigma &amp;lt;- 5
+&amp;gt; n &amp;lt;- nSites * nQuads
+&amp;gt; sites &amp;lt;- gl(n=nSites,k=nQuads, lab=paste0(&amp;#39;S&amp;#39;,1:nSites))
+&amp;gt; A &amp;lt;- gl(nTreat, nSitesPerTreat*nQuads, n, labels=c(&amp;#39;a1&amp;#39;,&amp;#39;a2&amp;#39;,&amp;#39;a3&amp;#39;))
+&amp;gt; a.means &amp;lt;- c(40,70,80)
+&amp;gt; ## the site means (treatment effects) are drawn from normal distributions
+&amp;gt; ## with means of 40, 70 and 80 and standard deviations of 12
+&amp;gt; A.effects &amp;lt;- rnorm(nSites, rep(a.means,each=nSitesPerTreat),site.sigma)
+&amp;gt; #A.effects &amp;lt;- a.means %*% t(model.matrix(~A, data.frame(A=gl(nTreat,nSitesPerTreat,nSites))))+rnorm(nSites,0,site.sigma)
+&amp;gt; Xmat &amp;lt;- model.matrix(~sites -1)
+&amp;gt; lin.pred &amp;lt;- Xmat %*% c(A.effects)
+&amp;gt; ## the quadrat observations (within sites) are drawn from
+&amp;gt; ## normal distributions with means according to the site means
+&amp;gt; ## and standard deviations of 5
+&amp;gt; y &amp;lt;- rnorm(n,lin.pred,sigma)
+&amp;gt; data.nest &amp;lt;- data.frame(y=y, A=A, Sites=sites,Quads=1:length(y))
+&amp;gt; head(data.nest)  #print out the first six rows of the data set
+         y  A Sites Quads
+1 42.20886 a1    S1     1
+2 35.76354 a1    S1     2
+3 23.44121 a1    S1     3
+4 36.78107 a1    S1     4
+5 30.91034 a1    S1     5
+6 27.93517 a1    S1     6
+&amp;gt; 
+&amp;gt; library(ggplot2)
+&amp;gt; ggplot(data.nest, aes(y=y, x=1)) + geom_boxplot() + facet_grid(.~Sites)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/nested-anova-jags/2020-02-01-nested-anova-jags_files/figure-html/generate_data-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;div id=&#34;exploratory-data-analysis&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Exploratory data analysis&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Normality and Homogeneity of variance&lt;/strong&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; #Effects of treatment
+&amp;gt; boxplot(y~A, ddply(data.nest, ~A+Sites,numcolwise(mean, na.rm=T)))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/nested-anova-jags/2020-02-01-nested-anova-jags_files/figure-html/exp1_data-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; 
+&amp;gt; #Site effects
+&amp;gt; boxplot(y~Sites, ddply(data.nest, ~A+Sites+Quads,numcolwise(mean, na.rm=T)))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/nested-anova-jags/2020-02-01-nested-anova-jags_files/figure-html/exp1_data-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; 
+&amp;gt; ## with ggplot2
+&amp;gt; ggplot(ddply(data.nest, ~A+Sites,numcolwise(mean, na.rm=T)), aes(y=y, x=A)) +
++   geom_boxplot()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/nested-anova-jags/2020-02-01-nested-anova-jags_files/figure-html/exp1_data-3.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Conclusions&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;there is no evidence that the response variable is consistently non-normal across all populations - each boxplot is approximately symmetrical.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;there is no evidence that variance (as estimated by the height of the boxplots) differs between the five populations. More importantly, there is no evidence of a relationship between mean and variance - the height of boxplots does not increase with increasing position along the y-axis. Hence it there is no evidence of non-homogeneity.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Obvious violations could be addressed either by:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;transform the scale of the response variables (to address normality, etc). Note transformations should be applied to the entire response variable (not just those populations that are skewed).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;model-fitting&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Model fitting&lt;/h1&gt;
+&lt;p&gt;For non-hierarchical linear models, uniform priors on variance (standard deviation) parameters seem to work reasonably well. &lt;span class=&#34;citation&#34;&gt;Gelman and others (2006)&lt;/span&gt; warns that the use of the inverse-gamma family of non-informative priors are very sensitive to ϵ particularly when variance is close to zero and this may lead to unintentionally informative priors. When the number of groups (treatments or varying/random effects) is large (more than &lt;span class=&#34;math inline&#34;&gt;\(5\)&lt;/span&gt;), &lt;span class=&#34;citation&#34;&gt;Gelman and others (2006)&lt;/span&gt; advocated the use of either uniform or half-cauchy priors. Yet when the number of groups is low, &lt;span class=&#34;citation&#34;&gt;Gelman and others (2006)&lt;/span&gt; indicates that uniform priors have a tendency to result in inflated variance estimates. Consequently, half-cauchy priors are generally recommended for variances.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Full parameterisation&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ y_{ijk} \sim N(\mu_{ij}, \sigma^2), \;\;\; \mu_{ij}=\alpha_0 + \alpha_i + \beta_{j(i)}, \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\beta_{ij)} \sim N(0, \sigma^2_B)\)&lt;/span&gt;, &lt;span class=&#34;math inline&#34;&gt;\(\alpha_0, \alpha_i \sim N(0, 1000000)\)&lt;/span&gt;, and &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2, \sigma^2_B \sim \text{Cauchy(0, 25)}\)&lt;/span&gt;. The &lt;em&gt;full parameterisation&lt;/em&gt;, shows the effects parameterisation in which there is an intercept (&lt;span class=&#34;math inline&#34;&gt;\(\alpha_0\)&lt;/span&gt;) and two treatment effects (&lt;span class=&#34;math inline&#34;&gt;\(\alpha_i\)&lt;/span&gt;, where &lt;span class=&#34;math inline&#34;&gt;\(i\)&lt;/span&gt; is &lt;span class=&#34;math inline&#34;&gt;\(1,2\)&lt;/span&gt;).&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Matrix parameterisation&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ y_{ijk} \sim N(\mu_{ij}, \sigma^2), \;\;\; \mu_{ij}=\boldsymbol \alpha \boldsymbol X + \beta_{j(i)}, \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\beta_{ij} \sim N(0, \sigma^2_B)\)&lt;/span&gt;, &lt;span class=&#34;math inline&#34;&gt;\(\boldsymbol \alpha \sim MVN(0, 1000000)\)&lt;/span&gt;, and &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2, \sigma^2_B \sim \text{Cauchy(0, 25)}\)&lt;/span&gt;. The full parameterisation, shows the effects parameterisation in which there is an intercept (&lt;span class=&#34;math inline&#34;&gt;\(\alpha_0\)&lt;/span&gt;) and two treatment effects (&lt;span class=&#34;math inline&#34;&gt;\(\alpha_i\)&lt;/span&gt;, where &lt;span class=&#34;math inline&#34;&gt;\(i\)&lt;/span&gt; is &lt;span class=&#34;math inline&#34;&gt;\(1,2\)&lt;/span&gt;). The &lt;em&gt;matrix parameterisation&lt;/em&gt; is a compressed notation, In this parameterisation, there are three alpha parameters (one representing the mean of treatment a1, and the other two representing the treatment effects (differences between a2 and a1 and a3 and a1). In generating priors for each of these three alpha parameters, we could loop through each and define a non-informative normal prior to each (as in the Full parameterisation version). However, it turns out that it is more efficient (in terms of mixing and thus the number of necessary iterations) to define the priors from a multivariate normal distribution. This has as many means as there are parameters to estimate (&lt;span class=&#34;math inline&#34;&gt;\(3\)&lt;/span&gt;) and a &lt;span class=&#34;math inline&#34;&gt;\(3\times3\)&lt;/span&gt; matrix of zeros and &lt;span class=&#34;math inline&#34;&gt;\(100\)&lt;/span&gt; in the diagonals.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \boldsymbol \mu =
+  \begin{bmatrix} 0  \\ 0  \\ 0 \end{bmatrix}, \;\;\; \sigma^2 \sim   
+  \begin{bmatrix}
+   1000000 &amp;amp; 0 &amp;amp; 0 \\
+   0 &amp;amp; 1000000 &amp;amp; 0 \\
+   0 &amp;amp; 0 &amp;amp; 1000000
+   \end{bmatrix}. \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Hierarchical parameterisation&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ y_{ijk} \sim N(\beta_{i(j)}, \sigma^2), \;\;\; \beta_{i(j)}\sim N(\mu_i, \sigma^2_B), \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\mu_i = \boldsymbol \alpha \boldsymbol X\)&lt;/span&gt;, &lt;span class=&#34;math inline&#34;&gt;\(\alpha_i \sim N(0, 1000000)\)&lt;/span&gt;, and &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2, \sigma^2_B \sim \text{Cauchy(0, 25)}\)&lt;/span&gt;. In the &lt;em&gt;heirarchical parameterisation&lt;/em&gt;, we are indicating two residual layers - one representing the variability in the observed data between individual observations (within sites) and the second representing the variability between site means (within the three treatments).&lt;/p&gt;
+&lt;div id=&#34;full-effect-parameterisation&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Full effect parameterisation&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; modelString=&amp;quot;
++ model {
++    #Likelihood
++    for (i in 1:n) {
++       y[i]~dnorm(mu[i],tau)
++       mu[i] &amp;lt;- alpha0 + alpha[A[i]] + beta[site[i]]
++    }
++    
++    #Priors
++    alpha0 ~ dnorm(0, 1.0E-6)
++    alpha[1] &amp;lt;- 0
++    for (i in 2:nA) {
++      alpha[i] ~ dnorm(0, 1.0E-6) #prior
++    }
++    for (i in 1:nSite) {
++      beta[i] ~ dnorm(0, tau.B) #prior
++    }
++    tau &amp;lt;- pow(sigma,-2)
++    sigma &amp;lt;-z/sqrt(chSq)
++    z ~ dnorm(0, .0016)I(0,)
++    chSq ~ dgamma(0.5, 0.5)
++ 
++    tau.B &amp;lt;- pow(sigma.B,-2)
++    sigma.B &amp;lt;-z/sqrt(chSq.B)
++    z.B ~ dnorm(0, .0016)I(0,)
++    chSq.B ~ dgamma(0.5, 0.5)
++  }
++ &amp;quot;
+&amp;gt; 
+&amp;gt; ## write the model to a text file
+&amp;gt; writeLines(modelString, con = &amp;quot;fullModel.txt&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Arrange the data as a list (as required by &lt;code&gt;JAGS&lt;/code&gt;). As input, &lt;code&gt;JAGS&lt;/code&gt; will need to be supplied with: the response variable, the predictor matrix, the number of predictors, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; data.nest.list &amp;lt;- with(data.nest,
++         list(y=y,
++                  site=as.numeric(Sites),
++          A=as.numeric(A),
++          n=nrow(data.nest),
++          nSite=length(levels(Sites)),
++                  nA = length(levels(A))
++          )
++ )&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Define the nodes (parameters and derivatives) to monitor and the chain parameters.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; params &amp;lt;- c(&amp;quot;alpha0&amp;quot;,&amp;quot;alpha&amp;quot;,&amp;quot;sigma&amp;quot;,&amp;quot;sigma.B&amp;quot;)
+&amp;gt; adaptSteps = 1000
+&amp;gt; burnInSteps = 3000
+&amp;gt; nChains = 2
+&amp;gt; numSavedSteps = 3000
+&amp;gt; thinSteps = 1
+&amp;gt; nIter = burnInSteps+ceiling((numSavedSteps * thinSteps)/nChains)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Start the &lt;code&gt;JAGS&lt;/code&gt; model (check the model, load data into the model, specify the number of chains and compile the model). Load the &lt;code&gt;R2jags&lt;/code&gt; package.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(R2jags)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now run the &lt;code&gt;JAGS&lt;/code&gt; code via the &lt;code&gt;R2jags&lt;/code&gt; interface.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; data.nest.r2jags.f &amp;lt;- jags(data = data.nest.list, inits = NULL, parameters.to.save = params,
++     model.file = &amp;quot;fullModel.txt&amp;quot;, n.chains = nChains, n.iter = nIter,
++     n.burnin = burnInSteps, n.thin = thinSteps)
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 150
+   Unobserved stochastic nodes: 22
+   Total graph size: 502
+
+Initializing model
+&amp;gt; 
+&amp;gt; print(data.nest.r2jags.f)
+Inference for Bugs model at &amp;quot;fullModel.txt&amp;quot;, fit using jags,
+ 2 chains, each with 4500 iterations (first 3000 discarded)
+ n.sims = 3000 iterations saved
+         mu.vect sd.vect    2.5%     25%     50%     75%   97.5%  Rhat n.eff
+alpha[1]   0.000   0.000   0.000   0.000   0.000   0.000   0.000 1.000     1
+alpha[2]  27.388   7.149  13.085  22.881  27.312  31.980  41.230 1.001  3000
+alpha[3]  40.839   7.083  26.936  36.251  40.800  45.412  55.107 1.002  3000
+alpha0    42.325   4.978  32.452  39.136  42.215  45.422  52.310 1.002  3000
+sigma      5.069   0.307   4.530   4.851   5.051   5.265   5.722 1.002  3000
+sigma.B   10.990   2.527   7.168   9.260  10.656  12.306  17.136 1.009   190
+deviance 909.635   5.937 899.898 905.400 908.952 913.145 923.175 1.001  3000
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 17.6 and DIC = 927.3
+DIC is an estimate of expected predictive error (lower deviance is better).&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;matrix-parameterisation&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Matrix parameterisation&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; modelString2=&amp;quot;
++ model {
++    #Likelihood
++    for (i in 1:n) {
++       y[i]~dnorm(mu[i],tau)
++       mu[i] &amp;lt;- inprod(alpha[],X[i,]) + inprod(beta[], Z[i,])
++    } 
++    
++    #Priors
++    alpha ~ dmnorm(a0,A0)
++    for (i in 1:nZ) {
++      beta[i] ~ dnorm(0, tau.B) #prior
++    }
++    tau &amp;lt;- pow(sigma,-2)
++    sigma &amp;lt;-z/sqrt(chSq)
++    z ~ dnorm(0, .0016)I(0,)
++    chSq ~ dgamma(0.5, 0.5)
++ 
++    tau.B &amp;lt;- pow(sigma.B,-2)
++    sigma.B &amp;lt;-z/sqrt(chSq.B)
++    z.B ~ dnorm(0, .0016)I(0,)
++    chSq.B ~ dgamma(0.5, 0.5)
++ 
++ }
++ &amp;quot;
+&amp;gt; 
+&amp;gt; ## write the model to a text file
+&amp;gt; writeLines(modelString2, con = &amp;quot;matrixModel.txt&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Arrange the data as a list (as required by &lt;code&gt;JAGS&lt;/code&gt;). As input, &lt;code&gt;JAGS&lt;/code&gt; will need to be supplied with: the response variable, the predictor matrix, the number of predictors, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; A.Xmat &amp;lt;- model.matrix(~A,data.nest)
+&amp;gt; Zmat &amp;lt;- model.matrix(~-1+Sites, data.nest)
+&amp;gt; data.nest.list &amp;lt;- with(data.nest,
++         list(y=y,
++          X=A.Xmat,
++          n=nrow(data.nest),
++          Z=Zmat, nZ=ncol(Zmat),
++          a0=rep(0,3), A0=diag(3)
++          )
++ )&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Define the nodes (parameters and derivatives) to monitor and the chain parameters.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; params &amp;lt;- c(&amp;quot;alpha&amp;quot;,&amp;quot;sigma&amp;quot;,&amp;quot;sigma.B&amp;quot;,&amp;#39;beta&amp;#39;)
+&amp;gt; burnInSteps = 3000
+&amp;gt; nChains = 2
+&amp;gt; numSavedSteps = 3000
+&amp;gt; thinSteps = 1
+&amp;gt; nIter = burnInSteps+ceiling((numSavedSteps * thinSteps)/nChains)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now run the &lt;code&gt;JAGS&lt;/code&gt; code via the &lt;code&gt;R2jags&lt;/code&gt; interface.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; data.nest.r2jags.m &amp;lt;- jags(data = data.nest.list, inits = NULL, parameters.to.save = params,
++     model.file = &amp;quot;matrixModel.txt&amp;quot;, n.chains = nChains, n.iter = nIter,
++     n.burnin = burnInSteps, n.thin = thinSteps)
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 150
+   Unobserved stochastic nodes: 20
+   Total graph size: 3231
+
+Initializing model
+&amp;gt; 
+&amp;gt; print(data.nest.r2jags.m)
+Inference for Bugs model at &amp;quot;matrixModel.txt&amp;quot;, fit using jags,
+ 2 chains, each with 4500 iterations (first 3000 discarded)
+ n.sims = 3000 iterations saved
+         mu.vect sd.vect    2.5%     25%     50%     75%   97.5%  Rhat n.eff
+alpha[1]   0.201   1.016  -1.750  -0.474   0.215   0.872   2.161 1.001  3000
+alpha[2]   0.082   0.972  -1.835  -0.585   0.092   0.730   1.954 1.003  2000
+alpha[3]   0.077   1.005  -1.867  -0.608   0.075   0.771   2.055 1.001  3000
+beta[1]   31.532   1.871  27.942  30.237  31.536  32.794  35.248 1.001  3000
+beta[2]   38.069   1.911  34.289  36.788  38.125  39.343  41.817 1.001  3000
+beta[3]   59.346   1.872  55.692  58.089  59.346  60.579  63.088 1.001  3000
+beta[4]   40.644   1.936  36.885  39.378  40.659  41.960  44.321 1.002  1400
+beta[5]   40.506   1.855  36.802  39.248  40.492  41.750  44.199 1.001  3000
+beta[6]   90.495   2.131  86.451  89.013  90.489  91.970  94.602 1.001  3000
+beta[7]   75.252   2.114  71.007  73.850  75.238  76.681  79.322 1.002  1200
+beta[8]   57.061   2.180  52.888  55.574  57.032  58.568  61.289 1.001  2400
+beta[9]   61.336   2.171  57.214  59.855  61.372  62.822  65.415 1.001  3000
+beta[10]  62.816   2.159  58.580  61.353  62.774  64.268  67.144 1.001  3000
+beta[11]  93.379   2.134  89.192  91.945  93.374  94.750  97.533 1.001  3000
+beta[12]  83.011   2.161  78.822  81.508  83.024  84.486  87.245 1.001  3000
+beta[13]  82.765   2.202  78.398  81.292  82.774  84.252  87.054 1.001  3000
+beta[14]  81.140   2.165  76.775  79.675  81.185  82.598  85.236 1.001  3000
+beta[15]  74.041   2.119  70.008  72.616  74.027  75.493  78.245 1.001  3000
+sigma      5.058   0.306   4.499   4.844   5.049   5.255   5.710 1.002  1200
+sigma.B   68.791  13.133  48.825  59.338  66.869  75.995  98.963 1.002  3000
+deviance 909.431   6.235 899.560 905.043 908.621 913.008 923.865 1.003   810
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 19.4 and DIC = 928.8
+DIC is an estimate of expected predictive error (lower deviance is better).&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;hierarchical-parameterisation&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Hierarchical parameterisation&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; modelString3=&amp;quot;
++ model {
++    #Likelihood (esimating site means (gamma.site)
++    for (i in 1:n) {
++       y[i]~dnorm(quad.means[i],tau)
++       quad.means[i] &amp;lt;- gamma.site[site[i]]
++    }
++    for (i in 1:s) {
++       gamma.site[i] ~ dnorm(site.means[i], tau.site)
++       site.means[i] &amp;lt;- inprod(beta[],A.Xmat[i,])
++    }
++    #Priors
++    for (i in 1:a) {
++      beta[i] ~ dnorm(0, 1.0E-6) #prior
++    }
++    tau &amp;lt;- pow(sigma,-2)
++    sigma &amp;lt;-z/sqrt(chSq)
++    z ~ dnorm(0, .0016)I(0,)
++    chSq ~ dgamma(0.5, 0.5)
++ 
++    tau.B &amp;lt;- pow(sigma.B,-2)
++    sigma.B &amp;lt;-z/sqrt(chSq.B)
++    z.B ~ dnorm(0, .0016)I(0,)
++    chSq.B ~ dgamma(0.5, 0.5)
++ 
++    tau.site &amp;lt;- pow(sigma.site,-2)
++    sigma.site &amp;lt;-z/sqrt(chSq.site)
++    z.site ~ dnorm(0, .0016)I(0,)
++    chSq.site ~ dgamma(0.5, 0.5)
++  }
++ &amp;quot;
+&amp;gt; 
+&amp;gt; ## write the model to a text file
+&amp;gt; writeLines(modelString3, con = &amp;quot;hierarchicalModel.txt&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Arrange the data as a list (as required by &lt;code&gt;JAGS&lt;/code&gt;). As input, &lt;code&gt;JAGS&lt;/code&gt; will need to be supplied with: the response variable, the predictor matrix, the number of predictors, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; A.Xmat &amp;lt;- model.matrix(~A,ddply(data.nest,~Sites,catcolwise(unique)))
+&amp;gt; data.nest.list &amp;lt;- with(data.nest,
++         list(y=y,
++                  site=Sites,
++          A.Xmat= A.Xmat,
++          n=nrow(data.nest),
++          s=length(levels(Sites)),
++                  a = ncol(A.Xmat)
++          )
++ )&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Define the nodes (parameters and derivatives) to monitor and the chain parameters.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; params &amp;lt;- c(&amp;quot;beta&amp;quot;,&amp;quot;sigma&amp;quot;,&amp;quot;sigma.site&amp;quot;)
+&amp;gt; burnInSteps = 3000
+&amp;gt; nChains = 2
+&amp;gt; numSavedSteps = 3000
+&amp;gt; thinSteps = 1
+&amp;gt; nIter = burnInSteps+ceiling((numSavedSteps * thinSteps)/nChains)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now run the &lt;code&gt;JAGS&lt;/code&gt; code via the &lt;code&gt;R2jags&lt;/code&gt; interface.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; data.nest.r2jags.h &amp;lt;- jags(data = data.nest.list, inits = NULL, parameters.to.save = params,
++     model.file = &amp;quot;hierarchicalModel.txt&amp;quot;, n.chains = nChains, n.iter = nIter,
++     n.burnin = burnInSteps, n.thin = thinSteps)
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 150
+   Unobserved stochastic nodes: 24
+   Total graph size: 406
+
+Initializing model
+&amp;gt; 
+&amp;gt; print(data.nest.r2jags.h)
+Inference for Bugs model at &amp;quot;hierarchicalModel.txt&amp;quot;, fit using jags,
+ 2 chains, each with 4500 iterations (first 3000 discarded)
+ n.sims = 3000 iterations saved
+           mu.vect sd.vect    2.5%     25%     50%     75%   97.5%  Rhat n.eff
+beta[1]     42.139   4.991  32.186  38.913  42.226  45.346  51.751 1.001  3000
+beta[2]     27.611   6.859  13.692  23.437  27.617  31.993  41.118 1.001  3000
+beta[3]     41.048   7.032  26.813  36.805  41.067  45.316  55.566 1.002  1200
+sigma        5.058   0.315   4.483   4.841   5.036   5.257   5.763 1.001  3000
+sigma.site  10.889   2.386   7.235   9.269  10.578  12.125  16.695 1.005  3000
+deviance   909.557   6.168 899.915 905.154 908.708 913.153 923.686 1.001  1900
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 19.0 and DIC = 928.6
+DIC is an estimate of expected predictive error (lower deviance is better).&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If you want to include finite-population standard deviations in the model you can use the following code.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; modelString4=&amp;quot;
++ model {
++    #Likelihood (esimating site means (gamma.site)
++    for (i in 1:n) {
++       y[i]~dnorm(quad.means[i],tau)
++       quad.means[i] &amp;lt;- gamma.site[site[i]]
++       y.err[i]&amp;lt;- quad.means[i]-y[i]
++    }
++    for (i in 1:s) {
++       gamma.site[i] ~ dnorm(site.means[i], tau.site)
++       site.means[i] &amp;lt;- inprod(beta[],A.Xmat[i,])
++       site.err[i] &amp;lt;- site.means[i] - gamma.site[i]
++    }
++    #Priors
++    for (i in 1:a) {
++      beta[i] ~ dnorm(0, 1.0E-6) #prior
++    }
++    tau &amp;lt;- pow(sigma,-2)
++    sigma &amp;lt;-z/sqrt(chSq)
++    z ~ dnorm(0, .0016)I(0,)
++    chSq ~ dgamma(0.5, 0.5)
++ 
++    tau.site &amp;lt;- pow(sigma.site,-2)
++    sigma.site &amp;lt;-z/sqrt(chSq.site)
++    z.site ~ dnorm(0, .0016)I(0,)
++    chSq.site ~ dgamma(0.5, 0.5)
++    
++    sd.y &amp;lt;- sd(y.err)
++    sd.site &amp;lt;- sd(site.err)
++    sd.A &amp;lt;- sd(beta)
++  }
++ &amp;quot;
+&amp;gt; 
+&amp;gt; ## write the model to a text file
+&amp;gt; writeLines(modelString4, con = &amp;quot;SDModel.txt&amp;quot;)
+&amp;gt; 
+&amp;gt; #data list
+&amp;gt; A.Xmat &amp;lt;- model.matrix(~A,ddply(data.nest,~Sites,catcolwise(unique)))
+&amp;gt; data.nest.list &amp;lt;- with(data.nest,
++         list(y=y,
++                  site=Sites,
++          A.Xmat= A.Xmat,
++          n=nrow(data.nest),
++          s=length(levels(Sites)),
++                  a = ncol(A.Xmat)
++          )
++ )
+&amp;gt; 
+&amp;gt; #parameters and chain details
+&amp;gt; params &amp;lt;- c(&amp;quot;beta&amp;quot;,&amp;quot;sigma&amp;quot;,&amp;quot;sd.y&amp;quot;,&amp;#39;sd.site&amp;#39;,&amp;#39;sd.A&amp;#39;,&amp;#39;sigma.site&amp;#39;)
+&amp;gt; adaptSteps = 1000
+&amp;gt; burnInSteps = 3000
+&amp;gt; nChains = 2
+&amp;gt; numSavedSteps = 3000
+&amp;gt; thinSteps = 1
+&amp;gt; nIter = burnInSteps+ceiling((numSavedSteps * thinSteps)/nChains)
+&amp;gt; 
+&amp;gt; data.nest.r2jags.SD &amp;lt;- jags(data = data.nest.list, inits = NULL, parameters.to.save = params,
++     model.file = &amp;quot;SDModel.txt&amp;quot;, n.chains = nChains, n.iter = nIter,
++     n.burnin = burnInSteps, n.thin = thinSteps)
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 150
+   Unobserved stochastic nodes: 22
+   Total graph size: 571
+
+Initializing model
+&amp;gt; 
+&amp;gt; print(data.nest.r2jags.SD)
+Inference for Bugs model at &amp;quot;SDModel.txt&amp;quot;, fit using jags,
+ 2 chains, each with 4500 iterations (first 3000 discarded)
+ n.sims = 3000 iterations saved
+           mu.vect sd.vect    2.5%     25%     50%     75%   97.5%  Rhat n.eff
+beta[1]     42.336   5.027  32.564  39.187  42.338  45.373  52.570 1.004   420
+beta[2]     27.417   7.290  12.457  22.904  27.308  31.955  42.039 1.001  2100
+beta[3]     40.862   7.164  26.163  36.386  40.920  45.444  55.173 1.007   770
+sd.A        10.042   4.276   2.657   7.162   9.646  12.369  19.900 1.001  2200
+sd.site     10.592   1.057   9.214   9.909  10.354  11.029  13.276 1.010   280
+sd.y         4.999   0.095   4.852   4.929   4.987   5.058   5.219 1.003   770
+sigma        5.047   0.309   4.489   4.830   5.029   5.257   5.705 1.005   310
+sigma.site  11.003   2.465   7.419   9.295  10.610  12.282  16.704 1.004   480
+deviance   909.411   6.011 899.576 904.938 908.750 913.034 922.925 1.003   630
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 18.0 and DIC = 927.5
+DIC is an estimate of expected predictive error (lower deviance is better).&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Calculate &lt;span class=&#34;math inline&#34;&gt;\(R^2\)&lt;/span&gt; from the posterior of the model.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; data.nest.mcmc.listSD &amp;lt;- as.mcmc(data.nest.r2jags.SD)
+&amp;gt; 
+&amp;gt; Xmat &amp;lt;- model.matrix(~A, data.nest)
+&amp;gt; coefs &amp;lt;- data.nest.r2jags.SD$BUGSoutput$sims.list[[&amp;#39;beta&amp;#39;]]
+&amp;gt; fitted &amp;lt;- coefs %*% t(Xmat)
+&amp;gt; X.var &amp;lt;- aaply(fitted,1,function(x){var(x)})
+&amp;gt; Z.var &amp;lt;- data.nest.r2jags.SD$BUGSoutput$sims.list[[&amp;#39;sd.site&amp;#39;]]^2
+&amp;gt; R.var &amp;lt;- data.nest.r2jags.SD$BUGSoutput$sims.list[[&amp;#39;sd.y&amp;#39;]]^2
+&amp;gt; R2.marginal &amp;lt;- (X.var)/(X.var+Z.var+R.var)
+&amp;gt; R2.marginal &amp;lt;- data.frame(Mean=mean(R2.marginal), Median=median(R2.marginal), HPDinterval(as.mcmc(R2.marginal)))
+&amp;gt; R2.conditional &amp;lt;- (X.var+Z.var)/(X.var+Z.var+R.var)
+&amp;gt; R2.conditional &amp;lt;- data.frame(Mean=mean(R2.conditional),
++    Median=median(R2.conditional), HPDinterval(as.mcmc(R2.conditional)))
+&amp;gt; R2.site &amp;lt;- (Z.var)/(X.var+Z.var+R.var)
+&amp;gt; R2.site &amp;lt;- data.frame(Mean=mean(R2.site), Median=median(R2.site), HPDinterval(as.mcmc(R2.site)))
+&amp;gt; R2.res&amp;lt;-(R.var)/(X.var+Z.var+R.var)
+&amp;gt; R2.res &amp;lt;- data.frame(Mean=mean(R2.res), Median=median(R2.res), HPDinterval(as.mcmc(R2.res)))
+&amp;gt; 
+&amp;gt; rbind(R2.site=R2.site, R2.marginal=R2.marginal, R2.res=R2.res, R2.conditional=R2.conditional)
+                     Mean    Median      lower      upper
+R2.site        0.26437322 0.2428822 0.16881028 0.41958555
+R2.marginal    0.67674004 0.6992418 0.49930501 0.78437310
+R2.res         0.05888674 0.0584191 0.03459529 0.08514432
+R2.conditional 0.94111326 0.9415809 0.91485568 0.96540471&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;graphical-summaries&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Graphical summaries&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; newdata &amp;lt;- with(data.nest, data.frame(A=levels(A)))
+&amp;gt; Xmat &amp;lt;- model.matrix(~A, newdata)
+&amp;gt; coefs &amp;lt;- data.nest.r2jags.m$BUGSoutput$sims.list[[&amp;#39;alpha&amp;#39;]]
+&amp;gt; fit &amp;lt;- coefs %*% t(Xmat)
+&amp;gt; newdata &amp;lt;- cbind(newdata,
++    adply(fit, 2, function(x) {
++           data.frame(Mean=mean(x), Median=median(x), HPDinterval(as.mcmc(x)),
++              HPDinterval(as.mcmc(x), p=0.68))
++    })
++ )
+&amp;gt; 
+&amp;gt; 
+&amp;gt; library(ggplot2)
+&amp;gt; library(gridExtra)
+&amp;gt; library(grid)
+&amp;gt; p1 &amp;lt;- ggplot(newdata, aes(y=Median, x=A)) +
++   geom_errorbar(aes(ymin=lower, ymax=upper), width=0.01, size=1) +
++   geom_errorbar(aes(ymin=lower.1, ymax=upper.1), width=0, size=2) +
++   geom_point(size=4, shape=21, fill=&amp;#39;white&amp;#39;)+
++   scale_y_continuous(&amp;#39;Y&amp;#39;)+
++   scale_x_discrete(&amp;#39;X&amp;#39;)+
++   theme_classic()+
++   theme(axis.title.y=element_text(vjust=2, size=rel(1.25)),
++         axis.title.x=element_text(vjust=-2, size=rel(1.25)),
++         plot.margin=unit(c(0.5,0.5,2,2), &amp;#39;lines&amp;#39;)
++   )
+&amp;gt; 
+&amp;gt; p1&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/nested-anova-jags/2020-02-01-nested-anova-jags_files/figure-html/summaries_graph-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;data-generation---second-example&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Data generation - second example&lt;/h1&gt;
+&lt;p&gt;Now imagine a similar experiment in which we intend to measure a response (&lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;) to one of treatments (three levels; “a1”, “a2” and “a3”). As with the previous design, we decided to establish a nested design in which there are sub-replicate (&lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt;m Quadrats) within each Site. In the current design, we have decided to further sub-replicate. Within each of the &lt;span class=&#34;math inline&#34;&gt;\(5\)&lt;/span&gt; Quadrats, we are going to randomly place &lt;span class=&#34;math inline&#34;&gt;\(2\times10\)&lt;/span&gt;cm pit traps. Now we have Sites nested within Treatments, Quadrats nested within Sites AND, Pits nested within Sites. The latter of these (Pits nested within Sites) are the observations (&lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;). As this section is mainly about the generation of artificial data (and not specifically about what to do with the data), understanding the actual details are optional and can be safely skipped.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; set.seed(123)
+&amp;gt; nTreat &amp;lt;- 3
+&amp;gt; nSites &amp;lt;- 15
+&amp;gt; nSitesPerTreat &amp;lt;- nSites/nTreat
+&amp;gt; nQuads &amp;lt;- 5
+&amp;gt; nPits &amp;lt;- 2
+&amp;gt; site.sigma &amp;lt;- 10 # sd within between sites within treatment
+&amp;gt; quad.sigma &amp;lt;- 10
+&amp;gt; sigma &amp;lt;- 7.5
+&amp;gt; n &amp;lt;- nSites * nQuads * nPits
+&amp;gt; sites &amp;lt;- gl(n=nSites,n/nSites,n, lab=paste(&amp;quot;site&amp;quot;,1:nSites))
+&amp;gt; A &amp;lt;- gl(nTreat, n/nTreat, n, labels=c(&amp;#39;a1&amp;#39;,&amp;#39;a2&amp;#39;,&amp;#39;a3&amp;#39;))
+&amp;gt; a.means &amp;lt;- c(40,70,80)
+&amp;gt; 
+&amp;gt; #A&amp;lt;-gl(nTreat,nSites/nTreat,nSites,labels=c(&amp;#39;a1&amp;#39;,&amp;#39;a2&amp;#39;,&amp;#39;a3&amp;#39;))
+&amp;gt; a&amp;lt;-gl(nTreat,1,nTreat,labels=c(&amp;#39;a1&amp;#39;,&amp;#39;a2&amp;#39;,&amp;#39;a3&amp;#39;))
+&amp;gt; a.X &amp;lt;- model.matrix(~a, expand.grid(a))
+&amp;gt; a.eff &amp;lt;- as.vector(solve(a.X,a.means))
+&amp;gt; site.means &amp;lt;- rnorm(nSites,a.X %*% a.eff,site.sigma)
+&amp;gt; 
+&amp;gt; A &amp;lt;- gl(nTreat,nSites/nTreat,nSites,labels=c(&amp;#39;a1&amp;#39;,&amp;#39;a2&amp;#39;,&amp;#39;a3&amp;#39;))
+&amp;gt; A.X &amp;lt;- model.matrix(~A, expand.grid(A))
+&amp;gt; #a.X &amp;lt;- model.matrix(~A, expand.grid(A=gl(nTreat,nSites/nTreat,nSites,labels=c(&amp;#39;a1&amp;#39;,&amp;#39;a2&amp;#39;,&amp;#39;a3&amp;#39;))))
+&amp;gt; site.means &amp;lt;- rnorm(nSites,A.X %*% a.eff,site.sigma)
+&amp;gt; 
+&amp;gt; SITES &amp;lt;- gl(nSites,(nSites*nQuads)/nSites,nSites*nQuads,labels=paste(&amp;#39;site&amp;#39;,1:nSites))
+&amp;gt; sites.X &amp;lt;- model.matrix(~SITES-1)
+&amp;gt; quad.means &amp;lt;- rnorm(nSites*nQuads,sites.X %*% site.means,quad.sigma)
+&amp;gt; 
+&amp;gt; #SITES &amp;lt;- gl(nSites,1,nSites,labels=paste(&amp;#39;site&amp;#39;,1:nSites))
+&amp;gt; #sites.X &amp;lt;- model.matrix(~SITES-1)
+&amp;gt; #quad.means &amp;lt;- rnorm(nSites*nQuads,sites.X %*% site.means,quad.sigma)
+&amp;gt; 
+&amp;gt; QUADS &amp;lt;- gl(nSites*nQuads,n/(nSites*nQuads),n,labels=paste(&amp;#39;quad&amp;#39;,1:(nSites*nQuads)))
+&amp;gt; quads.X &amp;lt;- model.matrix(~QUADS-1)
+&amp;gt; #quads.eff &amp;lt;- as.vector(solve(quads.X,quad.means))
+&amp;gt; #pit.means &amp;lt;- rnorm(n,quads.eff %*% t(quads.X),sigma)
+&amp;gt; pit.means &amp;lt;- rnorm(n,quads.X %*% quad.means,sigma)
+&amp;gt; 
+&amp;gt; PITS &amp;lt;- gl(nPits*nSites*nQuads,1, n, labels=paste(&amp;#39;pit&amp;#39;,1:(nPits*nSites*nQuads)))
+&amp;gt; data.nest1&amp;lt;-data.frame(Pits=PITS,Quads=QUADS,Sites=rep(SITES,each=2), A=rep(A,each=nQuads*nPits),y=pit.means)
+&amp;gt; #data.nest1&amp;lt;-data.nest1[order(data.nest1$A,data.nest1$Sites,data.nest1$Quads),]
+&amp;gt; head(data.nest1)  #print out the first six rows of the data set
+   Pits  Quads  Sites  A        y
+1 pit 1 quad 1 site 1 a1 61.79607
+2 pit 2 quad 1 site 1 a1 56.24699
+3 pit 3 quad 2 site 1 a1 42.40885
+4 pit 4 quad 2 site 1 a1 52.06672
+5 pit 5 quad 3 site 1 a1 73.71286
+6 pit 6 quad 3 site 1 a1 62.50529
+&amp;gt; 
+&amp;gt; ggplot(data.nest1, aes(y=y, x=1)) + geom_boxplot() + facet_grid(.~Quads)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/nested-anova-jags/2020-02-01-nested-anova-jags_files/figure-html/generate_data_ex2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;div id=&#34;exploratory-data-analysis-1&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Exploratory data analysis&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Normality and Homogeneity of variance&lt;/strong&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; #Effects of treatment
+&amp;gt; boxplot(y~A, ddply(data.nest1, ~A+Sites,numcolwise(mean, na.rm=T)))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/nested-anova-jags/2020-02-01-nested-anova-jags_files/figure-html/exp1_data_ex2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; 
+&amp;gt; #Site effects
+&amp;gt; boxplot(y~Sites, ddply(data.nest1, ~A+Sites+Quads,numcolwise(mean, na.rm=T)))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/nested-anova-jags/2020-02-01-nested-anova-jags_files/figure-html/exp1_data_ex2-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; 
+&amp;gt; #Quadrat effects
+&amp;gt; boxplot(y~Quads, ddply(data.nest1, ~A+Sites+Quads+Pits,numcolwise(mean, na.rm=T)))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/nested-anova-jags/2020-02-01-nested-anova-jags_files/figure-html/exp1_data_ex2-3.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Conclusions&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;there is no evidence that the response variable is consistently non-normal across all populations - each boxplot is approximately symmetrical.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;there is no evidence that variance (as estimated by the height of the boxplots) differs between the five populations. More importantly, there is no evidence of a relationship between mean and variance - the height of boxplots does not increase with increasing position along the &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt;-axis. Hence it there is no evidence of non-homogeneity.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;it is a little difficult to assess normality/homogeneity of variance of quadrats since there are only two pits per quadrat. Nevertheless, there is no suggestion that variance increases with increasing mean.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Obvious violations could be addressed either by:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;transform the scale of the response variables (to address normality, etc). Note transformations should be applied to the entire response variable (not just those populations that are skewed).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;model-fitting-1&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Model fitting&lt;/h1&gt;
+&lt;div id=&#34;frequentist-for-comparison&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Frequentist for comparison&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(nlme)
+&amp;gt; d.lme &amp;lt;- lme(y ~ A, random=~1|Sites/Quads,data=data.nest1)
+&amp;gt; summary(d.lme)
+Linear mixed-effects model fit by REML
+ Data: data.nest1 
+       AIC      BIC   logLik
+  1137.994 1155.937 -562.997
+
+Random effects:
+ Formula: ~1 | Sites
+        (Intercept)
+StdDev:    10.38248
+
+ Formula: ~1 | Quads %in% Sites
+        (Intercept) Residual
+StdDev:    8.441615 7.161178
+
+Fixed effects: y ~ A 
+               Value Std.Error DF  t-value p-value
+(Intercept) 41.38646   5.04334 75 8.206160  0.0000
+Aa2         21.36271   7.13236 12 2.995181  0.0112
+Aa3         39.14584   7.13236 12 5.488483  0.0001
+ Correlation: 
+    (Intr) Aa2   
+Aa2 -0.707       
+Aa3 -0.707  0.500
+
+Standardized Within-Group Residuals:
+        Min          Q1         Med          Q3         Max 
+-2.11852493 -0.54600763 -0.03428569  0.53382444  2.26256381 
+
+Number of Observations: 150
+Number of Groups: 
+           Sites Quads %in% Sites 
+              15               75 
+&amp;gt; 
+&amp;gt; anova(d.lme)
+            numDF denDF  F-value p-value
+(Intercept)     1    75 446.9152  &amp;lt;.0001
+A               2    12  15.1037   5e-04&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;full-effect-parameterisation-1&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Full effect parameterisation&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; modelString=&amp;quot;
++ model {
++    #Likelihood
++    for (i in 1:n) {
++       y[i]~dnorm(mu[i],tau)
++       mu[i] &amp;lt;- alpha0 + alpha[A[i]] + beta.site[site[i]] + beta.quad[quad[i]]
++    }
++    
++    #Priors
++    alpha0 ~ dnorm(0, 1.0E-6)
++    alpha[1] &amp;lt;- 0
++    for (i in 2:nA) {
++      alpha[i] ~ dnorm(0, 1.0E-6) #prior
++    }
++    for (i in 1:nSite) {
++      beta.site[i] ~ dnorm(0, tau.Bs) #prior
++    }
++    for (i in 1:nQuad) {
++      beta.quad[i] ~ dnorm(0, tau.Bq) #prior
++    }
++    tau &amp;lt;- pow(sigma,-2)
++    sigma &amp;lt;-z/sqrt(chSq)
++    z ~ dnorm(0, .0016)I(0,)
++    chSq ~ dgamma(0.5, 0.5)
++ 
++    tau.Bs &amp;lt;- pow(sigma.Bs,-2)
++    sigma.Bs &amp;lt;-z/sqrt(chSq.Bs)
++    z.Bs ~ dnorm(0, .0016)I(0,)
++    chSq.Bs ~ dgamma(0.5, 0.5)
++ 
++    tau.Bq &amp;lt;- pow(sigma.Bq,-2)
++    sigma.Bq &amp;lt;-z/sqrt(chSq.Bq)
++    z.Bq ~ dnorm(0, .0016)I(0,)
++    chSq.Bq ~ dgamma(0.5, 0.5)
++ 
++  }
++ &amp;quot;
+&amp;gt; 
+&amp;gt; ## write the model to a text file
+&amp;gt; writeLines(modelString, con = &amp;quot;fullModel2.txt&amp;quot;)
+&amp;gt; 
+&amp;gt; data.nest.list &amp;lt;- with(data.nest1,
++         list(y=y,
++                  site=as.numeric(Sites),
++          A=as.numeric(A),
++          n=nrow(data.nest1),
++          nSite=length(levels(Sites)),
++                  nA = length(levels(A)),
++          nQuad=length(levels(Quads)),
++                  quad = as.numeric(Quads)
++          )
++ )
+&amp;gt; 
+&amp;gt; params &amp;lt;- c(&amp;quot;alpha0&amp;quot;,&amp;quot;alpha&amp;quot;,&amp;quot;sigma&amp;quot;,&amp;quot;sigma.Bs&amp;quot;,&amp;quot;sigma.Bq&amp;quot;)
+&amp;gt; burnInSteps = 3000
+&amp;gt; nChains = 2
+&amp;gt; numSavedSteps = 3000
+&amp;gt; thinSteps = 1
+&amp;gt; nIter = burnInSteps+ceiling((numSavedSteps * thinSteps)/nChains)
+&amp;gt; 
+&amp;gt; data.nest.r2jags.f2 &amp;lt;- jags(data = data.nest.list, inits = NULL, parameters.to.save = params,
++     model.file = &amp;quot;fullModel2.txt&amp;quot;, n.chains = nChains, n.iter = nIter,
++     n.burnin = burnInSteps, n.thin = thinSteps)
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 150
+   Unobserved stochastic nodes: 99
+   Total graph size: 793
+
+Initializing model
+&amp;gt; 
+&amp;gt; print(data.nest.r2jags.f2)
+Inference for Bugs model at &amp;quot;fullModel2.txt&amp;quot;, fit using jags,
+ 2 chains, each with 4500 iterations (first 3000 discarded)
+ n.sims = 3000 iterations saved
+          mu.vect sd.vect    2.5%      25%      50%      75%    97.5%  Rhat
+alpha[1]    0.000   0.000   0.000    0.000    0.000    0.000    0.000 1.000
+alpha[2]   21.147   7.532   6.252   16.137   21.140   25.968   35.890 1.001
+alpha[3]   38.985   7.635  23.341   34.130   39.120   43.879   53.757 1.001
+alpha0     41.541   5.460  30.677   37.967   41.659   45.032   52.383 1.001
+sigma       7.294   0.604   6.238    6.870    7.264    7.664    8.580 1.003
+sigma.Bq    8.433   1.132   6.355    7.650    8.378    9.175   10.757 1.005
+sigma.Bs   10.779   2.673   6.704    8.951   10.409   12.219   17.127 1.017
+deviance 1020.495  17.724 988.898 1007.948 1019.500 1032.389 1056.708 1.005
+         n.eff
+alpha[1]     1
+alpha[2]  3000
+alpha[3]  3000
+alpha0    3000
+sigma      970
+sigma.Bq   420
+sigma.Bs   100
+deviance   510
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 156.8 and DIC = 1177.3
+DIC is an estimate of expected predictive error (lower deviance is better).&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;matrix-parameterisation-1&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Matrix parameterisation&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; modelString2=&amp;quot;
++ model {
++    #Likelihood
++    for (i in 1:n) {
++       y[i]~dnorm(mu[i],tau)
++       mu[i] &amp;lt;- inprod(alpha[], X[i,]) + inprod(beta.site[],Z.site[i,]) + inprod(beta.quad[],Z.quad[i,])
++       y.err[i] &amp;lt;- y[i]-mu[i]
++    }
++    
++    #Priors
++    for (i in 1:nX) {
++      alpha[i] ~ dnorm(0, 1.0E-6) #prior
++    }
++    for (i in 1:nSite) {
++      beta.site[i] ~ dnorm(0, tau.Bs) #prior
++    }
++    for (i in 1:nQuad) {
++      beta.quad[i] ~ dnorm(0, tau.Bq) #prior
++    }
++    tau &amp;lt;- pow(sigma,-2)
++    sigma &amp;lt;-z/sqrt(chSq)
++    z ~ dnorm(0, .0016)I(0,)
++    chSq ~ dgamma(0.5, 0.5)
++ 
++    tau.Bs &amp;lt;- pow(sigma.Bs,-2)
++    sigma.Bs &amp;lt;-z/sqrt(chSq.Bs)
++    z.Bs ~ dnorm(0, .0016)I(0,)
++    chSq.Bs ~ dgamma(0.5, 0.5)
++ 
++    tau.Bq &amp;lt;- pow(sigma.Bq,-2)
++    sigma.Bq &amp;lt;-z/sqrt(chSq.Bq)
++    z.Bq ~ dnorm(0, .0016)I(0,)
++    chSq.Bq ~ dgamma(0.5, 0.5)
++ 
++    sd.res &amp;lt;- sd(y.err[])
++    sd.site &amp;lt;- sd(beta.site[])
++    sd.quad &amp;lt;- sd(beta.quad[])   
++  }
++ &amp;quot;
+&amp;gt; 
+&amp;gt; ## write the model to a text file
+&amp;gt; writeLines(modelString2, con = &amp;quot;matrixModel2.txt&amp;quot;)
+&amp;gt; 
+&amp;gt; Xmat &amp;lt;- model.matrix(~A, data=data.nest1)
+&amp;gt; Zsite &amp;lt;- model.matrix(~-1+Sites, data=data.nest1)
+&amp;gt; Zquad &amp;lt;- model.matrix(~-1+Quads, data=data.nest1)
+&amp;gt; 
+&amp;gt; data.nest.list &amp;lt;- with(data.nest1,
++         list(y=y,
++          n=nrow(data.nest1),
++                  X=Xmat, nX=ncol(Xmat),
++          Z.site=Zsite, nSite=ncol(Zsite),
++                  Z.quad=Zquad, nQuad=ncol(Zquad)
++          )
++ )
+&amp;gt; 
+&amp;gt; params &amp;lt;- c(&amp;quot;alpha&amp;quot;,&amp;quot;sigma&amp;quot;,&amp;quot;sigma.Bs&amp;quot;,&amp;quot;sigma.Bq&amp;quot;,&amp;#39;sd.res&amp;#39;,&amp;#39;sd.site&amp;#39;,&amp;#39;sd.quad&amp;#39;)
+&amp;gt; burnInSteps = 3000
+&amp;gt; nChains = 2
+&amp;gt; numSavedSteps = 3000
+&amp;gt; thinSteps = 1
+&amp;gt; nIter = burnInSteps+ceiling((numSavedSteps * thinSteps)/nChains)
+&amp;gt; 
+&amp;gt; data.nest.r2jags.m2 &amp;lt;- jags(data = data.nest.list, inits = NULL, parameters.to.save = params,
++     model.file = &amp;quot;matrixModel2.txt&amp;quot;, n.chains = nChains, n.iter = nIter,
++     n.burnin = burnInSteps, n.thin = thinSteps)
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 150
+   Unobserved stochastic nodes: 99
+   Total graph size: 14993
+
+Initializing model
+&amp;gt; 
+&amp;gt; print(data.nest.r2jags.m2)
+Inference for Bugs model at &amp;quot;matrixModel2.txt&amp;quot;, fit using jags,
+ 2 chains, each with 4500 iterations (first 3000 discarded)
+ n.sims = 3000 iterations saved
+          mu.vect sd.vect    2.5%      25%      50%      75%    97.5%  Rhat
+alpha[1]   41.247   5.438  30.494   37.721   41.227   44.692   52.262 1.002
+alpha[2]   21.535   7.824   6.537   16.541   21.439   26.473   37.416 1.003
+alpha[3]   39.276   7.723  24.165   34.357   39.319   44.191   54.637 1.001
+sd.quad     8.427   0.828   6.866    7.889    8.420    8.956   10.131 1.001
+sd.res      7.221   0.420   6.500    6.924    7.186    7.486    8.137 1.010
+sd.site    10.263   1.703   7.202    9.180   10.187   11.240   13.917 1.002
+sigma       7.261   0.598   6.189    6.845    7.209    7.631    8.540 1.010
+sigma.Bq    8.514   1.064   6.557    7.776    8.454    9.189   10.801 1.001
+sigma.Bs   10.703   2.802   6.379    8.805   10.283   12.108   17.304 1.001
+deviance 1019.366  17.429 987.783 1007.166 1018.196 1030.618 1056.340 1.010
+         n.eff
+alpha[1]  3000
+alpha[2]  3000
+alpha[3]  2500
+sd.quad   3000
+sd.res     150
+sd.site   3000
+sigma      160
+sigma.Bq  3000
+sigma.Bs  3000
+deviance   160
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 151.0 and DIC = 1170.4
+DIC is an estimate of expected predictive error (lower deviance is better).&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If we use the &lt;code&gt;JAGS&lt;/code&gt; matrix parameterisation model from above, the &lt;code&gt;JAGS&lt;/code&gt; model is already complete (as we defined the sd components in that model already).&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; data.nest1.mcmc.listSD &amp;lt;- as.mcmc(data.nest.r2jags.m2)
+&amp;gt; 
+&amp;gt; Xmat &amp;lt;- model.matrix(~A, data.nest1)
+&amp;gt; coefs &amp;lt;- data.nest.r2jags.m2$BUGSoutput$sims.list[[&amp;#39;alpha&amp;#39;]]
+&amp;gt; fitted &amp;lt;- coefs %*% t(Xmat)
+&amp;gt; X.var &amp;lt;- aaply(fitted,1,function(x){var(x)})
+&amp;gt; Z.var &amp;lt;- data.nest.r2jags.m2$BUGSoutput$sims.list[[&amp;#39;sd.site&amp;#39;]]^2
+&amp;gt; R.var &amp;lt;- data.nest.r2jags.m2$BUGSoutput$sims.list[[&amp;#39;sd.res&amp;#39;]]^2
+&amp;gt; R2.marginal &amp;lt;- (X.var)/(X.var+Z.var+R.var)
+&amp;gt; R2.marginal &amp;lt;- data.frame(Mean=mean(R2.marginal), Median=median(R2.marginal), HPDinterval(as.mcmc(R2.marginal)))
+&amp;gt; R2.conditional &amp;lt;- (X.var+Z.var)/(X.var+Z.var+R.var)
+&amp;gt; R2.conditional &amp;lt;- data.frame(Mean=mean(R2.conditional),
++    Median=median(R2.conditional), HPDinterval(as.mcmc(R2.conditional)))
+&amp;gt; R2.site &amp;lt;- (Z.var)/(X.var+Z.var+R.var)
+&amp;gt; R2.site &amp;lt;- data.frame(Mean=mean(R2.site), Median=median(R2.site), HPDinterval(as.mcmc(R2.site)))
+&amp;gt; R2.res&amp;lt;-(R.var)/(X.var+Z.var+R.var)
+&amp;gt; R2.res &amp;lt;- data.frame(Mean=mean(R2.res), Median=median(R2.res), HPDinterval(as.mcmc(R2.res)))
+&amp;gt; 
+&amp;gt; rbind(R2.site=R2.site, R2.marginal=R2.marginal, R2.res=R2.res, R2.conditional=R2.conditional)
+                    Mean    Median     lower     upper
+R2.site        0.2537842 0.2373232 0.1145934 0.4450797
+R2.marginal    0.6199972 0.6408875 0.4077973 0.7873383
+R2.res         0.1262186 0.1233096 0.0646023 0.1907540
+R2.conditional 0.8737814 0.8766904 0.8092460 0.9353977&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
+&lt;h1&gt;References&lt;/h1&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references hanging-indent&#34;&gt;
+&lt;div id=&#34;ref-gelman2006prior&#34;&gt;
+&lt;p&gt;Gelman, Andrew, and others. 2006. “Prior Distributions for Variance Parameters in Hierarchical Models (Comment on Article by Browne and Draper).” &lt;em&gt;Bayesian Analysis&lt;/em&gt; 1 (3): 515–34.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-plummer2004jags&#34;&gt;
+&lt;p&gt;Plummer, Martyn. 2004. “JAGS: Just Another Gibbs Sampler.”&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-su2015package&#34;&gt;
+&lt;p&gt;Su, Yu-Sung, Masanao Yajima, Maintainer Yu-Sung Su, and JAGS SystemRequirements. 2015. “Package ‘R2jags’.” &lt;em&gt;R Package Version 0.03-08, URL Http://CRAN. R-Project. Org/Package= R2jags&lt;/em&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
     
     <item>
       <title>Temporal Autocorrelation - JAGS</title>

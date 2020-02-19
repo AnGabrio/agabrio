@@ -39,6 +39,42 @@
     </item>
     
     <item>
+      <title>anova</title>
+      <link>/tags/anova/</link>
+      <pubDate>Sun, 09 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/anova/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>JAGS</title>
+      <link>/tags/jags/</link>
+      <pubDate>Sun, 09 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/jags/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>mixed effects model</title>
+      <link>/tags/mixed-effects-model/</link>
+      <pubDate>Sun, 09 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/mixed-effects-model/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>tutorials</title>
+      <link>/tags/tutorials/</link>
+      <pubDate>Sun, 09 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/tutorials/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>autocorrelation</title>
       <link>/tags/autocorrelation/</link>
       <pubDate>Sat, 08 Feb 2020 21:13:14 -0500</pubDate>
@@ -48,29 +84,11 @@
     </item>
     
     <item>
-      <title>JAGS</title>
-      <link>/tags/jags/</link>
-      <pubDate>Sat, 08 Feb 2020 21:13:14 -0500</pubDate>
-      
-      <guid>/tags/jags/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>STAN</title>
       <link>/tags/stan/</link>
       <pubDate>Sat, 08 Feb 2020 21:13:14 -0500</pubDate>
       
       <guid>/tags/stan/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>tutorials</title>
-      <link>/tags/tutorials/</link>
-      <pubDate>Sat, 08 Feb 2020 21:13:14 -0500</pubDate>
-      
-      <guid>/tags/tutorials/</guid>
       <description></description>
     </item>
     
@@ -89,15 +107,6 @@
       <pubDate>Fri, 07 Feb 2020 21:13:14 -0500</pubDate>
       
       <guid>/tags/heteroskedasticity/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>anova</title>
-      <link>/tags/anova/</link>
-      <pubDate>Thu, 06 Feb 2020 21:13:14 -0500</pubDate>
-      
-      <guid>/tags/anova/</guid>
       <description></description>
     </item>
     

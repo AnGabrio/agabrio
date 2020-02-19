@@ -39,12 +39,67 @@
   
   <url>
     <loc>/authors/andrea-gabrio/</loc>
-    <lastmod>2020-02-08T21:13:14-05:00</lastmod>
+    <lastmod>2020-02-09T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/anova/</loc>
+    <lastmod>2020-02-09T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/anova/</loc>
+    <lastmod>2020-02-09T21:13:14-05:00</lastmod>
   </url>
   
   <url>
     <loc>/authors/</loc>
-    <lastmod>2020-02-08T21:13:14-05:00</lastmod>
+    <lastmod>2020-02-09T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/jags/</loc>
+    <lastmod>2020-02-09T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/</loc>
+    <lastmod>2020-02-09T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/jags/</loc>
+    <lastmod>2020-02-09T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/jags/</loc>
+    <lastmod>2020-02-09T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/mixed-effects-model/</loc>
+    <lastmod>2020-02-09T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/mixed-effects-model/</loc>
+    <lastmod>2020-02-09T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/jags/nested-anova-jags/netsed-anova-jags/</loc>
+    <lastmod>2020-02-09T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/r/</loc>
+    <lastmod>2020-02-09T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/tutorials/</loc>
+    <lastmod>2020-02-09T21:13:14-05:00</lastmod>
   </url>
   
   <url>
@@ -58,32 +113,7 @@
   </url>
   
   <url>
-    <loc>/jags/</loc>
-    <lastmod>2020-02-08T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/stan/</loc>
-    <lastmod>2020-02-08T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/</loc>
-    <lastmod>2020-02-08T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/jags/</loc>
-    <lastmod>2020-02-08T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/jags/</loc>
-    <lastmod>2020-02-08T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/r/</loc>
     <lastmod>2020-02-08T21:13:14-05:00</lastmod>
   </url>
   
@@ -108,11 +138,6 @@
   </url>
   
   <url>
-    <loc>/tags/tutorials/</loc>
-    <lastmod>2020-02-08T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/categories/heterogeneity/</loc>
     <lastmod>2020-02-07T21:13:14-05:00</lastmod>
   </url>
@@ -123,12 +148,12 @@
   </url>
   
   <url>
-    <loc>/tags/heteroskedasticity/</loc>
+    <loc>/categories/heteroskedasticity/</loc>
     <lastmod>2020-02-07T21:13:14-05:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/heteroskedasticity/</loc>
+    <loc>/tags/heteroskedasticity/</loc>
     <lastmod>2020-02-07T21:13:14-05:00</lastmod>
   </url>
   
@@ -140,16 +165,6 @@
   <url>
     <loc>/stan/heterogeneity-stan/heterogeneity-stan/</loc>
     <lastmod>2020-02-07T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/anova/</loc>
-    <lastmod>2020-02-06T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/anova/</loc>
-    <lastmod>2020-02-06T21:13:14-05:00</lastmod>
   </url>
   
   <url>
@@ -173,12 +188,12 @@
   </url>
   
   <url>
-    <loc>/categories/factorial-designs/</loc>
+    <loc>/tags/factorial-designs/</loc>
     <lastmod>2020-02-06T21:13:14-05:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/factorial-designs/</loc>
+    <loc>/categories/factorial-designs/</loc>
     <lastmod>2020-02-06T21:13:14-05:00</lastmod>
   </url>
   
@@ -193,12 +208,12 @@
   </url>
   
   <url>
-    <loc>/categories/ancova/</loc>
+    <loc>/tags/ancova/</loc>
     <lastmod>2020-02-05T21:13:14-05:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/ancova/</loc>
+    <loc>/categories/ancova/</loc>
     <lastmod>2020-02-05T21:13:14-05:00</lastmod>
   </url>
   
@@ -383,12 +398,12 @@
   </url>
   
   <url>
-    <loc>/categories/christmas/</loc>
+    <loc>/tags/christmas/</loc>
     <lastmod>2019-11-09T12:34:03+01:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/christmas/</loc>
+    <loc>/categories/christmas/</loc>
     <lastmod>2019-11-09T12:34:03+01:00</lastmod>
   </url>
   

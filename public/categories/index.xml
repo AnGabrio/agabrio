@@ -6,10 +6,46 @@
     <description>Recent content in Categories on Andrea Gabrio</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 08 Feb 2020 21:13:14 -0500</lastBuildDate>
+    <lastBuildDate>Sun, 09 Feb 2020 21:13:14 -0500</lastBuildDate>
     
 	    <atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>anova</title>
+      <link>/categories/anova/</link>
+      <pubDate>Sun, 09 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/categories/anova/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>JAGS</title>
+      <link>/categories/jags/</link>
+      <pubDate>Sun, 09 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/categories/jags/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>mixed effects model</title>
+      <link>/categories/mixed-effects-model/</link>
+      <pubDate>Sun, 09 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/categories/mixed-effects-model/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>R</title>
+      <link>/categories/r/</link>
+      <pubDate>Sun, 09 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/categories/r/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>autocorrelation</title>
@@ -17,24 +53,6 @@
       <pubDate>Sat, 08 Feb 2020 21:13:14 -0500</pubDate>
       
       <guid>/categories/autocorrelation/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>JAGS</title>
-      <link>/categories/jags/</link>
-      <pubDate>Sat, 08 Feb 2020 21:13:14 -0500</pubDate>
-      
-      <guid>/categories/jags/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>R</title>
-      <link>/categories/r/</link>
-      <pubDate>Sat, 08 Feb 2020 21:13:14 -0500</pubDate>
-      
-      <guid>/categories/r/</guid>
       <description></description>
     </item>
     
@@ -62,15 +80,6 @@
       <pubDate>Fri, 07 Feb 2020 21:13:14 -0500</pubDate>
       
       <guid>/categories/heteroskedasticity/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>anova</title>
-      <link>/categories/anova/</link>
-      <pubDate>Thu, 06 Feb 2020 21:13:14 -0500</pubDate>
-      
-      <guid>/categories/anova/</guid>
       <description></description>
     </item>
     
