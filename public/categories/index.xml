@@ -6,15 +6,24 @@
     <description>Recent content in Categories on Andrea Gabrio</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 09 Feb 2020 21:13:14 -0500</lastBuildDate>
+    <lastBuildDate>Mon, 10 Feb 2020 21:13:14 -0500</lastBuildDate>
     
 	    <atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
+      <title>anova</title>
+      <link>/categories/anova/</link>
+      <pubDate>Mon, 10 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/categories/anova/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>JAGS</title>
       <link>/categories/jags/</link>
-      <pubDate>Sun, 09 Feb 2020 21:13:14 -0500</pubDate>
+      <pubDate>Mon, 10 Feb 2020 21:13:14 -0500</pubDate>
       
       <guid>/categories/jags/</guid>
       <description></description>
@@ -23,27 +32,18 @@
     <item>
       <title>R</title>
       <link>/categories/r/</link>
-      <pubDate>Sun, 09 Feb 2020 21:13:14 -0500</pubDate>
+      <pubDate>Mon, 10 Feb 2020 21:13:14 -0500</pubDate>
       
       <guid>/categories/r/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>STAN</title>
-      <link>/categories/stan/</link>
-      <pubDate>Sun, 09 Feb 2020 21:13:14 -0500</pubDate>
+      <title>randomised complete block</title>
+      <link>/categories/randomised-complete-block/</link>
+      <pubDate>Mon, 10 Feb 2020 21:13:14 -0500</pubDate>
       
-      <guid>/categories/stan/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>anova</title>
-      <link>/categories/anova/</link>
-      <pubDate>Sun, 09 Feb 2020 21:13:14 -0500</pubDate>
-      
-      <guid>/categories/anova/</guid>
+      <guid>/categories/randomised-complete-block/</guid>
       <description></description>
     </item>
     
@@ -53,6 +53,15 @@
       <pubDate>Sun, 09 Feb 2020 21:13:14 -0500</pubDate>
       
       <guid>/categories/mixed-effects-model/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>STAN</title>
+      <link>/categories/stan/</link>
+      <pubDate>Sun, 09 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/categories/stan/</guid>
       <description></description>
     </item>
     
@@ -129,20 +138,20 @@
     </item>
     
     <item>
-      <title>PRIMENT</title>
-      <link>/categories/priment/</link>
-      <pubDate>Sat, 01 Feb 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/categories/priment/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>news</title>
       <link>/categories/news/</link>
       <pubDate>Sat, 01 Feb 2020 00:00:00 +0000</pubDate>
       
       <guid>/categories/news/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>PRIMENT</title>
+      <link>/categories/priment/</link>
+      <pubDate>Sat, 01 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/priment/</guid>
       <description></description>
     </item>
     
