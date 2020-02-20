@@ -6,7 +6,7 @@
     <description>Recent content in Categories on Andrea Gabrio</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 10 Feb 2020 21:13:14 -0500</lastBuildDate>
+    <lastBuildDate>Tue, 11 Feb 2020 21:13:14 -0500</lastBuildDate>
     
 	    <atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
     
@@ -14,7 +14,7 @@
     <item>
       <title>JAGS</title>
       <link>/categories/jags/</link>
-      <pubDate>Mon, 10 Feb 2020 21:13:14 -0500</pubDate>
+      <pubDate>Tue, 11 Feb 2020 21:13:14 -0500</pubDate>
       
       <guid>/categories/jags/</guid>
       <description></description>
@@ -23,7 +23,7 @@
     <item>
       <title>R</title>
       <link>/categories/r/</link>
-      <pubDate>Mon, 10 Feb 2020 21:13:14 -0500</pubDate>
+      <pubDate>Tue, 11 Feb 2020 21:13:14 -0500</pubDate>
       
       <guid>/categories/r/</guid>
       <description></description>
@@ -32,7 +32,7 @@
     <item>
       <title>STAN</title>
       <link>/categories/stan/</link>
-      <pubDate>Mon, 10 Feb 2020 21:13:14 -0500</pubDate>
+      <pubDate>Tue, 11 Feb 2020 21:13:14 -0500</pubDate>
       
       <guid>/categories/stan/</guid>
       <description></description>
@@ -41,9 +41,27 @@
     <item>
       <title>anova</title>
       <link>/categories/anova/</link>
-      <pubDate>Mon, 10 Feb 2020 21:13:14 -0500</pubDate>
+      <pubDate>Tue, 11 Feb 2020 21:13:14 -0500</pubDate>
       
       <guid>/categories/anova/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>repeated measures</title>
+      <link>/categories/repeated-measures/</link>
+      <pubDate>Tue, 11 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/categories/repeated-measures/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>split-plot</title>
+      <link>/categories/split-plot/</link>
+      <pubDate>Tue, 11 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/categories/split-plot/</guid>
       <description></description>
     </item>
     

@@ -3,8 +3,124 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>/authors/andrea-gabrio/</loc>
+    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>/</loc>
-    <lastmod>2020-02-11T09:00:00+00:00</lastmod>
+    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/authors/</loc>
+    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/jags/</loc>
+    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/stan/</loc>
+    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/</loc>
+    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/jags/</loc>
+    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/jags/</loc>
+    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/jags/partly-nested-anova-jags/block-anova-jags/</loc>
+    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/stan/partly-nested-anova-stan/partly-nested-anova-stan/</loc>
+    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/r/</loc>
+    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/stan/</loc>
+    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/stan/</loc>
+    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/</loc>
+    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/anova/</loc>
+    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/anova/</loc>
+    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/repeated-measures/</loc>
+    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/repeated-measures/</loc>
+    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/split-plot/</loc>
+    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/split-plot/</loc>
+    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/tutorials/</loc>
+    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -32,60 +148,8 @@
   </url>
   
   <url>
-    <loc>/tags/</loc>
-    <lastmod>2020-02-11T09:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>/talk/heartcourse2020/</loc>
     <lastmod>2020-02-11T09:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/authors/andrea-gabrio/</loc>
-    <lastmod>2020-02-10T21:13:14-05:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/authors/</loc>
-    <lastmod>2020-02-10T21:13:14-05:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/jags/</loc>
-    <lastmod>2020-02-10T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/stan/</loc>
-    <lastmod>2020-02-10T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/</loc>
-    <lastmod>2020-02-10T21:13:14-05:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/jags/</loc>
-    <lastmod>2020-02-10T21:13:14-05:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/tags/jags/</loc>
-    <lastmod>2020-02-10T21:13:14-05:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/r/</loc>
-    <lastmod>2020-02-10T21:13:14-05:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
@@ -99,30 +163,6 @@
   </url>
   
   <url>
-    <loc>/categories/stan/</loc>
-    <lastmod>2020-02-10T21:13:14-05:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/tags/stan/</loc>
-    <lastmod>2020-02-10T21:13:14-05:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/anova/</loc>
-    <lastmod>2020-02-10T21:13:14-05:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/tags/anova/</loc>
-    <lastmod>2020-02-10T21:13:14-05:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>/categories/randomised-complete-block/</loc>
     <lastmod>2020-02-10T21:13:14-05:00</lastmod>
     <priority>0</priority>
@@ -130,12 +170,6 @@
   
   <url>
     <loc>/tags/randomised-complete-block/</loc>
-    <lastmod>2020-02-10T21:13:14-05:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/tags/tutorials/</loc>
     <lastmod>2020-02-10T21:13:14-05:00</lastmod>
     <priority>0</priority>
   </url>

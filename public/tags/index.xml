@@ -6,10 +6,64 @@
     <description>Recent content in Tags on Andrea Gabrio</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 11 Feb 2020 09:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 11 Feb 2020 21:13:14 -0500</lastBuildDate>
     
 	    <atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>JAGS</title>
+      <link>/tags/jags/</link>
+      <pubDate>Tue, 11 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/jags/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>STAN</title>
+      <link>/tags/stan/</link>
+      <pubDate>Tue, 11 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/stan/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>anova</title>
+      <link>/tags/anova/</link>
+      <pubDate>Tue, 11 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/anova/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>repeated measures</title>
+      <link>/tags/repeated-measures/</link>
+      <pubDate>Tue, 11 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/repeated-measures/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>split-plot</title>
+      <link>/tags/split-plot/</link>
+      <pubDate>Tue, 11 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/split-plot/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>tutorials</title>
+      <link>/tags/tutorials/</link>
+      <pubDate>Tue, 11 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/tutorials/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Clinical Trials</title>
@@ -39,47 +93,11 @@
     </item>
     
     <item>
-      <title>JAGS</title>
-      <link>/tags/jags/</link>
-      <pubDate>Mon, 10 Feb 2020 21:13:14 -0500</pubDate>
-      
-      <guid>/tags/jags/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>STAN</title>
-      <link>/tags/stan/</link>
-      <pubDate>Mon, 10 Feb 2020 21:13:14 -0500</pubDate>
-      
-      <guid>/tags/stan/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>anova</title>
-      <link>/tags/anova/</link>
-      <pubDate>Mon, 10 Feb 2020 21:13:14 -0500</pubDate>
-      
-      <guid>/tags/anova/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>randomised complete block</title>
       <link>/tags/randomised-complete-block/</link>
       <pubDate>Mon, 10 Feb 2020 21:13:14 -0500</pubDate>
       
       <guid>/tags/randomised-complete-block/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>tutorials</title>
-      <link>/tags/tutorials/</link>
-      <pubDate>Mon, 10 Feb 2020 21:13:14 -0500</pubDate>
-      
-      <guid>/tags/tutorials/</guid>
       <description></description>
     </item>
     
