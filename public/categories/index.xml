@@ -12,15 +12,6 @@
     
     
     <item>
-      <title>anova</title>
-      <link>/categories/anova/</link>
-      <pubDate>Mon, 10 Feb 2020 21:13:14 -0500</pubDate>
-      
-      <guid>/categories/anova/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>JAGS</title>
       <link>/categories/jags/</link>
       <pubDate>Mon, 10 Feb 2020 21:13:14 -0500</pubDate>
@@ -39,6 +30,24 @@
     </item>
     
     <item>
+      <title>STAN</title>
+      <link>/categories/stan/</link>
+      <pubDate>Mon, 10 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/categories/stan/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>anova</title>
+      <link>/categories/anova/</link>
+      <pubDate>Mon, 10 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/categories/anova/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>randomised complete block</title>
       <link>/categories/randomised-complete-block/</link>
       <pubDate>Mon, 10 Feb 2020 21:13:14 -0500</pubDate>
@@ -53,15 +62,6 @@
       <pubDate>Sun, 09 Feb 2020 21:13:14 -0500</pubDate>
       
       <guid>/categories/mixed-effects-model/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>STAN</title>
-      <link>/categories/stan/</link>
-      <pubDate>Sun, 09 Feb 2020 21:13:14 -0500</pubDate>
-      
-      <guid>/categories/stan/</guid>
       <description></description>
     </item>
     
@@ -138,20 +138,20 @@
     </item>
     
     <item>
-      <title>news</title>
-      <link>/categories/news/</link>
-      <pubDate>Sat, 01 Feb 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/categories/news/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>PRIMENT</title>
       <link>/categories/priment/</link>
       <pubDate>Sat, 01 Feb 2020 00:00:00 +0000</pubDate>
       
       <guid>/categories/priment/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>news</title>
+      <link>/categories/news/</link>
+      <pubDate>Sat, 01 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/news/</guid>
       <description></description>
     </item>
     
