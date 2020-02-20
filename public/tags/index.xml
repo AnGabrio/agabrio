@@ -6,7 +6,7 @@
     <description>Recent content in Tags on Andrea Gabrio</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 11 Feb 2020 21:13:14 -0500</lastBuildDate>
+    <lastBuildDate>Sat, 15 Feb 2020 21:13:14 -0500</lastBuildDate>
     
 	    <atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     
@@ -14,9 +14,54 @@
     <item>
       <title>JAGS</title>
       <link>/tags/jags/</link>
-      <pubDate>Tue, 11 Feb 2020 21:13:14 -0500</pubDate>
+      <pubDate>Sat, 15 Feb 2020 21:13:14 -0500</pubDate>
       
       <guid>/tags/jags/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>generalised linear mixed models</title>
+      <link>/tags/generalised-linear-mixed-models/</link>
+      <pubDate>Sat, 15 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/generalised-linear-mixed-models/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>tutorials</title>
+      <link>/tags/tutorials/</link>
+      <pubDate>Sat, 15 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/tutorials/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>generalised linear models</title>
+      <link>/tags/generalised-linear-models/</link>
+      <pubDate>Fri, 14 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/generalised-linear-models/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>frequency analysis</title>
+      <link>/tags/frequency-analysis/</link>
+      <pubDate>Wed, 12 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/frequency-analysis/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>goodness of fit tests</title>
+      <link>/tags/goodness-of-fit-tests/</link>
+      <pubDate>Wed, 12 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/goodness-of-fit-tests/</guid>
       <description></description>
     </item>
     
@@ -53,15 +98,6 @@
       <pubDate>Tue, 11 Feb 2020 21:13:14 -0500</pubDate>
       
       <guid>/tags/split-plot/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>tutorials</title>
-      <link>/tags/tutorials/</link>
-      <pubDate>Tue, 11 Feb 2020 21:13:14 -0500</pubDate>
-      
-      <guid>/tags/tutorials/</guid>
       <description></description>
     </item>
     

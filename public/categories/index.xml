@@ -6,7 +6,7 @@
     <description>Recent content in Categories on Andrea Gabrio</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 11 Feb 2020 21:13:14 -0500</lastBuildDate>
+    <lastBuildDate>Sat, 15 Feb 2020 21:13:14 -0500</lastBuildDate>
     
 	    <atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
     
@@ -14,7 +14,7 @@
     <item>
       <title>JAGS</title>
       <link>/categories/jags/</link>
-      <pubDate>Tue, 11 Feb 2020 21:13:14 -0500</pubDate>
+      <pubDate>Sat, 15 Feb 2020 21:13:14 -0500</pubDate>
       
       <guid>/categories/jags/</guid>
       <description></description>
@@ -23,9 +23,45 @@
     <item>
       <title>R</title>
       <link>/categories/r/</link>
-      <pubDate>Tue, 11 Feb 2020 21:13:14 -0500</pubDate>
+      <pubDate>Sat, 15 Feb 2020 21:13:14 -0500</pubDate>
       
       <guid>/categories/r/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>generalised linear mixed models</title>
+      <link>/categories/generalised-linear-mixed-models/</link>
+      <pubDate>Sat, 15 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/categories/generalised-linear-mixed-models/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>generalised linear models</title>
+      <link>/categories/generalised-linear-models/</link>
+      <pubDate>Fri, 14 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/categories/generalised-linear-models/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>frequency analysis</title>
+      <link>/categories/frequency-analysis/</link>
+      <pubDate>Wed, 12 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/categories/frequency-analysis/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>goodness of fit tests</title>
+      <link>/categories/goodness-of-fit-tests/</link>
+      <pubDate>Wed, 12 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/categories/goodness-of-fit-tests/</guid>
       <description></description>
     </item>
     

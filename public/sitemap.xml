@@ -4,48 +4,134 @@
   
   <url>
     <loc>/authors/andrea-gabrio/</loc>
-    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
+    <lastmod>2020-02-15T21:13:14-05:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/</loc>
-    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
+    <lastmod>2020-02-15T21:13:14-05:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/authors/</loc>
-    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
+    <lastmod>2020-02-15T21:13:14-05:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/jags/</loc>
-    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/stan/</loc>
-    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
+    <lastmod>2020-02-15T21:13:14-05:00</lastmod>
   </url>
   
   <url>
     <loc>/categories/</loc>
-    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
+    <lastmod>2020-02-15T21:13:14-05:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
+    <loc>/jags/glmm-jags/glmm-jags/</loc>
+    <lastmod>2020-02-15T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/categories/jags/</loc>
-    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
+    <lastmod>2020-02-15T21:13:14-05:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/tags/jags/</loc>
-    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
+    <lastmod>2020-02-15T21:13:14-05:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/r/</loc>
+    <lastmod>2020-02-15T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/</loc>
+    <lastmod>2020-02-15T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/generalised-linear-mixed-models/</loc>
+    <lastmod>2020-02-15T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/generalised-linear-mixed-models/</loc>
+    <lastmod>2020-02-15T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/tutorials/</loc>
+    <lastmod>2020-02-15T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/jags/glm2-jags/glm2-jags/</loc>
+    <lastmod>2020-02-14T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/generalised-linear-models/</loc>
+    <lastmod>2020-02-14T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/generalised-linear-models/</loc>
+    <lastmod>2020-02-14T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/jags/glm-jags/glm-jags/</loc>
+    <lastmod>2020-02-13T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/jags/gof-tests-jags/gof-tests-jags/</loc>
+    <lastmod>2020-02-12T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/frequency-analysis/</loc>
+    <lastmod>2020-02-12T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/frequency-analysis/</loc>
+    <lastmod>2020-02-12T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/goodness-of-fit-tests/</loc>
+    <lastmod>2020-02-12T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/goodness-of-fit-tests/</loc>
+    <lastmod>2020-02-12T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/stan/</loc>
+    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
   </url>
   
   <url>
@@ -59,12 +145,6 @@
   </url>
   
   <url>
-    <loc>/categories/r/</loc>
-    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>/categories/stan/</loc>
     <lastmod>2020-02-11T21:13:14-05:00</lastmod>
     <priority>0</priority>
@@ -72,12 +152,6 @@
   
   <url>
     <loc>/tags/stan/</loc>
-    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/tags/</loc>
     <lastmod>2020-02-11T21:13:14-05:00</lastmod>
     <priority>0</priority>
   </url>
@@ -114,12 +188,6 @@
   
   <url>
     <loc>/tags/split-plot/</loc>
-    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/tags/tutorials/</loc>
     <lastmod>2020-02-11T21:13:14-05:00</lastmod>
     <priority>0</priority>
   </url>

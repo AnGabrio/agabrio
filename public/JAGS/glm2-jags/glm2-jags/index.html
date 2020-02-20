@@ -1,0 +1,2694 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.3.1">
+
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+  
+  
+
+  <meta name="author" content="Andrea Gabrio">
+
+  
+  
+  
+    
+  
+  <meta name="description" content="This tutorial will focus on the use of Bayesian estimation to fit simple linear regression models. BUGS (Bayesian inference Using Gibbs Sampling) is an algorithm and supporting language (resembling R) dedicated to performing the Gibbs sampling implementation of Markov Chain Monte Carlo (MCMC) method. Dialects of the BUGS language are implemented within three main projects:
+OpenBUGS - written in component pascal.
+JAGS - (Just Another Gibbs Sampler) - written in C&#43;&#43;.">
+
+  
+  <link rel="alternate" hreflang="en-us" href="/jags/glm2-jags/glm2-jags/">
+
+  
+
+
+  
+
+  
+  
+  
+  <meta name="theme-color" content="#2962ff">
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.0/css/all.css" integrity="sha384-aOkxzJ5uQz7WBObEZcHvV5JvRW3TUc2rNPA7pe3AwnsUohiw1Vj2Rgx2KSOkF5+h" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" integrity="sha256-ygkqlh3CYSUri3LhQxzdcm0n1EQvH2Y+U5S2idbLtxs=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+        
+      
+    
+
+    
+
+    
+
+  
+
+  
+  
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:450,700|Oswald+Sans:600,700|Roboto+Mono:550,700">
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.min.548c5488bf2acb3767aba941aacbd58f.css">
+
+  
+    
+    
+    
+    
+      
+    
+    
+    
+    <link rel="stylesheet" href="/css/academic.3f1befffb0882d6c3372ec9dda375740.css">
+  
+
+  
+  
+  
+
+  
+
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="/jags/glm2-jags/glm2-jags/">
+
+  
+  
+  
+  
+    
+    
+  
+  <meta property="twitter:card" content="summary">
+  
+  <meta property="og:site_name" content="Andrea Gabrio">
+  <meta property="og:url" content="/jags/glm2-jags/glm2-jags/">
+  <meta property="og:title" content="Generalised Linear Models part II - JAGS | Andrea Gabrio">
+  <meta property="og:description" content="This tutorial will focus on the use of Bayesian estimation to fit simple linear regression models. BUGS (Bayesian inference Using Gibbs Sampling) is an algorithm and supporting language (resembling R) dedicated to performing the Gibbs sampling implementation of Markov Chain Monte Carlo (MCMC) method. Dialects of the BUGS language are implemented within three main projects:
+OpenBUGS - written in component pascal.
+JAGS - (Just Another Gibbs Sampler) - written in C&#43;&#43;."><meta property="og:image" content="/img/icon-192.png">
+  <meta property="og:locale" content="en-us">
+  
+  <meta property="article:published_time" content="2020-02-14T21:13:14-05:00">
+  
+  <meta property="article:modified_time" content="2020-02-14T21:13:14-05:00">
+  
+
+  
+
+
+  
+
+
+
+
+
+  <title>Generalised Linear Models part II - JAGS | Andrea Gabrio</title>
+
+</head>
+
+
+<body id="top" data-spy="scroll" data-target="#TableOfContents" data-offset="71" >
+
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" role="textbox" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+  
+<nav class="navbar navbar-light fixed-top navbar-expand-lg py-0" id="navbar-main">
+  <div class="container">
+
+    
+      <a class="navbar-brand" href="/">Andrea Gabrio</a>
+      
+      <button type="button" class="navbar-toggler" data-toggle="collapse"
+              data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span><i class="fas fa-bars"></i></span>
+      </button>
+      
+
+    
+    <div class="collapse navbar-collapse" id="navbar">
+
+      
+      
+      <ul class="navbar-nav ml-auto">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#about"><span>Home</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/post/"><span>Blog</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/research/"><span>Research</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/publication/"><span>Publications</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/talk/"><span>Talks</span></a>
+        </li>
+
+        
+        
+
+        
+        <li class="nav-item dropdown">
+          <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"><span>Software</span><span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            
+            <li class="dropdown-item my-0 py-0 mx-0 px-0">
+              <a href="/missingHE/"><span>missingHE</span></a>
+            </li>
+            
+          </ul>
+        </li>
+
+        
+        
+
+        
+        <li class="nav-item dropdown">
+          <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"><span>Tutorials</span><span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            
+            <li class="dropdown-item my-0 py-0 mx-0 px-0">
+              <a href="/JAGS/"><span>JAGS</span></a>
+            </li>
+            
+            <li class="dropdown-item my-0 py-0 mx-0 px-0">
+              <a href="/OpenBUGS/"><span>OpenBUGS</span></a>
+            </li>
+            
+            <li class="dropdown-item my-0 py-0 mx-0 px-0">
+              <a href="/STAN/"><span>STAN</span></a>
+            </li>
+            
+          </ul>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/missingdata/"><span>Missing Data</span></a>
+        </li>
+
+        
+        
+
+      
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+        </li>
+        
+
+        
+
+        
+
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+  <article class="article" itemscope itemtype="http://schema.org/Article">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  
+  
+<div class="article-container pt-3">
+  <h1 itemprop="name">Generalised Linear Models part II - JAGS</h1>
+
+  
+
+  
+    
+
+
+
+<meta content="2020-02-14 21:13:14 -0500 -0500" itemprop="datePublished">
+<meta content="2020-02-14 21:13:14 -0500 -0500" itemprop="dateModified">
+
+<div class="article-metadata">
+
+  
+  
+  
+  
+  <div>
+    
+
+
+
+  <span itemprop="author name" itemtype="http://schema.org/Person"><a>Andrea Gabrio</a></span>
+  </div>
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+    
+    <time>Feb 14, 2020</time>
+  </span>
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+  <span class="middot-divider"></span>
+  <span class="article-categories">
+    <i class="fas fa-folder"></i>
+    <a href="/categories/r/">R</a>, <a href="/categories/jags/">JAGS</a>, <a href="/categories/generalised-linear-models/">generalised linear models</a></span>
+  
+
+  
+    
+
+  
+
+</div>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+</div>
+
+
+
+  <div class="article-container">
+
+    <div class="article-style" itemprop="articleBody">
+      
+
+
+<p>This tutorial will focus on the use of Bayesian estimation to fit simple linear regression models. <code>BUGS</code> (Bayesian inference Using <em>Gibbs Sampling</em>) is an algorithm and supporting language (resembling <code>R</code>) dedicated to performing the Gibbs sampling implementation of <em>Markov Chain Monte Carlo</em> (MCMC) method. Dialects of the <code>BUGS</code> language are implemented within three main projects:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>OpenBUGS</strong> - written in component pascal.</p></li>
+<li><p><strong>JAGS</strong> - (Just Another Gibbs Sampler) - written in <code>C++</code>.</p></li>
+<li><p><strong>STAN</strong> - a dedicated Bayesian modelling framework written in <code>C++</code> and implementing <em>Hamiltonian</em> MCMC samplers.</p></li>
+</ol>
+<p>Whilst the above programs can be used stand-alone, they do offer the rich data pre-processing and graphical capabilities of <code>R</code>, and thus, they are best accessed from within <code>R</code> itself. As such there are multiple packages devoted to interfacing with the various software implementations:</p>
+<ul>
+<li><p><em>R2OpenBUGS</em> - interfaces with <code>OpenBUGS</code></p></li>
+<li><p><em>R2jags</em> - interfaces with <code>JAGS</code></p></li>
+<li><p><em>rstan</em> - interfaces with <code>STAN</code></p></li>
+</ul>
+<p>This tutorial will demonstrate how to fit models in <code>JAGS</code> (<span class="citation">Plummer (2004)</span>) using the package <code>R2jags</code> (<span class="citation">Su et al. (2015)</span>) as interface, which also requires to load some other packages.</p>
+<div id="overview" class="section level1">
+<h1>Overview</h1>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>Whilst in many instances, count data can be approximated reasonably well by a normal distribution (particularly if the counts are all above zero and the mean count is greater than about <span class="math inline">\(20\)</span>), more typically, when count data are modelled via normal distribution certain undesirable characteristics arise that are a consequence of the nature of discrete non-negative data.</p>
+<ul>
+<li><p>Expected (predicted) values and confidence bands less than zero are illogical, yet these are entirely possible from a normal distribution</p></li>
+<li><p>The distribution of count data are often skewed when their mean is low (in part because the distribution is truncated to the left by zero) and variance usually increases with increasing mean (variance is typically proportional to mean in count data). By contrast, the Gaussian (normal) distribution assumes that mean and variance are unrelated and thus estimates (particularly of standard error) might well be reasonable inaccurate.</p></li>
+</ul>
+<p>Poisson regression is a type of <strong>generalised linear model</strong> (GLM) in which a non-negative integer (natural number) response is modelled against a linear predictor via a specific link function. The linear predictor is typically a linear combination of effects parameters. The role of the link function is to transform the expected values of the response y (which is on the scale of (<span class="math inline">\(0;\infty\)</span>), as is the Poisson distribution from which expectations are drawn) into the scale of the linear predictor (which is <span class="math inline">\(-\infty;\infty\)</span>).</p>
+<p>As implied in the name of this group of analyses, a Poisson rather than Gaussian (normal) distribution is used to represent the errors (residuals). Like count data (number of individuals, species etc), the Poisson distribution encapsulates positive integers and is bound by zero at one end. Consequently, the degree of variability is directly related the expected value (equivalent to the mean of a Gaussian distribution). Put differently, the variance is a function of the mean. Repeated observations from a Poisson distribution located close to zero will yield a much smaller spread of observations than will samples drawn from a Poisson distribution located a greater distance from zero. In the Poisson distribution, the variance has a 1:1 relationship with the mean. The canonical link function for the Poisson distribution is a log-link function.</p>
+<p>Whilst the expectation that the mean=variance (<span class="math inline">\(\mu=\sigma\)</span>) is broadly compatible with actual count data (that variance increases at the same rate as the mean), under certain circumstances, this might not be the case. For example, when there are other unmeasured influences on the response variable, the distribution of counts might be somewhat clumped which can result in higher than expected variability (that is <span class="math inline">\(\sigma &gt; \mu\)</span>). The variance increases more rapidly than does the mean. This is referred to as <strong>overdispersion</strong>. The degree to which the variability is greater than the mean (and thus the expected degree of variability) is called <strong>dispersion</strong>. Effectively, the Poisson distribution has a dispersion parameter (or <strong>scaling factor</strong>) of <span class="math inline">\(1\)</span>.</p>
+<p>It turns out that overdispersion is very common for count data and it typically underestimates variability, standard errors and thus deflated p-values. There are a number of ways of overcoming this limitation, the effectiveness of which depend on the causes of overdispersion.</p>
+<p><strong>Quasi-Poisson models</strong> - these introduce the dispersion parameter (<span class="math inline">\(\phi\)</span>) into the model. This approach does not utilize an underlying error distribution to calculate the maximum likelihood (there is no quasi-Poisson distribution). Instead, if the Newton-Ralphson iterative reweighting least squares algorithm is applied using a direct specification of the relationship between mean and variance (<span class="math inline">\(\text{var}(y)=\phi\mu\)</span>, the estimates of the regression coefficients are identical to those of the maximum likelihood estimates from the Poisson model. This is analogous to fitting ordinary least squares on symmetrical, yet not normally distributed data - the parameter estimates are the same, however they won’t necessarily be as efficient. The standard errors of the coefficients are then calculated by multiplying the Poisson model coefficient standard errors by <span class="math inline">\(\sqrt{\phi}\)</span>. Unfortunately, because the quasi-poisson model is not estimated via maximum likelihood, properties such as AIC and log-likelihood cannot be derived. Consequently, quasi-poisson and Poisson model fits cannot be compared via either AIC or likelihood ratio tests (nor can they be compared via deviance as uasi-poisson and Poisson models have the same residual deviance). That said, quasi-likelihood can be obtained by dividing the likelihood from the Poisson model by the dispersion (scale) factor.</p>
+<p><strong>Negative binomial model</strong> - technically, the negative binomial distribution is a probability distribution for the number of successes before a specified number of failures. However, the negative binomial can also be defined (parameterised) in terms of a mean (<span class="math inline">\(\mu\)</span>) and scale factor (<span class="math inline">\(\omega\)</span>),</p>
+<p><span class="math display">\[ p(y_i) = \frac{\Gamma(y_i+\omega)}{\Gamma(\omega)y!} \times \frac{\mu^{y_i}_i\omega^\omega}{(\mu_i+\omega)^{\mu_i+\omega}},\]</span></p>
+<p>where the expectected value of the values <span class="math inline">\(y_i\)</span> (the means) are (<span class="math inline">\(\mu_i\)</span>) and the variance is <span class="math inline">\(y_i=\frac{\mu_i+\mu^2_i}{\omega}\)</span>. In this way, the negative binomial is a two-stage hierarchical process in which the response is modeled against a Poisson distribution whose expected count is in turn modeled by a Gamma distribution with a mean of <span class="math inline">\(\mu\)</span> and constant scale parameter (<span class="math inline">\(\omega\)</span>). Strictly, the negative binomial is not an exponential family distribution (unless <span class="math inline">\(\omega\)</span> is fixed as a constant), and thus negative binomial models cannot be fit via the usual GLM iterative reweighting algorithm. Instead estimates of the regression parameters along with the scale factor (<span class="math inline">\(\omega\)</span>) are obtained via maximum likelihood. The negative binomial model is useful for accommodating overdispersal when it is likely caused by clumping (due to the influence of other unmeasured factors) within the response.</p>
+<p><strong>Zero-inflated Poisson model</strong> - overdispersion can also be caused by the presence of a greater number of zero’s than would otherwise be expected for a Poisson distribution. There are potentially two sources of zero counts - genuine zeros and false zeros. Firstly, there may genuinely be no individuals present. This would be the number expected by a Poisson distribution. Secondly, individuals may have been present yet not detected or may not even been possible. These are false zero’s and lead to zero inflated data (data with more zeros than expected). For example, the number of joeys accompanying an adult koala could be zero because the koala has no offspring (true zero) or because the koala is male or infertile (both of which would be examples of false zeros). Similarly, zero counts of the number of individual in a transect are due either to the absence of individuals or the inability of the observer to detect them. Whilst in the former example, the latent variable representing false zeros (sex or infertility) can be identified and those individuals removed prior to analysis, this is not the case for the latter example. That is, we cannot easily partition which counts of zero are due to detection issues and which are a true indication of the natural state.</p>
+<p>Consistent with these two sources of zeros, zero-inflated models combine a binary logistic regression model (that models count membership according to a latent variable representing observations that can only be zeros - not detectable or male koalas) with a Poisson regression (that models count membership according to a latent variable representing observations whose values could be 0 or any positive integer - fertile female koalas).</p>
+</div>
+<div id="poisson-regression" class="section level2">
+<h2>Poisson regression</h2>
+<p>The following equations are provided since in Bayesian modelling, it is occasionally necessary to directly define the log-likelihood calculations (particularly for zero-inflated models and other mixture models).</p>
+<p><span class="math display">\[ f(y \mid \lambda) = \frac{\lambda^ye^{-\lambda}}{y!},\]</span></p>
+<p>where <span class="math inline">\(E[Y]=Var(Y)=\lambda\)</span> and <span class="math inline">\(\lambda\)</span> is the mean.</p>
+</div>
+<div id="data-generation" class="section level2">
+<h2>Data generation</h2>
+<p>Lets say we wanted to model the abundance of an item (<span class="math inline">\(y\)</span>) against a continuous predictor (<span class="math inline">\(x\)</span>). As this section is mainly about the generation of artificial data (and not specifically about what to do with the data), understanding the actual details are optional and can be safely skipped.</p>
+<pre class="r"><code>&gt; set.seed(8)
+&gt; #The number of samples
+&gt; n.x &lt;- 20
+&gt; #Create x values that at uniformly distributed throughout the rate of 1 to 20
+&gt; x &lt;- sort(runif(n = n.x, min = 1, max =20))
+&gt; mm &lt;- model.matrix(~x)
+&gt; intercept &lt;- 0.6
+&gt; slope=0.1
+&gt; #The linear predictor
+&gt; linpred &lt;- mm %*% c(intercept,slope)
+&gt; #Predicted y values
+&gt; lambda &lt;- exp(linpred)
+&gt; #Add some noise and make binomial
+&gt; y &lt;- rpois(n=n.x, lambda=lambda)
+&gt; dat &lt;- data.frame(y,x)</code></pre>
+<p>With these sort of data, we are primarily interested in investigating whether there is a relationship between the binary response variable and the linear predictor (linear combination of one or more continuous or categorical predictors).</p>
+</div>
+<div id="exploratory-data-analysis" class="section level2">
+<h2>Exploratory data analysis</h2>
+<p>There are at least five main potential models we could consider fitting to these data:</p>
+<ul>
+<li><p><strong>Ordinary least squares regression (general linear model)</strong> - assumes normality of residuals</p></li>
+<li><p><strong>Poisson regression</strong> - assumes mean=variance (dispersion<span class="math inline">\(=1\)</span>)</p></li>
+<li><p><strong>Quasi-poisson regression</strong> - a general solution to overdispersion. Assumes variance is a function of mean, dispersion estimated, however likelihood based statistics unavailable</p></li>
+<li><p><strong>Negative binomial regression</strong> - a specific solution to overdispersion caused by clumping (due to an unmeasured latent variable). Scaling factor (<span class="math inline">\(\omega\)</span>) is estimated along with the regression parameters.</p></li>
+<li><p><strong>Zero-inflation model</strong> - a specific solution to overdispersion caused by excessive zeros (due to an unmeasured latent variable). Mixture of binomial and Poisson models.</p></li>
+</ul>
+<p>When counts are all very large (not close to <span class="math inline">\(0\)</span>) and their ranges do not span orders of magnitude, they take on very Gaussian properties (symmetrical distribution and variance independent of the mean). Given that models based on the Gaussian distribution are more optimized and recognized than Generalized Linear Models, it can be prudent to adopt Gaussian models for such data. Hence it is a good idea to first explore whether a Poisson model is likely to be more appropriate than a standard Gaussian model. The potential for overdispersion can be explored by adding a rug to boxplot. The rug is simply tick marks on the inside of an axis at the position corresponding to an observation. As multiple identical values result in tick marks drawn over one another, it is typically a good idea to apply a slight amount of jitter (random displacement) to the values used by the rug.</p>
+<pre class="r"><code>&gt; hist(dat$x)</code></pre>
+<p><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/expl_data1-1.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; boxplot(dat$y, horizontal=TRUE)
+&gt; rug(jitter(dat$y), side=1)</code></pre>
+<p><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/expl_data1-2.png" width="672" /></p>
+<p>There is definitely signs of non-normality that would warrant Poisson models. The rug applied to the boxplots does not indicate a series degree of clumping and there appears to be few zero. Thus overdispersion is unlikely to be an issue. Lets now explore linearity by creating a histogram of the predictor variable (<span class="math inline">\(x\)</span>) and a scatterplot of the relationship between the response (<span class="math inline">\(y\)</span>) and the predictor (<span class="math inline">\(x\)</span>)</p>
+<pre class="r"><code>&gt; #now for the scatterplot
+&gt; plot(y~x, dat, log=&quot;y&quot;)
+&gt; with(dat, lines(lowess(y~x)))</code></pre>
+<p><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/expl_data2-1.png" width="672" /></p>
+<p><strong>Conclusions</strong>: the predictor (<span class="math inline">\(x\)</span>) does not display any skewness or other issues that might lead to non-linearity. The lowess smoother on the scatterplot does not display major deviations from a straight line and thus linearity is satisfied. Violations of linearity could be addressed by either:</p>
+<ul>
+<li><p>define a non-linear linear predictor (such as a polynomial, spline or other non-linear function).</p></li>
+<li><p>transform the scale of the predictor variables.</p></li>
+</ul>
+<p>Although we have already established that there are few zeros in the data (and thus overdispersion is unlikely to be an issue), we can also explore this by comparing the number of zeros in the data to the number of zeros that would be expected from a Poisson distribution with a mean equal to the mean count of the data.</p>
+<pre class="r"><code>&gt; #proportion of 0&#39;s in the data
+&gt; dat.tab&lt;-table(dat$y==0)
+&gt; dat.tab/sum(dat.tab)
+
+FALSE 
+    1 
+&gt; 
+&gt; #proportion of 0&#39;s expected from a Poisson distribution
+&gt; mu &lt;- mean(dat$y)
+&gt; cnts &lt;- rpois(1000, mu)
+&gt; dat.tab &lt;- table(cnts == 0)
+&gt; dat.tab/sum(dat.tab)
+
+FALSE  TRUE 
+0.997 0.003 </code></pre>
+<p>In the above, the value under <code>FALSE</code> is the proportion of non-zero values in the data and the value under <code>TRUE</code> is the proportion of zeros in the data. In this example, there are no zeros in the observed data which corresponds closely to the very low proportion expected (<span class="math inline">\(0.003\)</span>).</p>
+</div>
+<div id="model-fitting" class="section level2">
+<h2>Model fitting</h2>
+<p><span class="math display">\[ y_i \sim \text{Pois}(\lambda_i),\]</span></p>
+<p>where <span class="math inline">\(\log(\lambda_i)=\eta_i\)</span>, with <span class="math inline">\(\eta_i=\beta_0+\beta_1x_{i}\)</span> and <span class="math inline">\(\beta_0,\beta_1 \sim N(0, 10000)\)</span>.</p>
+<pre class="r"><code>&gt; dat.list &lt;- with(dat,list(Y=y, X=x,N=nrow(dat)))
+&gt; modelString=&quot;
++ model {
++   for (i in 1:N) {
++      Y[i] ~ dpois(lambda[i])
++      log(lambda[i]) &lt;- beta0 + beta1*X[i]
++   }
++   beta0 ~ dnorm(0,1.0E-06)
++   beta1 ~ dnorm(0,1.0E-06)
++ } 
++ &quot;
+&gt; writeLines(modelString, con=&#39;modelpois.txt&#39;)
+&gt; 
+&gt; params &lt;- c(&#39;beta0&#39;,&#39;beta1&#39;)
+&gt; nChains = 2
+&gt; burnInSteps = 5000
+&gt; thinSteps = 1
+&gt; numSavedSteps = 20000
+&gt; nIter = ceiling((numSavedSteps * thinSteps)/nChains)
+&gt; 
+&gt; library(R2jags)
+&gt; dat.P.jags &lt;- jags(data=dat.list,model.file=&#39;modelpois.txt&#39;, param=params,
++                    n.chains=nChains, n.iter=nIter, n.burnin=burnInSteps, n.thin=thinSteps)
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 20
+   Unobserved stochastic nodes: 2
+   Total graph size: 105
+
+Initializing model</code></pre>
+</div>
+<div id="model-evaluation" class="section level2">
+<h2>Model evaluation</h2>
+<pre class="r"><code>&gt; library(mcmcplots)
+&gt; denplot(dat.P.jags, parms = c(&quot;beta0&quot;,&quot;beta1&quot;))</code></pre>
+<p><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/mcmc_diag-1.png" width="672" /></p>
+<pre class="r"><code>&gt; traplot(dat.P.jags, parms = c(&quot;beta0&quot;,&quot;beta1&quot;))</code></pre>
+<p><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/mcmc_diag-2.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; raftery.diag(as.mcmc(dat.P.jags))
+[[1]]
+
+Quantile (q) = 0.025
+Accuracy (r) = +/- 0.005
+Probability (s) = 0.95 
+                                                
+          Burn-in  Total Lower bound  Dependence
+          (M)      (N)   (Nmin)       factor (I)
+ beta0    10       10830 3746         2.89      
+ beta1    12       12612 3746         3.37      
+ deviance 3        4410  3746         1.18      
+
+
+[[2]]
+
+Quantile (q) = 0.025
+Accuracy (r) = +/- 0.005
+Probability (s) = 0.95 
+                                                
+          Burn-in  Total Lower bound  Dependence
+          (M)      (N)   (Nmin)       factor (I)
+ beta0    12       14878 3746         3.97      
+ beta1    10       11942 3746         3.19      
+ deviance 2        3995  3746         1.07      
+&gt; 
+&gt; autocorr.diag(as.mcmc(dat.P.jags))
+             beta0         beta1     deviance
+Lag 0   1.00000000  1.0000000000  1.000000000
+Lag 1   0.83977964  0.8111423616  0.508803232
+Lag 5   0.43884918  0.3859514845  0.118732714
+Lag 10  0.22584100  0.1883831873  0.029775648
+Lag 50 -0.01164622 -0.0003926876 -0.007507996</code></pre>
+<p>One very important model validation procedure is to examine a plot of residuals against predicted or fitted values (the residual plot). Ideally, residual plots should show a random scatter of points without outliers. That is, there should be no patterns in the residuals. Patterns suggest inappropriate linear predictor (or scale) and/or inappropriate residual distribution/link function. The residuals used in such plots should be standardized (particularly if the model incorporated any variance-covariance structures - such as an autoregressive correlation structure) Pearsons’s residuals standardize residuals by division with the square-root of the variance. We can generate Pearson’s residuals within the <code>JAGS</code> model. Alternatively, we could use the parameters to generate the residuals outside of <code>JAGS</code>. Pearson’s residuals are calculated according to:</p>
+<p><span class="math display">\[ \epsilon = \frac{y_i - \mu}{\sqrt{\text{var}(y)}},\]</span></p>
+<p>where <span class="math inline">\(\mu\)</span> is the expected value of <span class="math inline">\(Y\)</span> (<span class="math inline">\(=\lambda\)</span> for Poisson) and var(<span class="math inline">\(y\)</span>) is the variance of <span class="math inline">\(Y\)</span> (<span class="math inline">\(=\lambda\)</span> for Poisson).</p>
+<pre class="r"><code>&gt; #extract the samples for the two model parameters
+&gt; coefs &lt;- dat.P.jags$BUGSoutput$sims.matrix[,1:2]
+&gt; Xmat &lt;- model.matrix(~x, data=dat)
+&gt; #expected values on a log scale
+&gt; eta&lt;-coefs %*% t(Xmat)
+&gt; #expected value on response scale
+&gt; lambda &lt;- exp(eta)
+&gt; #Expected value and variance are both equal to lambda
+&gt; expY &lt;- varY &lt;- lambda
+&gt; #sweep across rows and then divide by lambda
+&gt; Resid &lt;- -1*sweep(expY,2,dat$y,&#39;-&#39;)/sqrt(varY)
+&gt; #plot residuals vs expected values
+&gt; plot(apply(Resid,2,mean)~apply(eta,2,mean))</code></pre>
+<p><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/model2_mcmc_diag-1.png" width="672" /></p>
+<p>Now we will compare the sum of squared residuals to the sum of squares residuals that would be expected from a Poisson distribution matching that estimated by the model. Essentially this is estimating how well the Poisson distribution, the log-link function and the linear model approximates the observed data.</p>
+<pre class="r"><code>&gt; SSres&lt;-apply(Resid^2,1,sum)
+&gt; 
+&gt; #generate a matrix of draws from a poisson distribution
+&gt; # the matrix is the same dimensions as lambda and uses the probabilities of lambda
+&gt; YNew &lt;- matrix(rpois(length(lambda),lambda=lambda),nrow=nrow(lambda))
+&gt; 
+&gt; Resid1&lt;-(lambda - YNew)/sqrt(lambda)
+&gt; SSres.sim&lt;-apply(Resid1^2,1,sum)
+&gt; mean(SSres.sim&gt;SSres, na.rm = T)
+[1] 0.4697</code></pre>
+</div>
+<div id="goodness-of-fit" class="section level2">
+<h2>Goodness of fit</h2>
+<pre class="r"><code>&gt; dat.list1 &lt;- with(dat,list(Y=y, X=x,N=nrow(dat)))
+&gt; modelString=&quot;
++ model {
++   for (i in 1:N) {
++     #likelihood function
++     Y[i] ~ dpois(lambda[i])
++     eta[i] &lt;- beta0+beta1*X[i] #linear predictor
++     log(lambda[i]) &lt;- eta[i]   #link function
++ 
++     #E(Y) and var(Y)
++     expY[i] &lt;- lambda[i]
++     varY[i] &lt;- lambda[i]
++ 
++     # Calculate RSS
++     Resid[i] &lt;- (Y[i] - expY[i])/sqrt(varY[i])
++     RSS[i] &lt;- pow(Resid[i],2)
++ 
++     #Simulate data from a Poisson distribution
++     Y1[i] ~ dpois(lambda[i])
++     #Calculate RSS for simulated data
++     Resid1[i] &lt;- (Y1[i] - expY[i])/sqrt(varY[i])
++     RSS1[i] &lt;-pow(Resid1[i],2) 
++   }
++   #Priors
++   beta0 ~ dnorm(0,1.0E-06)
++   beta1 ~ dnorm(0,1.0E-06)
++   #Bayesian P-value
++   Pvalue &lt;- mean(sum(RSS1)&gt;sum(RSS))
++ } 
++ &quot;
+&gt; 
+&gt; writeLines(modelString, con=&#39;modelpois_gof.txt&#39;)
+&gt; 
+&gt; params &lt;- c(&#39;beta0&#39;,&#39;beta1&#39;, &#39;Pvalue&#39;)
+&gt; nChains = 2
+&gt; burnInSteps = 5000
+&gt; thinSteps = 1
+&gt; numSavedSteps = 20000
+&gt; nIter = ceiling((numSavedSteps * thinSteps)/nChains)
+&gt; 
+&gt; dat.P.jags1 &lt;- jags(data=dat.list,model.file=&#39;modelpois_gof.txt&#39;, param=params,
++                    n.chains=nChains, n.iter=nIter, n.burnin=burnInSteps, n.thin=thinSteps)
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 20
+   Unobserved stochastic nodes: 22
+   Total graph size: 272
+
+Initializing model
+&gt; 
+&gt; print(dat.P.jags1)
+Inference for Bugs model at &quot;modelpois_gof.txt&quot;, fit using jags,
+ 2 chains, each with 10000 iterations (first 5000 discarded)
+ n.sims = 10000 iterations saved
+         mu.vect sd.vect   2.5%    25%    50%    75%  97.5%  Rhat n.eff
+Pvalue     0.478   0.500  0.000  0.000  0.000  1.000  1.000 1.001 10000
+beta0      0.546   0.254  0.015  0.381  0.559  0.719  1.013 1.001 10000
+beta1      0.112   0.018  0.077  0.099  0.111  0.124  0.149 1.001  3200
+deviance  88.372   3.041 86.373 86.883 87.671 89.075 93.868 1.006  2000
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 4.6 and DIC = 93.0
+DIC is an estimate of expected predictive error (lower deviance is better).</code></pre>
+<p><strong>Conclusions</strong>: the Bayesian p-value is approximately <span class="math inline">\(0.5\)</span>, suggesting that there is a good fit of the model to the data.</p>
+<p>Unfortunately, unlike with linear models (Gaussian family), the expected distribution of data (residuals) varies over the range of fitted values for numerous (often competing) ways that make diagnosing (and attributing causes thereof) miss-specified generalized linear models from standard residual plots very difficult. The use of standardized (Pearson) residuals or deviance residuals can partly address this issue, yet they still do not offer completely consistent diagnoses across all issues (miss-specified model, over-dispersion, zero-inflation). An alternative approach is to use simulated data from the model posteriors to calculate an empirical cumulative density function from which residuals are are generated as values corresponding to the observed data along the density function. Now we will compare the sum of squared residuals to the sum of squares residuals that would be expected from a Bernoulli distribution matching that estimated by the model. Essentially this is estimating how well the Bernoulli distribution and linear model approximates the observed data.</p>
+<pre class="r"><code>&gt; #extract the samples for the two model parameters
+&gt; coefs &lt;- dat.P.jags$BUGSoutput$sims.matrix[,1:2]
+&gt; Xmat &lt;- model.matrix(~x, data=dat)
+&gt; #expected values on a log scale
+&gt; eta&lt;-coefs %*% t(Xmat)
+&gt; #expected value on response scale
+&gt; lambda &lt;- exp(eta)
+&gt; 
+&gt; simRes &lt;- function(lambda, data,n=250, plot=T, family=&#39;poisson&#39;) {
++  require(gap)
++  N = nrow(data)
++  sim = switch(family,
++     &#39;poisson&#39; = matrix(rpois(n*N,apply(lambda,2,mean)),ncol=N, byrow=TRUE)
++  )
++  a = apply(sim + runif(n,-0.5,0.5),2,ecdf)
++  resid&lt;-NULL
++  for (i in 1:nrow(data)) resid&lt;-c(resid,a[[i]](data$y[i] + runif(1 ,-0.5,0.5)))
++  if (plot==T) {
++    par(mfrow=c(1,2))
++    gap::qqunif(resid,pch = 2, bty = &quot;n&quot;,
++    logscale = F, col = &quot;black&quot;, cex = 0.6, main = &quot;QQ plot residuals&quot;,
++    cex.main = 1, las=1)
++    plot(resid~apply(lambda,2,mean), xlab=&#39;Predicted value&#39;, ylab=&#39;Standardized residual&#39;, las=1)
++  }
++  resid
++ }
+&gt; 
+&gt; simRes(lambda,dat, family=&#39;poisson&#39;)</code></pre>
+<p><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/model2_mcmc_res2-1.png" width="672" /></p>
+<pre><code> [1] 0.220 0.544 0.532 0.344 0.812 0.980 0.048 0.592 0.548 0.728 0.164 0.492
+[13] 0.856 0.096 0.240 0.292 0.876 0.880 0.148 0.748</code></pre>
+<p>The trend (black symbols) in the qq-plot does not appear to be overly non-linear (matching the ideal red line well), suggesting that the model is not overdispersed. The spread of standardized (simulated) residuals in the residual plot do not appear overly non-uniform. That is there is not trend in the residuals. Furthermore, there is not a concentration of points close to <span class="math inline">\(1\)</span> or <span class="math inline">\(0\)</span> (which would imply overdispersion).</p>
+<p>Recall that the Poisson regression model assumes that variance=mean (var=μϕ where <span class="math inline">\(\phi=1\)</span>) and thus dispersion (<span class="math inline">\(\phi=\frac{\text{var}}{\mu}=1)\)</span>). However, we can also calculate approximately what the dispersion factor would be by using sum square of the residuals as a measure of variance and the model residual degrees of freedom as a measure of the mean (since the expected value of a Poisson distribution is the same as its degrees of freedom).</p>
+<p><span class="math display">\[ \phi = \frac{RSS}{df},\]</span></p>
+<p>where <span class="math inline">\(df=n−k\)</span> and <span class="math inline">\(k\)</span> is the number of estimated model coefficients.</p>
+<pre class="r"><code>&gt; Resid &lt;- -1*sweep(lambda,2,dat$y,&#39;-&#39;)/sqrt(lambda)
+&gt; RSS&lt;-apply(Resid^2,1,sum)
+&gt; (df&lt;-nrow(dat)-ncol(coefs))
+[1] 18
+&gt; 
+&gt; Disp &lt;- RSS/df
+&gt; data.frame(Median=median(Disp), Mean=mean(Disp), HPDinterval(as.mcmc(Disp)),
++            HPDinterval(as.mcmc(Disp),p=0.5))
+       Median     Mean     lower    upper   lower.1  upper.1
+var1 1.053527 1.110853 0.9299722 1.449502 0.9300381 1.053579</code></pre>
+<p>We can incorporate the dispersion statistic directly into <code>JAGS</code>.</p>
+<pre class="r"><code>&gt; dat.list &lt;- with(dat,list(Y=y, X=x,N=nrow(dat)))
+&gt; modelString=&quot;
++ model {
++   for (i in 1:N) {
++      Y[i] ~ dpois(lambda[i])
++      eta[i] &lt;- beta0 + beta1*X[i]
++      log(lambda[i]) &lt;- eta[i]
++      expY[i] &lt;- lambda[i]
++      varY[i] &lt;- lambda[i]
++    Resid[i] &lt;- (Y[i] - expY[i])/sqrt(varY[i]) 
++   }
++   beta0 ~ dnorm(0,1.0E-06)
++   beta1 ~ dnorm(0,1.0E-06)
++   RSS &lt;- sum(pow(Resid,2))
++   df &lt;- N-2
++   phi &lt;- RSS/df
++ } 
++ &quot;
+&gt; 
+&gt; writeLines(modelString, con=&#39;modelpois_disp.txt&#39;)
+&gt; 
+&gt; params &lt;- c(&#39;beta0&#39;,&#39;beta1&#39;,&#39;phi&#39;)
+&gt; nChains = 2
+&gt; burnInSteps = 5000
+&gt; thinSteps = 1
+&gt; numSavedSteps = 20000
+&gt; nIter = ceiling((numSavedSteps * thinSteps)/nChains)
+&gt; 
+&gt; dat.P.jags &lt;- jags(data=dat.list,model.file=&#39;modelpois_disp.txt&#39;, param=params,
++                    n.chains=nChains, n.iter=nIter, n.burnin=burnInSteps, n.thin=thinSteps)
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 20
+   Unobserved stochastic nodes: 2
+   Total graph size: 171
+
+Initializing model
+&gt; 
+&gt; print(dat.P.jags)
+Inference for Bugs model at &quot;modelpois_disp.txt&quot;, fit using jags,
+ 2 chains, each with 10000 iterations (first 5000 discarded)
+ n.sims = 10000 iterations saved
+         mu.vect sd.vect   2.5%    25%    50%    75%  97.5%  Rhat n.eff
+beta0      0.552   0.256  0.039  0.382  0.557  0.724  1.042 1.001 10000
+beta1      0.111   0.019  0.074  0.099  0.112  0.124  0.147 1.001  2800
+phi        1.105   0.246  0.934  0.977  1.048  1.169  1.581 1.001 10000
+deviance  88.354   2.633 86.368 86.896 87.709 89.074 93.897 1.002  4300
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 3.5 and DIC = 91.8
+DIC is an estimate of expected predictive error (lower deviance is better).</code></pre>
+<p>The dispersion statistic is close to <span class="math inline">\(1\)</span> and thus there is no evidence that the data were overdispersed. The Poisson distribution was therefore appropriate.</p>
+</div>
+<div id="exploring-the-model-parameters" class="section level2">
+<h2>Exploring the model parameters</h2>
+<p>If there was any evidence that the assumptions had been violated or the model was not an appropriate fit, then we would need to reconsider the model and start the process again. In this case, there is no evidence that the test will be unreliable so we can proceed to explore the test statistics.</p>
+<pre class="r"><code>&gt; library(coda)
+&gt; print(dat.P.jags)
+Inference for Bugs model at &quot;modelpois_disp.txt&quot;, fit using jags,
+ 2 chains, each with 10000 iterations (first 5000 discarded)
+ n.sims = 10000 iterations saved
+         mu.vect sd.vect   2.5%    25%    50%    75%  97.5%  Rhat n.eff
+beta0      0.552   0.256  0.039  0.382  0.557  0.724  1.042 1.001 10000
+beta1      0.111   0.019  0.074  0.099  0.112  0.124  0.147 1.001  2800
+phi        1.105   0.246  0.934  0.977  1.048  1.169  1.581 1.001 10000
+deviance  88.354   2.633 86.368 86.896 87.709 89.074 93.897 1.002  4300
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 3.5 and DIC = 91.8
+DIC is an estimate of expected predictive error (lower deviance is better).
+&gt; 
+&gt; library(plyr)
+&gt; adply(dat.P.jags$BUGSoutput$sims.matrix[,1:2], 2, function(x) {
++   data.frame(Median=median(x), Mean=mean(x), HPDinterval(as.mcmc(x)), HPDinterval(as.mcmc(x),p=0.5))
++ })
+     X1    Median      Mean      lower     upper    lower.1   upper.1
+1 beta0 0.5570252 0.5517525 0.03871735 1.0423628 0.39092213 0.7317579
+2 beta1 0.1115363 0.1113176 0.07499903 0.1484004 0.09893134 0.1239861
+&gt; 
+&gt; #on original scale
+&gt; adply(exp(dat.P.jags$BUGSoutput$sims.matrix[,1:2]), 2, function(x) {
++   data.frame(Median=median(x), Mean=mean(x), HPDinterval(as.mcmc(x)), HPDinterval(as.mcmc(x),p=0.5))
++ })
+     X1   Median     Mean     lower    upper  lower.1  upper.1
+1 beta0 1.745472 1.793464 0.9803783 2.734057 1.423789 2.013575
+2 beta1 1.117994 1.117948 1.0778831 1.159977 1.101510 1.129458</code></pre>
+<p><strong>Conclusions</strong>: We would reject the null hypothesis of no effect of <span class="math inline">\(x\)</span> on <span class="math inline">\(y\)</span>. An increase in x is associated with a significant linear increase (positive slope) in the abundance of y. Every <span class="math inline">\(1\)</span> unit increase in <span class="math inline">\(x\)</span> results in a log <span class="math inline">\(0.11\)</span> unit increase in <span class="math inline">\(y\)</span>. We usually express this in terms of abundance rather than log abundance, so every <span class="math inline">\(1\)</span> unit increase in <span class="math inline">\(x\)</span> results in a ($e^{ 0.11} = 1.12 $) <span class="math inline">\(1.12\)</span> unit increase in the abundance of <span class="math inline">\(y\)</span>.</p>
+</div>
+<div id="explorations-of-the-trends" class="section level2">
+<h2>Explorations of the trends</h2>
+<p>A measure of the strength of the relationship can be obtained according to:</p>
+<p><span class="math display">\[ R^2 = 1 - \frac{\text{RSS}_{model}}{\text{RSS}_{null}}\]</span></p>
+<pre class="r"><code>&gt; Xmat &lt;- model.matrix(~x, data=dat)
+&gt; #expected values on a log scale
+&gt; eta&lt;-coefs %*% t(Xmat)
+&gt; #expected value on response scale
+&gt; lambda &lt;- exp(eta)
+&gt; #calculate the raw SS residuals
+&gt; SSres &lt;- apply((-1*(sweep(lambda,2,dat$y,&#39;-&#39;)))^2,1,sum)
+&gt; SSres.null &lt;- sum((dat$y - mean(dat$y))^2)
+&gt; #OR 
+&gt; SSres.null &lt;- crossprod(dat$y - mean(dat$y))
+&gt; #calculate the model r2
+&gt; 1-mean(SSres)/SSres.null
+          [,1]
+[1,] 0.6569594</code></pre>
+<p><strong>Conclusions</strong>: <span class="math inline">\(65\)</span>% of the variation in <span class="math inline">\(y\)</span> abundance can be explained by its relationship with <span class="math inline">\(x\)</span>. We can also do it directly into <code>JAGS</code>.</p>
+<pre class="r"><code>&gt; dat.list &lt;- with(dat,list(Y=y, X=x,N=nrow(dat)))
+&gt; modelString=&quot;
++ model {
++   for (i in 1:N) {
++      Y[i] ~ dpois(lambda[i])
++      eta[i] &lt;- beta0 + beta1*X[i]
++      log(lambda[i]) &lt;- eta[i]
++      res[i] &lt;- Y[i] - lambda[i]
++      resnull[i] &lt;- Y[i] - meanY
++   }
++   meanY &lt;- mean(Y)
++   beta0 ~ dnorm(0,1.0E-06)
++   beta1 ~ dnorm(0,1.0E-06)
++   RSS &lt;- sum(res^2)
++   RSSnull &lt;- sum(resnull^2)
++   r2 &lt;- 1-RSS/RSSnull
++ } 
++ &quot;
+&gt; 
+&gt; writeLines(modelString, con=&#39;modelpois_disp_r2.txt&#39;)
+&gt; 
+&gt; params &lt;- c(&#39;beta0&#39;,&#39;beta1&#39;,&#39;r2&#39;)
+&gt; nChains = 2
+&gt; burnInSteps = 5000
+&gt; thinSteps = 1
+&gt; numSavedSteps = 20000
+&gt; nIter = ceiling((numSavedSteps * thinSteps)/nChains)
+&gt; 
+&gt; dat.P.jags &lt;- jags(data=dat.list,model.file=&#39;modelpois_disp_r2.txt&#39;, param=params,
++                    n.chains=nChains, n.iter=nIter, n.burnin=burnInSteps, n.thin=thinSteps)
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 20
+   Unobserved stochastic nodes: 2
+   Total graph size: 150
+
+Initializing model
+&gt; 
+&gt; print(dat.P.jags)
+Inference for Bugs model at &quot;modelpois_disp_r2.txt&quot;, fit using jags,
+ 2 chains, each with 10000 iterations (first 5000 discarded)
+ n.sims = 10000 iterations saved
+         mu.vect sd.vect   2.5%    25%    50%    75%  97.5%  Rhat n.eff
+beta0      0.547   0.257  0.024  0.379  0.556  0.721  1.032 1.001  3900
+beta1      0.112   0.019  0.077  0.100  0.112  0.125  0.150 1.001  7000
+r2         0.655   0.057  0.510  0.640  0.672  0.690  0.701 1.001 10000
+deviance  88.383   2.776 86.372 86.904 87.733 89.122 93.692 1.003  6200
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 3.9 and DIC = 92.2
+DIC is an estimate of expected predictive error (lower deviance is better).</code></pre>
+<p>Finally, we will create a summary plot.</p>
+<pre class="r"><code>&gt; par(mar = c(4, 5, 0, 0))
+&gt; plot(y ~ x, data = dat, type = &quot;n&quot;, ann = F, axes = F)
+&gt; points(y ~ x, data = dat, pch = 16)
+&gt; xs &lt;- seq(min(dat$x,na.rm=TRUE),max(dat$x,na.rm=TRUE), l = 1000)
+&gt; Xmat &lt;- model.matrix(~xs)
+&gt; eta&lt;-coefs %*% t(Xmat)
+&gt; ys &lt;- exp(eta)
+&gt; library(plyr)
+&gt; library(coda)
+&gt; data.tab &lt;- adply(ys,2,function(x) {
++   data.frame(Median=median(x), HPDinterval(as.mcmc(x)))
++ })
+&gt; data.tab &lt;- cbind(x=xs,data.tab)
+&gt; points(Median ~ x, data=data.tab,col = &quot;black&quot;, type = &quot;l&quot;)
+&gt; lines(lower ~ x, data=data.tab,col = &quot;black&quot;, type = &quot;l&quot;, lty = 2)
+&gt; lines(upper ~ x, data=data.tab,col = &quot;black&quot;, type = &quot;l&quot;, lty = 2)
+&gt; 
+&gt; axis(1)
+&gt; mtext(&quot;X&quot;, 1, cex = 1.5, line = 3)
+&gt; axis(2, las = 2)
+&gt; mtext(&quot;Abundance of Y&quot;, 2, cex = 1.5, line = 3)
+&gt; box(bty = &quot;l&quot;)</code></pre>
+<p><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/model_code_v2_plot-1.png" width="672" /></p>
+</div>
+<div id="full-log-likelihood-function" class="section level2">
+<h2>Full log-likelihood function</h2>
+<p>Now lets try it by specifying log-likelihood and the zero trick. When applying this trick, we need to manually calculate the deviance as the inbuilt deviance will be based on the log-likelihood of estimating the zeros (as part of the zero trick) rather than the deviance of the intended model. The one advantage of the zero trick is that the Deviance and thus DIC, AIC provided by <code>R2jags</code> will be incorrect. Hence, they too need to be manually defined within <code>JAGS</code> I suspect that the AIC calculation I have used is incorrect.</p>
+<pre class="r"><code>&gt; Xmat &lt;- model.matrix(~x, dat)
+&gt; nX &lt;- ncol(Xmat)
+&gt; dat.list2 &lt;- with(dat,list(Y=y, X=Xmat,N=nrow(dat), mu=rep(0,nX),
++                   Sigma=diag(1.0E-06,nX), zeros=rep(0,nrow(dat)), C=10000))
+&gt; modelString=&quot;
++ model {
++   for (i in 1:N) {
++      zeros[i] ~ dpois(zeros.lambda[i])
++      zeros.lambda[i] &lt;- -ll[i] + C     
++      ll[i] &lt;- Y[i]*log(lambda[i]) - lambda[i] - loggam(Y[i]+1)
++      eta[i] &lt;- inprod(beta[], X[i,])
++      log(lambda[i]) &lt;- eta[i]
++     llm[i] &lt;- Y[i]*log(meanlambda) - meanlambda - loggam(Y[i]+1)
++   }
++   meanlambda &lt;- mean(lambda)
++   beta ~ dmnorm(mu[],Sigma[,])
++   dev &lt;- sum(-2*ll)
++   pD &lt;- mean(dev)-sum(-2*llm)
++   AIC &lt;- min(dev+(2*pD))
++ } 
++ &quot;
+&gt; 
+&gt; writeLines(modelString, con=&#39;modelpois_ll.txt&#39;)
+&gt; 
+&gt; params &lt;- c(&#39;beta&#39;,&#39;dev&#39;,&#39;AIC&#39;)
+&gt; nChains = 2
+&gt; burnInSteps = 5000
+&gt; thinSteps = 1
+&gt; numSavedSteps = 20000
+&gt; nIter = ceiling((numSavedSteps * thinSteps)/nChains)
+&gt; 
+&gt; dat.P.jags3 &lt;- jags(data=dat.list2,model.file=&#39;modelpois_ll.txt&#39;, param=params,
++                    n.chains=nChains, n.iter=nIter, n.burnin=burnInSteps, n.thin=thinSteps)
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 20
+   Unobserved stochastic nodes: 1
+   Total graph size: 353
+
+Initializing model
+&gt; 
+&gt; print(dat.P.jags3)
+Inference for Bugs model at &quot;modelpois_ll.txt&quot;, fit using jags,
+ 2 chains, each with 10000 iterations (first 5000 discarded)
+ n.sims = 10000 iterations saved
+            mu.vect sd.vect       2.5%        25%        50%        75%
+AIC          13.728   4.725      9.624     10.548     11.952     15.158
+beta[1]       0.481   0.259     -0.079      0.319      0.506      0.669
+beta[2]       0.116   0.019      0.084      0.103      0.114      0.128
+dev          88.382   2.009     86.361     86.883     87.731     89.265
+deviance 400088.382   2.009 400086.361 400086.883 400087.731 400089.265
+              97.5%  Rhat n.eff
+AIC          26.878 1.016   180
+beta[1]       0.922 1.037    49
+beta[2]       0.155 1.029    60
+dev          94.071 1.009   300
+deviance 400094.071 1.000     1
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 2.0 and DIC = 400090.4
+DIC is an estimate of expected predictive error (lower deviance is better).</code></pre>
+</div>
+</div>
+<div id="negative-binomial" class="section level1">
+<h1>Negative binomial</h1>
+<p>The following equations are provided since in Bayesian modelling, it is occasionally necessary to directly define the log-likelihood calculations (particularly for zero-inflated models and other mixture models).</p>
+<p><span class="math display">\[ f(y \mid r, p) = \frac{\Gamma(y+r)}{\Gamma(r)\Gamma(y+1)}p^r(1-p)^y,\]</span></p>
+<p>where <span class="math inline">\(p\)</span> is the probability of <span class="math inline">\(y\)</span> successes until <span class="math inline">\(r\)</span> failures. If, we make <span class="math inline">\(p=\frac{\text{size}}{\text{size}+\mu}\)</span>, then we can define the function in terms of <span class="math inline">\(\mu\)</span>:</p>
+<p><span class="math display">\[ \mu = \frac{r(1-p)}{p},\]</span></p>
+<p>where <span class="math inline">\(E[Y]=\mu\)</span>, <span class="math inline">\(Var(Y)=\mu + \frac{\mu^2}{r}\)</span>.</p>
+<div id="data-generation-1" class="section level2">
+<h2>Data generation</h2>
+<p>Lets say we wanted to model the abundance of an item (<span class="math inline">\(y\)</span>) against a continuous predictor (<span class="math inline">\(x\)</span>). As this section is mainly about the generation of artificial data (and not specifically about what to do with the data), understanding the actual details are optional and can be safely skipped.</p>
+<pre class="r"><code>&gt; set.seed(37) #16 #35
+&gt; #The number of samples
+&gt; n.x &lt;- 20
+&gt; #Create x values that at uniformly distributed throughout the rate of 1 to 20
+&gt; x &lt;- sort(runif(n = n.x, min = 1, max =20))
+&gt; mm &lt;- model.matrix(~x)
+&gt; intercept &lt;- 0.6
+&gt; slope=0.1
+&gt; #The linear predictor
+&gt; linpred &lt;- mm %*% c(intercept,slope)
+&gt; #Predicted y values
+&gt; lambda &lt;- exp(linpred)
+&gt; #Add some noise and make binomial
+&gt; y &lt;- rnbinom(n=n.x, mu=lambda, size=1)
+&gt; dat.nb &lt;- data.frame(y,x)</code></pre>
+<p>When counts are all very large (not close to <span class="math inline">\(0\)</span>) and their ranges do not span orders of magnitude, they take on very Gaussian properties (symmetrical distribution and variance independent of the mean). Given that models based on the Gaussian distribution are more optimized and recognized than Generalized Linear Models, it can be prudent to adopt Gaussian models for such data. Hence it is a good idea to first explore whether a Poisson or Negative Binomial model is likely to be more appropriate than a standard Gaussian model. Recall from Poisson regression, there are five main potential models that we could consider fitting to these data.</p>
+<pre class="r"><code>&gt; hist(dat$x)</code></pre>
+<p><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/expl_data1_negbin-1.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; #now for the scatterplot
+&gt; plot(y~x, dat.nb, log=&quot;y&quot;)
+&gt; with(dat.nb, lines(lowess(y~x)))</code></pre>
+<p><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/expl_data1_negbin-2.png" width="672" /></p>
+<p><strong>Conclusions</strong>: the predictor (<span class="math inline">\(x\)</span>) does not display any skewness or other issues that might lead to non-linearity. The lowess smoother on the scatterplot does not display major deviations from a straight line and thus linearity is satisfied. Violations of linearity could be addressed by either:</p>
+<ul>
+<li><p>define a non-linear linear predictor (such as a polynomial, spline or other non-linear function).</p></li>
+<li><p>transform the scale of the predictor variables.</p></li>
+</ul>
+<p>Although we have already established that there are few zeros in the data (and thus overdispersion is unlikely to be an issue), we can also explore this by comparing the number of zeros in the data to the number of zeros that would be expected from a Poisson distribution with a mean equal to the mean count of the data.</p>
+<pre class="r"><code>&gt; #proportion of 0&#39;s in the data
+&gt; dat.nb.tab&lt;-table(dat.nb$y==0)
+&gt; dat.nb.tab/sum(dat.nb.tab)
+
+FALSE  TRUE 
+ 0.95  0.05 
+&gt; 
+&gt; #proportion of 0&#39;s expected from a Poisson distribution
+&gt; mu &lt;- mean(dat.nb$y)
+&gt; cnts &lt;- rpois(1000, mu)
+&gt; dat.nb.tabE &lt;- table(cnts == 0)
+&gt; dat.nb.tabE/sum(dat.nb.tabE)
+
+FALSE 
+    1 </code></pre>
+<p>In the above, the value under <code>FALSE</code> is the proportion of non-zero values in the data and the value under <code>TRUE</code> is the proportion of zeros in the data. In this example, the proportion of zeros observed is similar to the proportion expected. Indeed, there was only a single zero observed. Hence it is likely that if there is overdispersion it is unlikely to be due to excessive zeros.</p>
+</div>
+<div id="model-fitting-1" class="section level2">
+<h2>Model fitting</h2>
+<p><span class="math display">\[ y_i \sim \text{NegBin}(p_i,r),\]</span></p>
+<p>where <span class="math inline">\(p_i=\frac{r}{r+\lambda_i}\)</span>, with <span class="math inline">\(\log(\lambda_i)=\beta_0+\beta_1x_{i}\)</span> and <span class="math inline">\(\beta_0,\beta_1 \sim N(0, 10000)\)</span>, <span class="math inline">\(r \sim \text{Unif}(0.001,1000)\)</span>.</p>
+<pre class="r"><code>&gt; dat.nb.list &lt;- with(dat.nb,list(Y=y, X=x,N=nrow(dat.nb)))
+&gt; modelString=&quot;
++ model {
++   for (i in 1:N) {
++      Y[i] ~ dnegbin(p[i],size)
++      p[i] &lt;- size/(size+lambda[i])
++      log(lambda[i]) &lt;- beta0 + beta1*X[i]
++   }
++   beta0 ~ dnorm(0,1.0E-06)
++   beta1 ~ dnorm(0,1.0E-06)
++   size ~ dunif(0.001,1000)
++   theta &lt;- pow(1/mean(p),2)
++   scaleparam &lt;- mean((1-p)/p) 
++ } 
++ &quot;
+&gt; writeLines(modelString, con=&#39;modelnbin.txt&#39;)
+&gt; 
+&gt; params &lt;- c(&#39;beta0&#39;,&#39;beta1&#39;, &#39;size&#39;,&#39;theta&#39;,&#39;scaleparam&#39;)
+&gt; nChains = 2
+&gt; burnInSteps = 5000
+&gt; thinSteps = 1
+&gt; numSavedSteps = 20000
+&gt; nIter = ceiling((numSavedSteps * thinSteps)/nChains)
+&gt; 
+&gt; dat.NB.jags &lt;- jags(data=dat.nb.list,model.file=&#39;modelnbin.txt&#39;, param=params,
++                    n.chains=nChains, n.iter=nIter, n.burnin=burnInSteps, n.thin=thinSteps)
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 20
+   Unobserved stochastic nodes: 3
+   Total graph size: 157
+
+Initializing model</code></pre>
+</div>
+<div id="model-evaluation-1" class="section level2">
+<h2>Model evaluation</h2>
+<pre class="r"><code>&gt; denplot(dat.NB.jags, parms = c(&quot;beta0&quot;,&quot;beta1&quot;,&quot;size&quot;))</code></pre>
+<p><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/mcmc_diag_nbin-1.png" width="672" /></p>
+<pre class="r"><code>&gt; traplot(dat.NB.jags, parms = c(&quot;beta0&quot;,&quot;beta1&quot;,&quot;size&quot;))</code></pre>
+<p><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/mcmc_diag_nbin-2.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; raftery.diag(as.mcmc(dat.NB.jags))
+[[1]]
+
+Quantile (q) = 0.025
+Accuracy (r) = +/- 0.005
+Probability (s) = 0.95 
+                                                  
+            Burn-in  Total Lower bound  Dependence
+            (M)      (N)   (Nmin)       factor (I)
+ beta0      16       17518 3746         4.68      
+ beta1      24       28713 3746         7.66      
+ deviance   3        4198  3746         1.12      
+ scaleparam 16       16290 3746         4.35      
+ size       4        5038  3746         1.34      
+ theta      16       16244 3746         4.34      
+
+
+[[2]]
+
+Quantile (q) = 0.025
+Accuracy (r) = +/- 0.005
+Probability (s) = 0.95 
+                                                  
+            Burn-in  Total Lower bound  Dependence
+            (M)      (N)   (Nmin)       factor (I)
+ beta0      18       20025 3746         5.35      
+ beta1      24       21072 3746         5.63      
+ deviance   3        4267  3746         1.14      
+ scaleparam 18       19920 3746         5.32      
+ size       3        4375  3746         1.17      
+ theta      20       20682 3746         5.52      
+&gt; 
+&gt; autocorr.diag(as.mcmc(dat.NB.jags))
+              beta0        beta1     deviance  scaleparam        size
+Lag 0   1.000000000  1.000000000  1.000000000  1.00000000 1.000000000
+Lag 1   0.855250119  0.856542892  0.566377262  0.33360033 0.684520361
+Lag 5   0.519024321  0.521535488  0.163024546  0.07618281 0.220180993
+Lag 10  0.276801196  0.280283232  0.025179110  0.02814049 0.039259726
+Lag 50 -0.008060569 -0.004454124 -0.003876422 -0.01103395 0.006904325
+             theta
+Lag 0   1.00000000
+Lag 1   0.26024619
+Lag 5   0.05872969
+Lag 10  0.02940084
+Lag 50 -0.01349378</code></pre>
+<p>We now explore the goodness of fit of the models via the residuals and deviance. We could calculate the Pearsons’s residuals within the <code>JAGS</code> model. Alternatively, we could use the parameters to generate the residuals outside of <code>JAGS</code>.</p>
+<pre class="r"><code>&gt; #extract the samples for the two model parameters
+&gt; coefs &lt;- dat.NB.jags$BUGSoutput$sims.matrix[,1:2]
+&gt; size &lt;- dat.NB.jags$BUGSoutput$sims.matrix[,&#39;size&#39;]
+&gt; Xmat &lt;- model.matrix(~x, data=dat.nb)
+&gt; #expected values on a log scale
+&gt; eta&lt;-coefs %*% t(Xmat)
+&gt; #expected value on response scale
+&gt; lambda &lt;- exp(eta)
+&gt; varY &lt;- lambda + (lambda^2)/size
+&gt; #sweep across rows and then divide by lambda
+&gt; Resid &lt;- -1*sweep(lambda,2,dat.nb$y,&#39;-&#39;)/sqrt(varY)
+&gt; #plot residuals vs expected values
+&gt; plot(apply(Resid,2,mean)~apply(eta,2,mean))</code></pre>
+<p><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/model2_mcmc_diag_nbin-1.png" width="672" /></p>
+<p>Now we will compare the sum of squared residuals to the sum of squares residuals that would be expected from a Negative binomial distribution matching that estimated by the model. Essentially this is estimating how well the Negative binomial distribution, the log-link function and the linear model approximates the observed data.</p>
+<pre class="r"><code>&gt; SSres&lt;-apply(Resid^2,1,sum)
+&gt; 
+&gt; #generate a matrix of draws from a negative binomial distribution
+&gt; # the matrix is the same dimensions as pi and uses the probabilities of pi
+&gt; YNew &lt;- matrix(rnbinom(length(lambda),mu=lambda, size=size),nrow=nrow(lambda))
+&gt; Resid1&lt;-(lambda - YNew)/sqrt(varY)
+&gt; SSres.sim&lt;-apply(Resid1^2,1,sum)
+&gt; mean(SSres.sim&gt;SSres, na.rm = T)
+[1] 0.4163</code></pre>
+<p><strong>Conclusions</strong>: the Bayesian p-value is approximately <span class="math inline">\(0.5\)</span>, suggesting that there is a good fit of the model to the data.</p>
+<p>Unfortunately, unlike with linear models (Gaussian family), the expected distribution of data (residuals) varies over the range of fitted values for numerous (often competing) ways that make diagnosing (and attributing causes thereof) miss-specified generalized linear models from standard residual plots very difficult. The use of standardized (Pearson) residuals or deviance residuals can partly address this issue, yet they still do not offer completely consistent diagnoses across all issues (miss-specified model, over-dispersion, zero-inflation). An alternative approach is to use simulated data from the model posteriors to calculate an empirical cumulative density function from which residuals are are generated as values corresponding to the observed data along the density function.</p>
+<pre class="r"><code>&gt; #extract the samples for the two model parameters
+&gt; coefs &lt;- dat.NB.jags$BUGSoutput$sims.matrix[,1:2]
+&gt; size &lt;- dat.NB.jags$BUGSoutput$sims.matrix[,&#39;size&#39;]
+&gt; Xmat &lt;- model.matrix(~x, data=dat.nb)
+&gt; #expected values on a log scale
+&gt; eta&lt;-coefs %*% t(Xmat)
+&gt; #expected value on response scale
+&gt; lambda &lt;- exp(eta)
+&gt; 
+&gt; simRes &lt;- function(lambda, data,n=250, plot=T, family=&#39;negbin&#39;, size=NULL) {
++  require(gap)
++  N = nrow(data)
++  sim = switch(family,
++     &#39;poisson&#39; = matrix(rpois(n*N,apply(lambda,2,mean)),ncol=N, byrow=TRUE),
++     &#39;negbin&#39; = matrix(MASS:::rnegbin(n*N,apply(lambda,2,mean),size),ncol=N, byrow=TRUE)
++  )
++  a = apply(sim + runif(n,-0.5,0.5),2,ecdf)
++  resid&lt;-NULL
++  for (i in 1:nrow(data)) resid&lt;-c(resid,a[[i]](data$y[i] + runif(1 ,-0.5,0.5)))
++  if (plot==T) {
++    par(mfrow=c(1,2))
++    gap::qqunif(resid,pch = 2, bty = &quot;n&quot;,
++    logscale = F, col = &quot;black&quot;, cex = 0.6, main = &quot;QQ plot residuals&quot;,
++    cex.main = 1, las=1)
++    plot(resid~apply(lambda,2,mean), xlab=&#39;Predicted value&#39;, ylab=&#39;Standardized residual&#39;, las=1)
++  }
++  resid
++ }
+&gt; 
+&gt; simRes(lambda,dat.nb, family=&#39;negbin&#39;, size=mean(size))</code></pre>
+<p><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/model2_mcmc_res2_nbin-1.png" width="672" /></p>
+<pre><code> [1] 0.368 0.944 0.456 0.788 0.148 0.928 0.136 0.704 0.164 0.800 0.500 0.464
+[13] 0.100 0.216 0.680 0.212 0.000 0.676 0.924 0.852</code></pre>
+<p>The trend (black symbols) in the qq-plot does not appear to be overly non-linear (matching the ideal red line well), suggesting that the model is not overdispersed. The spread of standardized (simulated) residuals in the residual plot do not appear overly non-uniform. That is there is not trend in the residuals. Furthermore, there is not a concentration of points close to <span class="math inline">\(1\)</span> or <span class="math inline">\(0\)</span> (which would imply overdispersion).</p>
+</div>
+<div id="exploring-the-model-parameters-1" class="section level2">
+<h2>Exploring the model parameters</h2>
+<p>If there was any evidence that the assumptions had been violated or the model was not an appropriate fit, then we would need to reconsider the model and start the process again. In this case, there is no evidence that the test will be unreliable so we can proceed to explore the test statistics. As with most Bayesian models, it is best to base conclusions on medians rather than means.</p>
+<pre class="r"><code>&gt; print(dat.NB.jags)
+Inference for Bugs model at &quot;modelnbin.txt&quot;, fit using jags,
+ 2 chains, each with 10000 iterations (first 5000 discarded)
+ n.sims = 10000 iterations saved
+           mu.vect sd.vect    2.5%     25%     50%     75%   97.5%  Rhat n.eff
+beta0        0.731   0.395  -0.023   0.470   0.717   0.984   1.534 1.001 10000
+beta1        0.097   0.032   0.034   0.077   0.098   0.118   0.158 1.001 10000
+scaleparam   2.787   1.756   0.704   1.670   2.412   3.444   7.089 1.001 10000
+size         3.255   2.190   1.055   1.941   2.697   3.853   9.050 1.001 10000
+theta       12.548  12.474   2.669   5.892   9.157  14.790  43.249 1.001 10000
+deviance   113.053   2.691 110.093 111.115 112.352 114.190 120.305 1.002  2000
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 3.6 and DIC = 116.7
+DIC is an estimate of expected predictive error (lower deviance is better).
+&gt; 
+&gt; adply(dat.NB.jags$BUGSoutput$sims.matrix, 2, function(x) {
++   data.frame(Median=median(x), Mean=mean(x), HPDinterval(as.mcmc(x)), HPDinterval(as.mcmc(x),p=0.5))
++ })
+          X1       Median         Mean        lower       upper     lower.1
+1      beta0   0.71693048   0.73121205  -0.05129743   1.5032427   0.4523583
+2      beta1   0.09800852   0.09730699   0.03509028   0.1591976   0.0789372
+3   deviance 112.35178835 113.05255254 109.86520971 118.4814291 110.0898498
+4 scaleparam   2.41198253   2.78665197   0.33094006   5.9583607   1.2865037
+5       size   2.69653197   3.25545915   0.68960555   7.2146030   1.4202953
+6      theta   9.15704708  12.54776430   1.61632232  32.9116959   3.6489231
+      upper.1
+1   0.9610028
+2   0.1201659
+3 112.4668566
+4   2.8677393
+5   2.9988148
+6  10.3646959
+&gt; 
+&gt; #on original scale
+&gt; adply(exp(dat.NB.jags$BUGSoutput$sims.matrix[,1:2]), 2, function(x) {
++   data.frame(Median=median(x), Mean=mean(x), HPDinterval(as.mcmc(x)), HPDinterval(as.mcmc(x),p=0.5))
++ })
+     X1   Median     Mean     lower    upper  lower.1  upper.1
+1 beta0 2.048137 2.249960 0.8335273 4.249614 1.340384 2.309801
+2 beta1 1.102972 1.102753 1.0357132 1.172570 1.080463 1.125944</code></pre>
+<p><strong>Conclusions</strong>: We would reject the null hypothesis of no effect of <span class="math inline">\(x\)</span> on <span class="math inline">\(y\)</span>. An increase in x is associated with a significant linear increase (positive slope) in the abundance of <span class="math inline">\(y\)</span>. Every <span class="math inline">\(1\)</span> unit increase in <span class="math inline">\(x\)</span> results in a log <span class="math inline">\(0.09\)</span> unit increase in <span class="math inline">\(y\)</span>. We usually express this in terms of abundance rather than log abundance, so every <span class="math inline">\(1\)</span> unit increase in <span class="math inline">\(x\)</span> results in a ($e^{ 0.09} = 1.02 $) <span class="math inline">\(1.02\)</span> unit increase in the abundance of <span class="math inline">\(y\)</span>.</p>
+</div>
+<div id="explorations-of-the-trends-1" class="section level2">
+<h2>Explorations of the trends</h2>
+<p>A measure of the strength of the relationship can be obtained according to:</p>
+<p><span class="math display">\[ R^2 = 1 - \frac{\text{RSS}_{model}}{\text{RSS}_{null}}\]</span></p>
+<pre class="r"><code>&gt; Xmat &lt;- model.matrix(~x, data=dat.nb)
+&gt; #expected values on a log scale
+&gt; eta&lt;-coefs %*% t(Xmat)
+&gt; #expected value on response scale
+&gt; lambda &lt;- exp(eta)
+&gt; #calculate the raw SS residuals
+&gt; SSres &lt;- apply((-1*(sweep(lambda,2,dat.nb$y,&#39;-&#39;)))^2,1,sum)
+&gt; SSres.null &lt;- sum((dat.nb$y - mean(dat.nb$y))^2)
+&gt; #OR 
+&gt; SSres.null &lt;- crossprod(dat.nb$y - mean(dat.nb$y))
+&gt; #calculate the model r2
+&gt; 1-mean(SSres)/SSres.null
+         [,1]
+[1,] 0.270553</code></pre>
+<p><strong>Conclusions</strong>: <span class="math inline">\(27\)</span>% of the variation in <span class="math inline">\(y\)</span> abundance can be explained by its relationship with <span class="math inline">\(x\)</span>. We can also do it directly into <code>JAGS</code>.</p>
+<p>Finally, we will create a summary plot.</p>
+<pre class="r"><code>&gt; par(mar = c(4, 5, 0, 0))
+&gt; plot(y ~ x, data = dat.nb, type = &quot;n&quot;, ann = F, axes = F)
+&gt; points(y ~ x, data = dat.nb, pch = 16)
+&gt; xs &lt;- seq(min(dat.nb$x,na.rm=TRUE),max(dat.nb$x,na.rm=TRUE), l = 1000)
+&gt; Xmat &lt;- model.matrix(~xs)
+&gt; eta&lt;-coefs %*% t(Xmat)
+&gt; ys &lt;- exp(eta)
+&gt; library(plyr)
+&gt; library(coda)
+&gt; data.tab &lt;- adply(ys,2,function(x) {
++   data.frame(Median=median(x), HPDinterval(as.mcmc(x)))
++ })
+&gt; data.tab &lt;- cbind(x=xs,data.tab)
+&gt; points(Median ~ x, data=data.tab,col = &quot;black&quot;, type = &quot;l&quot;)
+&gt; lines(lower ~ x, data=data.tab,col = &quot;black&quot;, type = &quot;l&quot;, lty = 2)
+&gt; lines(upper ~ x, data=data.tab,col = &quot;black&quot;, type = &quot;l&quot;, lty = 2)
+&gt; 
+&gt; axis(1)
+&gt; mtext(&quot;X&quot;, 1, cex = 1.5, line = 3)
+&gt; axis(2, las = 2)
+&gt; mtext(&quot;Abundance of Y&quot;, 2, cex = 1.5, line = 3)
+&gt; box(bty = &quot;l&quot;)</code></pre>
+<p><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/model_code_v2_plot_nbin-1.png" width="672" /></p>
+</div>
+<div id="full-log-likelihood-function-1" class="section level2">
+<h2>Full log-likelihood function</h2>
+<p>Now lets try it by specifying log-likelihood and the zero trick. When applying this trick, we need to manually calculate the deviance as the inbuilt deviance will be based on the log-likelihood of estimating the zeros (as part of the zero trick) rather than the deviance of the intended model. The one advantage of the zero trick is that the Deviance and thus DIC, AIC provided by <code>R2jags</code> will be incorrect. Hence, they too need to be manually defined within <code>JAGS</code> I suspect that the AIC calculation I have used is incorrect.</p>
+<pre class="r"><code>&gt; Xmat &lt;- model.matrix(~x, dat.nb)
+&gt; nX &lt;- ncol(Xmat)
+&gt; dat.nb.list2 &lt;- with(dat.nb,list(Y=y, X=Xmat,N=nrow(dat.nb), mu=rep(0,nX),
++                   Sigma=diag(1.0E-06,nX), zeros=rep(0,nrow(dat.nb)), C=10000))
+&gt; modelString=&quot;
++ model {
++   for (i in 1:N) {
++      zeros[i] ~ dpois(zeros.lambda[i])
++      zeros.lambda[i] &lt;- -ll[i] + C     
++      ll[i] &lt;- loggam(Y[i]+size) - loggam(Y[i]+1) - loggam(size) + size*(log(p[i]) - log(p[i]+1)) - 
++               Y[i]*log(p[i]+1)
++      p[i] &lt;- size/lambda[i]
++      eta[i] &lt;- inprod(beta[], X[i,])
++      log(lambda[i]) &lt;- eta[i]
++   }
++   beta ~ dmnorm(mu[],Sigma[,])
++   size ~ dunif(0.001,1000)
++   dev &lt;- sum(-2*ll)
++ } 
++ &quot;
+&gt; 
+&gt; writeLines(modelString, con=&#39;modelnbin_ll.txt&#39;)
+&gt; 
+&gt; params &lt;- c(&#39;beta&#39;,&#39;dev&#39;)
+&gt; nChains = 2
+&gt; burnInSteps = 5000
+&gt; thinSteps = 1
+&gt; numSavedSteps = 20000
+&gt; nIter = ceiling((numSavedSteps * thinSteps)/nChains)
+&gt; 
+&gt; dat.NB.jags3 &lt;- jags(data=dat.nb.list2,model.file=&#39;modelnbin_ll.txt&#39;, param=params,
++                    n.chains=nChains, n.iter=nIter, n.burnin=burnInSteps, n.thin=thinSteps)
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 20
+   Unobserved stochastic nodes: 2
+   Total graph size: 453
+
+Initializing model
+&gt; 
+&gt; print(dat.NB.jags3)
+Inference for Bugs model at &quot;modelnbin_ll.txt&quot;, fit using jags,
+ 2 chains, each with 10000 iterations (first 5000 discarded)
+ n.sims = 10000 iterations saved
+            mu.vect sd.vect       2.5%        25%        50%        75%
+beta[1]       0.739   0.386      0.039      0.484      0.726      0.968
+beta[2]       0.096   0.031      0.034      0.077      0.096      0.116
+dev         112.830   2.548    110.074    111.037    112.105    113.842
+deviance 400112.830   2.548 400110.074 400111.037 400112.105 400113.842
+              97.5%  Rhat n.eff
+beta[1]       1.536 1.015   160
+beta[2]       0.153 1.010   230
+dev         119.701 1.002  1200
+deviance 400119.701 1.000     1
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 3.2 and DIC = 400116.1
+DIC is an estimate of expected predictive error (lower deviance is better).</code></pre>
+</div>
+</div>
+<div id="zero-inflated-poisson" class="section level1">
+<h1>Zero inflated Poisson</h1>
+<p>Zero-Inflation Poisson (ZIP) mixture model is defined as:</p>
+<p><span class="math display">\[ p(y_i \mid \theta, \lambda) = \begin{cases}
+  \theta + (1-\theta) \times \text{Pois}(0 \mid \lambda) &amp; \text{if } y_i = 0\\    
+  (1-\theta) \times \text{Pois}(y_i \mid \lambda) &amp; \text{if } y_i &gt; 0,    
+\end{cases}\]</span></p>
+<p>where <span class="math inline">\(\theta\)</span> is the probability of false values (zeros). Hence there is essentially two models coupled together (a mixture model) to yield an overall probability:</p>
+<ul>
+<li><p>when an observed response is zero (<span class="math inline">\(y_i=0\)</span>), it is the probability of getting a false value (zero) plus the probability of a true value multiplied probability of drawing a value of zero from a Poisson distribution of lambda.</p></li>
+<li><p>when an observed response is greater than <span class="math inline">\(0\)</span>, it is the probability of a true value multiplied probability of drawing that value from a Poisson distribution of lambda</p></li>
+</ul>
+<p>The above formulation indicates the same <span class="math inline">\(\lambda\)</span> for both the zeros and non-zeros components. In the model of zero values, we are essentially investigating whether the likelihood of false zeros is related to the linear predictor and then the greater than zero model investigates whether the counts are related to the linear predictor. However, we are typically less interested in modelling determinants of false zeros. Indeed, it is better that the likelihood of false zeros be unrelated to the linear predictor. For example, if excess (false zeros) are due to issues of detectability (individuals are present, just not detected), it is better that the detectability is not related to experimental treatments. Ideally, any detectability issues should be equal across all treatment levels. The expected value of <span class="math inline">\(Y\)</span> and the variance in <span class="math inline">\(Y\)</span> for a ZIP model are:</p>
+<p><span class="math display">\[ E[y_i] = \lambda \times (1-\theta),\]</span></p>
+<p><span class="math display">\[ \text{Var}(y_i) = \lambda \times (1-\theta) \times (1+\theta \times \lambda^2)\]</span></p>
+<div id="data-generation-2" class="section level2">
+<h2>Data generation</h2>
+<p>Lets say we wanted to model the abundance of an item (<span class="math inline">\(y\)</span>) against a continuous predictor (<span class="math inline">\(x\)</span>). As this section is mainly about the generation of artificial data (and not specifically about what to do with the data), understanding the actual details are optional and can be safely skipped.</p>
+<pre class="r"><code>&gt; set.seed(9) #34.5  #4 #10 #16 #17 #26
+&gt; #The number of samples
+&gt; n.x &lt;- 20
+&gt; #Create x values that at uniformly distributed throughout the rate of 1 to 20
+&gt; x &lt;- sort(runif(n = n.x, min = 1, max =20))
+&gt; mm &lt;- model.matrix(~x)
+&gt; intercept &lt;- 0.6
+&gt; slope=0.1
+&gt; #The linear predictor
+&gt; linpred &lt;- mm %*% c(intercept,slope)
+&gt; #Predicted y values
+&gt; lambda &lt;- exp(linpred)
+&gt; #Add some noise and make binomial
+&gt; library(gamlss.dist)
+&gt; #fixed latent binomial
+&gt; y&lt;- rZIP(n.x,lambda, 0.4)
+&gt; #latent binomial influenced by the linear predictor 
+&gt; #y&lt;- rZIP(n.x,lambda, 1-exp(linpred)/(1+exp(linpred)))
+&gt; dat.zip &lt;- data.frame(y,x)
+&gt; 
+&gt; summary(glm(y~x, dat.zip, family=&quot;poisson&quot;))
+
+Call:
+glm(formula = y ~ x, family = &quot;poisson&quot;, data = dat.zip)
+
+Deviance Residuals: 
+    Min       1Q   Median       3Q      Max  
+-4.6803  -2.0343   0.2895   1.2767   2.1153  
+
+Coefficients:
+            Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)  0.30200    0.25247   1.196    0.232    
+x            0.10691    0.01847   5.789 7.09e-09 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+(Dispersion parameter for poisson family taken to be 1)
+
+    Null deviance: 111.495  on 19  degrees of freedom
+Residual deviance:  79.118  on 18  degrees of freedom
+AIC: 126.64
+
+Number of Fisher Scoring iterations: 5
+&gt; 
+&gt; plot(glm(y~x, dat.zip, family=&quot;poisson&quot;))</code></pre>
+<p><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/generate_data_zip-1.png" width="672" /><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/generate_data_zip-2.png" width="672" /><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/generate_data_zip-3.png" width="672" /><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/generate_data_zip-4.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; library(pscl)
+&gt; summary(zeroinfl(y ~ x | 1, dist = &quot;poisson&quot;, data = dat.zip))
+
+Call:
+zeroinfl(formula = y ~ x | 1, data = dat.zip, dist = &quot;poisson&quot;)
+
+Pearson residuals:
+    Min      1Q  Median      3Q     Max 
+-1.1625 -0.9549  0.1955  0.8125  1.4438 
+
+Count model coefficients (poisson with log link):
+            Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)  0.88696    0.28825   3.077  0.00209 ** 
+x            0.09374    0.02106   4.450 8.58e-06 ***
+
+Zero-inflation model coefficients (binomial with logit link):
+            Estimate Std. Error z value Pr(&gt;|z|)
+(Intercept)  -0.4581     0.4725   -0.97    0.332
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1 
+
+Number of iterations in BFGS optimization: 8 
+Log-likelihood: -38.58 on 3 Df
+&gt; 
+&gt; plot(resid(zeroinfl(y ~ x | 1, dist = &quot;poisson&quot;, data = dat.zip))~fitted(zeroinfl(y ~ x | 1, dist = &quot;poisson&quot;)))</code></pre>
+<p><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/generate_data_zip-5.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; library(gamlss)
+&gt; summary(gamlss(y~x,data=dat.zip, family=ZIP))
+GAMLSS-RS iteration 1: Global Deviance = 77.8434 
+GAMLSS-RS iteration 2: Global Deviance = 77.1603 
+GAMLSS-RS iteration 3: Global Deviance = 77.1598 
+******************************************************************
+Family:  c(&quot;ZIP&quot;, &quot;Poisson Zero Inflated&quot;) 
+
+Call:  gamlss(formula = y ~ x, family = ZIP, data = dat.zip) 
+
+Fitting method: RS() 
+
+------------------------------------------------------------------
+Mu link function:  log
+Mu Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  0.88620    0.28819   3.075 0.006862 ** 
+x            0.09387    0.02105   4.458 0.000345 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+------------------------------------------------------------------
+Sigma link function:  logit
+Sigma Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept)  -0.4582     0.4725   -0.97    0.346
+
+------------------------------------------------------------------
+No. of observations in the fit:  20 
+Degrees of Freedom for the fit:  3
+      Residual Deg. of Freedom:  17 
+                      at cycle:  3 
+ 
+Global Deviance:     77.15981 
+            AIC:     83.15981 
+            SBC:     86.14701 
+******************************************************************
+&gt; 
+&gt; predict(gamlss(y~x,data=dat.zip, family=ZIP), se.fit=TRUE, what=&quot;mu&quot;)
+GAMLSS-RS iteration 1: Global Deviance = 77.8434 
+GAMLSS-RS iteration 2: Global Deviance = 77.1603 
+GAMLSS-RS iteration 3: Global Deviance = 77.1598 
+$fit
+        1         2         3         4         5         6         7         8 
+0.9952647 1.0233409 1.1897115 1.2189891 1.3490911 1.3644351 1.3748867 1.5164069 
+        9        10        11        12        13        14        15        16 
+1.6184170 1.6379917 1.6760055 1.6962694 1.7705249 1.8559090 1.8578379 1.8718850 
+       17        18        19        20 
+2.1712345 2.5536059 2.7205304 2.7472964 
+
+$se.fit
+        1         2         3         4         5         6         7         8 
+0.3826655 0.3724115 0.3131865 0.3031078 0.2601025 0.2552658 0.2520053 0.2112310 
+        9        10        11        12        13        14        15        16 
+0.1872286 0.1833232 0.1765049 0.1733169 0.1646100 0.1610460 0.1610499 0.1611915 
+       17        18        19        20 
+0.2055555 0.3248709 0.3848647 0.3947072 </code></pre>
+</div>
+<div id="exploratory-data-analysis-1" class="section level2">
+<h2>Exploratory data analysis</h2>
+<p>Check the distribution of the <span class="math inline">\(y\)</span> abundances.</p>
+<pre class="r"><code>&gt; hist(dat.zip$y)</code></pre>
+<p><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/expl_data1_zip-1.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; boxplot(dat.zip$y, horizontal=TRUE)
+&gt; rug(jitter(dat.zip$y))</code></pre>
+<p><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/expl_data1_zip-2.png" width="672" /></p>
+<p>There is definitely signs of non-normality that would warrant Poisson models. Further to that, there appears to be a large number of zeros that are likely to be the cause of overdispersion A zero-inflated Poisson model is likely to be one of the most effective for modeling these data. Lets now explore linearity by creating a histogram of the predictor variable (<span class="math inline">\(x\)</span>). Note, it is difficult to directly assess issues of linearity. Indeed, a scatterplot with lowess smoother will be largely influenced by the presence of zeros. One possible way of doing so is to explore the trend in the non-zero data.</p>
+<pre class="r"><code>&gt; hist(dat.zip$x)</code></pre>
+<p><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/expl_data2_zip-1.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; #now for the scatterplot
+&gt; plot(y~x, dat.zip)
+&gt; with(subset(dat.zip,y&gt;0), lines(lowess(y~x)))</code></pre>
+<p><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/expl_data2_zip-2.png" width="672" /></p>
+<p><strong>Conclusions</strong>: the predictor (<span class="math inline">\(x\)</span>) does not display any skewness or other issues that might lead to non-linearity. The lowess smoother on the non-zero data cloud does not display major deviations from a straight line and thus linearity is likely to be satisfied. Violations of linearity (whilst difficult to be certain about due to the unknown influence of the zeros) could be addressed by either:</p>
+<ul>
+<li><p>define a non-linear linear predictor (such as a polynomial, spline or other non-linear function).</p></li>
+<li><p>transform the scale of the predictor variables.</p></li>
+</ul>
+<p>Although we have already established that there are few zeros in the data (and thus overdispersion is unlikely to be an issue), we can also explore this by comparing the number of zeros in the data to the number of zeros that would be expected from a Poisson distribution with a mean equal to the mean count of the data.</p>
+<pre class="r"><code>&gt; #proportion of 0&#39;s in the data
+&gt; dat.zip.tab&lt;-table(dat.zip$y==0)
+&gt; dat.zip.tab/sum(dat.zip.tab)
+
+FALSE  TRUE 
+  0.6   0.4 
+&gt; 
+&gt; #proportion of 0&#39;s expected from a Poisson distribution
+&gt; mu &lt;- mean(dat.zip$y)
+&gt; cnts &lt;- rpois(1000, mu)
+&gt; dat.zip.tabE &lt;- table(cnts == 0)
+&gt; dat.zip.tabE/sum(dat.zip.tabE)
+
+FALSE  TRUE 
+0.982 0.018 </code></pre>
+<p>In the above, the value under <code>FALSE</code> is the proportion of non-zero values in the data and the value under TRUE is the proportion of zeros in the data. In this example, the proportion of zeros observed (<span class="math inline">\(45\)</span>%) far exceeds that that would have been expected (<span class="math inline">\(7.9\)</span>%). Hence it is highly likely that any models will be zero-inflated.</p>
+</div>
+<div id="model-fitting-2" class="section level2">
+<h2>Model fitting</h2>
+<p><span class="math display">\[ y_i \sim \text{ZIP}(\lambda_i, \theta),\]</span></p>
+<p>where <span class="math inline">\(\text{logit}(\theta) = \gamma_0\)</span>, <span class="math inline">\(\log(\lambda_i)=\eta_i\)</span>, with <span class="math inline">\(\eta_i=\beta_0+\beta_1x_{i}\)</span> and <span class="math inline">\(\beta_0,\beta_1,\gamma_0 \sim N(0, 10000)\)</span>.</p>
+<pre class="r"><code>&gt; dat.zip.list &lt;- with(dat.zip,list(Y=y, X=x,N=nrow(dat.nb), z=ifelse(y==0,0,1)))
+&gt; modelString=&quot;
++ model {
++   for (i in 1:N) {
++      z[i] ~ dbern(one.minus.theta)
++      Y[i] ~ dpois(lambda[i])
++      lambda[i] &lt;- z[i]*eta[i]
++      log(eta[i]) &lt;- beta0 + beta1*X[i]
++   }
++   one.minus.theta &lt;- 1-theta
++   logit(theta) &lt;- gamma0
++   beta0 ~ dnorm(0,1.0E-06)
++   beta1 ~ dnorm(0,1.0E-06)
++   gamma0 ~ dnorm(0,1.0E-06)
++ } 
++ &quot;
+&gt; writeLines(modelString, con=&#39;modelzip.txt&#39;)
+&gt; 
+&gt; params &lt;- c(&#39;beta0&#39;,&#39;beta1&#39;, &#39;gamma0&#39;,&#39;theta&#39;)
+&gt; nChains = 2
+&gt; burnInSteps = 5000
+&gt; thinSteps = 1
+&gt; numSavedSteps = 20000
+&gt; nIter = ceiling((numSavedSteps * thinSteps)/nChains)
+&gt; 
+&gt; dat.zip.jags &lt;- jags(data=dat.zip.list,model.file=&#39;modelzip.txt&#39;, param=params,
++                    n.chains=nChains, n.iter=nIter, n.burnin=burnInSteps, n.thin=thinSteps)
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 40
+   Unobserved stochastic nodes: 3
+   Total graph size: 149
+
+Initializing model</code></pre>
+</div>
+<div id="model-evaluation-2" class="section level2">
+<h2>Model evaluation</h2>
+<pre class="r"><code>&gt; denplot(dat.zip.jags, parms = c(&#39;beta&#39;, &#39;gamma0&#39;))</code></pre>
+<p><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/mcmc_diag_zip-1.png" width="672" /></p>
+<pre class="r"><code>&gt; traplot(dat.zip.jags, parms = c(&#39;beta&#39;, &#39;gamma0&#39;))</code></pre>
+<p><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/mcmc_diag_zip-2.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; raftery.diag(as.mcmc(dat.zip.jags))
+[[1]]
+
+Quantile (q) = 0.025
+Accuracy (r) = +/- 0.005
+Probability (s) = 0.95 
+                                                
+          Burn-in  Total Lower bound  Dependence
+          (M)      (N)   (Nmin)       factor (I)
+ beta0    20       20276 3746         5.41      
+ beta1    22       24038 3746         6.42      
+ deviance 4        4636  3746         1.24      
+ gamma0   5        5908  3746         1.58      
+ theta    5        5908  3746         1.58      
+
+
+[[2]]
+
+Quantile (q) = 0.025
+Accuracy (r) = +/- 0.005
+Probability (s) = 0.95 
+                                                
+          Burn-in  Total Lower bound  Dependence
+          (M)      (N)   (Nmin)       factor (I)
+ beta0    20       21336 3746         5.70      
+ beta1    20       22636 3746         6.04      
+ deviance 3        4267  3746         1.14      
+ gamma0   5        6078  3746         1.62      
+ theta    5        6078  3746         1.62      
+&gt; 
+&gt; autocorr.diag(as.mcmc(dat.zip.jags))
+             beta0       beta1    deviance      gamma0       theta
+Lag 0   1.00000000  1.00000000  1.00000000 1.000000000 1.000000000
+Lag 1   0.88627108  0.88426590  0.51799594 0.232408997 0.227686735
+Lag 5   0.58998005  0.59775827  0.19471855 0.002321179 0.001571686
+Lag 10  0.35846288  0.35888205  0.06697926 0.017561785 0.015598223
+Lag 50 -0.01753582 -0.01936659 -0.01212528 0.022040872 0.021016755</code></pre>
+</div>
+<div id="goodness-of-fit-1" class="section level2">
+<h2>Goodness of fit</h2>
+<pre class="r"><code>&gt; #extract the samples for the two model parameters
+&gt; coefs &lt;- dat.zip.jags$BUGSoutput$sims.matrix[,1:2]
+&gt; theta &lt;- dat.zip.jags$BUGSoutput$sims.matrix[,&#39;theta&#39;]
+&gt; Xmat &lt;- model.matrix(~x, data=dat.zip)
+&gt; #expected values on a log scale
+&gt; lambda&lt;-coefs %*% t(Xmat)
+&gt; #expected value on response scale
+&gt; eta &lt;- exp(lambda)
+&gt; expY &lt;- sweep(eta,1,(1-theta),&quot;*&quot;)
+&gt; varY &lt;- eta+sweep(eta^2,1,theta,&quot;*&quot;)
+&gt; varY &lt;- sweep(varY,1,(1-theta),&#39;*&#39;)
+&gt; #sweep across rows and then divide by lambda
+&gt; Resid &lt;- -1*sweep(expY,2,dat.zip$y,&#39;-&#39;)/sqrt(varY)
+&gt; #plot residuals vs expected values
+&gt; plot(apply(Resid,2,mean)~apply(eta,2,mean))</code></pre>
+<p><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/model2_mcmc_gof_zip-1.png" width="672" /></p>
+<p>Now we will compare the sum of squared residuals to the sum of squares residuals that would be expected from a Poisson distribution matching that estimated by the model. Essentially this is estimating how well the Poisson distribution, the log-link function and the linear model approximates the observed data. When doing so, we need to consider the expected value and variance of the zero-inflated poisson.</p>
+<pre class="r"><code>&gt; SSres&lt;-apply(Resid^2,1,sum, na.rm=T)
+&gt; 
+&gt; #generate a matrix of draws from a zero-inflated poisson (ZIP) distribution
+&gt; # the matrix is the same dimensions as lambda
+&gt; library(gamlss.dist)
+&gt; #YNew &lt;- matrix(rZIP(length(lambda),eta, theta),nrow=nrow(lambda))
+&gt; lambda &lt;- sweep(eta,1,ifelse(dat.zip$y==0,0,1),&#39;*&#39;)
+&gt; YNew &lt;- matrix(rpois(length(lambda),lambda),nrow=nrow(lambda))
+&gt; Resid1&lt;-(expY - YNew)/sqrt(varY)
+&gt; SSres.sim&lt;-apply(Resid1^2,1,sum)
+&gt; mean(SSres.sim&gt;SSres, na.rm = T)
+[1] 0.5619</code></pre>
+<p>Since it is difficult to diagnose many issues from the typical residuals we will now explore simulated residuals.</p>
+<pre class="r"><code>&gt; #extract the samples for the two model parameters
+&gt; coefs &lt;- dat.zip.jags$BUGSoutput$sims.matrix[,1:2]
+&gt; theta &lt;- dat.zip.jags$BUGSoutput$sims.matrix[,&#39;theta&#39;]
+&gt; Xmat &lt;- model.matrix(~x, data=dat.zip)
+&gt; #expected values on a log scale
+&gt; eta&lt;-coefs %*% t(Xmat)
+&gt; #expected value on response scale
+&gt; lambda &lt;- exp(eta)
+&gt; 
+&gt; simRes &lt;- function(lambda, data,n=250, plot=T, family=&#39;negbin&#39;, size=NULL,theta=NULL) {
++  require(gap)
++  N = nrow(data)
++  sim = switch(family,
++     &#39;poisson&#39; = matrix(rpois(n*N,apply(lambda,2,mean)),ncol=N, byrow=TRUE),
++     &#39;negbin&#39; = matrix(MASS:::rnegbin(n*N,apply(lambda,2,mean),size),ncol=N, byrow=TRUE),
++         &#39;zip&#39; = matrix(gamlss.dist:::rZIP(n*N,apply(lambda,2,mean),theta),ncol=N, byrow=TRUE)
++  )
++  a = apply(sim + runif(n,-0.5,0.5),2,ecdf)
++  resid&lt;-NULL
++  for (i in 1:nrow(data)) resid&lt;-c(resid,a[[i]](data$y[i] + runif(1 ,-0.5,0.5)))
++  if (plot==T) {
++    par(mfrow=c(1,2))
++    gap::qqunif(resid,pch = 2, bty = &quot;n&quot;,
++    logscale = F, col = &quot;black&quot;, cex = 0.6, main = &quot;QQ plot residuals&quot;,
++    cex.main = 1, las=1)
++    plot(resid~apply(lambda,2,mean), xlab=&#39;Predicted value&#39;, ylab=&#39;Standardized residual&#39;, las=1)
++  }
++  resid
++ }
+&gt; 
+&gt; simRes(lambda,dat.zip, family=&#39;zip&#39;,theta=theta)</code></pre>
+<p><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/model2_mcmc_res3_zip-1.png" width="672" /></p>
+<pre><code> [1] 0.718 0.212 0.106 0.050 0.476 0.778 0.248 0.060 0.878 0.704 0.090 0.890
+[13] 0.416 0.764 0.282 0.752 0.602 0.848 0.154 0.656</code></pre>
+<p>The trend (black symbols) in the qq-plot does not appear to be overly non-linear (matching the ideal red line well), suggesting that the model is not overdispersed. The spread of standardized (simulated) residuals in the residual plot do not appear overly non-uniform. That is there is not trend in the residuals. Furthermore, there is not a concentration of points close to <span class="math inline">\(1\)</span> or <span class="math inline">\(0\)</span> (which would imply overdispersion). Hence, once zero-inflation is accounted for, the model does not display overdispersion. Although there is a slight hint of non-linearity in that the residuals are high for low and high fitted values and lower in the middle, this might well be an artifact of the small data set size. By change, most of the observed values in the middle range of the predictor were zero.</p>
+</div>
+<div id="exploring-the-model-parameters-2" class="section level2">
+<h2>Exploring the model parameters</h2>
+<p>If there was any evidence that the assumptions had been violated or the model was not an appropriate fit, then we would need to reconsider the model and start the process again. In this case, there is no evidence that the test will be unreliable so we can proceed to explore the test statistics. As with most Bayesian models, it is best to base conclusions on medians rather than means.</p>
+<pre class="r"><code>&gt; print(dat.zip.jags)
+Inference for Bugs model at &quot;modelzip.txt&quot;, fit using jags,
+ 2 chains, each with 10000 iterations (first 5000 discarded)
+ n.sims = 10000 iterations saved
+         mu.vect sd.vect   2.5%    25%    50%    75%  97.5%  Rhat n.eff
+beta0      0.930   0.282  0.365  0.742  0.933  1.128  1.468 1.003   860
+beta1      0.090   0.021  0.049  0.076  0.090  0.104  0.132 1.002  1400
+gamma0    -0.420   0.458 -1.349 -0.722 -0.417 -0.110  0.459 1.001 10000
+theta      0.401   0.105  0.206  0.327  0.397  0.472  0.613 1.001  7600
+deviance  80.674   2.501 77.856 78.867 80.008 81.801 87.064 1.001 10000
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 3.1 and DIC = 83.8
+DIC is an estimate of expected predictive error (lower deviance is better).
+&gt; 
+&gt; adply(dat.zip.jags$BUGSoutput$sims.matrix, 2, function(x) {
++   data.frame(Median=median(x), Mean=mean(x), HPDinterval(as.mcmc(x)), HPDinterval(as.mcmc(x),p=0.5))
++ })
+        X1      Median        Mean       lower      upper    lower.1
+1    beta0  0.93334635  0.92997411  0.37821529  1.4774189  0.7530788
+2    beta1  0.09005537  0.09005981  0.04864163  0.1313802  0.0749821
+3 deviance 80.00841187 80.67383245 77.63946567 85.5798539 77.8273778
+4   gamma0 -0.41667356 -0.41996110 -1.34903991  0.4586909 -0.7013225
+5    theta  0.39731301  0.40136809  0.19516803  0.6012233  0.3173026
+      upper.1
+1  1.13629442
+2  0.10333030
+3 80.10544007
+4 -0.09258569
+5  0.46170971
+&gt; 
+&gt; #on original scale
+&gt; adply(exp(dat.zip.jags$BUGSoutput$sims.matrix[,1:2]), 2, function(x) {
++   data.frame(Median=median(x), Mean=mean(x), HPDinterval(as.mcmc(x)), HPDinterval(as.mcmc(x),p=0.5))
++ })
+     X1   Median     Mean    lower    upper  lower.1  upper.1
+1 beta0 2.543005 2.636434 1.280362 4.056990 1.911083 2.853498
+2 beta1 1.094235 1.094483 1.049844 1.140401 1.077865 1.108858</code></pre>
+<p><strong>Conclusions</strong>: We would reject the null hypothesis of no effect of <span class="math inline">\(x\)</span> on <span class="math inline">\(y\)</span>. An increase in <span class="math inline">\(x\)</span> is associated with a significant linear increase (positive slope) in the abundance of <span class="math inline">\(y\)</span>. Every <span class="math inline">\(1\)</span> unit increase in <span class="math inline">\(x\)</span> results in a log <span class="math inline">\(0.09\)</span> unit increase in <span class="math inline">\(y\)</span>. We usually express this in terms of abundance rather than log abundance, so every <span class="math inline">\(1\)</span> unit increase in <span class="math inline">\(x\)</span> results in a (<span class="math inline">\(e^{0.09}=1.1\)</span>) <span class="math inline">\(1.1\)</span> unit increase in the abundance of <span class="math inline">\(y\)</span>.</p>
+</div>
+<div id="explorations-of-the-trends-2" class="section level2">
+<h2>Explorations of the trends</h2>
+<p>A measure of the strength of the relationship can be obtained according to:</p>
+<p><span class="math display">\[ R^2 = 1 - \frac{\text{RSS}_{model}}{\text{RSS}_{null}}\]</span></p>
+<p>Alternatively, we could use McFadden’s psuedo</p>
+<p><span class="math display">\[ R^2 = 1- \frac{LL(Model_{full})}{LL(Model_{reduced}}\]</span></p>
+<pre class="r"><code>&gt; Xmat &lt;- model.matrix(~x, dat=dat.zip)
+&gt; #expected values on a log scale
+&gt; neta&lt;-coefs %*% t(Xmat)
+&gt; #expected value on response scale
+&gt; eta &lt;- exp(neta)
+&gt; lambda &lt;- sweep(eta,2,ifelse(dat.zip$y==0,0,1),&#39;*&#39;)
+&gt; theta &lt;- dat.zip.jags$BUGSoutput$sims.matrix[,&#39;theta&#39;]
+&gt; expY &lt;- sweep(lambda,2,1-theta,&#39;*&#39;)
+&gt; #calculate the raw SS residuals
+&gt; SSres &lt;- apply((-1*(sweep(expY,2,dat.zip$y,&#39;-&#39;)))^2,1,sum)
+&gt; mean(SSres)
+[1] 168.3814
+&gt; 
+&gt; SSres.null &lt;- sum((dat.zip$y - mean(dat.zip$y))^2)
+&gt; #calculate the model r2
+&gt; 1-mean(SSres)/SSres.null
+[1] 0.5977029</code></pre>
+<p><strong>Conclusions</strong>: <span class="math inline">\(50\)</span>% of the variation in <span class="math inline">\(y\)</span> abundance can be explained by its relationship with <span class="math inline">\(x\)</span>. Finally, we will create a summary plot.</p>
+<pre class="r"><code>&gt; par(mar = c(4, 5, 0, 0))
+&gt; plot(y ~ x, data = dat.zip, type = &quot;n&quot;, ann = F, axes = F)
+&gt; points(y ~ x, data = dat.zip, pch = 16)
+&gt; xs &lt;- seq(min(dat.zip$x,na.rm=TRUE),max(dat.zip$x,na.rm=TRUE), l = 1000)
+&gt; Xmat &lt;- model.matrix(~xs)
+&gt; eta&lt;-coefs %*% t(Xmat)
+&gt; ys &lt;- exp(eta)
+&gt; library(plyr)
+&gt; library(coda)
+&gt; data.tab &lt;- adply(ys,2,function(x) {
++   data.frame(Median=median(x), HPDinterval(as.mcmc(x)))
++ })
+&gt; data.tab &lt;- cbind(x=xs,data.tab)
+&gt; points(Median ~ x, data=data.tab,col = &quot;black&quot;, type = &quot;l&quot;)
+&gt; lines(lower ~ x, data=data.tab,col = &quot;black&quot;, type = &quot;l&quot;, lty = 2)
+&gt; lines(upper ~ x, data=data.tab,col = &quot;black&quot;, type = &quot;l&quot;, lty = 2)
+&gt; 
+&gt; axis(1)
+&gt; mtext(&quot;X&quot;, 1, cex = 1.5, line = 3)
+&gt; axis(2, las = 2)
+&gt; mtext(&quot;Abundance of Y&quot;, 2, cex = 1.5, line = 3)
+&gt; box(bty = &quot;l&quot;)</code></pre>
+<p><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/model_code_v2_plot_zip-1.png" width="672" /></p>
+</div>
+<div id="full-log-likelihood-function-2" class="section level2">
+<h2>Full log-likelihood function</h2>
+<p>Now lets try it by specifying log-likelihood and the zero trick. When applying this trick, we need to manually calculate the deviance as the inbuilt deviance will be based on the log-likelihood of estimating the zeros (as part of the zero trick) rather than the deviance of the intended model. The one advantage of the zero trick is that the Deviance and thus DIC, AIC provided by <code>R2jags</code> will be incorrect. Hence, they too need to be manually defined within <code>JAGS</code> I suspect that the AIC calculation I have used is incorrect.</p>
+<pre class="r"><code>&gt; Xmat &lt;- model.matrix(~x, dat.zip)
+&gt; nX &lt;- ncol(Xmat)
+&gt; dat.zip.list2 &lt;- with(dat.zip,list(Y=y, X=Xmat,N=nrow(dat.zip), mu=rep(0,nX),
++                   Sigma=diag(1.0E-06,nX), zeros=rep(0,nrow(dat)), C=10000))
+&gt; modelString=&quot;
++ model {
++   for (i in 1:N) {
++      zeros[i] ~ dpois(zeros.lambda[i])
++      zeros.lambda[i] &lt;- -ll[i] + C     
++      ll[i] &lt;- Y[i]*log(lambda[i]) - lambda[i] - loggam(Y[i]+1)
++      eta[i] &lt;- inprod(beta[], X[i,])
++      log(lambda[i]) &lt;- eta[i]
++     llm[i] &lt;- Y[i]*log(meanlambda) - meanlambda - loggam(Y[i]+1)
++   }
++   meanlambda &lt;- mean(lambda)
++   beta ~ dmnorm(mu[],Sigma[,])
++   dev &lt;- sum(-2*ll)
++   pD &lt;- mean(dev)-sum(-2*llm)
++   AIC &lt;- min(dev+(2*pD))
++ } 
++ &quot;
+&gt; 
+&gt; writeLines(modelString, con=&#39;modelzip_ll.txt&#39;)
+&gt; 
+&gt; params &lt;- c(&#39;beta&#39;,&#39;dev&#39;,&#39;AIC&#39;)
+&gt; nChains = 2
+&gt; burnInSteps = 5000
+&gt; thinSteps = 1
+&gt; numSavedSteps = 20000
+&gt; nIter = ceiling((numSavedSteps * thinSteps)/nChains)
+&gt; 
+&gt; dat.ZIP.jags3  &lt;- jags(data=dat.zip.list2,model.file=&#39;modelzip_ll.txt&#39;, param=params,
++                    n.chains=nChains, n.iter=nIter, n.burnin=burnInSteps, n.thin=thinSteps)
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 20
+   Unobserved stochastic nodes: 1
+   Total graph size: 328
+
+Initializing model
+&gt; 
+&gt; print(dat.ZIP.jags3 )
+Inference for Bugs model at &quot;modelzip_ll.txt&quot;, fit using jags,
+ 2 chains, each with 10000 iterations (first 5000 discarded)
+ n.sims = 10000 iterations saved
+            mu.vect sd.vect       2.5%        25%        50%        75%
+AIC          61.488   3.844     57.991     58.846     60.144     62.785
+beta[1]       0.329   0.225     -0.122      0.176      0.331      0.475
+beta[2]       0.104   0.017      0.070      0.093      0.104      0.116
+dev         124.472   1.801    122.700    123.170    123.871    125.221
+deviance 400124.472   1.801 400122.700 400123.170 400123.871 400125.221
+              97.5%  Rhat n.eff
+AIC          72.257 1.089    35
+beta[1]       0.785 1.071    67
+beta[2]       0.137 1.051    69
+dev         129.054 1.042    53
+deviance 400129.054 1.000     1
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 1.6 and DIC = 400126.1
+DIC is an estimate of expected predictive error (lower deviance is better).</code></pre>
+</div>
+</div>
+<div id="zero-inflated-negative-binomial" class="section level1">
+<h1>Zero inflated Negative Binomial</h1>
+<div id="data-generation-3" class="section level2">
+<h2>Data generation</h2>
+<p>Lets say we wanted to model the abundance of an item (<span class="math inline">\(y\)</span>) against a continuous predictor (<span class="math inline">\(x\)</span>). As this section is mainly about the generation of artificial data (and not specifically about what to do with the data), understanding the actual details are optional and can be safely skipped.</p>
+<pre class="r"><code>&gt; set.seed(37) #34.5  #4 #10 #16 #17 #26
+&gt; #The number of samples
+&gt; n.x &lt;- 20
+&gt; #Create x values that at uniformly distributed throughout the rate of 1 to 20
+&gt; x &lt;- sort(runif(n = n.x, min = 1, max =20))
+&gt; mm &lt;- model.matrix(~x)
+&gt; intercept &lt;- 0.6
+&gt; slope=0.1
+&gt; #The linear predictor
+&gt; linpred &lt;- mm %*% c(intercept,slope)
+&gt; #Predicted y values
+&gt; lambda &lt;- exp(linpred)
+&gt; #Add some noise and make binomial
+&gt; library(gamlss.dist)
+&gt; #fixed latent binomial
+&gt; y&lt;- rZINBI(n.x,lambda, 0.4)
+&gt; #latent binomial influenced by the linear predictor 
+&gt; #y&lt;- rZINB(n.x,lambda, 1-exp(linpred)/(1+exp(linpred)))
+&gt; dat.zinb &lt;- data.frame(y,x)
+&gt; 
+&gt; summary(dat.glm.nb&lt;-glm.nb(y~x, dat.zinb))
+
+Call:
+glm.nb(formula = y ~ x, data = dat.zinb, init.theta = 0.4646673144, 
+    link = log)
+
+Deviance Residuals: 
+    Min       1Q   Median       3Q      Max  
+-1.3578  -1.3455  -0.5069   0.3790   1.1809  
+
+Coefficients:
+            Estimate Std. Error z value Pr(&gt;|z|)
+(Intercept) 0.914191   0.796804   1.147    0.251
+x           0.009149   0.067713   0.135    0.893
+
+(Dispersion parameter for Negative Binomial(0.4647) family taken to be 1)
+
+    Null deviance: 20.303  on 19  degrees of freedom
+Residual deviance: 20.282  on 18  degrees of freedom
+AIC: 90.365
+
+Number of Fisher Scoring iterations: 1
+
+              Theta:  0.465 
+          Std. Err.:  0.218 
+
+ 2 x log-likelihood:  -84.365 
+&gt; 
+&gt; plot(glm.nb(y~x, dat.zinb))</code></pre>
+<p><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/generate_data_zinb-1.png" width="672" /><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/generate_data_zinb-2.png" width="672" /><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/generate_data_zinb-3.png" width="672" /><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/generate_data_zinb-4.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; library(pscl)
+&gt; summary(dat.zeroinfl&lt;-zeroinfl(y ~ x | 1, dist = &quot;negbin&quot;, data = dat.zinb))
+
+Call:
+zeroinfl(formula = y ~ x | 1, data = dat.zinb, dist = &quot;negbin&quot;)
+
+Pearson residuals:
+    Min      1Q  Median      3Q     Max 
+-0.9609 -0.9268 -0.4446  1.0425  1.7556 
+
+Count model coefficients (negbin with log link):
+            Estimate Std. Error z value Pr(&gt;|z|)   
+(Intercept)  0.92733    0.32507   2.853  0.00433 **
+x            0.06870    0.02755   2.494  0.01263 * 
+Log(theta)   3.36066    3.59739   0.934  0.35020   
+
+Zero-inflation model coefficients (binomial with logit link):
+            Estimate Std. Error z value Pr(&gt;|z|)
+(Intercept)  -0.2250     0.4559  -0.494    0.622
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1 
+
+Theta = 28.8082 
+Number of iterations in BFGS optimization: 17 
+Log-likelihood: -38.54 on 4 Df
+&gt; 
+&gt; plot(resid(zeroinfl(y ~ x | 1, dist = &quot;negbin&quot;, data = dat.zinb))~fitted(zeroinfl(y ~ x | 1, dist = &quot;negbin&quot;)))</code></pre>
+<p><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/generate_data_zinb-5.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; vuong(dat.glm.nb, dat.zeroinfl)
+Vuong Non-Nested Hypothesis Test-Statistic: 
+(test-statistic is asymptotically distributed N(0,1) under the
+ null that the models are indistinguishible)
+-------------------------------------------------------------
+              Vuong z-statistic             H_A p-value
+Raw                  -1.2809521 model2 &gt; model1 0.10011
+AIC-corrected        -0.9296587 model2 &gt; model1 0.17627
+BIC-corrected        -0.7547616 model2 &gt; model1 0.22520
+&gt; 
+&gt; library(gamlss)
+&gt; summary(gamlss(y~x, data=dat.zinb, family=&#39;ZINBI&#39;))
+GAMLSS-RS iteration 1: Global Deviance = 81.436 
+GAMLSS-RS iteration 2: Global Deviance = 78.1917 
+GAMLSS-RS iteration 3: Global Deviance = 77.0798 
+GAMLSS-RS iteration 4: Global Deviance = 77.0726 
+GAMLSS-RS iteration 5: Global Deviance = 77.0725 
+******************************************************************
+Family:  c(&quot;ZINBI&quot;, &quot;Zero inflated negative binomial type I&quot;) 
+
+Call:  gamlss(formula = y ~ x, family = &quot;ZINBI&quot;, data = dat.zinb) 
+
+Fitting method: RS() 
+
+------------------------------------------------------------------
+Mu link function:  log
+Mu Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)  
+(Intercept)  0.92653    0.32502   2.851   0.0116 *
+x            0.06880    0.02753   2.499   0.0237 *
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+------------------------------------------------------------------
+Sigma link function:  log
+Sigma Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept)   -3.363      3.603  -0.933    0.365
+
+------------------------------------------------------------------
+Nu link function:  logit 
+Nu Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept)  -0.2250     0.4559  -0.494    0.628
+
+------------------------------------------------------------------
+No. of observations in the fit:  20 
+Degrees of Freedom for the fit:  4
+      Residual Deg. of Freedom:  16 
+                      at cycle:  5 
+ 
+Global Deviance:     77.0725 
+            AIC:     85.0725 
+            SBC:     89.05543 
+******************************************************************
+&gt; 
+&gt; summary(gamlss(y~x, nu.fo=y~x,data=dat.zinb, family=&#39;ZINBI&#39;))
+GAMLSS-RS iteration 1: Global Deviance = 78.2478 
+GAMLSS-RS iteration 2: Global Deviance = 74.2622 
+GAMLSS-RS iteration 3: Global Deviance = 73.8329 
+GAMLSS-RS iteration 4: Global Deviance = 73.8305 
+GAMLSS-RS iteration 5: Global Deviance = 73.8305 
+******************************************************************
+Family:  c(&quot;ZINBI&quot;, &quot;Zero inflated negative binomial type I&quot;) 
+
+Call:  gamlss(formula = y ~ x, nu.formula = y ~ x, family = &quot;ZINBI&quot;,  
+    data = dat.zinb) 
+
+Fitting method: RS() 
+
+------------------------------------------------------------------
+Mu link function:  log
+Mu Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)  
+(Intercept)  0.84246    0.35267   2.389   0.0305 *
+x            0.07481    0.02933   2.550   0.0222 *
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+------------------------------------------------------------------
+Sigma link function:  log
+Sigma Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept)   -2.982      2.844  -1.048    0.311
+
+------------------------------------------------------------------
+Nu link function:  logit 
+Nu Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept)  -2.4988     1.8283  -1.367    0.192
+x             0.1996     0.1417   1.408    0.179
+
+------------------------------------------------------------------
+No. of observations in the fit:  20 
+Degrees of Freedom for the fit:  5
+      Residual Deg. of Freedom:  15 
+                      at cycle:  5 
+ 
+Global Deviance:     73.83046 
+            AIC:     83.83046 
+            SBC:     88.80912 
+******************************************************************</code></pre>
+</div>
+<div id="exploratory-data-analysis-2" class="section level2">
+<h2>Exploratory data analysis</h2>
+<p>Check the distribution of the <span class="math inline">\(y\)</span> abundances.</p>
+<pre class="r"><code>&gt; hist(dat.zinb$y)</code></pre>
+<p><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/expl_data1_zinb-1.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; boxplot(dat.zinb$y, horizontal=TRUE)
+&gt; rug(jitter(dat.zinb$y))</code></pre>
+<p><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/expl_data1_zinb-2.png" width="672" /></p>
+<p>There is definitely signs of non-normality that would warrant Poisson or negative binomial models. Further to that, there appears to be a large number of zeros and a possible clumpiness that are likely to be the cause of overdispersion A zero-inflated negative binomial model is likely to be one of the most effective for modeling these data. Lets now explore linearity by creating a histogram of the predictor variable (<span class="math inline">\(x\)</span>). Note, it is difficult to directly assess issues of linearity. Indeed, a scatterplot with lowess smoother will be largely influenced by the presence of zeros. One possible way of doing so is to explore the trend in the non-zero data.</p>
+<pre class="r"><code>&gt; hist(dat.zinb$x)</code></pre>
+<p><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/expl_data2_zinb-1.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; #now for the scatterplot
+&gt; plot(y~x, dat.zinb, log=&quot;y&quot;)
+&gt; with(subset(dat.zinb,y&gt;0), lines(lowess(y~x)))</code></pre>
+<p><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/expl_data2_zinb-2.png" width="672" /></p>
+<p><strong>Conclusions</strong>: the predictor (<span class="math inline">\(x\)</span>) does not display any skewness or other issues that might lead to non-linearity. The lowess smoother on the non-zero data cloud does not display major deviations from a straight line and thus linearity is likely to be satisfied. Violations of linearity (whilst difficult to be certain about due to the unknown influence of the zeros) could be addressed by either:</p>
+<ul>
+<li><p>define a non-linear linear predictor (such as a polynomial, spline or other non-linear function).</p></li>
+<li><p>transform the scale of the predictor variables.</p></li>
+</ul>
+<p>Although we have already established that there are few zeros in the data (and thus overdispersion is unlikely to be an issue), we can also explore this by comparing the number of zeros in the data to the number of zeros that would be expected from a Poisson distribution with a mean equal to the mean count of the data.</p>
+<pre class="r"><code>&gt; #proportion of 0&#39;s in the data
+&gt; dat.zinb.tab&lt;-table(dat.zinb$y==0)
+&gt; dat.zinb.tab/sum(dat.zinb.tab)
+
+FALSE  TRUE 
+ 0.55  0.45 
+&gt; 
+&gt; #proportion of 0&#39;s expected from a Poisson distribution
+&gt; mu &lt;- mean(dat.zinb$y)
+&gt; v &lt;- var(dat.zinb$y)
+&gt; size &lt;- mu + (mu^2)/v
+&gt; cnts &lt;- rnbinom(1000, mu=mu, size=size)
+&gt; dat.zinb.tabE &lt;- table(cnts == 0)
+&gt; dat.zinb.tabE/sum(dat.zinb.tabE)
+
+FALSE  TRUE 
+0.861 0.139 </code></pre>
+<p>In the above, the value under <code>FALSE</code> is the proportion of non-zero values in the data and the value under TRUE is the proportion of zeros in the data. In this example, the proportion of zeros observed (<span class="math inline">\(45\)</span>%) far exceeds that that would have been expected (<span class="math inline">\(14\)</span>%). Hence it is highly likely that any models will be zero-inflated.</p>
+</div>
+<div id="model-fitting-3" class="section level2">
+<h2>Model fitting</h2>
+<p><span class="math display">\[ y_i \sim \text{ZINB}(\lambda_i, \theta),\]</span></p>
+<p>where <span class="math inline">\(\text{logit}(\theta) = \gamma_0\)</span>, <span class="math inline">\(\log(\lambda_i)=\eta_i\)</span>, with <span class="math inline">\(\eta_i=\beta_0+\beta_1x_{i}\)</span> and <span class="math inline">\(\beta_0,\beta_1,\gamma_0 \sim N(0, 10000)\)</span>.</p>
+<pre class="r"><code>&gt; dat.zinb.list &lt;- with(dat.zinb,list(Y=y, X=x,N=nrow(dat.zinb),z=ifelse(y==0,0,1)))
+&gt; modelString=&quot;
++ model {
++   for (i in 1:N) {
++      z[i] ~ dbern(psi.min)
++      Y[i] ~ dnegbin(p[i],size)
++      p[i] &lt;- size/(size+mu.eff[i])
++      mu.eff[i] &lt;- z[i]*mu[i]
++      eta[i] &lt;- beta0 + beta1*X[i]
++      log(mu[i]) &lt;- eta[i]
++   }
++   gamma ~ dnorm(0,0.001)
++   psi.min &lt;- min(0.9999, max(0.00001, (1-psi)))
++   logit(psi) &lt;- max(-20, min(20, gamma))
++   size ~ dunif(0.001, 5)
++   theta &lt;- pow(1/mean(p),2)
++   beta0 ~ dnorm(0,1.0E-06)
++   beta1 ~ dnorm(0,1.0E-06)
++ } 
++ &quot;
+&gt; writeLines(modelString, con=&#39;modelzinb.txt&#39;)
+&gt; 
+&gt; params &lt;- c(&#39;beta0&#39;,&#39;beta1&#39;, &#39;size&#39;, &#39;theta&#39;)
+&gt; nChains = 2
+&gt; burnInSteps = 5000
+&gt; thinSteps = 1
+&gt; numSavedSteps = 20000
+&gt; nIter = ceiling((numSavedSteps * thinSteps)/nChains)
+&gt; 
+&gt; dat.zinb.jags &lt;- jags(data=dat.zinb.list,model.file=&#39;modelzinb.txt&#39;, param=params,
++                    n.chains=nChains, n.iter=nIter, n.burnin=burnInSteps, n.thin=thinSteps)
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 40
+   Unobserved stochastic nodes: 4
+   Total graph size: 205
+
+Initializing model
+&gt; 
+&gt; print(dat.zinb.jags)
+Inference for Bugs model at &quot;modelzinb.txt&quot;, fit using jags,
+ 2 chains, each with 10000 iterations (first 5000 discarded)
+ n.sims = 10000 iterations saved
+         mu.vect sd.vect   2.5%    25%    50%    75%  97.5%  Rhat n.eff
+beta0      0.971   0.460  0.055  0.678  0.963  1.273  1.868 1.007   250
+beta1      0.067   0.042 -0.016  0.039  0.066  0.094  0.151 1.008   200
+size       3.501   1.015  1.389  2.763  3.644  4.351  4.935 1.001 10000
+theta      2.200   0.367  1.721  1.937  2.115  2.371  3.145 1.001  3300
+deviance  82.769   2.843 79.139 80.663 82.139 84.254 89.891 1.001 10000
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 4.0 and DIC = 86.8
+DIC is an estimate of expected predictive error (lower deviance is better).</code></pre>
+</div>
+<div id="model-evaluation-3" class="section level2">
+<h2>Model evaluation</h2>
+<pre class="r"><code>&gt; denplot(dat.zinb.jags, parms = c(&#39;beta0&#39;,&#39;beta1&#39;, &#39;size&#39;, &#39;theta&#39;))</code></pre>
+<p><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/mcmc_diag_zinb-1.png" width="672" /></p>
+<pre class="r"><code>&gt; traplot(dat.zinb.jags, parms = c(&#39;beta0&#39;,&#39;beta1&#39;, &#39;size&#39;, &#39;theta&#39;))</code></pre>
+<p><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/mcmc_diag_zinb-2.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; raftery.diag(as.mcmc(dat.zinb.jags))
+[[1]]
+
+Quantile (q) = 0.025
+Accuracy (r) = +/- 0.005
+Probability (s) = 0.95 
+                                                
+          Burn-in  Total Lower bound  Dependence
+          (M)      (N)   (Nmin)       factor (I)
+ beta0    15       16236 3746         4.33      
+ beta1    14       15725 3746         4.20      
+ deviance 3        4484  3746         1.20      
+ size     5        5771  3746         1.54      
+ theta    3        4338  3746         1.16      
+
+
+[[2]]
+
+Quantile (q) = 0.025
+Accuracy (r) = +/- 0.005
+Probability (s) = 0.95 
+                                                
+          Burn-in  Total Lower bound  Dependence
+          (M)      (N)   (Nmin)       factor (I)
+ beta0    27       27564 3746         7.36      
+ beta1    18       21057 3746         5.62      
+ deviance 3        4410  3746         1.18      
+ size     5        5771  3746         1.54      
+ theta    2        3995  3746         1.07      
+&gt; 
+&gt; autocorr.diag(as.mcmc(dat.zinb.jags))
+             beta0       beta1    deviance        size       theta
+Lag 0   1.00000000  1.00000000  1.00000000 1.000000000 1.000000000
+Lag 1   0.82187294  0.82300377  0.55172222 0.391115803 0.387289605
+Lag 5   0.44679310  0.44494849  0.13559995 0.045297725 0.067379632
+Lag 10  0.19928140  0.20123773  0.05371302 0.008341721 0.013304093
+Lag 50 -0.04037202 -0.04473554 -0.02496182 0.011474420 0.007333003</code></pre>
+</div>
+<div id="goodness-of-fit-2" class="section level2">
+<h2>Goodness of fit</h2>
+<pre class="r"><code>&gt; #extract the samples for the two model parameters
+&gt; coefs &lt;- dat.zinb.jags$BUGSoutput$sims.matrix[,1:2]
+&gt; theta &lt;- dat.zinb.jags$BUGSoutput$sims.matrix[,&#39;theta&#39;]
+&gt; Xmat &lt;- model.matrix(~x, data=dat.zinb)
+&gt; #expected values on a log scale
+&gt; lambda&lt;-coefs %*% t(Xmat)
+&gt; #expected value on response scale
+&gt; eta &lt;- exp(lambda)
+&gt; expY &lt;- sweep(eta,1,(1-theta),&quot;*&quot;)
+&gt; varY &lt;- eta+sweep(eta^2,1,theta,&quot;*&quot;)
+&gt; head(varY)
+             1         2        3        4        5        6        7        8
+[1,] 10.844323 13.189501 15.47499 15.73287 18.21519 26.87133 28.14742 29.27065
+[2,] 71.832694 61.952112 54.97632 54.30484 48.72535 36.70113 35.49495 34.51074
+[3,] 24.764991 24.273552 23.88302 23.84316 23.49392 22.60135 22.49799 22.41131
+[4,]  6.397443  8.786249 11.40150 11.71375 14.89149 28.26188 30.51610 32.55772
+[5,] 27.048585 28.561484 29.85015 29.98628 31.21706 34.70423 35.14294 35.51685
+[6,] 32.911549 36.163316 39.03708 39.34619 42.18864 50.70280 51.82155 52.78337
+            9       10       11       12        13        14        15
+[1,] 32.48606 39.45733 45.43874 50.02645  59.31437  71.66019  73.00520
+[2,] 32.02933 27.89750 25.25717 23.61192  20.97369  18.40930  18.17586
+[3,] 22.18262 21.76433 21.46712 21.26761  20.92017  20.54281  20.50616
+[4,] 38.69312 53.42044 67.53693 79.24793 105.19992 144.10581 148.63604
+[5,] 36.53055 38.49254 39.97741 41.01961  42.92731  45.14296  45.36660
+[6,] 55.42928 60.70818 64.84042 67.81058  73.39529  80.11924  80.81199
+            16        17        18        19        20
+[1,]  89.37583  90.29710  93.03697  99.45044 121.73297
+[2,]  15.83105  15.72115  15.40547  14.72560  12.85289
+[3,]  20.11263  20.09293  20.03565  19.90863  19.52937
+[4,] 208.15726 211.74132 222.54395 248.66128 348.12988
+[5,]  47.86864  47.99890  48.38049  49.24196  51.94528
+[6,]  88.73695  89.15824  90.39740  93.22189 102.32692
+&gt; 
+&gt; #varY &lt;- sweep(varY,1,(1-theta),&#39;*&#39;)
+&gt; #sweep across rows and then divide by lambda
+&gt; Resid &lt;- -1*sweep(expY,2,dat.zinb$y,&#39;-&#39;)/sqrt(varY)
+&gt; #plot residuals vs expected values
+&gt; plot(apply(Resid,2,mean)~apply(eta,2,mean))</code></pre>
+<p><img src="/JAGS/glm2-jags/2020-02-01-glm2-jags_files/figure-html/model2_mcmc_gof_zinb-1.png" width="672" /></p>
+<p>Now we will compare the sum of squared residuals to the sum of squares residuals that would be expected from a Poisson distribution matching that estimated by the model. Essentially this is estimating how well the Poisson distribution, the log-link function and the linear model approximates the observed data. When doing so, we need to consider the expected value and variance of the zero-inflated poisson.</p>
+<pre class="r"><code>&gt; SSres&lt;-apply(Resid^2,1,sum, na.rm=T)
+&gt; 
+&gt; #generate a matrix of draws from a zero-inflated poisson (ZINB) distribution
+&gt; # the matrix is the same dimensions as lambda
+&gt; library(gamlss.dist)
+&gt; #YNew &lt;- matrix(rZINB(length(lambda),eta, theta),nrow=nrow(lambda))
+&gt; lambda &lt;- sweep(eta,1,ifelse(dat.zinb$y==0,0,1),&#39;*&#39;)
+&gt; YNew &lt;- matrix(rpois(length(lambda),lambda),nrow=nrow(lambda))
+&gt; Resid1&lt;-(expY - YNew)/sqrt(varY)
+&gt; SSres.sim&lt;-apply(Resid1^2,1,sum)
+&gt; mean(SSres.sim&gt;SSres, na.rm = T)
+[1] 0.5212</code></pre>
+</div>
+<div id="exploring-the-model-parameters-3" class="section level2">
+<h2>Exploring the model parameters</h2>
+<p>If there was any evidence that the assumptions had been violated or the model was not an appropriate fit, then we would need to reconsider the model and start the process again. In this case, there is no evidence that the test will be unreliable so we can proceed to explore the test statistics. As with most Bayesian models, it is best to base conclusions on medians rather than means.</p>
+<pre class="r"><code>&gt; print(dat.zinb.jags)
+Inference for Bugs model at &quot;modelzinb.txt&quot;, fit using jags,
+ 2 chains, each with 10000 iterations (first 5000 discarded)
+ n.sims = 10000 iterations saved
+         mu.vect sd.vect   2.5%    25%    50%    75%  97.5%  Rhat n.eff
+beta0      0.971   0.460  0.055  0.678  0.963  1.273  1.868 1.007   250
+beta1      0.067   0.042 -0.016  0.039  0.066  0.094  0.151 1.008   200
+size       3.501   1.015  1.389  2.763  3.644  4.351  4.935 1.001 10000
+theta      2.200   0.367  1.721  1.937  2.115  2.371  3.145 1.001  3300
+deviance  82.769   2.843 79.139 80.663 82.139 84.254 89.891 1.001 10000
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 4.0 and DIC = 86.8
+DIC is an estimate of expected predictive error (lower deviance is better).
+&gt; 
+&gt; adply(dat.zinb.jags$BUGSoutput$sims.matrix, 2, function(x) {
++   data.frame(Median=median(x), Mean=mean(x), HPDinterval(as.mcmc(x)), HPDinterval(as.mcmc(x),p=0.5))
++ })
+        X1      Median        Mean       lower      upper     lower.1
+1    beta0  0.96339931  0.97060322  0.05196655  1.8646388  0.68771701
+2    beta1  0.06565837  0.06658472 -0.01850221  0.1478933  0.03570031
+3 deviance 82.13938661 82.76912313 78.75619568 88.5891138 79.69050804
+4     size  3.64385931  3.50054311  1.63847682  4.9995959  3.62583688
+5    theta  2.11463918  2.19954948  1.65289052  2.9565781  1.83698278
+      upper.1
+1  1.28169341
+2  0.09027889
+3 82.76458253
+4  4.98121591
+5  2.20696839
+&gt; 
+&gt; #on original scale
+&gt; adply(exp(dat.zinb.jags$BUGSoutput$sims.matrix[,1:2]), 2, function(x) {
++   data.frame(Median=median(x), Mean=mean(x), HPDinterval(as.mcmc(x)), HPDinterval(as.mcmc(x),p=0.5))
++ })
+     X1   Median     Mean     lower    upper  lower.1  upper.1
+1 beta0 2.620590 2.935935 0.7910564 5.701997 1.628127 3.096623
+2 beta1 1.067862 1.069796 0.9816679 1.159389 1.036345 1.094479</code></pre>
+<p><strong>Conclusions</strong>: We would reject the null hypothesis of no effect of <span class="math inline">\(x\)</span> on <span class="math inline">\(y\)</span>. An increase in <span class="math inline">\(x\)</span> is associated with a significant linear increase (positive slope) in the abundance of <span class="math inline">\(y\)</span>. Every <span class="math inline">\(1\)</span> unit increase in <span class="math inline">\(x\)</span> results in a log <span class="math inline">\(0.06\)</span> unit increase in <span class="math inline">\(y\)</span>. We usually express this in terms of abundance rather than log abundance, so every <span class="math inline">\(1\)</span> unit increase in <span class="math inline">\(x\)</span> results in a (<span class="math inline">\(e^{0.06}=1.07\)</span>) <span class="math inline">\(1.07\)</span> unit increase in the abundance of <span class="math inline">\(y\)</span>.</p>
+</div>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references">
+<div id="ref-plummer2004jags">
+<p>Plummer, Martyn. 2004. “JAGS: Just Another Gibbs Sampler.”</p>
+</div>
+<div id="ref-su2015package">
+<p>Su, Yu-Sung, Masanao Yajima, Maintainer Yu-Sung Su, and JAGS SystemRequirements. 2015. “Package ‘R2jags’.” <em>R Package Version 0.03-08, URL Http://CRAN. R-Project. Org/Package= R2jags</em>.</p>
+</div>
+</div>
+</div>
+
+    </div>
+
+    
+
+<div class="article-tags">
+  
+  <a class="badge badge-light" href="/tags/tutorials/">tutorials</a>
+  
+  <a class="badge badge-light" href="/tags/jags/">JAGS</a>
+  
+  <a class="badge badge-light" href="/tags/generalised-linear-models/">generalised linear models</a>
+  
+</div>
+
+
+
+    
+      
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+  
+
+
+
+
+
+  
+  
+  
+  
+  <div class="media author-card" itemscope itemtype="http://schema.org/Person">
+    
+
+    <div class="media-body">
+      <h5 class="card-title" itemprop="name"><a href="/authors/andrea-gabrio/"></a></h5>
+      
+      
+      <ul class="network-icon" aria-hidden="true">
+        
+      </ul>
+    </div>
+  </div>
+
+
+
+      
+      
+      <div class="article-widget">
+        <div class="hr-light"></div>
+        <h3>Related</h3>
+        <ul>
+          
+          <li><a href="/jags/glm-jags/glm-jags/">Generalised Linear Models - JAGS</a></li>
+          
+          <li><a href="/jags/gof-tests-jags/gof-tests-jags/">Goodness of fit tests - JAGS</a></li>
+          
+          <li><a href="/jags/partly-nested-anova-jags/block-anova-jags/">Partly Nested Anova - JAGS</a></li>
+          
+          <li><a href="/jags/block-anova-jags/block-anova-jags/">Randomised Complete Block Anova - JAGS</a></li>
+          
+          <li><a href="/jags/nested-anova-jags/netsed-anova-jags/">Nested Anova - JAGS</a></li>
+          
+        </ul>
+      </div>
+      
+    
+
+    
+
+    
+
+
+  </div>
+</article>
+
+      
+
+    
+    
+    
+    <script src="/js/mathjax-config.js"></script>
+    
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
+
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js" integrity="sha256-aYTdUrn6Ow1DDgh5JTc3aDGnnju48y/1c8s1dgkYPQ8=" crossorigin="anonymous"></script>
+        
+        <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/r.min.js"></script>
+        
+      
+
+      
+      
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_CHTML-full" integrity="sha256-GhM+5JHb6QUzOQPXSJLEWP7R73CbkisjzK5Eyij4U9w=" crossorigin="anonymous" async></script>
+      
+    
+
+    
+    
+      <script async defer src="//maps.googleapis.com/maps/api/js?key=AIzaSyAYShZdrjjE_TojzlN30gOZCZjvTBD3b3c"></script>
+      
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/gmaps.js/0.4.25/gmaps.min.js" integrity="sha256-7vjlAeb8OaTrCXZkCNun9djzuB2owUsaO72kXaFDBJs=" crossorigin="anonymous"></script>
+      
+    
+
+    
+    
+    
+
+    
+    
+    <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script>
+      const search_index_filename = "/index.json";
+      const i18n = {
+        'placeholder': "Search...",
+        'results': "results found",
+        'no_results': "No results found"
+      };
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/js/academic.min.9ef1b53ee2bde6c7f33b150c6ba4d452.js"></script>
+
+    
+
+
+
+
+
+
+  
+  <div class="container">
+    <footer class="site-footer">
+
+  <p class="powered-by">
+    
+
+    &#169; Andrea Gabrio 2019. Based on the 
+    <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+    <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+    
+    <span class="float-right" aria-hidden="true">
+      <a href="#" id="back_to_top">
+        <span class="button_icon">
+          <i class="fas fa-chevron-up fa-2x"></i>
+        </span>
+      </a>
+    </span>
+    
+  </p>
+</footer>
+
+  </div>
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

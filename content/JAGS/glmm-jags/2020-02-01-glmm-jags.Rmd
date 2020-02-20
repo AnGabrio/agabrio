@@ -1,0 +1,182 @@
+---
+title: "Generalised Linear Mixed Models - JAGS"
+author: "Andrea Gabrio"
+date: 2020-02-15T21:13:14-05:00
+categories: ["R", "JAGS", "generalised linear mixed models"]
+tags: ["tutorials", "JAGS", "generalised linear mixed models"]
+authors: ["Andrea Gabrio"]
+bibliography: [citations_jags16.bib]
+draft: no
+slug: glmm-jags
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, prompt = TRUE, background = '#FFFFFF')
+```
+
+This tutorial will focus on the use of Bayesian estimation to fit simple linear regression models. `BUGS` (Bayesian inference Using *Gibbs Sampling*) is an algorithm and supporting language (resembling `R`) dedicated to performing the Gibbs sampling implementation of *Markov Chain Monte Carlo* (MCMC) method. Dialects of the `BUGS` language are implemented within three main projects:
+
+1. **OpenBUGS** - written in component pascal.
+ 
+2. **JAGS** - (Just Another Gibbs Sampler) - written in `C++`. 
+
+3. **STAN** - a dedicated Bayesian modelling framework written in `C++` and implementing *Hamiltonian* MCMC samplers.
+
+Whilst the above programs can be used stand-alone, they do offer the rich data pre-processing and graphical capabilities of `R`, and thus, they are best accessed from within `R` itself. As such there are multiple packages devoted to interfacing with the various software implementations:
+
+* *R2OpenBUGS* - interfaces with `OpenBUGS`
+
+* *R2jags* - interfaces with `JAGS`
+
+* *rstan* - interfaces with `STAN`
+
+This tutorial will demonstrate how to fit models in `JAGS` (@plummer2004jags) using the package `R2jags` (@su2015package) as interface, which also requires to load some other packages.
+
+# Binomial
+
+## Data generation
+
+Goodness of fit tests are concerned with comparing the observed frequencies with those expected on the basis of a specific null hypothesis. So lets now fabricate a motivating scenario and some data. We will create a scenario that involves items classified into one of three groups (A, B and C). The number of items in each classification group are then tallied up. Out of a total of $4$7 items, $15$ where of type A, $9$ where of type B and $23$ where of type C. We could evaluate a parity (a $1:1:1$ ratio from these data. In a frequentist context, this might involve testing a null hypothesis that the observed data could have come from a population with a $1:1$ item ratio. In this case the probability would be the probability of obtaining the observed ratio of frequencies when the null hypothesis is true. In a Bayesian context, there are numerous ways that we could tackle these data. We would be evaluating the evidence for the null hypothesis ($1:1:1$ item ratio) given the observed by estimating the degree of freedom from a chi-square distribution. Alternatively, we could estimate the value of the three population fractions which are expected to be 1/3, 1/3, 1/3 when $1:1:1$. We will explore this option first and then explore the chi-square approach second. To extend the example, lets also explore a $1:1:2$ ratio.
+
+We start by generating the observed data:
+
+```{r generate_data, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
+ #the observed frequences of A and B
+obs <- c(15, 9, 23)
+obs
+```
+
+## Model fitting
+
+```{r model_code, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
+modelString="
+ model {
+   #Likelihood
+  for (i in 1:nGroups) {
+    obs[i] ~ dbin(p[i],n[i])
+    p[i] ~ dbeta(a[i],b[i])
+    a[i] ~ dgamma(1,0.01)
+    b[i] ~ dgamma(1,0.01)
+  }
+}
+"
+
+writeLines(modelString, con='modelbin.txt')
+
+#The observed item frequencies
+obs <- c(15, 9, 23)
+data.list <- list(obs = obs, n = c(47, 47, 47), nGroups = 3)
+data.list
+
+params <- c('p')
+nChains = 2
+burnInSteps = 5000
+thinSteps = 1
+numSavedSteps = 20000
+nIter = ceiling((numSavedSteps * thinSteps)/nChains)
+
+library(R2jags)
+data.r2jags <- jags(data=data.list,model.file='modelbin.txt', param=params,
+                   n.chains=nChains, n.iter=nIter, n.burnin=burnInSteps, n.thin=thinSteps)
+
+print(data.r2jags)
+```
+
+**Conclusions**: Initially, we should focus our attention on the Rhat and n.eff columns. These are the scale reduction and number of effective samples respectively and they provide an indication of the degree of mixing or coverage of the samples. Ideally, the n.eff values should be approximately equal to the number of saved samples (in this case $4701$), and the Rhat values should be approximately $1$ (complete convergence). Whilst the actual values are likely to differ substantially from run to run (due to the stochastic nature of the way the chains traverse the posterior distribution), on this occasion, the n.eff of the first two probability parameters (p[1] and p[2]) are substantially lower than $4700$. Hence, the samples of these parameters may not accurately reflect the posterior distribution. We might consider altering one or more of the chain behavioural paramters (such as the thinning rate), alter the model definition (or priors) itself.
+
+## Model evaluation
+
+```{r mcmc_diag, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
+library(mcmcplots)
+denplot(data.r2jags, parms = c("p"))
+traplot(data.r2jags, parms = c("p"))
+
+autocorr.diag(as.mcmc(data.r2jags))
+```
+
+# Chi-square
+
+## Model fitting
+
+```{r model_code_chi, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
+modelString="
+data {
+ for (i in 1:n){
+      resid[i] <- pow(obs[i]-exp[i],2)/exp[i]
+    }
+    chisq <- sum(resid)
+ }
+ model {
+   #Likelihood
+   chisq  ~ dchisqr(k)
+   #Priors
+   k ~ dunif(0.01,100)
+}
+"
+
+writeLines(modelString, con='modelchi.txt')
+
+#The observed item frequencies
+obs <- c(15, 9, 23)
+#The expected item frequencies (for a 1:1:1 ratio)
+exp <- rep(sum(obs) * 1/3, 3)
+data.list <- list(obs = obs, exp = exp, n = 3)
+data.list
+
+#The expected item frequencies (for a 1:1:2 ratio)
+exp <- sum(obs) * c(1/4, 1/4, 2/4)
+data.list1 <- list(obs = obs, exp = exp, n = 3)
+data.list1
+
+params <- c("chisq", "resid", "k")
+nChains = 2
+burnInSteps = 5000
+thinSteps = 1
+numSavedSteps = 20000
+nIter = ceiling((numSavedSteps * thinSteps)/nChains)
+
+data.r2jags <- jags(data=data.list,model.file='modelchi.txt', param=params,
+                   n.chains=nChains, n.iter=nIter, n.burnin=burnInSteps, n.thin=thinSteps)
+
+print(data.r2jags)
+```
+
+**Conclusions**: The median degrees of freedom ($k$) was $8.00$ with a $95$% spread of $2.31-16.16$. This interval does not include the value of $2$ (expected value of the chi2 distribution for this hypothesis). Hence there is evidence that the population ratio deviates from a 1:1:1 ratio.
+
+```{r mcmc_post_chi, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
+data.r2jags1 <- jags(data=data.list1,model.file='modelchi.txt', param=params,
+                   n.chains=nChains, n.iter=nIter, n.burnin=burnInSteps, n.thin=thinSteps)
+
+print(data.r2jags1)
+```
+
+**Conclusions**: The median degrees of freedom ($k$) was $3.31$ with a $95$% spread of $0.57-7.61$. This interval comfortably includes the value of $2$ (expected value of the chi2 distribution for this hypothesis). Hence there is no evidence that the population ratio deviates from a 1:1:2 ratio.
+
+## Model evaluation
+
+```{r mcmc_diag_chi, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
+denplot(data.r2jags, parms = c("k"))
+traplot(data.r2jags, parms = c("k"))
+
+autocorr.diag(as.mcmc(data.r2jags))
+```
+
+## Exploration of the trends
+
+There are a number of avenues we could take in order to explore the data and models further. One thing we could do is calculate the probability that $k$ is greater than $2$ (the expected value) for each hypothesis. This can be done either by modifying the `JAGS` code to include a derivative that uses the step function, or we can derive it within `R` from the $k$ samples. Lets explore the latter.
+
+```{r mcmc_trend_chi, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
+k <- data.r2jags$BUGSoutput$sims.matrix[, "k"]
+pr <- sum(k > 2)/length(k)
+pr
+
+k <- data.r2jags1$BUGSoutput$sims.matrix[, "k"]
+pr1 <- sum(k > 2)/length(k)
+pr1
+```
+
+**Conclusions**: the probability that the expected value exceeds $2$ for the 1:1:1 hypothesis is $0.982$ ($98.2$%). There is an $98.2$% likelihood that the population is not 1:1:1.
+We could also compare the two alternative hypotheses. The 1:1:2 hypothesis has lower DIC and is therefore considered a better fit ($4.7$ vs $6.4$). This is a difference in DIC of around $1.7$ units. So the data have higher support for a 1:1:2 population ratio than a 1:1:1 ratio.
+
+# References
+

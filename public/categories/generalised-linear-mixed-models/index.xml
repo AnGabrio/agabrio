@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>generalised linear mixed models on Andrea Gabrio</title>
+    <link>/categories/generalised-linear-mixed-models/</link>
+    <description>Recent content in generalised linear mixed models on Andrea Gabrio</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 15 Feb 2020 21:13:14 -0500</lastBuildDate>
+    
+	    <atom:link href="/categories/generalised-linear-mixed-models/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Generalised Linear Mixed Models - JAGS</title>
+      <link>/jags/glmm-jags/glmm-jags/</link>
+      <pubDate>Sat, 15 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/jags/glmm-jags/glmm-jags/</guid>
+      <description>
+
+
+&lt;p&gt;This tutorial will focus on the use of Bayesian estimation to fit simple linear regression models. &lt;code&gt;BUGS&lt;/code&gt; (Bayesian inference Using &lt;em&gt;Gibbs Sampling&lt;/em&gt;) is an algorithm and supporting language (resembling &lt;code&gt;R&lt;/code&gt;) dedicated to performing the Gibbs sampling implementation of &lt;em&gt;Markov Chain Monte Carlo&lt;/em&gt; (MCMC) method. Dialects of the &lt;code&gt;BUGS&lt;/code&gt; language are implemented within three main projects:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;OpenBUGS&lt;/strong&gt; - written in component pascal.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;JAGS&lt;/strong&gt; - (Just Another Gibbs Sampler) - written in &lt;code&gt;C++&lt;/code&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;STAN&lt;/strong&gt; - a dedicated Bayesian modelling framework written in &lt;code&gt;C++&lt;/code&gt; and implementing &lt;em&gt;Hamiltonian&lt;/em&gt; MCMC samplers.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Whilst the above programs can be used stand-alone, they do offer the rich data pre-processing and graphical capabilities of &lt;code&gt;R&lt;/code&gt;, and thus, they are best accessed from within &lt;code&gt;R&lt;/code&gt; itself. As such there are multiple packages devoted to interfacing with the various software implementations:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;R2OpenBUGS&lt;/em&gt; - interfaces with &lt;code&gt;OpenBUGS&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;R2jags&lt;/em&gt; - interfaces with &lt;code&gt;JAGS&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;rstan&lt;/em&gt; - interfaces with &lt;code&gt;STAN&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This tutorial will demonstrate how to fit models in &lt;code&gt;JAGS&lt;/code&gt; (&lt;span class=&#34;citation&#34;&gt;Plummer (2004)&lt;/span&gt;) using the package &lt;code&gt;R2jags&lt;/code&gt; (&lt;span class=&#34;citation&#34;&gt;Su et al. (2015)&lt;/span&gt;) as interface, which also requires to load some other packages.&lt;/p&gt;
+&lt;div id=&#34;binomial&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Binomial&lt;/h1&gt;
+&lt;div id=&#34;data-generation&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Data generation&lt;/h2&gt;
+&lt;p&gt;Goodness of fit tests are concerned with comparing the observed frequencies with those expected on the basis of a specific null hypothesis. So lets now fabricate a motivating scenario and some data. We will create a scenario that involves items classified into one of three groups (A, B and C). The number of items in each classification group are then tallied up. Out of a total of $4$7 items, &lt;span class=&#34;math inline&#34;&gt;\(15\)&lt;/span&gt; where of type A, &lt;span class=&#34;math inline&#34;&gt;\(9\)&lt;/span&gt; where of type B and &lt;span class=&#34;math inline&#34;&gt;\(23\)&lt;/span&gt; where of type C. We could evaluate a parity (a &lt;span class=&#34;math inline&#34;&gt;\(1:1:1\)&lt;/span&gt; ratio from these data. In a frequentist context, this might involve testing a null hypothesis that the observed data could have come from a population with a &lt;span class=&#34;math inline&#34;&gt;\(1:1\)&lt;/span&gt; item ratio. In this case the probability would be the probability of obtaining the observed ratio of frequencies when the null hypothesis is true. In a Bayesian context, there are numerous ways that we could tackle these data. We would be evaluating the evidence for the null hypothesis (&lt;span class=&#34;math inline&#34;&gt;\(1:1:1\)&lt;/span&gt; item ratio) given the observed by estimating the degree of freedom from a chi-square distribution. Alternatively, we could estimate the value of the three population fractions which are expected to be 1/3, 1/3, 1/3 when &lt;span class=&#34;math inline&#34;&gt;\(1:1:1\)&lt;/span&gt;. We will explore this option first and then explore the chi-square approach second. To extend the example, lets also explore a &lt;span class=&#34;math inline&#34;&gt;\(1:1:2\)&lt;/span&gt; ratio.&lt;/p&gt;
+&lt;p&gt;We start by generating the observed data:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt;  #the observed frequences of A and B
+&amp;gt; obs &amp;lt;- c(15, 9, 23)
+&amp;gt; obs
+[1] 15  9 23&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;model-fitting&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Model fitting&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; modelString=&amp;quot;
++  model {
++    #Likelihood
++   for (i in 1:nGroups) {
++     obs[i] ~ dbin(p[i],n[i])
++     p[i] ~ dbeta(a[i],b[i])
++     a[i] ~ dgamma(1,0.01)
++     b[i] ~ dgamma(1,0.01)
++   }
++ }
++ &amp;quot;
+&amp;gt; 
+&amp;gt; writeLines(modelString, con=&amp;#39;modelbin.txt&amp;#39;)
+&amp;gt; 
+&amp;gt; #The observed item frequencies
+&amp;gt; obs &amp;lt;- c(15, 9, 23)
+&amp;gt; data.list &amp;lt;- list(obs = obs, n = c(47, 47, 47), nGroups = 3)
+&amp;gt; data.list
+$obs
+[1] 15  9 23
+
+$n
+[1] 47 47 47
+
+$nGroups
+[1] 3
+&amp;gt; 
+&amp;gt; params &amp;lt;- c(&amp;#39;p&amp;#39;)
+&amp;gt; nChains = 2
+&amp;gt; burnInSteps = 5000
+&amp;gt; thinSteps = 1
+&amp;gt; numSavedSteps = 20000
+&amp;gt; nIter = ceiling((numSavedSteps * thinSteps)/nChains)
+&amp;gt; 
+&amp;gt; library(R2jags)
+&amp;gt; data.r2jags &amp;lt;- jags(data=data.list,model.file=&amp;#39;modelbin.txt&amp;#39;, param=params,
++                    n.chains=nChains, n.iter=nIter, n.burnin=burnInSteps, n.thin=thinSteps)
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 3
+   Unobserved stochastic nodes: 9
+   Total graph size: 18
+
+Initializing model
+&amp;gt; 
+&amp;gt; print(data.r2jags)
+Inference for Bugs model at &amp;quot;modelbin.txt&amp;quot;, fit using jags,
+ 2 chains, each with 10000 iterations (first 5000 discarded)
+ n.sims = 10000 iterations saved
+         mu.vect sd.vect   2.5%    25%    50%    75%  97.5%  Rhat n.eff
+p[1]       0.325   0.065  0.204  0.279  0.324  0.369  0.457 1.007   270
+p[2]       0.205   0.057  0.106  0.164  0.201  0.243  0.324 1.001 10000
+p[3]       0.492   0.072  0.355  0.443  0.492  0.541  0.632 1.001  4800
+deviance  15.241   2.364 12.544 13.511 14.660 16.334 21.177 1.001 10000
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 2.8 and DIC = 18.0
+DIC is an estimate of expected predictive error (lower deviance is better).&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Conclusions&lt;/strong&gt;: Initially, we should focus our attention on the Rhat and n.eff columns. These are the scale reduction and number of effective samples respectively and they provide an indication of the degree of mixing or coverage of the samples. Ideally, the n.eff values should be approximately equal to the number of saved samples (in this case &lt;span class=&#34;math inline&#34;&gt;\(4701\)&lt;/span&gt;), and the Rhat values should be approximately &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt; (complete convergence). Whilst the actual values are likely to differ substantially from run to run (due to the stochastic nature of the way the chains traverse the posterior distribution), on this occasion, the n.eff of the first two probability parameters (p[1] and p[2]) are substantially lower than &lt;span class=&#34;math inline&#34;&gt;\(4700\)&lt;/span&gt;. Hence, the samples of these parameters may not accurately reflect the posterior distribution. We might consider altering one or more of the chain behavioural paramters (such as the thinning rate), alter the model definition (or priors) itself.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;model-evaluation&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Model evaluation&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(mcmcplots)
+&amp;gt; denplot(data.r2jags, parms = c(&amp;quot;p&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/glmm-jags/2020-02-01-glmm-jags_files/figure-html/mcmc_diag-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; traplot(data.r2jags, parms = c(&amp;quot;p&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/glmm-jags/2020-02-01-glmm-jags_files/figure-html/mcmc_diag-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; 
+&amp;gt; autocorr.diag(as.mcmc(data.r2jags))
+          deviance       p[1]        p[2]         p[3]
+Lag 0   1.00000000 1.00000000  1.00000000  1.000000000
+Lag 1   0.68267965 0.80481535  0.81718010  0.824484449
+Lag 5   0.19023252 0.36717636  0.40855991  0.438047294
+Lag 10  0.01283481 0.13233461  0.18566394  0.210279554
+Lag 50 -0.02733898 0.01296104 -0.00839694 -0.009310405&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;chi-square&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Chi-square&lt;/h1&gt;
+&lt;div id=&#34;model-fitting-1&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Model fitting&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; modelString=&amp;quot;
++ data {
++  for (i in 1:n){
++       resid[i] &amp;lt;- pow(obs[i]-exp[i],2)/exp[i]
++     }
++     chisq &amp;lt;- sum(resid)
++  }
++  model {
++    #Likelihood
++    chisq  ~ dchisqr(k)
++    #Priors
++    k ~ dunif(0.01,100)
++ }
++ &amp;quot;
+&amp;gt; 
+&amp;gt; writeLines(modelString, con=&amp;#39;modelchi.txt&amp;#39;)
+&amp;gt; 
+&amp;gt; #The observed item frequencies
+&amp;gt; obs &amp;lt;- c(15, 9, 23)
+&amp;gt; #The expected item frequencies (for a 1:1:1 ratio)
+&amp;gt; exp &amp;lt;- rep(sum(obs) * 1/3, 3)
+&amp;gt; data.list &amp;lt;- list(obs = obs, exp = exp, n = 3)
+&amp;gt; data.list
+$obs
+[1] 15  9 23
+
+$exp
+[1] 15.66667 15.66667 15.66667
+
+$n
+[1] 3
+&amp;gt; 
+&amp;gt; #The expected item frequencies (for a 1:1:2 ratio)
+&amp;gt; exp &amp;lt;- sum(obs) * c(1/4, 1/4, 2/4)
+&amp;gt; data.list1 &amp;lt;- list(obs = obs, exp = exp, n = 3)
+&amp;gt; data.list1
+$obs
+[1] 15  9 23
+
+$exp
+[1] 11.75 11.75 23.50
+
+$n
+[1] 3
+&amp;gt; 
+&amp;gt; params &amp;lt;- c(&amp;quot;chisq&amp;quot;, &amp;quot;resid&amp;quot;, &amp;quot;k&amp;quot;)
+&amp;gt; nChains = 2
+&amp;gt; burnInSteps = 5000
+&amp;gt; thinSteps = 1
+&amp;gt; numSavedSteps = 20000
+&amp;gt; nIter = ceiling((numSavedSteps * thinSteps)/nChains)
+&amp;gt; 
+&amp;gt; data.r2jags &amp;lt;- jags(data=data.list,model.file=&amp;#39;modelchi.txt&amp;#39;, param=params,
++                    n.chains=nChains, n.iter=nIter, n.burnin=burnInSteps, n.thin=thinSteps)
+Compiling data graph
+   Resolving undeclared variables
+   Allocating nodes
+   Initializing
+   Reading data back into data table
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 1
+   Unobserved stochastic nodes: 1
+   Total graph size: 14
+
+Initializing model
+&amp;gt; 
+&amp;gt; print(data.r2jags)
+Inference for Bugs model at &amp;quot;modelchi.txt&amp;quot;, fit using jags,
+ 2 chains, each with 10000 iterations (first 5000 discarded)
+ n.sims = 10000 iterations saved
+         mu.vect sd.vect  2.5%   25%   50%    75%  97.5%  Rhat n.eff
+chisq      6.298   0.000 6.298 6.298 6.298  6.298  6.298 1.000     1
+k          8.279   3.541 2.356 5.724 7.935 10.459 16.061 1.001  9200
+resid[1]   0.028   0.000 0.028 0.028 0.028  0.028  0.028 1.000     1
+resid[2]   2.837   0.000 2.837 2.837 2.837  2.837  2.837 1.000     1
+resid[3]   3.433   0.000 3.433 3.433 3.433  3.433  3.433 1.000     1
+deviance   5.306   1.360 4.346 4.439 4.783  5.609  9.146 1.001 10000
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 0.9 and DIC = 6.2
+DIC is an estimate of expected predictive error (lower deviance is better).&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Conclusions&lt;/strong&gt;: The median degrees of freedom (&lt;span class=&#34;math inline&#34;&gt;\(k\)&lt;/span&gt;) was &lt;span class=&#34;math inline&#34;&gt;\(8.00\)&lt;/span&gt; with a &lt;span class=&#34;math inline&#34;&gt;\(95\)&lt;/span&gt;% spread of &lt;span class=&#34;math inline&#34;&gt;\(2.31-16.16\)&lt;/span&gt;. This interval does not include the value of &lt;span class=&#34;math inline&#34;&gt;\(2\)&lt;/span&gt; (expected value of the chi2 distribution for this hypothesis). Hence there is evidence that the population ratio deviates from a 1:1:1 ratio.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; data.r2jags1 &amp;lt;- jags(data=data.list1,model.file=&amp;#39;modelchi.txt&amp;#39;, param=params,
++                    n.chains=nChains, n.iter=nIter, n.burnin=burnInSteps, n.thin=thinSteps)
+Compiling data graph
+   Resolving undeclared variables
+   Allocating nodes
+   Initializing
+   Reading data back into data table
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 1
+   Unobserved stochastic nodes: 1
+   Total graph size: 14
+
+Initializing model
+&amp;gt; 
+&amp;gt; print(data.r2jags1)
+Inference for Bugs model at &amp;quot;modelchi.txt&amp;quot;, fit using jags,
+ 2 chains, each with 10000 iterations (first 5000 discarded)
+ n.sims = 10000 iterations saved
+         mu.vect sd.vect  2.5%   25%   50%   75% 97.5%  Rhat n.eff
+chisq      1.553   0.000 1.553 1.553 1.553 1.553 1.553 1.000     1
+k          3.358   1.850 0.601 1.967 3.090 4.473 7.698 1.001 10000
+resid[1]   0.899   0.000 0.899 0.899 0.899 0.899 0.899 1.000     1
+resid[2]   0.644   0.000 0.644 0.644 0.644 0.644 0.644 1.000     1
+resid[3]   0.011   0.000 0.011 0.011 0.011 0.011 0.011 1.000     1
+deviance   3.815   1.321 2.870 2.966 3.318 4.129 7.674 1.002  2300
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 0.9 and DIC = 4.7
+DIC is an estimate of expected predictive error (lower deviance is better).&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Conclusions&lt;/strong&gt;: The median degrees of freedom (&lt;span class=&#34;math inline&#34;&gt;\(k\)&lt;/span&gt;) was &lt;span class=&#34;math inline&#34;&gt;\(3.31\)&lt;/span&gt; with a &lt;span class=&#34;math inline&#34;&gt;\(95\)&lt;/span&gt;% spread of &lt;span class=&#34;math inline&#34;&gt;\(0.57-7.61\)&lt;/span&gt;. This interval comfortably includes the value of &lt;span class=&#34;math inline&#34;&gt;\(2\)&lt;/span&gt; (expected value of the chi2 distribution for this hypothesis). Hence there is no evidence that the population ratio deviates from a 1:1:2 ratio.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;model-evaluation-1&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Model evaluation&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; denplot(data.r2jags, parms = c(&amp;quot;k&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/glmm-jags/2020-02-01-glmm-jags_files/figure-html/mcmc_diag_chi-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; traplot(data.r2jags, parms = c(&amp;quot;k&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/JAGS/glmm-jags/2020-02-01-glmm-jags_files/figure-html/mcmc_diag_chi-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; 
+&amp;gt; autocorr.diag(as.mcmc(data.r2jags))
+       chisq     deviance            k resid[1] resid[2] resid[3]
+Lag 0    NaN  1.000000000  1.000000000      NaN      NaN   1.0000
+Lag 1    NaN  0.442254918  0.261323204      NaN      NaN   0.9998
+Lag 5    NaN  0.021391203  0.010672399      NaN      NaN   0.9990
+Lag 10   NaN -0.007353145 -0.015931057      NaN      NaN   0.9980
+Lag 50   NaN  0.007103731 -0.001695536      NaN      NaN   0.9900&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;exploration-of-the-trends&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Exploration of the trends&lt;/h2&gt;
+&lt;p&gt;There are a number of avenues we could take in order to explore the data and models further. One thing we could do is calculate the probability that &lt;span class=&#34;math inline&#34;&gt;\(k\)&lt;/span&gt; is greater than &lt;span class=&#34;math inline&#34;&gt;\(2\)&lt;/span&gt; (the expected value) for each hypothesis. This can be done either by modifying the &lt;code&gt;JAGS&lt;/code&gt; code to include a derivative that uses the step function, or we can derive it within &lt;code&gt;R&lt;/code&gt; from the &lt;span class=&#34;math inline&#34;&gt;\(k\)&lt;/span&gt; samples. Lets explore the latter.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; k &amp;lt;- data.r2jags$BUGSoutput$sims.matrix[, &amp;quot;k&amp;quot;]
+&amp;gt; pr &amp;lt;- sum(k &amp;gt; 2)/length(k)
+&amp;gt; pr
+[1] 0.9823
+&amp;gt; 
+&amp;gt; k &amp;lt;- data.r2jags1$BUGSoutput$sims.matrix[, &amp;quot;k&amp;quot;]
+&amp;gt; pr1 &amp;lt;- sum(k &amp;gt; 2)/length(k)
+&amp;gt; pr1
+[1] 0.7419&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Conclusions&lt;/strong&gt;: the probability that the expected value exceeds &lt;span class=&#34;math inline&#34;&gt;\(2\)&lt;/span&gt; for the 1:1:1 hypothesis is &lt;span class=&#34;math inline&#34;&gt;\(0.982\)&lt;/span&gt; (&lt;span class=&#34;math inline&#34;&gt;\(98.2\)&lt;/span&gt;%). There is an &lt;span class=&#34;math inline&#34;&gt;\(98.2\)&lt;/span&gt;% likelihood that the population is not 1:1:1.
+We could also compare the two alternative hypotheses. The 1:1:2 hypothesis has lower DIC and is therefore considered a better fit (&lt;span class=&#34;math inline&#34;&gt;\(4.7\)&lt;/span&gt; vs &lt;span class=&#34;math inline&#34;&gt;\(6.4\)&lt;/span&gt;). This is a difference in DIC of around &lt;span class=&#34;math inline&#34;&gt;\(1.7\)&lt;/span&gt; units. So the data have higher support for a 1:1:2 population ratio than a 1:1:1 ratio.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
+&lt;h1&gt;References&lt;/h1&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references&#34;&gt;
+&lt;div id=&#34;ref-plummer2004jags&#34;&gt;
+&lt;p&gt;Plummer, Martyn. 2004. “JAGS: Just Another Gibbs Sampler.”&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-su2015package&#34;&gt;
+&lt;p&gt;Su, Yu-Sung, Masanao Yajima, Maintainer Yu-Sung Su, and JAGS SystemRequirements. 2015. “Package ‘R2jags’.” &lt;em&gt;R Package Version 0.03-08, URL Http://CRAN. R-Project. Org/Package= R2jags&lt;/em&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
