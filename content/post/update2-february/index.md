@@ -27,7 +27,7 @@ The moment for the second edition of the HEART's one-day introductory course to 
 
 Finally, a couple of personal notes. 
 
-* I recently attended a very interesting meeting about missing data methodology which was held by an international group of very talented senior and junior statisticians from different universities, including people like [Ian White](https://www.ctu.mrc.ac.uk/about-us/senior-staff/ian-white/) and [James Carpenter](https://www.lshtm.ac.uk/aboutus/people/carpenter.james) from UCL and the LSHTM. It was really an amazing experience to meet so many people working in different stats area but with a common passion about missing data methods (also mine!). From what I understood this series of meetings (called "MiDIA") have been held since years but do not have a very regular schedule due to people being busy I guess, which makes totally sense. Not sure when the next one will be held by no I am definitely looking forward to the next meetings!
+* I recently attended a very interesting meeting about missing data methodology which was held by an international group of very talented senior and junior statisticians from different universities, including people like [Ian White](https://www.ctu.mrc.ac.uk/about-us/senior-staff/ian-white/) and [James Carpenter](https://www.lshtm.ac.uk/aboutus/people/carpenter.james) from UCL and the LSHTM. It was really an amazing experience to meet so many people working in different stats area but with a common passion about missing data methods (also mine!). From what I understood this series of meetings (called "MiDIA") have been held since years but do not have a very regular schedule due to people being busy I guess, which makes totally sense. Not sure when the next one will be held but now I am definitely looking forward to the next meetings!
 
 ![](https://media.giphy.com/media/kFBJt0yqZD315EFJiJ/giphy.gif)
 	
@@ -39,7 +39,7 @@ which advertises a new position as health economist in our HEART group for perfo
 
 ![](https://media.giphy.com/media/kHZu4LDtvpY63RT1He/giphy.gif)
 
-* To conclude, I would also like to say that I have done some updates to this website. From the inclusion of new tutorials on the use of `JAGS` and `STAN` on different statistical topics, to a restyle of the website. In particular I had fun by playing around with some `Markdown` code to add new features, e.g. customised alert notes and emoji that you may find on my [home page]({{< ref "/authors/agabrio/_index.md" >}}), for example. This took me so much time but I am quite satisfied with the result if I may say so. You really never stop learning new things! 
+* To conclude, I would also like to say that I have done some updates to this website. From the inclusion of new tutorials on the use of [JAGS]({{< ref "/JAGS/_index.md" >}}) and [STAN]({{< ref "/STAN/_index.md" >}}) on different statistical topics, to a restyle of the website. In particular I had fun by playing around with some `Markdown` code to add new features, e.g. customised alert notes and emoji that you may find on my [home page]({{< ref "/authors/agabrio/_index.md" >}}), for example. This took me so much time but I am quite satisfied with the result if I may say so. You really never stop learning new things! 
  
  
  
