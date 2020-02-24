@@ -265,6 +265,52 @@
   </url>
   
   <url>
+    <loc>/tags/academic/</loc>
+    <lastmod>2020-02-10T12:34:03+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/heart/</loc>
+    <lastmod>2020-02-10T12:34:03+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/midia/</loc>
+    <lastmod>2020-02-10T12:34:03+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/post/</loc>
+    <lastmod>2020-02-10T12:34:03+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/news/</loc>
+    <lastmod>2020-02-10T12:34:03+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/priment/</loc>
+    <lastmod>2020-02-10T12:34:03+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/post/update2-february/update2-february/</loc>
+    <lastmod>2020-02-10T12:34:03+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/news/</loc>
+    <lastmod>2020-02-10T12:34:03+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>/jags/autocorrelation-jags/autocorrelation-jags/</loc>
     <lastmod>2020-02-08T21:13:14-05:00</lastmod>
   </url>
@@ -453,12 +499,6 @@
   </url>
   
   <url>
-    <loc>/tags/academic/</loc>
-    <lastmod>2020-02-01T12:34:03+01:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>/publication/gabrio2020/</loc>
     <lastmod>2020-02-01T00:00:00+00:00</lastmod>
   </url>
@@ -477,23 +517,6 @@
   <url>
     <loc>/tags/hierarchical-models/</loc>
     <lastmod>2020-02-01T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/post/</loc>
-    <lastmod>2020-02-01T12:34:03+01:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/news/</loc>
-    <lastmod>2020-02-01T12:34:03+01:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/priment/</loc>
-    <lastmod>2020-02-01T12:34:03+01:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -517,12 +540,6 @@
   <url>
     <loc>/tags/volleyball/</loc>
     <lastmod>2020-02-01T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/news/</loc>
-    <lastmod>2020-02-01T12:34:03+01:00</lastmod>
     <priority>0</priority>
   </url>
   

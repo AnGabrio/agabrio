@@ -6,6 +6,7 @@
     <description>Recent content in Categories on Andrea Gabrio</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
+    <copyright>`{year}`</copyright>
     <lastBuildDate>Sat, 15 Feb 2020 21:13:14 -0500</lastBuildDate>
     
 	    <atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
@@ -120,6 +121,42 @@
     </item>
     
     <item>
+      <title>HEART</title>
+      <link>/categories/heart/</link>
+      <pubDate>Mon, 10 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/heart/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Midia</title>
+      <link>/categories/midia/</link>
+      <pubDate>Mon, 10 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/midia/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>PRIMENT</title>
+      <link>/categories/priment/</link>
+      <pubDate>Mon, 10 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/priment/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>news</title>
+      <link>/categories/news/</link>
+      <pubDate>Mon, 10 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/news/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>autocorrelation</title>
       <link>/categories/autocorrelation/</link>
       <pubDate>Sat, 08 Feb 2020 21:13:14 -0500</pubDate>
@@ -188,24 +225,6 @@
       <pubDate>Sat, 01 Feb 2020 21:13:14 -0500</pubDate>
       
       <guid>/categories/one-sample-t-test/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>PRIMENT</title>
-      <link>/categories/priment/</link>
-      <pubDate>Sat, 01 Feb 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/categories/priment/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>news</title>
-      <link>/categories/news/</link>
-      <pubDate>Sat, 01 Feb 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/categories/news/</guid>
       <description></description>
     </item>
     

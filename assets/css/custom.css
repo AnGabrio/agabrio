@@ -147,10 +147,9 @@ html {
  *  Alerts
  **************************************************/
 
-
 .alert-note {
-  color: #fff;
-  background-color: rgb(127,140,180); 
+  color: #0A2F6C;
+  background-color: rgb(229, 237, 250); 
   border-color: #bce8f1;
 }
 
@@ -167,3 +166,4 @@ video {
   margin-right: auto;
   display: block;
 }
+

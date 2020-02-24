@@ -15,7 +15,7 @@ lastmod: '2020-02-01T12:34:03+01:00'
 featured: false
 draft: false
 header:
-  caption: "Work, work, work"
+  caption: "ICTM logo"
   image: ""
 image:
   caption: ""

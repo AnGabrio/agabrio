@@ -1,9 +1,9 @@
 <footer class="site-footer">
 
   <p class="powered-by">
-    {{ with site.Copyright }}{{ replace . "{year}" now.Year | markdownify}} &middot; {{ end }}
-
-    &#169; Andrea Gabrio 2019. Based on the 
+    &#169; Andrea Gabrio &middot;
+    {{ with site.Copyright }}{{ replace . "{year}" now.Year | markdownify}} {{ end }}
+    &middot; Based on the 
     <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
     <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
 

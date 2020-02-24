@@ -6,6 +6,7 @@
     <description>Recent content in Tags on Andrea Gabrio</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
+    <copyright>`{year}`</copyright>
     <lastBuildDate>Sat, 15 Feb 2020 21:13:14 -0500</lastBuildDate>
     
 	    <atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
@@ -147,6 +148,24 @@
     </item>
     
     <item>
+      <title>Academic</title>
+      <link>/tags/academic/</link>
+      <pubDate>Mon, 10 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/academic/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>News</title>
+      <link>/tags/news/</link>
+      <pubDate>Mon, 10 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/news/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>autocorrelation</title>
       <link>/tags/autocorrelation/</link>
       <pubDate>Sat, 08 Feb 2020 21:13:14 -0500</pubDate>
@@ -219,15 +238,6 @@
     </item>
     
     <item>
-      <title>Academic</title>
-      <link>/tags/academic/</link>
-      <pubDate>Sat, 01 Feb 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/academic/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Bayesian methods</title>
       <link>/tags/bayesian-methods/</link>
       <pubDate>Sat, 01 Feb 2020 00:00:00 +0000</pubDate>
@@ -242,15 +252,6 @@
       <pubDate>Sat, 01 Feb 2020 00:00:00 +0000</pubDate>
       
       <guid>/tags/hierarchical-models/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>News</title>
-      <link>/tags/news/</link>
-      <pubDate>Sat, 01 Feb 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/news/</guid>
       <description></description>
     </item>
     

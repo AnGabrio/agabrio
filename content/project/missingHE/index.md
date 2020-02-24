@@ -47,7 +47,7 @@ For example, the function `plot`, when applied to the output of a model fitted u
 
 ![png](imputed.jpg)
 
-More information, including new updates, about 'missingHE' can be found at this [dedicated page](http://127.0.0.1:4321/missingHE/) 
+More information, including new updates, about 'missingHE' can be found at this [dedicated page]({{< ref "/missingHE/_index.md" >}})
 
 
 

@@ -1,0 +1,57 @@
+---
+title: Something old, something new, something borrowed, something blue
+author: Andrea Gabrio
+date: '2020-02-10'
+slug: update2-february
+categories: ["news","Midia","PRIMENT","HEART"]
+tags:
+  - News
+  - Academic
+subtitle: ''
+summary: ''
+authors: ["Andrea Gabrio"]
+lastmod: '2020-02-10T12:34:03+01:00'
+featured: false
+draft: false
+header:
+  caption: "Who can get this reference?"
+  image: ""
+image:
+  caption: ""
+  focal_point: "Smart"
+projects: ["Missing Data"]
+# Options: Smart, Center, TopLeft, Top, TopRight, Left, Right, #BottomLeft, Bottom, BottomRight
+---
+
+The moment for the second edition of the HEART's one-day introductory course to health economics arrived at last! The course, led by [Rachael Hunter](https://iris.ucl.ac.uk/iris/browse/profile?upi=RMHUN48) and called "Understanding health economics in clinical trials", took place on Tuesday 11 February and was prepared in collaboration between the HEART group and the Institute of Clinical Trials and Methodology (ICTM). I believe this second edition of the course was a success both in terms of the quality/quantity of the material covered during the six sessions throughout the day, as well as in terms of the positive feedback we received from the participants. Also, this time a new HEART member ([Marie](https://iris.ucl.ac.uk/iris/browse/profile?upi=MCCLE13)) joined the group and very nicely delivered the session about patient reported outcome measures (PROMs), engaging in nice discussions with the audience. 
+
+Finally, a couple of personal notes. 
+
+* I recently attended a very interesting meeting about missing data methodology which was held by an international group of very talented senior and junior statisticians from different universities, including people like [Ian White](https://www.ctu.mrc.ac.uk/about-us/senior-staff/ian-white/) and [James Carpenter](https://www.lshtm.ac.uk/aboutus/people/carpenter.james) from UCL and the LSHTM. It was really an amazing experience to meet so many people working in different stats area but with a common passion about missing data methods (also mine!). From what I understood this series of meetings (called "MiDIA") have been held since years but do not have a very regular schedule due to people being busy I guess, which makes totally sense. Not sure when the next one will be held by no I am definitely looking forward to the next meetings!
+
+![](https://media.giphy.com/media/kFBJt0yqZD315EFJiJ/giphy.gif)
+	
+* I would also like to highlight a recent tweet from [UCL PRIMENT CTU](https://www.ucl.ac.uk/priment/) 
+
+{{< tweet 1230124818244173824 >}}
+
+which advertises a new position as health economist in our HEART group for performing health economics using data from clinical trials. I would encourage anyone interested in some good applied health economic work to apply for this position. Deadline 15 March 2020.  
+
+![](https://media.giphy.com/media/kHZu4LDtvpY63RT1He/giphy.gif)
+
+* To conclude, I would also like to say that I have done some updates to this website. From the inclusion of new tutorials on the use of `JAGS` and `STAN` on different statistical topics, to a restyle of the website. In particular I had fun by playing around with some `Markdown` code to add new features, e.g. customised alert notes and emoji that you may find on my [home page]({{< ref "/authors/agabrio/_index.md" >}}), for example. This took me so much time but I am quite satisfied with the result if I may say so. You really never stop learning new things! 
+ 
+ 
+ 
+
+
+
+
+
+
+
+
+
+
+
+

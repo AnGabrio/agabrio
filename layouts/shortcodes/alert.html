@@ -1,0 +1,8 @@
+<div class="alert alert-{{ .Get 0 }}">
+    <h4 class="alert-heading;">&#9818; King's note! &#9818; </h4>
+  <div>
+        <hr>
+    {{ .Inner | markdownify | emojify }}
+        <hr>
+  </div>
+</div>
