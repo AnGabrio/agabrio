@@ -262,7 +262,7 @@ DIC is an estimate of expected predictive error (lower deviance is better).</cod
 &gt; plot_pred_comp1 &lt;- function(home_team, away_team, ms) {
 +     # Simulates and plots game goals scores using the MCMC samples from the m1
 +     # model.
-+     par(mar=c(1,1,1,1))
++     par(mar=c(2,2,2,2))
 +     par(mfrow = c(2, 4))
 +     baseline &lt;- ms[, &quot;baseline&quot;]
 +     home_skill &lt;- ms[, which(teams == home_team)]
@@ -450,7 +450,7 @@ Home advantage in number of goals      NA       NA       NA</code></pre>
 [1] 168.7556</code></pre>
 <p>Finally we’ll look at the simulated results for Valencia (home team) vs Sevilla (away team) using the estimates from the new model with the first row of the graph showing the predicted outcome and the second row showing the actual data.</p>
 <pre class="r"><code>&gt; plot_pred_comp2 &lt;- function(home_team, away_team, ms) {
-+     par(mar=c(1,1,1,1))
++     par(mar=c(2,2,2,2))
 +     par(mfrow = c(2, 4))
 +     home_baseline &lt;- ms[, &quot;home_baseline&quot;]
 +     away_baseline &lt;- ms[, &quot;away_baseline&quot;]
@@ -481,7 +481,7 @@ Home advantage in number of goals      NA       NA       NA</code></pre>
 <p><img src="/JAGS/glmm-jags/2020-02-01-glmm-jags_files/figure-html/data_check_m3-1.png" width="672" /></p>
 <p>The second iteration of the model was therefore modified to include the year-to-year variability in team skill. This was done by allowing each team to have one skill parameter per season but to connect the skill parameters by using a team’s skill parameter for season <span class="math inline">\(t\)</span> in the prior distribution for that team’s skill parameter for season <span class="math inline">\(t+1\)</span> so that</p>
 <p><span class="math display">\[ \text{skill}_{t+1} \sim N(\text{skill}_t,\sigma^2_{\text{season}})\]</span></p>
-<p>for all different <span class="math inline">\(t\)</span>, except the first season which is given an vague prior. Here <span class="math inline">\(\sigma^2_{\text{season}}\)</span> is a parameter estimated using the whole data set. The home and away baselines are given the same kind of priors and below is the resulting <code>JAGS</code> model.</p>
+<p>for all different <span class="math inline">\(t\)</span>, except the first season which is given a vague prior. Here <span class="math inline">\(\sigma^2_{\text{season}}\)</span> is a parameter estimated using the whole data set. The home and away baselines are given the same kind of priors and below is the resulting <code>JAGS</code> model.</p>
 <pre class="r"><code>&gt; # model 3
 &gt; m3_string &lt;- &quot;model {
 + for(i in 1:n_games) {
@@ -526,7 +526,7 @@ Home advantage in number of goals      NA       NA       NA</code></pre>
 &gt; 
 &gt; ## write the model to a text file
 &gt; writeLines(m3_string, con = &quot;model3.txt&quot;)</code></pre>
-<p>And now re-fit the model. These changes to the model unfortunately introduces quit a lot of autocorrelation when running the MCMC sampler. Also, re-define the data list to include information for the season parameters.</p>
+<p>And now re-fit the model. These changes to the model unfortunately introduce quite a lot of autocorrelation when running the MCMC sampler. Also, I re-define the data list to include information for the season parameters.</p>
 <pre class="r"><code>&gt; data_list_m3 &lt;- list(HomeGoals = d$HomeGoals, AwayGoals = d$AwayGoals, HomeTeam = as.numeric(factor(d$HomeTeam,
 +     levels = teams)), AwayTeam = as.numeric(factor(d$AwayTeam, levels = teams)),
 +     Season = as.numeric(factor(d$Season, levels = seasons)), n_teams = length(teams),
@@ -910,9 +910,8 @@ DIC is an estimate of expected predictive error (lower deviance is better).</cod
 &gt; colnames(team_skill) &lt;- teams
 &gt; team_skill &lt;- team_skill[, order(colMeans(team_skill), decreasing = T)]
 &gt; par(mar = c(2, 0.7, 0.7, 0.7), xaxs = &quot;i&quot;)
-&gt; caterplot(team_skill, labels.loc = &quot;above&quot;, val.lim = c(0.7, 3.8)) + theme_classic()</code></pre>
+&gt; caterplot(team_skill, labels.loc = &quot;above&quot;, val.lim = c(0.7, 3.8), style = &quot;plain&quot;)</code></pre>
 <p><img src="/JAGS/glmm-jags/2020-02-01-glmm-jags_files/figure-html/cat_plot-1.png" width="672" /></p>
-<pre><code>NULL</code></pre>
 <p>Two teams are clearly ahead of the rest, FC Barcelona and Real Madrid CF. Let’s look at the credible difference between the two teams.</p>
 <pre class="r"><code>&gt; plotPost(team_skill[, &quot;FC Barcelona&quot;] - team_skill[, &quot;Real Madrid CF&quot;], compVal = 0,
 +     xlab = &quot;← Real Madrid     vs     Barcelona →&quot;)</code></pre>
@@ -1009,68 +1008,574 @@ DIC is an estimate of expected predictive error (lower deviance is better).</cod
 +     laliga_forecast$AwayTeam, &quot;Draw&quot;))
 &gt; 
 &gt; rownames(laliga_forecast) &lt;- NULL
-&gt; print(xtable(laliga_forecast, align = &quot;cccccccccc&quot;))
-% latex table generated in R 3.6.1 by xtable 1.8-4 package
-% Tue Feb 25 22:45:56 2020
-\begin{table}[ht]
-\centering
-\begin{tabular}{cccccccccc}
-  \hline
- &amp; Season &amp; Week &amp; HomeTeam &amp; AwayTeam &amp; mean\_home\_goals &amp; mean\_away\_goals &amp; mode\_home\_goals &amp; mode\_away\_goals &amp; predicted\_winner \\ 
-  \hline
-1 &amp; 2012/13 &amp;  34 &amp; Celta Vigo &amp; Athletic Club Bilbao &amp; 1.50 &amp; 1.20 &amp; 1.00 &amp; 1.00 &amp; Celta Vigo \\ 
-  2 &amp; 2012/13 &amp;  34 &amp; Deportivo de La CoruÃ±a &amp; AtlÃ©tico Madrid &amp; 1.20 &amp; 1.40 &amp; 1.00 &amp; 1.00 &amp; AtlÃ©tico Madrid \\ 
-  3 &amp; 2012/13 &amp;  34 &amp; FC Barcelona &amp; Betis Sevilla &amp; 3.20 &amp; 0.50 &amp; 3.00 &amp; 0.00 &amp; FC Barcelona \\ 
-  4 &amp; 2012/13 &amp;  34 &amp; FC Sevilla &amp; Espanyol Barcelona &amp; 1.80 &amp; 1.00 &amp; 1.00 &amp; 0.00 &amp; FC Sevilla \\ 
-  5 &amp; 2012/13 &amp;  34 &amp; FC Valencia &amp; CA Osasuna &amp; 2.00 &amp; 0.90 &amp; 2.00 &amp; 0.00 &amp; FC Valencia \\ 
-  6 &amp; 2012/13 &amp;  34 &amp; Getafe CF &amp; Real Sociedad San Sebastian &amp; 1.50 &amp; 1.20 &amp; 1.00 &amp; 1.00 &amp; Getafe CF \\ 
-  7 &amp; 2012/13 &amp;  34 &amp; Granada CF &amp; MÃ¡laga CF &amp; 1.30 &amp; 1.30 &amp; 1.00 &amp; 1.00 &amp; Granada CF \\ 
-  8 &amp; 2012/13 &amp;  34 &amp; RCD Mallorca &amp; Levante U.D. &amp; 1.50 &amp; 1.10 &amp; 1.00 &amp; 1.00 &amp; RCD Mallorca \\ 
-  9 &amp; 2012/13 &amp;  34 &amp; Real Madrid CF &amp; Real Valladolid &amp; 3.20 &amp; 0.50 &amp; 3.00 &amp; 0.00 &amp; Real Madrid CF \\ 
-  10 &amp; 2012/13 &amp;  34 &amp; Real Zaragoza &amp; Rayo Vallecano &amp; 1.50 &amp; 1.10 &amp; 1.00 &amp; 1.00 &amp; Real Zaragoza \\ 
-  11 &amp; 2012/13 &amp;  35 &amp; Athletic Club Bilbao &amp; RCD Mallorca &amp; 1.60 &amp; 1.00 &amp; 1.00 &amp; 1.00 &amp; Athletic Club Bilbao \\ 
-  12 &amp; 2012/13 &amp;  35 &amp; AtlÃ©tico Madrid &amp; FC Barcelona &amp; 1.00 &amp; 1.80 &amp; 0.00 &amp; 1.00 &amp; FC Barcelona \\ 
-  13 &amp; 2012/13 &amp;  35 &amp; Betis Sevilla &amp; Celta Vigo &amp; 1.70 &amp; 1.00 &amp; 1.00 &amp; 1.00 &amp; Betis Sevilla \\ 
-  14 &amp; 2012/13 &amp;  35 &amp; CA Osasuna &amp; Getafe CF &amp; 1.50 &amp; 1.10 &amp; 1.00 &amp; 1.00 &amp; CA Osasuna \\ 
-  15 &amp; 2012/13 &amp;  35 &amp; Espanyol Barcelona &amp; Real Madrid CF &amp; 0.80 &amp; 2.10 &amp; 0.00 &amp; 2.00 &amp; Real Madrid CF \\ 
-  16 &amp; 2012/13 &amp;  35 &amp; Levante U.D. &amp; Real Zaragoza &amp; 1.80 &amp; 1.00 &amp; 1.00 &amp; 0.00 &amp; Levante U.D. \\ 
-  17 &amp; 2012/13 &amp;  35 &amp; MÃ¡laga CF &amp; FC Sevilla &amp; 1.50 &amp; 1.20 &amp; 1.00 &amp; 1.00 &amp; MÃ¡laga CF \\ 
-  18 &amp; 2012/13 &amp;  35 &amp; Rayo Vallecano &amp; FC Valencia &amp; 1.20 &amp; 1.40 &amp; 1.00 &amp; 1.00 &amp; FC Valencia \\ 
-  19 &amp; 2012/13 &amp;  35 &amp; Real Sociedad San Sebastian &amp; Granada CF &amp; 2.00 &amp; 0.90 &amp; 2.00 &amp; 0.00 &amp; Real Sociedad San Sebastian \\ 
-  20 &amp; 2012/13 &amp;  35 &amp; Real Valladolid &amp; Deportivo de La CoruÃ±a &amp; 1.60 &amp; 1.10 &amp; 1.00 &amp; 1.00 &amp; Real Valladolid \\ 
-  21 &amp; 2012/13 &amp;  36 &amp; Celta Vigo &amp; AtlÃ©tico Madrid &amp; 1.20 &amp; 1.50 &amp; 1.00 &amp; 1.00 &amp; AtlÃ©tico Madrid \\ 
-  22 &amp; 2012/13 &amp;  36 &amp; Deportivo de La CoruÃ±a &amp; Espanyol Barcelona &amp; 1.50 &amp; 1.20 &amp; 1.00 &amp; 1.00 &amp; Deportivo de La CoruÃ±a \\ 
-  23 &amp; 2012/13 &amp;  36 &amp; FC Barcelona &amp; Real Valladolid &amp; 3.50 &amp; 0.50 &amp; 3.00 &amp; 0.00 &amp; FC Barcelona \\ 
-  24 &amp; 2012/13 &amp;  36 &amp; FC Sevilla &amp; Real Sociedad San Sebastian &amp; 1.60 &amp; 1.00 &amp; 1.00 &amp; 1.00 &amp; FC Sevilla \\ 
-  25 &amp; 2012/13 &amp;  36 &amp; Getafe CF &amp; FC Valencia &amp; 1.30 &amp; 1.30 &amp; 1.00 &amp; 1.00 &amp; Getafe CF \\ 
-  26 &amp; 2012/13 &amp;  36 &amp; Granada CF &amp; CA Osasuna &amp; 1.40 &amp; 1.20 &amp; 1.00 &amp; 1.00 &amp; Granada CF \\ 
-  27 &amp; 2012/13 &amp;  36 &amp; Levante U.D. &amp; Rayo Vallecano &amp; 1.70 &amp; 1.00 &amp; 1.00 &amp; 1.00 &amp; Levante U.D. \\ 
-  28 &amp; 2012/13 &amp;  36 &amp; RCD Mallorca &amp; Betis Sevilla &amp; 1.50 &amp; 1.20 &amp; 1.00 &amp; 1.00 &amp; RCD Mallorca \\ 
-  29 &amp; 2012/13 &amp;  36 &amp; Real Madrid CF &amp; MÃ¡laga CF &amp; 2.90 &amp; 0.60 &amp; 2.00 &amp; 0.00 &amp; Real Madrid CF \\ 
-  30 &amp; 2012/13 &amp;  36 &amp; Real Zaragoza &amp; Athletic Club Bilbao &amp; 1.40 &amp; 1.20 &amp; 1.00 &amp; 1.00 &amp; Real Zaragoza \\ 
-  31 &amp; 2012/13 &amp;  37 &amp; Athletic Club Bilbao &amp; Levante U.D. &amp; 1.60 &amp; 1.10 &amp; 1.00 &amp; 1.00 &amp; Athletic Club Bilbao \\ 
-  32 &amp; 2012/13 &amp;  37 &amp; AtlÃ©tico Madrid &amp; RCD Mallorca &amp; 2.00 &amp; 0.80 &amp; 1.00 &amp; 0.00 &amp; AtlÃ©tico Madrid \\ 
-  33 &amp; 2012/13 &amp;  37 &amp; Betis Sevilla &amp; Real Zaragoza &amp; 1.80 &amp; 1.00 &amp; 1.00 &amp; 0.00 &amp; Betis Sevilla \\ 
-  34 &amp; 2012/13 &amp;  37 &amp; CA Osasuna &amp; FC Sevilla &amp; 1.40 &amp; 1.30 &amp; 1.00 &amp; 1.00 &amp; CA Osasuna \\ 
-  35 &amp; 2012/13 &amp;  37 &amp; Espanyol Barcelona &amp; FC Barcelona &amp; 0.80 &amp; 2.30 &amp; 0.00 &amp; 2.00 &amp; FC Barcelona \\ 
-  36 &amp; 2012/13 &amp;  37 &amp; FC Valencia &amp; Granada CF &amp; 2.20 &amp; 0.80 &amp; 2.00 &amp; 0.00 &amp; FC Valencia \\ 
-  37 &amp; 2012/13 &amp;  37 &amp; Getafe CF &amp; Rayo Vallecano &amp; 1.70 &amp; 1.00 &amp; 1.00 &amp; 0.00 &amp; Getafe CF \\ 
-  38 &amp; 2012/13 &amp;  37 &amp; MÃ¡laga CF &amp; Deportivo de La CoruÃ±a &amp; 1.80 &amp; 0.90 &amp; 1.00 &amp; 0.00 &amp; MÃ¡laga CF \\ 
-  39 &amp; 2012/13 &amp;  37 &amp; Real Sociedad San Sebastian &amp; Real Madrid CF &amp; 0.90 &amp; 1.90 &amp; 0.00 &amp; 1.00 &amp; Real Madrid CF \\ 
-  40 &amp; 2012/13 &amp;  37 &amp; Real Valladolid &amp; Celta Vigo &amp; 1.60 &amp; 1.10 &amp; 1.00 &amp; 1.00 &amp; Real Valladolid \\ 
-  41 &amp; 2012/13 &amp;  38 &amp; Celta Vigo &amp; Espanyol Barcelona &amp; 1.50 &amp; 1.20 &amp; 1.00 &amp; 1.00 &amp; Celta Vigo \\ 
-  42 &amp; 2012/13 &amp;  38 &amp; Deportivo de La CoruÃ±a &amp; Real Sociedad San Sebastian &amp; 1.30 &amp; 1.30 &amp; 1.00 &amp; 1.00 &amp; Deportivo de La CoruÃ±a \\ 
-  43 &amp; 2012/13 &amp;  38 &amp; FC Barcelona &amp; MÃ¡laga CF &amp; 3.10 &amp; 0.60 &amp; 3.00 &amp; 0.00 &amp; FC Barcelona \\ 
-  44 &amp; 2012/13 &amp;  38 &amp; FC Sevilla &amp; FC Valencia &amp; 1.50 &amp; 1.20 &amp; 1.00 &amp; 1.00 &amp; FC Sevilla \\ 
-  45 &amp; 2012/13 &amp;  38 &amp; Granada CF &amp; Getafe CF &amp; 1.40 &amp; 1.20 &amp; 1.00 &amp; 1.00 &amp; Granada CF \\ 
-  46 &amp; 2012/13 &amp;  38 &amp; Levante U.D. &amp; Betis Sevilla &amp; 1.50 &amp; 1.10 &amp; 1.00 &amp; 1.00 &amp; Levante U.D. \\ 
-  47 &amp; 2012/13 &amp;  38 &amp; RCD Mallorca &amp; Real Valladolid &amp; 1.60 &amp; 1.10 &amp; 1.00 &amp; 1.00 &amp; RCD Mallorca \\ 
-  48 &amp; 2012/13 &amp;  38 &amp; Rayo Vallecano &amp; Athletic Club Bilbao &amp; 1.50 &amp; 1.20 &amp; 1.00 &amp; 1.00 &amp; Rayo Vallecano \\ 
-  49 &amp; 2012/13 &amp;  38 &amp; Real Madrid CF &amp; CA Osasuna &amp; 3.10 &amp; 0.60 &amp; 2.00 &amp; 0.00 &amp; Real Madrid CF \\ 
-  50 &amp; 2012/13 &amp;  38 &amp; Real Zaragoza &amp; AtlÃ©tico Madrid &amp; 1.10 &amp; 1.50 &amp; 1.00 &amp; 1.00 &amp; AtlÃ©tico Madrid \\ 
-   \hline
-\end{tabular}
-\end{table}</code></pre>
+&gt; knitr::kable(laliga_forecast, &quot;pandoc&quot;, align = &quot;c&quot;)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="center">Season</th>
+<th align="center">Week</th>
+<th align="center">HomeTeam</th>
+<th align="center">AwayTeam</th>
+<th align="center">mean_home_goals</th>
+<th align="center">mean_away_goals</th>
+<th align="center">mode_home_goals</th>
+<th align="center">mode_away_goals</th>
+<th align="center">predicted_winner</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">34</td>
+<td align="center">Celta Vigo</td>
+<td align="center">Athletic Club Bilbao</td>
+<td align="center">1.5</td>
+<td align="center">1.2</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">Celta Vigo</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">34</td>
+<td align="center">Deportivo de La CoruÃ±a</td>
+<td align="center">AtlÃ©tico Madrid</td>
+<td align="center">1.2</td>
+<td align="center">1.4</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">AtlÃ©tico Madrid</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">34</td>
+<td align="center">FC Barcelona</td>
+<td align="center">Betis Sevilla</td>
+<td align="center">3.2</td>
+<td align="center">0.5</td>
+<td align="center">3</td>
+<td align="center">0</td>
+<td align="center">FC Barcelona</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">34</td>
+<td align="center">FC Sevilla</td>
+<td align="center">Espanyol Barcelona</td>
+<td align="center">1.8</td>
+<td align="center">1.0</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">FC Sevilla</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">34</td>
+<td align="center">FC Valencia</td>
+<td align="center">CA Osasuna</td>
+<td align="center">2.0</td>
+<td align="center">0.9</td>
+<td align="center">2</td>
+<td align="center">0</td>
+<td align="center">FC Valencia</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">34</td>
+<td align="center">Getafe CF</td>
+<td align="center">Real Sociedad San Sebastian</td>
+<td align="center">1.5</td>
+<td align="center">1.2</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">Getafe CF</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">34</td>
+<td align="center">Granada CF</td>
+<td align="center">MÃ¡laga CF</td>
+<td align="center">1.3</td>
+<td align="center">1.3</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">Granada CF</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">34</td>
+<td align="center">RCD Mallorca</td>
+<td align="center">Levante U.D.</td>
+<td align="center">1.5</td>
+<td align="center">1.1</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">RCD Mallorca</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">34</td>
+<td align="center">Real Madrid CF</td>
+<td align="center">Real Valladolid</td>
+<td align="center">3.2</td>
+<td align="center">0.5</td>
+<td align="center">3</td>
+<td align="center">0</td>
+<td align="center">Real Madrid CF</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">34</td>
+<td align="center">Real Zaragoza</td>
+<td align="center">Rayo Vallecano</td>
+<td align="center">1.5</td>
+<td align="center">1.1</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">Real Zaragoza</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">35</td>
+<td align="center">Athletic Club Bilbao</td>
+<td align="center">RCD Mallorca</td>
+<td align="center">1.6</td>
+<td align="center">1.0</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">Athletic Club Bilbao</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">35</td>
+<td align="center">AtlÃ©tico Madrid</td>
+<td align="center">FC Barcelona</td>
+<td align="center">1.0</td>
+<td align="center">1.8</td>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">FC Barcelona</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">35</td>
+<td align="center">Betis Sevilla</td>
+<td align="center">Celta Vigo</td>
+<td align="center">1.7</td>
+<td align="center">1.0</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">Betis Sevilla</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">35</td>
+<td align="center">CA Osasuna</td>
+<td align="center">Getafe CF</td>
+<td align="center">1.5</td>
+<td align="center">1.1</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">CA Osasuna</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">35</td>
+<td align="center">Espanyol Barcelona</td>
+<td align="center">Real Madrid CF</td>
+<td align="center">0.8</td>
+<td align="center">2.1</td>
+<td align="center">0</td>
+<td align="center">2</td>
+<td align="center">Real Madrid CF</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">35</td>
+<td align="center">Levante U.D.</td>
+<td align="center">Real Zaragoza</td>
+<td align="center">1.8</td>
+<td align="center">1.0</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">Levante U.D.</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">35</td>
+<td align="center">MÃ¡laga CF</td>
+<td align="center">FC Sevilla</td>
+<td align="center">1.5</td>
+<td align="center">1.2</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">MÃ¡laga CF</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">35</td>
+<td align="center">Rayo Vallecano</td>
+<td align="center">FC Valencia</td>
+<td align="center">1.2</td>
+<td align="center">1.4</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">FC Valencia</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">35</td>
+<td align="center">Real Sociedad San Sebastian</td>
+<td align="center">Granada CF</td>
+<td align="center">2.0</td>
+<td align="center">0.9</td>
+<td align="center">2</td>
+<td align="center">0</td>
+<td align="center">Real Sociedad San Sebastian</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">35</td>
+<td align="center">Real Valladolid</td>
+<td align="center">Deportivo de La CoruÃ±a</td>
+<td align="center">1.6</td>
+<td align="center">1.1</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">Real Valladolid</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">36</td>
+<td align="center">Celta Vigo</td>
+<td align="center">AtlÃ©tico Madrid</td>
+<td align="center">1.2</td>
+<td align="center">1.5</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">AtlÃ©tico Madrid</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">36</td>
+<td align="center">Deportivo de La CoruÃ±a</td>
+<td align="center">Espanyol Barcelona</td>
+<td align="center">1.5</td>
+<td align="center">1.2</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">Deportivo de La CoruÃ±a</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">36</td>
+<td align="center">FC Barcelona</td>
+<td align="center">Real Valladolid</td>
+<td align="center">3.5</td>
+<td align="center">0.5</td>
+<td align="center">3</td>
+<td align="center">0</td>
+<td align="center">FC Barcelona</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">36</td>
+<td align="center">FC Sevilla</td>
+<td align="center">Real Sociedad San Sebastian</td>
+<td align="center">1.6</td>
+<td align="center">1.0</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">FC Sevilla</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">36</td>
+<td align="center">Getafe CF</td>
+<td align="center">FC Valencia</td>
+<td align="center">1.3</td>
+<td align="center">1.3</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">Getafe CF</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">36</td>
+<td align="center">Granada CF</td>
+<td align="center">CA Osasuna</td>
+<td align="center">1.4</td>
+<td align="center">1.2</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">Granada CF</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">36</td>
+<td align="center">Levante U.D.</td>
+<td align="center">Rayo Vallecano</td>
+<td align="center">1.7</td>
+<td align="center">1.0</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">Levante U.D.</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">36</td>
+<td align="center">RCD Mallorca</td>
+<td align="center">Betis Sevilla</td>
+<td align="center">1.5</td>
+<td align="center">1.2</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">RCD Mallorca</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">36</td>
+<td align="center">Real Madrid CF</td>
+<td align="center">MÃ¡laga CF</td>
+<td align="center">2.9</td>
+<td align="center">0.6</td>
+<td align="center">2</td>
+<td align="center">0</td>
+<td align="center">Real Madrid CF</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">36</td>
+<td align="center">Real Zaragoza</td>
+<td align="center">Athletic Club Bilbao</td>
+<td align="center">1.4</td>
+<td align="center">1.2</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">Real Zaragoza</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">37</td>
+<td align="center">Athletic Club Bilbao</td>
+<td align="center">Levante U.D.</td>
+<td align="center">1.6</td>
+<td align="center">1.1</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">Athletic Club Bilbao</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">37</td>
+<td align="center">AtlÃ©tico Madrid</td>
+<td align="center">RCD Mallorca</td>
+<td align="center">2.0</td>
+<td align="center">0.8</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">AtlÃ©tico Madrid</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">37</td>
+<td align="center">Betis Sevilla</td>
+<td align="center">Real Zaragoza</td>
+<td align="center">1.8</td>
+<td align="center">1.0</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">Betis Sevilla</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">37</td>
+<td align="center">CA Osasuna</td>
+<td align="center">FC Sevilla</td>
+<td align="center">1.4</td>
+<td align="center">1.3</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">CA Osasuna</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">37</td>
+<td align="center">Espanyol Barcelona</td>
+<td align="center">FC Barcelona</td>
+<td align="center">0.8</td>
+<td align="center">2.3</td>
+<td align="center">0</td>
+<td align="center">2</td>
+<td align="center">FC Barcelona</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">37</td>
+<td align="center">FC Valencia</td>
+<td align="center">Granada CF</td>
+<td align="center">2.2</td>
+<td align="center">0.8</td>
+<td align="center">2</td>
+<td align="center">0</td>
+<td align="center">FC Valencia</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">37</td>
+<td align="center">Getafe CF</td>
+<td align="center">Rayo Vallecano</td>
+<td align="center">1.7</td>
+<td align="center">1.0</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">Getafe CF</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">37</td>
+<td align="center">MÃ¡laga CF</td>
+<td align="center">Deportivo de La CoruÃ±a</td>
+<td align="center">1.8</td>
+<td align="center">0.9</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">MÃ¡laga CF</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">37</td>
+<td align="center">Real Sociedad San Sebastian</td>
+<td align="center">Real Madrid CF</td>
+<td align="center">0.9</td>
+<td align="center">1.9</td>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">Real Madrid CF</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">37</td>
+<td align="center">Real Valladolid</td>
+<td align="center">Celta Vigo</td>
+<td align="center">1.6</td>
+<td align="center">1.1</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">Real Valladolid</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">38</td>
+<td align="center">Celta Vigo</td>
+<td align="center">Espanyol Barcelona</td>
+<td align="center">1.5</td>
+<td align="center">1.2</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">Celta Vigo</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">38</td>
+<td align="center">Deportivo de La CoruÃ±a</td>
+<td align="center">Real Sociedad San Sebastian</td>
+<td align="center">1.3</td>
+<td align="center">1.3</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">Deportivo de La CoruÃ±a</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">38</td>
+<td align="center">FC Barcelona</td>
+<td align="center">MÃ¡laga CF</td>
+<td align="center">3.1</td>
+<td align="center">0.6</td>
+<td align="center">3</td>
+<td align="center">0</td>
+<td align="center">FC Barcelona</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">38</td>
+<td align="center">FC Sevilla</td>
+<td align="center">FC Valencia</td>
+<td align="center">1.5</td>
+<td align="center">1.2</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">FC Sevilla</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">38</td>
+<td align="center">Granada CF</td>
+<td align="center">Getafe CF</td>
+<td align="center">1.4</td>
+<td align="center">1.2</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">Granada CF</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">38</td>
+<td align="center">Levante U.D.</td>
+<td align="center">Betis Sevilla</td>
+<td align="center">1.5</td>
+<td align="center">1.1</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">Levante U.D.</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">38</td>
+<td align="center">RCD Mallorca</td>
+<td align="center">Real Valladolid</td>
+<td align="center">1.6</td>
+<td align="center">1.1</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">RCD Mallorca</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">38</td>
+<td align="center">Rayo Vallecano</td>
+<td align="center">Athletic Club Bilbao</td>
+<td align="center">1.5</td>
+<td align="center">1.2</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">Rayo Vallecano</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">38</td>
+<td align="center">Real Madrid CF</td>
+<td align="center">CA Osasuna</td>
+<td align="center">3.1</td>
+<td align="center">0.6</td>
+<td align="center">2</td>
+<td align="center">0</td>
+<td align="center">Real Madrid CF</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">38</td>
+<td align="center">Real Zaragoza</td>
+<td align="center">AtlÃ©tico Madrid</td>
+<td align="center">1.1</td>
+<td align="center">1.5</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">AtlÃ©tico Madrid</td>
+</tr>
+</tbody>
+</table>
 <p>While these predictions are good if you want to bet on the likely winner they do not reflect how the actual endgame will play out, e.g., there is not a single draw in the predicted_winner column. So at last let’s look at a possible version of the La Liga endgame by displaying the simulated match results calculated earlier.</p>
 <pre class="r"><code>&gt; laliga_sim &lt;- laliga[is.na(laliga$HomeGoals), c(&quot;Season&quot;, &quot;Week&quot;, &quot;HomeTeam&quot;,
 +     &quot;AwayTeam&quot;)]
@@ -1081,68 +1586,472 @@ DIC is an estimate of expected predictive error (lower deviance is better).</cod
 +         &quot;Draw&quot;))
 &gt; 
 &gt; rownames(laliga_sim) &lt;- NULL
-&gt; print(xtable(laliga_sim, align = &quot;cccccccc&quot;))
-% latex table generated in R 3.6.1 by xtable 1.8-4 package
-% Tue Feb 25 22:45:56 2020
-\begin{table}[ht]
-\centering
-\begin{tabular}{cccccccc}
-  \hline
- &amp; Season &amp; Week &amp; HomeTeam &amp; AwayTeam &amp; home\_goals &amp; away\_goals &amp; winner \\ 
-  \hline
-1 &amp; 2012/13 &amp;  34 &amp; Celta Vigo &amp; Athletic Club Bilbao &amp; 0.00 &amp; 0.00 &amp; Draw \\ 
-  2 &amp; 2012/13 &amp;  34 &amp; Deportivo de La CoruÃ±a &amp; AtlÃ©tico Madrid &amp; 1.00 &amp; 5.00 &amp; AtlÃ©tico Madrid \\ 
-  3 &amp; 2012/13 &amp;  34 &amp; FC Barcelona &amp; Betis Sevilla &amp; 5.00 &amp; 0.00 &amp; FC Barcelona \\ 
-  4 &amp; 2012/13 &amp;  34 &amp; FC Sevilla &amp; Espanyol Barcelona &amp; 1.00 &amp; 0.00 &amp; FC Sevilla \\ 
-  5 &amp; 2012/13 &amp;  34 &amp; FC Valencia &amp; CA Osasuna &amp; 1.00 &amp; 2.00 &amp; CA Osasuna \\ 
-  6 &amp; 2012/13 &amp;  34 &amp; Getafe CF &amp; Real Sociedad San Sebastian &amp; 1.00 &amp; 0.00 &amp; Getafe CF \\ 
-  7 &amp; 2012/13 &amp;  34 &amp; Granada CF &amp; MÃ¡laga CF &amp; 0.00 &amp; 2.00 &amp; MÃ¡laga CF \\ 
-  8 &amp; 2012/13 &amp;  34 &amp; RCD Mallorca &amp; Levante U.D. &amp; 0.00 &amp; 1.00 &amp; Levante U.D. \\ 
-  9 &amp; 2012/13 &amp;  34 &amp; Real Madrid CF &amp; Real Valladolid &amp; 2.00 &amp; 1.00 &amp; Real Madrid CF \\ 
-  10 &amp; 2012/13 &amp;  34 &amp; Real Zaragoza &amp; Rayo Vallecano &amp; 0.00 &amp; 2.00 &amp; Rayo Vallecano \\ 
-  11 &amp; 2012/13 &amp;  35 &amp; Athletic Club Bilbao &amp; RCD Mallorca &amp; 2.00 &amp; 0.00 &amp; Athletic Club Bilbao \\ 
-  12 &amp; 2012/13 &amp;  35 &amp; AtlÃ©tico Madrid &amp; FC Barcelona &amp; 1.00 &amp; 3.00 &amp; FC Barcelona \\ 
-  13 &amp; 2012/13 &amp;  35 &amp; Betis Sevilla &amp; Celta Vigo &amp; 2.00 &amp; 1.00 &amp; Betis Sevilla \\ 
-  14 &amp; 2012/13 &amp;  35 &amp; CA Osasuna &amp; Getafe CF &amp; 2.00 &amp; 1.00 &amp; CA Osasuna \\ 
-  15 &amp; 2012/13 &amp;  35 &amp; Espanyol Barcelona &amp; Real Madrid CF &amp; 2.00 &amp; 3.00 &amp; Real Madrid CF \\ 
-  16 &amp; 2012/13 &amp;  35 &amp; Levante U.D. &amp; Real Zaragoza &amp; 2.00 &amp; 0.00 &amp; Levante U.D. \\ 
-  17 &amp; 2012/13 &amp;  35 &amp; MÃ¡laga CF &amp; FC Sevilla &amp; 0.00 &amp; 1.00 &amp; FC Sevilla \\ 
-  18 &amp; 2012/13 &amp;  35 &amp; Rayo Vallecano &amp; FC Valencia &amp; 2.00 &amp; 4.00 &amp; FC Valencia \\ 
-  19 &amp; 2012/13 &amp;  35 &amp; Real Sociedad San Sebastian &amp; Granada CF &amp; 0.00 &amp; 3.00 &amp; Granada CF \\ 
-  20 &amp; 2012/13 &amp;  35 &amp; Real Valladolid &amp; Deportivo de La CoruÃ±a &amp; 3.00 &amp; 2.00 &amp; Real Valladolid \\ 
-  21 &amp; 2012/13 &amp;  36 &amp; Celta Vigo &amp; AtlÃ©tico Madrid &amp; 1.00 &amp; 1.00 &amp; Draw \\ 
-  22 &amp; 2012/13 &amp;  36 &amp; Deportivo de La CoruÃ±a &amp; Espanyol Barcelona &amp; 1.00 &amp; 0.00 &amp; Deportivo de La CoruÃ±a \\ 
-  23 &amp; 2012/13 &amp;  36 &amp; FC Barcelona &amp; Real Valladolid &amp; 4.00 &amp; 1.00 &amp; FC Barcelona \\ 
-  24 &amp; 2012/13 &amp;  36 &amp; FC Sevilla &amp; Real Sociedad San Sebastian &amp; 2.00 &amp; 0.00 &amp; FC Sevilla \\ 
-  25 &amp; 2012/13 &amp;  36 &amp; Getafe CF &amp; FC Valencia &amp; 1.00 &amp; 0.00 &amp; Getafe CF \\ 
-  26 &amp; 2012/13 &amp;  36 &amp; Granada CF &amp; CA Osasuna &amp; 3.00 &amp; 3.00 &amp; Draw \\ 
-  27 &amp; 2012/13 &amp;  36 &amp; Levante U.D. &amp; Rayo Vallecano &amp; 3.00 &amp; 0.00 &amp; Levante U.D. \\ 
-  28 &amp; 2012/13 &amp;  36 &amp; RCD Mallorca &amp; Betis Sevilla &amp; 3.00 &amp; 0.00 &amp; RCD Mallorca \\ 
-  29 &amp; 2012/13 &amp;  36 &amp; Real Madrid CF &amp; MÃ¡laga CF &amp; 1.00 &amp; 1.00 &amp; Draw \\ 
-  30 &amp; 2012/13 &amp;  36 &amp; Real Zaragoza &amp; Athletic Club Bilbao &amp; 1.00 &amp; 0.00 &amp; Real Zaragoza \\ 
-  31 &amp; 2012/13 &amp;  37 &amp; Athletic Club Bilbao &amp; Levante U.D. &amp; 2.00 &amp; 0.00 &amp; Athletic Club Bilbao \\ 
-  32 &amp; 2012/13 &amp;  37 &amp; AtlÃ©tico Madrid &amp; RCD Mallorca &amp; 1.00 &amp; 1.00 &amp; Draw \\ 
-  33 &amp; 2012/13 &amp;  37 &amp; Betis Sevilla &amp; Real Zaragoza &amp; 0.00 &amp; 6.00 &amp; Real Zaragoza \\ 
-  34 &amp; 2012/13 &amp;  37 &amp; CA Osasuna &amp; FC Sevilla &amp; 2.00 &amp; 0.00 &amp; CA Osasuna \\ 
-  35 &amp; 2012/13 &amp;  37 &amp; Espanyol Barcelona &amp; FC Barcelona &amp; 1.00 &amp; 3.00 &amp; FC Barcelona \\ 
-  36 &amp; 2012/13 &amp;  37 &amp; FC Valencia &amp; Granada CF &amp; 1.00 &amp; 0.00 &amp; FC Valencia \\ 
-  37 &amp; 2012/13 &amp;  37 &amp; Getafe CF &amp; Rayo Vallecano &amp; 0.00 &amp; 1.00 &amp; Rayo Vallecano \\ 
-  38 &amp; 2012/13 &amp;  37 &amp; MÃ¡laga CF &amp; Deportivo de La CoruÃ±a &amp; 0.00 &amp; 0.00 &amp; Draw \\ 
-  39 &amp; 2012/13 &amp;  37 &amp; Real Sociedad San Sebastian &amp; Real Madrid CF &amp; 1.00 &amp; 4.00 &amp; Real Madrid CF \\ 
-  40 &amp; 2012/13 &amp;  37 &amp; Real Valladolid &amp; Celta Vigo &amp; 2.00 &amp; 0.00 &amp; Real Valladolid \\ 
-  41 &amp; 2012/13 &amp;  38 &amp; Celta Vigo &amp; Espanyol Barcelona &amp; 1.00 &amp; 1.00 &amp; Draw \\ 
-  42 &amp; 2012/13 &amp;  38 &amp; Deportivo de La CoruÃ±a &amp; Real Sociedad San Sebastian &amp; 1.00 &amp; 3.00 &amp; Real Sociedad San Sebastian \\ 
-  43 &amp; 2012/13 &amp;  38 &amp; FC Barcelona &amp; MÃ¡laga CF &amp; 2.00 &amp; 0.00 &amp; FC Barcelona \\ 
-  44 &amp; 2012/13 &amp;  38 &amp; FC Sevilla &amp; FC Valencia &amp; 3.00 &amp; 1.00 &amp; FC Sevilla \\ 
-  45 &amp; 2012/13 &amp;  38 &amp; Granada CF &amp; Getafe CF &amp; 0.00 &amp; 1.00 &amp; Getafe CF \\ 
-  46 &amp; 2012/13 &amp;  38 &amp; Levante U.D. &amp; Betis Sevilla &amp; 1.00 &amp; 2.00 &amp; Betis Sevilla \\ 
-  47 &amp; 2012/13 &amp;  38 &amp; RCD Mallorca &amp; Real Valladolid &amp; 1.00 &amp; 0.00 &amp; RCD Mallorca \\ 
-  48 &amp; 2012/13 &amp;  38 &amp; Rayo Vallecano &amp; Athletic Club Bilbao &amp; 2.00 &amp; 0.00 &amp; Rayo Vallecano \\ 
-  49 &amp; 2012/13 &amp;  38 &amp; Real Madrid CF &amp; CA Osasuna &amp; 3.00 &amp; 0.00 &amp; Real Madrid CF \\ 
-  50 &amp; 2012/13 &amp;  38 &amp; Real Zaragoza &amp; AtlÃ©tico Madrid &amp; 0.00 &amp; 1.00 &amp; AtlÃ©tico Madrid \\ 
-   \hline
-\end{tabular}
-\end{table}</code></pre>
+&gt; knitr::kable(laliga_sim, &quot;pandoc&quot;, align = &quot;c&quot;)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="center">Season</th>
+<th align="center">Week</th>
+<th align="center">HomeTeam</th>
+<th align="center">AwayTeam</th>
+<th align="center">home_goals</th>
+<th align="center">away_goals</th>
+<th align="center">winner</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">34</td>
+<td align="center">Celta Vigo</td>
+<td align="center">Athletic Club Bilbao</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">Draw</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">34</td>
+<td align="center">Deportivo de La CoruÃ±a</td>
+<td align="center">AtlÃ©tico Madrid</td>
+<td align="center">1</td>
+<td align="center">5</td>
+<td align="center">AtlÃ©tico Madrid</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">34</td>
+<td align="center">FC Barcelona</td>
+<td align="center">Betis Sevilla</td>
+<td align="center">5</td>
+<td align="center">0</td>
+<td align="center">FC Barcelona</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">34</td>
+<td align="center">FC Sevilla</td>
+<td align="center">Espanyol Barcelona</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">FC Sevilla</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">34</td>
+<td align="center">FC Valencia</td>
+<td align="center">CA Osasuna</td>
+<td align="center">1</td>
+<td align="center">2</td>
+<td align="center">CA Osasuna</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">34</td>
+<td align="center">Getafe CF</td>
+<td align="center">Real Sociedad San Sebastian</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">Getafe CF</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">34</td>
+<td align="center">Granada CF</td>
+<td align="center">MÃ¡laga CF</td>
+<td align="center">0</td>
+<td align="center">2</td>
+<td align="center">MÃ¡laga CF</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">34</td>
+<td align="center">RCD Mallorca</td>
+<td align="center">Levante U.D.</td>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">Levante U.D.</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">34</td>
+<td align="center">Real Madrid CF</td>
+<td align="center">Real Valladolid</td>
+<td align="center">2</td>
+<td align="center">1</td>
+<td align="center">Real Madrid CF</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">34</td>
+<td align="center">Real Zaragoza</td>
+<td align="center">Rayo Vallecano</td>
+<td align="center">0</td>
+<td align="center">2</td>
+<td align="center">Rayo Vallecano</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">35</td>
+<td align="center">Athletic Club Bilbao</td>
+<td align="center">RCD Mallorca</td>
+<td align="center">2</td>
+<td align="center">0</td>
+<td align="center">Athletic Club Bilbao</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">35</td>
+<td align="center">AtlÃ©tico Madrid</td>
+<td align="center">FC Barcelona</td>
+<td align="center">1</td>
+<td align="center">3</td>
+<td align="center">FC Barcelona</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">35</td>
+<td align="center">Betis Sevilla</td>
+<td align="center">Celta Vigo</td>
+<td align="center">2</td>
+<td align="center">1</td>
+<td align="center">Betis Sevilla</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">35</td>
+<td align="center">CA Osasuna</td>
+<td align="center">Getafe CF</td>
+<td align="center">2</td>
+<td align="center">1</td>
+<td align="center">CA Osasuna</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">35</td>
+<td align="center">Espanyol Barcelona</td>
+<td align="center">Real Madrid CF</td>
+<td align="center">2</td>
+<td align="center">3</td>
+<td align="center">Real Madrid CF</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">35</td>
+<td align="center">Levante U.D.</td>
+<td align="center">Real Zaragoza</td>
+<td align="center">2</td>
+<td align="center">0</td>
+<td align="center">Levante U.D.</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">35</td>
+<td align="center">MÃ¡laga CF</td>
+<td align="center">FC Sevilla</td>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">FC Sevilla</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">35</td>
+<td align="center">Rayo Vallecano</td>
+<td align="center">FC Valencia</td>
+<td align="center">2</td>
+<td align="center">4</td>
+<td align="center">FC Valencia</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">35</td>
+<td align="center">Real Sociedad San Sebastian</td>
+<td align="center">Granada CF</td>
+<td align="center">0</td>
+<td align="center">3</td>
+<td align="center">Granada CF</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">35</td>
+<td align="center">Real Valladolid</td>
+<td align="center">Deportivo de La CoruÃ±a</td>
+<td align="center">3</td>
+<td align="center">2</td>
+<td align="center">Real Valladolid</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">36</td>
+<td align="center">Celta Vigo</td>
+<td align="center">AtlÃ©tico Madrid</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">Draw</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">36</td>
+<td align="center">Deportivo de La CoruÃ±a</td>
+<td align="center">Espanyol Barcelona</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">Deportivo de La CoruÃ±a</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">36</td>
+<td align="center">FC Barcelona</td>
+<td align="center">Real Valladolid</td>
+<td align="center">4</td>
+<td align="center">1</td>
+<td align="center">FC Barcelona</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">36</td>
+<td align="center">FC Sevilla</td>
+<td align="center">Real Sociedad San Sebastian</td>
+<td align="center">2</td>
+<td align="center">0</td>
+<td align="center">FC Sevilla</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">36</td>
+<td align="center">Getafe CF</td>
+<td align="center">FC Valencia</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">Getafe CF</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">36</td>
+<td align="center">Granada CF</td>
+<td align="center">CA Osasuna</td>
+<td align="center">3</td>
+<td align="center">3</td>
+<td align="center">Draw</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">36</td>
+<td align="center">Levante U.D.</td>
+<td align="center">Rayo Vallecano</td>
+<td align="center">3</td>
+<td align="center">0</td>
+<td align="center">Levante U.D.</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">36</td>
+<td align="center">RCD Mallorca</td>
+<td align="center">Betis Sevilla</td>
+<td align="center">3</td>
+<td align="center">0</td>
+<td align="center">RCD Mallorca</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">36</td>
+<td align="center">Real Madrid CF</td>
+<td align="center">MÃ¡laga CF</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">Draw</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">36</td>
+<td align="center">Real Zaragoza</td>
+<td align="center">Athletic Club Bilbao</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">Real Zaragoza</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">37</td>
+<td align="center">Athletic Club Bilbao</td>
+<td align="center">Levante U.D.</td>
+<td align="center">2</td>
+<td align="center">0</td>
+<td align="center">Athletic Club Bilbao</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">37</td>
+<td align="center">AtlÃ©tico Madrid</td>
+<td align="center">RCD Mallorca</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">Draw</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">37</td>
+<td align="center">Betis Sevilla</td>
+<td align="center">Real Zaragoza</td>
+<td align="center">0</td>
+<td align="center">6</td>
+<td align="center">Real Zaragoza</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">37</td>
+<td align="center">CA Osasuna</td>
+<td align="center">FC Sevilla</td>
+<td align="center">2</td>
+<td align="center">0</td>
+<td align="center">CA Osasuna</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">37</td>
+<td align="center">Espanyol Barcelona</td>
+<td align="center">FC Barcelona</td>
+<td align="center">1</td>
+<td align="center">3</td>
+<td align="center">FC Barcelona</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">37</td>
+<td align="center">FC Valencia</td>
+<td align="center">Granada CF</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">FC Valencia</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">37</td>
+<td align="center">Getafe CF</td>
+<td align="center">Rayo Vallecano</td>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">Rayo Vallecano</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">37</td>
+<td align="center">MÃ¡laga CF</td>
+<td align="center">Deportivo de La CoruÃ±a</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">Draw</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">37</td>
+<td align="center">Real Sociedad San Sebastian</td>
+<td align="center">Real Madrid CF</td>
+<td align="center">1</td>
+<td align="center">4</td>
+<td align="center">Real Madrid CF</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">37</td>
+<td align="center">Real Valladolid</td>
+<td align="center">Celta Vigo</td>
+<td align="center">2</td>
+<td align="center">0</td>
+<td align="center">Real Valladolid</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">38</td>
+<td align="center">Celta Vigo</td>
+<td align="center">Espanyol Barcelona</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">Draw</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">38</td>
+<td align="center">Deportivo de La CoruÃ±a</td>
+<td align="center">Real Sociedad San Sebastian</td>
+<td align="center">1</td>
+<td align="center">3</td>
+<td align="center">Real Sociedad San Sebastian</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">38</td>
+<td align="center">FC Barcelona</td>
+<td align="center">MÃ¡laga CF</td>
+<td align="center">2</td>
+<td align="center">0</td>
+<td align="center">FC Barcelona</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">38</td>
+<td align="center">FC Sevilla</td>
+<td align="center">FC Valencia</td>
+<td align="center">3</td>
+<td align="center">1</td>
+<td align="center">FC Sevilla</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">38</td>
+<td align="center">Granada CF</td>
+<td align="center">Getafe CF</td>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">Getafe CF</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">38</td>
+<td align="center">Levante U.D.</td>
+<td align="center">Betis Sevilla</td>
+<td align="center">1</td>
+<td align="center">2</td>
+<td align="center">Betis Sevilla</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">38</td>
+<td align="center">RCD Mallorca</td>
+<td align="center">Real Valladolid</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">RCD Mallorca</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">38</td>
+<td align="center">Rayo Vallecano</td>
+<td align="center">Athletic Club Bilbao</td>
+<td align="center">2</td>
+<td align="center">0</td>
+<td align="center">Rayo Vallecano</td>
+</tr>
+<tr class="odd">
+<td align="center">2012/13</td>
+<td align="center">38</td>
+<td align="center">Real Madrid CF</td>
+<td align="center">CA Osasuna</td>
+<td align="center">3</td>
+<td align="center">0</td>
+<td align="center">Real Madrid CF</td>
+</tr>
+<tr class="even">
+<td align="center">2012/13</td>
+<td align="center">38</td>
+<td align="center">Real Zaragoza</td>
+<td align="center">AtlÃ©tico Madrid</td>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">AtlÃ©tico Madrid</td>
+</tr>
+</tbody>
+</table>
 <p>Now we see a number of games resulting in a draw. We also see that Malaga manages to beat Real Madrid in week <span class="math inline">\(36\)</span>, against all odds, even though playing as the away team.</p>
 </div>
 <div id="calculating-the-predicted-payout-for-sevilla-vs-valencia-2013-06-01" class="section level1">
@@ -1178,26 +2087,94 @@ DIC is an estimate of expected predictive error (lower deviance is better).</cod
 &gt; colnames(goals_payout) &lt;- paste(&quot;Valencia&quot;, 0:6, sep = &quot; - &quot;)
 &gt; rownames(goals_payout) &lt;- paste(&quot;Sevilla&quot;, 0:6, sep = &quot; - &quot;)
 &gt; goals_payout &lt;- round(goals_payout, 1)
-&gt; print(xtable(goals_payout, align = &quot;cccccccc&quot;))
-% latex table generated in R 3.6.1 by xtable 1.8-4 package
-% Tue Feb 25 22:45:56 2020
-\begin{table}[ht]
-\centering
-\begin{tabular}{cccccccc}
-  \hline
- &amp; Valencia - 0 &amp; Valencia - 1 &amp; Valencia - 2 &amp; Valencia - 3 &amp; Valencia - 4 &amp; Valencia - 5 &amp; Valencia - 6 \\ 
-  \hline
-Sevilla - 0 &amp; 13.80 &amp; 11.90 &amp; 21.50 &amp; 47.30 &amp; 161.30 &amp; 714.30 &amp; 2500.00 \\ 
-  Sevilla - 1 &amp; 9.50 &amp; 8.00 &amp; 13.40 &amp; 36.90 &amp; 122.00 &amp; 441.20 &amp; 1666.70 \\ 
-  Sevilla - 2 &amp; 12.80 &amp; 11.50 &amp; 19.40 &amp; 56.40 &amp; 176.50 &amp; 625.00 &amp; 1875.00 \\ 
-  Sevilla - 3 &amp; 26.50 &amp; 22.90 &amp; 39.80 &amp; 97.40 &amp; 500.00 &amp; 1363.60 &amp; Inf \\ 
-  Sevilla - 4 &amp; 81.50 &amp; 58.80 &amp; 101.40 &amp; 306.10 &amp; 1071.40 &amp; 3000.00 &amp; Inf \\ 
-  Sevilla - 5 &amp; 211.30 &amp; 223.90 &amp; 319.10 &amp; 1000.00 &amp; 2500.00 &amp; 15000.00 &amp; Inf \\ 
-  Sevilla - 6 &amp; 750.00 &amp; 483.90 &amp; 1500.00 &amp; 3000.00 &amp; 7500.00 &amp; Inf &amp; Inf \\ 
-   \hline
-\end{tabular}
-\end{table}</code></pre>
-<p>The most likely result is 1 - 1 with a predicted payout of <span class="math inline">\(8.4\)</span> and betsson.com agrees with this also offering their lowest payout for this bet, <span class="math inline">\(5.3\)</span>. Not good enough! Looking at the payouts at bettson.com I can see that Sevilla - Valencia: 2 - 0 gives me a payout of <span class="math inline">\(16.0\)</span>, that’s much better than my predicted payout of <span class="math inline">\(13.1\)</span>. I’ll go for that!</p>
+&gt; knitr::kable(goals_payout, &quot;pandoc&quot;, align = &quot;c&quot;)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th align="center">Valencia - 0</th>
+<th align="center">Valencia - 1</th>
+<th align="center">Valencia - 2</th>
+<th align="center">Valencia - 3</th>
+<th align="center">Valencia - 4</th>
+<th align="center">Valencia - 5</th>
+<th align="center">Valencia - 6</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Sevilla - 0</td>
+<td align="center">13.8</td>
+<td align="center">11.9</td>
+<td align="center">21.5</td>
+<td align="center">47.3</td>
+<td align="center">161.3</td>
+<td align="center">714.3</td>
+<td align="center">2500.0</td>
+</tr>
+<tr class="even">
+<td>Sevilla - 1</td>
+<td align="center">9.5</td>
+<td align="center">8.0</td>
+<td align="center">13.4</td>
+<td align="center">36.9</td>
+<td align="center">122.0</td>
+<td align="center">441.2</td>
+<td align="center">1666.7</td>
+</tr>
+<tr class="odd">
+<td>Sevilla - 2</td>
+<td align="center">12.8</td>
+<td align="center">11.5</td>
+<td align="center">19.4</td>
+<td align="center">56.4</td>
+<td align="center">176.5</td>
+<td align="center">625.0</td>
+<td align="center">1875.0</td>
+</tr>
+<tr class="even">
+<td>Sevilla - 3</td>
+<td align="center">26.5</td>
+<td align="center">22.9</td>
+<td align="center">39.8</td>
+<td align="center">97.4</td>
+<td align="center">500.0</td>
+<td align="center">1363.6</td>
+<td align="center">Inf</td>
+</tr>
+<tr class="odd">
+<td>Sevilla - 4</td>
+<td align="center">81.5</td>
+<td align="center">58.8</td>
+<td align="center">101.4</td>
+<td align="center">306.1</td>
+<td align="center">1071.4</td>
+<td align="center">3000.0</td>
+<td align="center">Inf</td>
+</tr>
+<tr class="even">
+<td>Sevilla - 5</td>
+<td align="center">211.3</td>
+<td align="center">223.9</td>
+<td align="center">319.1</td>
+<td align="center">1000.0</td>
+<td align="center">2500.0</td>
+<td align="center">15000.0</td>
+<td align="center">Inf</td>
+</tr>
+<tr class="odd">
+<td>Sevilla - 6</td>
+<td align="center">750.0</td>
+<td align="center">483.9</td>
+<td align="center">1500.0</td>
+<td align="center">3000.0</td>
+<td align="center">7500.0</td>
+<td align="center">Inf</td>
+<td align="center">Inf</td>
+</tr>
+</tbody>
+</table>
+<p>The most likely result is 1 - 1 with a predicted payout of <span class="math inline">\(8.4\)</span> and the beeting site agrees with this also offering their lowest payout for this bet, <span class="math inline">\(5.3\)</span>. Not good enough! Looking at the payouts at the beeting site I can see that Sevilla - Valencia: 2 - 0 gives me a payout of <span class="math inline">\(16.0\)</span>, that’s much better than my predicted payout of <span class="math inline">\(13.1\)</span>. I’ll go for that!</p>
 </div>
 <div id="conclusions" class="section level1">
 <h1>Conclusions</h1>

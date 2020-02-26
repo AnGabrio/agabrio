@@ -215,7 +215,7 @@ plot_goals <- function(home_goals, away_goals) {
 plot_pred_comp1 <- function(home_team, away_team, ms) {
     # Simulates and plots game goals scores using the MCMC samples from the m1
     # model.
-    par(mar=c(1,1,1,1))
+    par(mar=c(2,2,2,2))
     par(mfrow = c(2, 4))
     baseline <- ms[, "baseline"]
     home_skill <- ms[, which(teams == home_team)]
@@ -328,7 +328,7 @@ Finally we’ll look at the simulated results for Valencia (home team) vs Sevill
 
 ```{r mcmc_diag_post3, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 plot_pred_comp2 <- function(home_team, away_team, ms) {
-    par(mar=c(1,1,1,1))
+    par(mar=c(2,2,2,2))
     par(mfrow = c(2, 4))
     home_baseline <- ms[, "home_baseline"]
     away_baseline <- ms[, "away_baseline"]
@@ -367,7 +367,7 @@ The second iteration of the model was therefore modified to include the year-to-
 
 \[ \text{skill}_{t+1} \sim N(\text{skill}_t,\sigma^2_{\text{season}})\]
 
-for all different $t$, except the first season which is given an vague prior. Here $\sigma^2_{\text{season}}$ is a parameter estimated using the whole data set. The home and away baselines are given the same kind of priors and below is the resulting `JAGS` model.
+for all different $t$, except the first season which is given a vague prior. Here $\sigma^2_{\text{season}}$ is a parameter estimated using the whole data set. The home and away baselines are given the same kind of priors and below is the resulting `JAGS` model.
 
 ```{r model_code3, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 # model 3
@@ -416,7 +416,7 @@ season_sigma ~ dunif(0, 3)
 writeLines(m3_string, con = "model3.txt")
 ```
 
-And now re-fit the model. These changes to the model unfortunately introduces quit a lot of autocorrelation when running the MCMC sampler. Also, re-define the data list to include information for the season parameters. 
+And now re-fit the model. These changes to the model unfortunately introduce quite a lot of autocorrelation when running the MCMC sampler. Also, I re-define the data list to include information for the season parameters. 
 
 ```{r chain_model3, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 data_list_m3 <- list(HomeGoals = d$HomeGoals, AwayGoals = d$AwayGoals, HomeTeam = as.numeric(factor(d$HomeTeam,
@@ -470,7 +470,7 @@ team_skill <- exp(team_skill)
 colnames(team_skill) <- teams
 team_skill <- team_skill[, order(colMeans(team_skill), decreasing = T)]
 par(mar = c(2, 0.7, 0.7, 0.7), xaxs = "i")
-caterplot(team_skill, labels.loc = "above", val.lim = c(0.7, 3.8)) + theme_classic()
+caterplot(team_skill, labels.loc = "above", val.lim = c(0.7, 3.8), style = "plain")
 ```
 
 Two teams are clearly ahead of the rest, FC Barcelona and Real Madrid CF. Let’s look at the credible difference between the two teams.
@@ -594,7 +594,7 @@ laliga_forecast$predicted_winner <- ifelse(m3_forecast[, "match_result"] ==
     laliga_forecast$AwayTeam, "Draw"))
 
 rownames(laliga_forecast) <- NULL
-print(xtable(laliga_forecast, align = "cccccccccc"))
+knitr::kable(laliga_forecast, "pandoc", align = "c")
 ```
 
 While these predictions are good if you want to bet on the likely winner they do not reflect how the actual endgame will play out, e.g., there is not a single draw in the predicted_winner column. So at last let’s look at a possible version of the La Liga endgame by displaying the simulated match results calculated earlier.
@@ -609,7 +609,7 @@ laliga_sim$winner <- ifelse(m3_forecast[, "rand_match_result"] == 1, laliga_fore
         "Draw"))
 
 rownames(laliga_sim) <- NULL
-print(xtable(laliga_sim, align = "cccccccc"))
+knitr::kable(laliga_sim, "pandoc", align = "c")
 ```
 
 Now we see a number of games resulting in a draw. We also see that Malaga manages to beat Real Madrid in week $36$, against all odds, even though playing as the away team. 
@@ -658,10 +658,10 @@ goals_payout <- laply(0:6, function(home_goal) {
 colnames(goals_payout) <- paste("Valencia", 0:6, sep = " - ")
 rownames(goals_payout) <- paste("Sevilla", 0:6, sep = " - ")
 goals_payout <- round(goals_payout, 1)
-print(xtable(goals_payout, align = "cccccccc"))
+knitr::kable(goals_payout, "pandoc", align = "c")
 ```
 
-The most likely result is 1 - 1 with a predicted payout of $8.4$ and betsson.com agrees with this also offering their lowest payout for this bet, $5.3$. Not good enough! Looking at the payouts at bettson.com I can see that Sevilla - Valencia: 2 - 0 gives me a payout of $16.0$, that’s much better than my predicted payout of $13.1$. I’ll go for that!
+The most likely result is 1 - 1 with a predicted payout of $8.4$ and the beeting site agrees with this also offering their lowest payout for this bet, $5.3$. Not good enough! Looking at the payouts at the beeting site I can see that Sevilla - Valencia: 2 - 0 gives me a payout of $16.0$, that’s much better than my predicted payout of $13.1$. I’ll go for that!
 
 # Conclusions
 
