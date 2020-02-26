@@ -45,7 +45,7 @@ url_poster: ""
 # slides: example
 ---
 
-A general problem associated with the implementatio of *Inverse Probability Weighting* (IPW) methods is that information in some available data is ignored by focussing only on the complete cases (@schafer2002missing). This has provided room to extend these methods to make a more efficient use of the available information through the incorporation of an "augmentation" term, which lead to the development of the so called *Augmented Inverse Probability Weighting* (AIPW) methods. These approaches extend IPW methods by creating predictions from a model to recove the information in the incomplete units and applying IPW to the residuals from the model (@little2019statistical).   
+A general problem associated with the implementatio of *Inverse Probability Weighting* (IPW) methods is that information in some available data is ignored by focussing only on the complete cases (@schafer2002missing). This has provided room to extend these methods to make a more efficient use of the available information through the incorporation of an "augmentation" term, which lead to the development of the so called *Augmented Inverse Probability Weighting* (AIPW) methods. These approaches extend IPW methods by creating predictions from a model to recover the information in the incomplete units and applying IPW to the residuals from the model (@little2019statistical).   
 
 Considering the IPW *Generalised Estimating Equation* (GEE) 
 
