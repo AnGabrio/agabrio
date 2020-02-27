@@ -20,9 +20,7 @@ Missing data are iteratively imputed using data augmentation methods according t
 
 `missingHE` produces plots which compares the observed and imputed values for both cost and benefit measures in each treatment intervention considered to detect possible concerns about the plausibility of the imputation methods. In addition, the output of `missingHE` cab be analysed using different funtions in the `R` package `BCEA` which produces a synthesis of the decision process given the current evidence and uncertainty, as well as several indicators that can be used to perform Probabilistic Sensitivity Analysis to parameter and model uncertainty. 
 
-
-![png](imputed.jpg)
-
+{{< figure library="1" src="imputed.jpg" title="Example of a graphical output from missingHE" >}}
 
 # Example
 

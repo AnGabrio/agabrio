@@ -26648,9 +26648,29 @@ and a general summary of the economic evaluations, including the results from pr
 
 &lt;p&gt;For example, the function &lt;code&gt;plot&lt;/code&gt;, when applied to the output of a model fitted using &lt;code&gt;missingHE&lt;/code&gt;, produces graphs which compare the observed and imputed values for both cost and benefit measures in each treatment group to detect possible concerns about the plausibility of the imputations.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;imputed.jpg&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
 
-&lt;p&gt;More information, including new updates, about &amp;lsquo;missingHE&amp;rsquo; can be found at this &lt;a href=&#34;/missinghe/&#34; target=&#34;_blank&#34;&gt;dedicated page&lt;/a&gt;&lt;/p&gt;
+
+
+  
+
+
+
+
+&lt;figure&gt;
+
+&lt;img src=&#34;/img/imputed.jpg&#34; &gt;
+
+
+
+&lt;figcaption data-pre=&#34;Figure &#34; data-post=&#34;:&#34; &gt;
+  &lt;h4&gt;Example of a graphical output from missingHE&lt;/h4&gt;
+  
+&lt;/figcaption&gt;
+
+&lt;/figure&gt;
+
+
+&lt;p&gt;More information, including new updates, about &lt;code&gt;missingHE&lt;/code&gt; can be found at this &lt;a href=&#34;/missinghe/&#34; target=&#34;_blank&#34;&gt;dedicated page&lt;/a&gt;&lt;/p&gt;
 </description>
     </item>
     

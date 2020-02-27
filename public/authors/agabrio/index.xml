@@ -26,7 +26,27 @@
 
 &lt;p&gt;&lt;code&gt;missingHE&lt;/code&gt; produces plots which compares the observed and imputed values for both cost and benefit measures in each treatment intervention considered to detect possible concerns about the plausibility of the imputation methods. In addition, the output of &lt;code&gt;missingHE&lt;/code&gt; cab be analysed using different funtions in the &lt;code&gt;R&lt;/code&gt; package &lt;code&gt;BCEA&lt;/code&gt; which produces a synthesis of the decision process given the current evidence and uncertainty, as well as several indicators that can be used to perform Probabilistic Sensitivity Analysis to parameter and model uncertainty.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;imputed.jpg&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
+
+
+
+  
+
+
+
+
+&lt;figure&gt;
+
+&lt;img src=&#34;/img/imputed.jpg&#34; &gt;
+
+
+
+&lt;figcaption data-pre=&#34;Figure &#34; data-post=&#34;:&#34; &gt;
+  &lt;h4&gt;Example of a graphical output from missingHE&lt;/h4&gt;
+  
+&lt;/figcaption&gt;
+
+&lt;/figure&gt;
+
 
 &lt;h1 id=&#34;example&#34;&gt;Example&lt;/h1&gt;
 
