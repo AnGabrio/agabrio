@@ -18,111 +18,81 @@
       <pubDate>Fri, 27 Apr 2018 00:00:00 +0000</pubDate>
       
       <guid>/project/volleyball/</guid>
-      <description>
-
-&lt;h1 id=&#34;modelling-framework&#34;&gt;Modelling Framework&lt;/h1&gt;
-
-&lt;p&gt;We extend and adapt the modelling frameworks typically used for the analysis of football data and propose a novel Bayesian hierarchical modelling framework for the analysis and
-prediction of volleyball results in regular seasons. Three different sub-models or &amp;ldquo;modules&amp;rdquo; form our framework: (1) The module of the observed number of points scored by the two opposing teams in a match ($y_h$ and $y_a$);
-(2) the module of the binary indicator for the number of sets played ($d^s$); (3) the module of the binary indicator for the winner of the match ($d^m$).
-These three modules are jointly modelled using a flexible Bayesian parametric approach, which allows to fully propagate the uncertainty for each unobserved quantity
+      <description>&lt;h1 id=&#34;modelling-framework&#34;&gt;Modelling Framework&lt;/h1&gt;
+&lt;p&gt;We extend and adapt the modelling frameworks typically used for the analysis of football data and propose a novel Bayesian hierarchical modelling framework for the analysis and 
+prediction of volleyball results in regular seasons. Three different sub-models or &amp;ldquo;modules&amp;rdquo; form our framework: (1) The module of the observed number of points scored by the two opposing teams in a match ($y_h$ and $y_a$); 
+(2) the module of the binary indicator for the number of sets played ($d^s$); (3) the module of the binary indicator for the winner of the match ($d^m$). 
+These three modules are jointly modelled using a flexible Bayesian parametric approach, which allows to fully propagate the uncertainty for each unobserved quantity 
 and to assess the predictive performance of the model in a relatively easy way. In the following, we describe the notation and the model used in each of the three modules.&lt;/p&gt;
-
 &lt;h2 id=&#34;module-1-modelling-the-scoring-intensity&#34;&gt;Module 1: Modelling the Scoring Intensity&lt;/h2&gt;
-
-&lt;p&gt;In the first module of the framework, we model the number of points scored by the home and away team in the $i$-th match of the season $\boldsymbol y=(y&lt;em&gt;{hi},y&lt;/em&gt;{ai})$
+&lt;p&gt;In the first module of the framework, we model the number of points scored by the home and away team in the $i$-th match of the season $\boldsymbol y=(y_{hi},y_{ai})$ 
 using two independent Poisson distributions&lt;/p&gt;
-
 &lt;p&gt;\[
 y_{hi} \sim Poisson(\theta_{hi}),
 \]&lt;/p&gt;
-
 &lt;p&gt;\[
 y_{ai} \sim Poisson(\theta_{ai}),
 \]&lt;/p&gt;
-
-&lt;p&gt;conditionally on the set of parameters $\boldsymbol \theta=(\theta_{hi},\theta_{ai})$, representing the scoring intensity in the $i$-th match for the home and away team, respectively.
+&lt;p&gt;conditionally on the set of parameters $\boldsymbol \theta=(\theta_{hi},\theta_{ai})$, representing the scoring intensity in the $i$-th match for the home and away team, respectively. 
 These parameters are then modelled using the log-linear regressions&lt;/p&gt;
-
 &lt;p&gt;\[
-log(\theta_{hi}) =\mu + \lambda + att_{h(i)} + def_{a(i)},
+log(\theta_{hi}) =\mu + \lambda + att_{h(i)} + def_{a(i)}, 
 \]&lt;/p&gt;
-
 &lt;p&gt;\[
 log(\theta_{ai}) =\mu + att_{a(i)} + def_{h(i)},
 \]&lt;/p&gt;
-
-&lt;p&gt;which corresponds to a Poisson log-linear model. Within these formulae, $\mu$ is a constant, while $\lambda$ can be identified as the home effect and represents the advantage
-for the team hosting the game which is typically assumed to be constant for all the teams and throughout the season.
-The overall offensive and defensive performances of the $k$-th team is captured by the parameters $att$ and $def$, whose nested indexes $h(i), a(i)=1,\ldots,K$ identify
+&lt;p&gt;which corresponds to a Poisson log-linear model. Within these formulae, $\mu$ is a constant, while $\lambda$ can be identified as the home effect and represents the advantage 
+for the team hosting the game which is typically assumed to be constant for all the teams and throughout the season. 
+The overall offensive and defensive performances of the $k$-th team is captured by the parameters $att$ and $def$, whose nested indexes $h(i), a(i)=1,\ldots,K$ identify 
 the home and away team in the $i$-th game of the season, where $K$ denotes the total number of the teams.&lt;/p&gt;
-
-&lt;p&gt;We then expand the modelling framework to incorporate match-specific statistics related to the offensive and defensive performances of the home and away teams.
+&lt;p&gt;We then expand the modelling framework to incorporate match-specific statistics related to the offensive and defensive performances of the home and away teams. 
 More specifically, the effects associated with the attack intensity of the home teams and the defence effect of the away teams are:&lt;/p&gt;
-
 &lt;p&gt;\[
 att_{h(i)} =\alpha_{0h(i)} + \alpha_{1h(i)}att^{eff}_{hi} + \alpha_{2h(i)}ser^{eff}_{hi},
 \]&lt;/p&gt;
-
 &lt;p&gt;\[
 def_{a(i)} =\beta_{0a(i)} + \beta_{1a(i)}def^{eff}_{ai} + \beta_{2a(i)}blo^{eff}_{ai}.
 \]&lt;/p&gt;
-
-&lt;p&gt;We omit the index $i$ from the terms to the left-hand side of the above formulae to ease notation, i.e. $att_{h(i)}=att_{h(i)i}$ and $def_{a(i)}=def_{a(i)i}$.
-The overall offensive effect of the home teams is a function of a baseline team specific parameter $\alpha_{0h(i)}$, and the attack and serve efficiencies of the home team,
-whose impact is captured by the parameters $\alpha_{1h(i)}$ and $\alpha_{2h(i)}$. The overall defensive effect of the away team is a function of a baseline team-specific
-parameter $\beta_{0a(i)}$, and the defence and block efficiencies of the away team, whose impact is captured by the parameters $\beta_{1a(i)}$ and $\beta_{2a(i)}$, respectively.
+&lt;p&gt;We omit the index $i$ from the terms to the left-hand side of the above formulae to ease notation, i.e. $att_{h(i)}=att_{h(i)i}$ and $def_{a(i)}=def_{a(i)i}$. 
+The overall offensive effect of the home teams is a function of a baseline team specific parameter $\alpha_{0h(i)}$, and the attack and serve efficiencies of the home team, 
+whose impact is captured by the parameters $\alpha_{1h(i)}$ and $\alpha_{2h(i)}$. The overall defensive effect of the away team is a function of a baseline team-specific 
+parameter $\beta_{0a(i)}$, and the defence and block efficiencies of the away team, whose impact is captured by the parameters $\beta_{1a(i)}$ and $\beta_{2a(i)}$, respectively. 
 Similarly, the effects associated with the attack intensity of the away teams and the defence effect of the home teams are:&lt;/p&gt;
-
 &lt;p&gt;\[
 att_{a(i)} =\alpha_{0a(i)} + \alpha_{1a(i)}att^{eff}_{ai}+ \alpha_{2a(i)}ser^{eff}_{ai},
 \]&lt;/p&gt;
-
 &lt;p&gt;\[
 def_{h(i)} =\beta_{0h(i)} + \beta_{1h(i)}def^{eff}_{hi}+ \beta_{2h(i)}blo^{eff}_{hi},
 \]&lt;/p&gt;
-
-&lt;p&gt;To achieve identifiability of the model, a set of parametric constraints needs to be imposed. We impose &lt;em&gt;sum-to-zero&lt;/em&gt; constraints on the team-specific parameters, i.e. we set $\sum_{k=1}^{K}\alpha_{jk}=0$ and $\sum_{k=1}^{K}\beta_{jk}=0$, for $k=1,\ldots,K$ and $j=(0,1,2)$.
+&lt;p&gt;To achieve identifiability of the model, a set of parametric constraints needs to be imposed. We impose &lt;em&gt;sum-to-zero&lt;/em&gt; constraints on the team-specific parameters, i.e. we set $\sum_{k=1}^{K}\alpha_{jk}=0$ and $\sum_{k=1}^{K}\beta_{jk}=0$, for $k=1,\ldots,K$ and $j=(0,1,2)$. 
 Under this set of constraints, the overall offensive and defensive effects of the teams are expressed as departures from a team of average offensive and defensive performance.
 Within a Bayesian framework, prior distributions need to be specified for all random parameters in the model. Weakly informative Normal distributions centred at $0$ with a relatively large variances are specified for the fixed effect parameters.&lt;/p&gt;
-
 &lt;h2 id=&#34;module-2-modelling-the-probability-of-playing-5-sets&#34;&gt;Module 2: Modelling the Probability of Playing 5 Sets&lt;/h2&gt;
-
-&lt;p&gt;In the second module, we explicitly model the chance of playing $5$ sets in the $i$-th match of the season, i.e. the sum of the sets won by the home ($s_{hi}$)
-and away ($s_{ai}$) team is equal to $5$. This is necessary when generating predictions in order to correctly assign the points to the winning/losing teams throughout
+&lt;p&gt;In the second module, we explicitly model the chance of playing $5$ sets in the $i$-th match of the season, i.e. the sum of the sets won by the home ($s_{hi}$) 
+and away ($s_{ai}$) team is equal to $5$. This is necessary when generating predictions in order to correctly assign the points to the winning/losing teams throughout 
 the season and evaluate the rankings of the teams at the end of the season.
 We model the indicator variable $d^s_{i}$, taking value $1$ if $5$ sets were played in the $i-$th match and $0$ otherwise, using a Bernoulli distribution&lt;/p&gt;
-
 &lt;p&gt;\[
 d^s_{i}:=\mathbb{I}(s_{hi}+s_{ai}=5)\sim\mbox{Bernoulli}(\pi^s_{i}),
 \]&lt;/p&gt;
-
 &lt;p&gt;where&lt;/p&gt;
-
 &lt;p&gt;\[
-logit(\pi^s_{i})= \gamma_0 + \gamma_1y_{hi} + \gamma_2y_{ai}.&lt;br /&gt;
+logit(\pi^s_{i})= \gamma_0 + \gamma_1y_{hi} + \gamma_2y_{ai}.&lt;br&gt;
 \]&lt;/p&gt;
-
 &lt;h2 id=&#34;module-3-modelling-the-probability-of-winning-the-match&#34;&gt;Module 3: Modelling the Probability of Winning the Match&lt;/h2&gt;
-
-&lt;p&gt;The last module deals with the chance of the home team to win the $i$-th match, i.e. the total number of sets won by the home team  ($s_{hi}$)
-is larger than that of the away team ($s_{ai}$) &amp;ndash; we note that we could have also equivalently decided to model the chance of the away team to win the $i$-th match.
-This part of the model is again necessary when predicting the results for future matches, since the team associated with the higher number of points scored in the $i$-th
-match may not correspond to the winning team.
+&lt;p&gt;The last module deals with the chance of the home team to win the $i$-th match, i.e. the total number of sets won by the home team  ($s_{hi}$) 
+is larger than that of the away team ($s_{ai}$) &amp;ndash; we note that we could have also equivalently decided to model the chance of the away team to win the $i$-th match. 
+This part of the model is again necessary when predicting the results for future matches, since the team associated with the higher number of points scored in the $i$-th 
+match may not correspond to the winning team. 
 We model the indicator variable $d^m_{i}$, taking value $1$ if the home team won the $i-$th match and $0$ otherwise, using another Bernoulli distribution&lt;/p&gt;
-
 &lt;p&gt;\[
 d^m_{i}:=\mathbb{I}(s_{hi}&amp;gt;s_{ai}) \sim\mbox{Bernoulli}(\pi^m_{i}),
 \]&lt;/p&gt;
-
 &lt;p&gt;where&lt;/p&gt;
-
 &lt;p&gt;\[
 logit(\pi^m_{i})= \eta_0 + \eta_1y_{hi} + \eta_2y_{ai} + \eta_3 d^s_i.
 \]&lt;/p&gt;
-
 &lt;p&gt;The next figure shows a graphical representation of the modelling framework proposed.&lt;/p&gt;
-
 
 
 
@@ -144,33 +114,26 @@ logit(\pi^m_{i})= \eta_0 + \eta_1y_{hi} + \eta_2y_{ai} + \eta_3 d^s_i.
 
 &lt;/figure&gt;
 
-
-&lt;p&gt;The framework corresponds to a joint distribution for all the observed quantities which are explicitly modelled.
-This is factored into the product of the marginal distribution of the total number of points scored by the two teams in each match, Module 1 &amp;ndash; $p(\boldsymbol y)$,
-the conditional distribution of the probability of playing $5$ sets in a match given $\boldsymbol y$, Module 2 &amp;ndash; $p(d^s_i \mid \boldsymbol y)$,
-and the conditional probability of winning the match given $\boldsymbol y$ and $d^s_i$, Module 3 &amp;ndash; $p(d^m_i\mid \boldsymbol y, d^s_i)$.
-Module 1 also includes the different in-game statistics as covariates in the model. These are related to the either the offensive (serve and attack efficiency)
-or defensive (defence and block efficiency) effects of the home and away teams in each match of the season, and are respectively denoted in the graph as
+&lt;p&gt;The framework corresponds to a joint distribution for all the observed quantities which are explicitly modelled. 
+This is factored into the product of the marginal distribution of the total number of points scored by the two teams in each match, Module 1 &amp;ndash; $p(\boldsymbol y)$, 
+the conditional distribution of the probability of playing $5$ sets in a match given $\boldsymbol y$, Module 2 &amp;ndash; $p(d^s_i \mid \boldsymbol y)$, 
+and the conditional probability of winning the match given $\boldsymbol y$ and $d^s_i$, Module 3 &amp;ndash; $p(d^m_i\mid \boldsymbol y, d^s_i)$. 
+Module 1 also includes the different in-game statistics as covariates in the model. These are related to the either the offensive (serve and attack efficiency) 
+or defensive (defence and block efficiency) effects of the home and away teams in each match of the season, and are respectively denoted in the graph as 
 $\boldsymbol x^{att}_{ti}=(ser^{eff}_{ti}, att^{eff}_{ti})$ and $\boldsymbol x^{def}_{ti}=(def^{eff}_{ti}, blo^{eff}_{ti})$ to ease notation, for $t=(h,a)$.&lt;/p&gt;
-
 &lt;h2 id=&#34;accounting-for-the-multilevel-correlation&#34;&gt;Accounting for the multilevel correlation&lt;/h2&gt;
-
-&lt;p&gt;&lt;br /&gt;
-Although the individual-level correlation between the observable variables $y_{hi}$ and $y_{ai}$ is taken into account through the hierarchical structure of the framework,
+&lt;p&gt;&lt;br&gt;
+Although the individual-level correlation between the observable variables $y_{hi}$ and $y_{ai}$ is taken into account through the hierarchical structure of the framework, 
 a potential limitation of the model is that it ignores the possible multilevel correlation between the team-specific offensive $\alpha_{jk}$ and defensive $\beta_{jk}$ coefficients, for $j=(0,1,2)$ and $k=1,\ldots,K$.
-In an alternative analysis, we account for the multilevel correlation using Inverse-Wishart distributions on the covariance matrix of the team specific parameters $ \boldsymbol \Sigma_{\boldsymbol \alpha}$ and $ \boldsymbol \Sigma_{\boldsymbol \beta}$,
+In an alternative analysis, we account for the multilevel correlation using Inverse-Wishart distributions on the covariance matrix of the team specific parameters $ \boldsymbol \Sigma_{\boldsymbol \alpha}$ and $ \boldsymbol \Sigma_{\boldsymbol \beta}$, 
 which are scaled in order to facilitate the specification of the priors.&lt;/p&gt;
-
 &lt;h1 id=&#34;results&#34;&gt;Results&lt;/h1&gt;
-
-&lt;p&gt;Overall, the predicted results from both the basic and the scaled IW model seem to replicate the observed data relatively well for most of the teams.
-The total number of points scored and conceded are similar between the observed and replicated data, with the teams scoring (conceding) the most being also associated
-with the highest replicated points scored (conceded) and vice versa. Relatively small discrepancies are observed between the results of the two models for some of the teams.
+&lt;p&gt;Overall, the predicted results from both the basic and the scaled IW model seem to replicate the observed data relatively well for most of the teams. 
+The total number of points scored and conceded are similar between the observed and replicated data, with the teams scoring (conceding) the most being also associated 
+with the highest replicated points scored (conceded) and vice versa. Relatively small discrepancies are observed between the results of the two models for some of the teams. 
 The total number of wins and league points are almost identical between the observed and replicated data, with the scaled IW model being associated with slightly m
 ore accurate predictions compared with the basic model.&lt;/p&gt;
-
 &lt;p&gt;The following figure compares the cumulative points derived from the observed results throughout the season (the black line) and the predictions from both the basic model (in red), and the scaled Inverse-Wishart model (in blue).&lt;/p&gt;
-
 
 
 
@@ -192,13 +155,10 @@ ore accurate predictions compared with the basic model.&lt;/p&gt;
 
 &lt;/figure&gt;
 
-
 &lt;p&gt;For almost all teams the predicted results are relatively close to the observed data and suggest a good performance of both models.&lt;/p&gt;
-
 &lt;h1 id=&#34;conclusions&#34;&gt;Conclusions&lt;/h1&gt;
-
-&lt;p&gt;To our knowledge, this is the first modelling framework which jointly allows to predict team rankings and the outcomes of the matches during a season in volleyball.
-The two alternative specifications implemented in our analysis show generally good predictive performances; between the two models, the scaled IW model seems to be
+&lt;p&gt;To our knowledge, this is the first modelling framework which jointly allows to predict team rankings and the outcomes of the matches during a season in volleyball. 
+The two alternative specifications implemented in our analysis show generally good predictive performances; between the two models, the scaled IW model seems to be 
 slightly more accurate compared with the basic model, but is also associated with a higher level of complexity.&lt;/p&gt;
 </description>
     </item>
@@ -209,18 +169,15 @@ slightly more accurate compared with the basic model, but is also associated wit
       <pubDate>Mon, 05 Feb 2018 00:00:00 +0000</pubDate>
       
       <guid>/project/missinghe/</guid>
-      <description>&lt;p&gt;&lt;code&gt;missingHE&lt;/code&gt; is a &lt;code&gt;R&lt;/code&gt; package, available on &lt;a href=&#34;https://cran.r-project.org/web/packages/missingHE/&#34; target=&#34;_blank&#34;&gt;CRAN&lt;/a&gt; which is aimed at providing some useful tools to analysts in order to handle missing outcome data under a full Bayesian framework in economic evaluations.
+      <description>&lt;p&gt;&lt;code&gt;missingHE&lt;/code&gt; is a &lt;code&gt;R&lt;/code&gt; package, available on &lt;a href=&#34;https://cran.r-project.org/web/packages/missingHE/&#34;&gt;CRAN&lt;/a&gt; which is aimed at providing some useful tools to analysts in order to handle missing outcome data under a full Bayesian framework in economic evaluations. 
 The package relies on the &lt;code&gt;R&lt;/code&gt; package &lt;code&gt;R2jags&lt;/code&gt; to implement Bayesian methods via the statistical software &lt;code&gt;JAGS&lt;/code&gt; to obtain inferences using Markov Chain Monte Carlo (MCMC) methods.
-Different types of missing data models are implemented in the package, including selection models, pattern mixture models and hurdle models. A range of parametric distributions can be specified when modelling the typical
-outcomes in an trial-based economic evaluations, namely the effectiveness and cost variabels, while simultaneously incorporating different assumptions about the missingness mechanism, which allows to easily perform
+Different types of missing data models are implemented in the package, including selection models, pattern mixture models and hurdle models. A range of parametric distributions can be specified when modelling the typical 
+outcomes in an trial-based economic evaluations, namely the effectiveness and cost variabels, while simultaneously incorporating different assumptions about the missingness mechanism, which allows to easily perform 
 sensitvity analysis to a range of alternative missing data assumptions according to the modelling choices selected by the user.&lt;/p&gt;
-
 &lt;p&gt;&lt;code&gt;missingHE&lt;/code&gt; also provides functions, taken and adapted from other &lt;code&gt;R&lt;/code&gt; packages, to assess the results of each type of model, including summaries of the posterior distributions of each model parameter,
 range and imputations of the missing values, different types of model diagnostics to assess convergence of the algorithm, posterior predictive checks, model assessment measures based on the fit to the observed data,
 and a general summary of the economic evaluations, including the results from probabilistic sensitivity analyses which are automatically performed within a Bayesian modelling framework.&lt;/p&gt;
-
 &lt;p&gt;For example, the function &lt;code&gt;plot&lt;/code&gt;, when applied to the output of a model fitted using &lt;code&gt;missingHE&lt;/code&gt;, produces graphs which compare the observed and imputed values for both cost and benefit measures in each treatment group to detect possible concerns about the plausibility of the imputations.&lt;/p&gt;
-
 
 
 
@@ -242,8 +199,7 @@ and a general summary of the economic evaluations, including the results from pr
 
 &lt;/figure&gt;
 
-
-&lt;p&gt;More information, including new updates, about &lt;code&gt;missingHE&lt;/code&gt; can be found at this &lt;a href=&#34;/missinghe/&#34; target=&#34;_blank&#34;&gt;dedicated page&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;More information, including new updates, about &lt;code&gt;missingHE&lt;/code&gt; can be found at this &lt;a href=&#34;/missinghe/&#34;&gt;dedicated page&lt;/a&gt;&lt;/p&gt;
 </description>
     </item>
     
@@ -253,27 +209,16 @@ and a general summary of the economic evaluations, including the results from pr
       <pubDate>Thu, 01 Jun 2017 00:00:00 +0000</pubDate>
       
       <guid>/project/missing-data-review/</guid>
-      <description>
-
-&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
-
+      <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
 &lt;p&gt;We performed a systematic literature review that assesses the quality of the information reported and type of methods used to handle missing outcome data in trial-based economic evaluations. The purpose of this review is to critically appraise the current literature in within-trial CEAs with respect to the quality of the information reported and the methods used to deal with missingness for both effectiveness and costs. The review complements previous work, covering 2003-2009 (88 articles) with a new systematic review, covering 2009-2015 (81 articles) and focuses on two~perspectives.&lt;/p&gt;
-
 &lt;p&gt;First, we provide guidelines on how the information about missingness and related methods should be presented to improve the reporting and handling of missing data. We propose to address this issue by means of a &lt;em&gt;quality evaluation scheme&lt;/em&gt;, providing a structured approach that can be used to guide the collection of information, formulation of the assumptions, choice of methods, and considerations of possible limitations for the given missingness problem. Second, we review the description of the missing data, the statistical methods used to deal with them and the quality of the judgement underpinning the choice of these methods.&lt;/p&gt;
-
 &lt;h1 id=&#34;quality-evaluation-scheme&#34;&gt;Quality Evaluation Scheme&lt;/h1&gt;
-
 &lt;p&gt;In order to judge whether missing data in CEAs have been adequately handled, we assembled guidelines from previous review articles on how information relating to the missing data should be reported. In particular, we defined three broad components of the analysis that are related to the description of the missingness problem (Description), details of the methods used to address it (Methods) and a discussion on the uncertainty in the conclusions resulting from the missingness (Limitations). For each component, information that is considered to be vital for transparency is listed under &lt;em&gt;key considerations&lt;/em&gt;, while other details that could usefully be provided as supplementary material are suggested under &lt;em&gt;optimal considerations&lt;/em&gt;.&lt;/p&gt;
-
 &lt;p&gt;Using the list of key considerations, we determine whether null (all key considerations absent), partial (one or more key considerations absent) or full (all key considerations present) information has been provided for each component. The set of key considerations is defined to ensure a full assessment of the impact that missingness may have on the final conclusions of the analysis with respect to all three components. However, providing a certain level of information on one component (e.g.~full information on Description) typically has a different impact on the results with respect to providing the same level of information on another component (e.g.~full information on Limitations). Based on this, we suggest computing a numerical score that weights each component by the impact that it may have on the final results to summarise the overall information provided on missingness.&lt;/p&gt;
-
 &lt;p&gt;Different score values are calculated based on whether full, partial or null information content is provided in each component and by weighting the three components in a ratio of 3:2:1 (Description: Method: Limitations). This weighting scheme has been chosen according to the impact that each component is likely to have on the final conclusions based on assumptions that we deemed to be~reasonable. Specifically, the Limitations component typically has the least importance among the three because of its limited impact on the conclusions. In the same way, the Description component has potentially a higher impact on the results than the Method component as it generally drives the choice for the initial assumptions about the missingness.&lt;/p&gt;
-
-&lt;p&gt;Finally, the relevance of the scores in terms of decision analysis is mainly associated with a qualitative assessment of the articles. Therefore, we suggest converting the scores into ordered grades (A-E) to evaluate the studies based on the overall information reported on the handling of the missing data. Studies that are graded in the top categories should be associated with a higher degree of confidence in their results, whereas more caution should be given in the consideration of results coming from studies that are graded in the bottom categories. When qualitatively assessing the articles, the different grading assigned to each of them could be an indication of a lack in the robustness of the conclusions provided due to missingness uncertainty.
+&lt;p&gt;Finally, the relevance of the scores in terms of decision analysis is mainly associated with a qualitative assessment of the articles. Therefore, we suggest converting the scores into ordered grades (A-E) to evaluate the studies based on the overall information reported on the handling of the missing data. Studies that are graded in the top categories should be associated with a higher degree of confidence in their results, whereas more caution should be given in the consideration of results coming from studies that are graded in the bottom categories. When qualitatively assessing the articles, the different grading assigned to each of them could be an indication of a lack in the robustness of the conclusions provided due to missingness uncertainty. 
 With respect to the quality assessment of the studies, the aggregation of the quality scores on the components of the analysis (Description, Method and Limitations) into ordered grades could lead to some loss of information compared with the direct use of the quality scores on each component. However, merging the scores into a fewer number of categories ensures a relatively easy comparison of the quality of the information provided across the three analysis components and provides a useful indication about the different degree of confidence to assign to the results obtained by each study.&lt;/p&gt;
-
 &lt;p&gt;The Figure below shows a visual representation of the grade (and score) assignment in the quality evaluation scheme. Although the importance between the different components is subjective, the chosen structure represents a reasonable and relatively straightforward assessment scheme.&lt;/p&gt;
-
 
 
 
@@ -295,16 +240,11 @@ With respect to the quality assessment of the studies, the aggregation of the qu
 
 &lt;/figure&gt;
 
-
 &lt;p&gt;The articles reviewed for the two periods are presented and compared by type of analysis performed. First, the base-case methods are considered, i.e.~those used in the main analysis. Second, any alternative methods in these analyses are discussed; when present, these assess the robustness of the results obtained in the main analysis against departures from the initial assumptions on missingness.&lt;/p&gt;
-
 &lt;h1 id=&#34;summary-of-the-findings&#34;&gt;Summary of the findings&lt;/h1&gt;
-
 &lt;p&gt;Our review is based on a sample of recently published studies and should therefore provide a picture of current missing data handling in within-trial CEAs. However, the quality assessment of the articles is based on the information reported in the articles. It is possible that authors had assessed the robustness of their conclusions to the missing data using alternative approaches that were not reported in the published version because of space limitations in journals. In these cases, it is important that on-line appendices and supplementary material are used to report these~alternatives.
 In our literature review, information about missing data information and methods was available from $4$ and $9$ on-line supplementary materials for the period 2003-2009 and 2009-2015, respectively. Both the larger number of on-line materials and more detailed information reported about missingness handling in the analyses indicate an increased use of this tool in the later period (2009-2015) compared to the first period (2003-2009).&lt;/p&gt;
-
 &lt;h2 id=&#34;descriptive-review&#34;&gt;Descriptive Review&lt;/h2&gt;
-
 
 
 
@@ -326,27 +266,17 @@ In our literature review, information about missing data information and methods
 
 &lt;/figure&gt;
 
-
-&lt;p&gt;From the comparison of the base-case methods used for the costs and effects between 2009 and 2015, the Figure above shows a marked reduction in the number of methods not clearly described for the effects, compared to those for the costs. A possible reason for this is that, while clinical effectiveness measures are often collected through self-reported questionnaires, which are naturally prone to missingness, cost measures rely more on clinical patient files which may ensure a higher completeness rate. It was not possible to confirm this interpretation in the reviewed studies due to the high proportions of articles not clearly reporting the missing rates in both 2003-2009 and 2009-2015 periods, for effects
-($\approx 45\%$ and $\approx 38\%$) and costs ( $\approx 50\%$ and $\approx 62\%$). In addition, clinical outcomes are almost invariably the main objective of RCTs and are usually subject to more advanced and standardised analyses. Arguably, costs are often considered as an add-on to the standard trial: for instance, sample size calculations are almost always performed with the effectiveness measure as the only outcome of interest. Consequently, missing data methods are less frequently well thought through for the analysis of the costs. However, this situation is likely to change as cost data from different perspectives (e.g. caregivers, patients, society, etc.) are being increasingly used in trials, leading to the more frequent adoption of self-report cost data which may start to exhibit similar missingness characteristics to effect data.&lt;/p&gt;
-
+&lt;p&gt;From the comparison of the base-case methods used for the costs and effects between 2009 and 2015, the Figure above shows a marked reduction in the number of methods not clearly described for the effects, compared to those for the costs. A possible reason for this is that, while clinical effectiveness measures are often collected through self-reported questionnaires, which are naturally prone to missingness, cost measures rely more on clinical patient files which may ensure a higher completeness rate. It was not possible to confirm this interpretation in the reviewed studies due to the high proportions of articles not clearly reporting the missing rates in both 2003-2009 and 2009-2015 periods, for effects 
+($\approx 45%$ and $\approx 38%$) and costs ( $\approx 50%$ and $\approx 62%$). In addition, clinical outcomes are almost invariably the main objective of RCTs and are usually subject to more advanced and standardised analyses. Arguably, costs are often considered as an add-on to the standard trial: for instance, sample size calculations are almost always performed with the effectiveness measure as the only outcome of interest. Consequently, missing data methods are less frequently well thought through for the analysis of the costs. However, this situation is likely to change as cost data from different perspectives (e.g. caregivers, patients, society, etc.) are being increasingly used in trials, leading to the more frequent adoption of self-report cost data which may start to exhibit similar missingness characteristics to effect data.&lt;/p&gt;
 &lt;p&gt;The review identified only a few articles using more than one alternative method. In addition, these analyses are typically conducted without any clear justification about their underlying missing data assumptions and may therefore not provide a concrete assessment of the impact of missingness uncertainty. This situation indicates a gap in the literature associated with an under-implementation of sensitivity analysis, which may significantly affect the whole decision-making process outcome, under the perspective of a body who is responsible for providing recommendations about the implementation of alternative interventions for health care matters.&lt;/p&gt;
-
 &lt;p&gt;Limiting the assessment of missingness assumptions to a single case is unlikely to provide a reliable picture of the underlying mechanism. This, in turn, may have a significant impact on the CEA and mislead its conclusions, suggesting the implementation of non-cost-effective treatments. Robustness analyses assess the sensitivity of the results to alternative missing data methods but do not justify the choice of these methods and their underlying assumptions about missingness which may therefore be inappropriate in the specific context analysed. By contrast, sensitivity analyses, which rely on external information to explore plausible alternative methods and missingness assumptions, represent an important and more appropriate tool to provide realistic assessments of the impact of missing data uncertainty on the final conclusions.&lt;/p&gt;
-
 &lt;h2 id=&#34;quality-assessment&#34;&gt;Quality assessment&lt;/h2&gt;
-
-&lt;p&gt;Generally speaking, most of the reviewed papers achieved an unsatisfactory quality score under the Quality Evaluation Scheme. Indeed, the benchmark area on the top-right corner of the graphs is barely reached by less than $7\%$ of the articles, both for cost and effect data.&lt;/p&gt;
-
+&lt;p&gt;Generally speaking, most of the reviewed papers achieved an unsatisfactory quality score under the Quality Evaluation Scheme. Indeed, the benchmark area on the top-right corner of the graphs is barely reached by less than $7%$ of the articles, both for cost and effect data.&lt;/p&gt;
 &lt;p&gt;Overall, the proportions of the studies associated with the lowest category (E) prevails in the majority of the years, with a similar pattern over time between missing costs and effects. All the articles that are associated with the top category (A) belong to the period 2013-2015, with the highest proportions of articles falling in this category being observed in 2015 for both outcomes.
 The opportunity of reaching such a target might be precluded by the choice of the method adopted, which may not be able to support less restrictive assumptions about missingness, even when this would be desirable. As a result, when simple methods cannot be fully justified it is necessary to replace them with more flexible ones that can relax assumptions and incorporate more alternatives. In settings such as those involving MNAR, sensitivity analysis might represent the only possible approach to account for the uncertainty due to the missingness in a principled way. However, due to the lack of studies either performing a sensitivity analysis or providing high quality scores on the assumptions, missingness is not adequately addressed in most studies. This could have the serious consequence of imposing too restrictive assumptions about missingness and affect the outcome of decision making.&lt;/p&gt;
-
 &lt;h1 id=&#34;conclusions&#34;&gt;Conclusions&lt;/h1&gt;
-
 &lt;p&gt;Our review shows, over time, a significant change from more to less restrictive methods in terms of the assumptions on the missingness mechanism. This is an encouraging movement towards a more suitable and careful missing data analysis. The results from the disaggregated analysis by year of publication in the later period (2009-2015) indicates the rise of a better and more transparent approach to handle missingness in the latest years of the review, especially in 2015. In particular, compared to the previous years, the articles reviewed from 2015 are associated with a higher proportion of MI methods used in the base-case analysis, a substantial increase in the number of robustness methods implemented, and a better quality score assignment.&lt;/p&gt;
-
 &lt;p&gt;Nevertheless, improvements are still needed as, overall, only a small number of articles provide transparent information about the missing data and almost no study performs a sensitivity~analysis. These failings are probably due to the fact that the implications of using methods that do not handle missingness in a principled way are not well-known among practitioners. In addition, the choice of the missing data methods may also be guided by their ease of implementation in standard software packages rather than methodological reasons. This is a potentially serious issue for bodies such as the NICE who use these evaluations in their decision making, thus possibly leading to incorrect policy decisions about the cost-effectiveness of new treatment options.&lt;/p&gt;
-
 &lt;p&gt;The Quality Evaluation Scheme represents a valuable tool to improve missing data handling. By carefully thinking about each component in the analysis we are forced to explicitly consider all the assumptions we make about missingness and assess the impact of their variation on final conclusions. The main advantage is a more comparable formalisation of the uncertainty as well as a better indication of possible issues in assessing the cost-effectiveness of new treatments.&lt;/p&gt;
 </description>
     </item>
@@ -357,27 +287,17 @@ The opportunity of reaching such a target might be precluded by the choice of th
       <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
       
       <guid>/project/health-economics/</guid>
-      <description>
-
-&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
-
+      <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
 &lt;p&gt;The type of data used in economic evaluations typically come from a range of sources, whose evidence is combined to inform HTA decision-making. Traditionally, relative effectiveness data are derived from &lt;em&gt;randomised controlled clinical trials&lt;/em&gt; (RCTs), while healthcare resource utilisation, costs and preference-based quality of life data may come from the same study that estimated the clinical effectiveness or not. A number of HTA agencies have developed their own methodological guidelines to support the generation of the evidence required to inform their decisions. In this context, the primary role of economic evaluation for HTA is not the estimation of the quantities of interest (e.g. the computation of point or interval estimation, or hypothesis testing), but to aid decision making. The implication of this is that the standard frequentist analyses that rely on power calculations and $P$-values to estimate  statistical and clinical significance, typically used in RCTs, are not well-suited for addressing these HTA requirements.&lt;/p&gt;
-
 &lt;p&gt;It has been argued that, to be consistent with its intended role in HTA, economic evaluation should embrace a decision-theoretic paradigm and develop ideally within a Bayesian statistical framework to inform two decisions&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;whether the treatments under evaluation are cost-effective given the available evidence and&lt;/li&gt;
-&lt;li&gt;whether the level of uncertainty surrounding the decision is acceptable (i.e. the potential benefits are worth the costs of making the wrong decision).&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;whether the level of uncertainty surrounding the decision is acceptable (i.e. the potential benefits are worth the costs of making the wrong decision).&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;This corresponds to quantify the impact of the uncertainty in the evidence on the entire decision-making process (e.g. to what extent the uncertainty in the estimation of the effectiveness of a new intervention affects the decision about whether it is paid for by the public provider).&lt;/p&gt;
-
 &lt;h1 id=&#34;bayesian-methods-in-hta&#34;&gt;Bayesian methods in HTA&lt;/h1&gt;
-
 &lt;p&gt;There are several reasons that make the use of Bayesian methods in economic evaluations particularly appealing. First, Bayesian modelling is naturally embedded in the wider scheme of decision theory; by taking a probabilistic approach, based on decision rules and available information, it is possible to explicitly account for relevant sources of uncertainty in the decision process and obtain an &lt;em&gt;optimal&lt;/em&gt; course of action. Second, Bayesian methods allow extreme flexibility in modelling using computational algorithms such as &lt;em&gt;Markov Chain Monte Carlo&lt;/em&gt; (MCMC) methods; this allows to handle in a relatively easy way the generally sophisticated structure of the relationships and complexities that characterise effectiveness, quality of life and cost data. Third, through the use of prior distributions, the Bayesian approach naturally allows the incorporation of evidence from different sources in the analysis (e.g. expert opinion or multiple studies), which may improve the estimation of the quantities of interest; the process is generally referred to as evidence synthesis and finds its most common application in the use of meta-analytic tools. This may be extremely important when, as it often happens, there is only some partial (imperfect) information to identify the model parameters. In this case analysts are required to develop chain-of-evidence models. When required by the limitations in the evidence base, subjective prior distributions can be specified based on the synthesis and elicitation of expert opinion to identify the model, and their impact on the results can be assessed by presenting or combining the results across a range of plausible alternatives. Finally, under a Bayesian approach, it is straightforward to conduct &lt;em&gt;sensitivity analysis&lt;/em&gt; to properly account for the impact of uncertainty in all inputs of the decision process; this is a required component in the approval or reimbursement of a new intervention for many decision-making bodies, such as NICE in the UK.&lt;/p&gt;
-
 &lt;p&gt;The general process of conducting a Bayesian analysis (with a view of using the results of the model to perform an economic evaluation) can be broken down in several steps, which are graphically summarized in the Figure below.&lt;/p&gt;
-
 
 
 
@@ -399,26 +319,17 @@ The opportunity of reaching such a target might be precluded by the choice of th
 
 &lt;/figure&gt;
 
-
 &lt;p&gt;The starting point is the identification of the decision problem, which defines the objective of the economic evaluation (e.g. the interventions being compared, the target population, the relevant time horizon). In line with the decision problem, a statistical model is constructed to describe the (by necessity, limited) knowledge of the underlying clinical pathways. This implies, for example, the definition of suitable models to describe variability in potentially observed data (e.g. the number of patients recovering from the disease because of a given treatment), as well as the epistemic uncertainty in the population parameters (e.g.~the underlying probability that a random individual in the target population is cured, if given the treatment under study).  At this point, all the relevant data are identified, collected and quantitatively sytnthesised to derive the estimates of the input parameters of interest for the model.&lt;/p&gt;
-
 &lt;p&gt;These parameter estimates (and associated uncertainties) are then fed to the economic model, with the objective of obtaining some relevant summaries indicating the benefits and costs for each intervention under evaluation. Uncertainty analysis represents some sort of &lt;em&gt;detour&lt;/em&gt; from the straight path going from the statistical model to the decision analysis: if the output of the statistical model allowed us to know with perfect certainty the &lt;em&gt;true&lt;/em&gt; value of the model parameters, then it would be possible to simply run the decision analysis and make the decision.  Of course, even if the statistical model were the &lt;em&gt;true&lt;/em&gt; representation of the underlying data generating process (which it most certainly is not), because the data may be limited in terms of length of follow up, or sample size, the uncertainty in the value of the model parameters would still remain. This &lt;em&gt;parameter&lt;/em&gt; (and &lt;em&gt;structural&lt;/em&gt;) uncertainty is propagated throughout the whole process to evaluate its impact on the decision-making. In some cases, although there might be substantial uncertainty in the model inputs, this may not turn out to modify substantially the output of the decision analysis, i.e. the new treatment would be deemed as optimal irrespectively.  In other cases, however, even a small amount of uncertainty in the inputs could be associated with very serious consequences. In such circumstances, the decision-maker may conclude that the availbale evidence is not sufficient to decide on which intervention to select and require more information before a decision can be made.&lt;/p&gt;
-
 &lt;p&gt;The results of the above analysis can be used to inform policy makers about two related decisions:&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;whether the new intervention is to be considered (on average) &lt;em&gt;value for money&lt;/em&gt;, given the evidence base available at the time of decision, and&lt;/li&gt;
-&lt;li&gt;whether the consequences (in terms of net health loss) of making the wrong decision would warrant further research to reduce this &lt;em&gt;decision uncertaint&lt;/em&gt;.&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;whether the consequences (in terms of net health loss) of making the wrong decision would warrant further research to reduce this &lt;em&gt;decision uncertaint&lt;/em&gt;.&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;While the type and specification of the statistical and economic models vary with the nature of the underlying data (e.g. individual (ILD) level versus aggregated (ALD) data, the decision and uncertainty analyses have a more standardised set up.&lt;/p&gt;
-
 &lt;h1 id=&#34;conclusions&#34;&gt;Conclusions&lt;/h1&gt;
-
 &lt;p&gt;HTA has been slow to adopt Bayesian methods; this could be due to a reluctance to use prior opinions, unfamiliarity, mathematical complexity, lack of software, or conservatism of the healthcare establishment and, in particular, the regulatory~authorities. However, the use of Bayesian approach has been increasingly advocated as an efficient tool to integrate statistical evidence synthesis and parameter estimation with probabilistic decision analysis in an unified framework for HTA. This enables a transparent &lt;em&gt;evidence-based&lt;/em&gt; decision modelling, reflecting the uncertainty and the structural relationships in all the available~data.&lt;/p&gt;
-
 &lt;p&gt;With respect to trial-based analyses, the flexibility and modularity of the Bayesian modelling structure are well-suited to jointly account for the typical complexities that affect ILD. In addition, prior distributions can be used as convenient means to incorporate external information into the model when the evidence from the data is limited or absent (e.g. for missing values). In the context of evidence synthesis, the Bayesian approach is particularly appealing in that it allows for all the uncertainty and correlation induced by the often heterogeneous nature of the evidence (either ALD only or both ALD and ILD) to be synthesised in a way that can be easily integrated within a decision modelling framework.&lt;/p&gt;
-
 &lt;p&gt;The availability and spread of Bayesian software among practitioners since the late 1990s, such as &lt;code&gt;OpenBUGS&lt;/code&gt; or &lt;code&gt;JAGS&lt;/code&gt;, has greatly improved the applicability and reduced the computational costs of these models. Thus, analysts are provided with a powerful framework, which has been termed &lt;em&gt;comprehensive decision modelling&lt;/em&gt;, for simultaneously estimating posterior distributions for parameters based on specified prior knowledge and data evidence, and for translating this into the ultimate measures used in the decision analysis to inform cost-effectiveness conclusions.&lt;/p&gt;
 </description>
     </item>
@@ -429,37 +340,24 @@ The opportunity of reaching such a target might be precluded by the choice of th
       <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
       
       <guid>/project/bayesian-modelling/</guid>
-      <description>
-
-&lt;h1 id=&#34;modelling-framework&#34;&gt;Modelling Framework&lt;/h1&gt;
-
+      <description>&lt;h1 id=&#34;modelling-framework&#34;&gt;Modelling Framework&lt;/h1&gt;
 &lt;p&gt;We propose a unified Bayesian framework that jointly accounts for the typical complexities of the data (e.g. correlation, skewness, spikes at the boundaries  and missingness), and that can be implemented in a relatively easy way.&lt;/p&gt;
-
-&lt;p&gt;Consider the usual cross-sectional bivariate outcome formed by the QALYs and total cost variables $(e_{it}, c_{it})$ calculated for the $i-$th person in group $t$ of the trial. To simplify the notation, unless necessary, we suppress the treatment indicator $t$.
+&lt;p&gt;Consider the usual cross-sectional bivariate outcome formed by the QALYs and total cost variables $(e_{it}, c_{it})$ calculated for the $i-$th person in group $t$ of the trial. To simplify the notation, unless necessary, we suppress the treatment indicator $t$. 
 We specify the joint distribution $p(e_i,c_i)$ as&lt;/p&gt;
-
 &lt;p&gt;\[
-p(e_i,c_i) = p(c_i)p(e_i\mid c_i) = p(e_i)p(c_i\mid e_i)
+p(e_i,c_i) = p(c_i)p(e_i\mid c_i) = p(e_i)p(c_i\mid e_i) 
 \]&lt;/p&gt;
-
 &lt;p&gt;where, for example, $p(e_i)$ is the &lt;em&gt;marginal&lt;/em&gt; distribution of the QALYs and $p(c_i\mid e_i)$ is the &lt;em&gt;conditional&lt;/em&gt; distribution of the costs given the QALYs. Note that, although the two factorisations are mathematically equivalent, the choice of which to use has different practical implications. From a statistical point of view, the factorisations require the specifications of different statistical models, e.g. $p(e_i)$ or $p(e_i\mid c_i)$, which may have different approximation errors. From a clinical point of view, the two versions make different assumptions about the casual relationships between the outcomes, i.e. either $e_i$ determines $c_i$ or vice versa. We describe our analysis under the assumption that the costs are determined by the effectiveness measures and therefore we specify the joint distribution $p(e_i,c_i)$ in terms of a marginal distribution for the QALYs and a conditional distribution for the costs.&lt;/p&gt;
-
-&lt;p&gt;For each individual we consider a marginal distribution $p(e_i \mid \boldsymbol \theta_e)$ indexed by a set of parameters $\boldsymbol \theta_e$ comprising a &lt;em&gt;location&lt;/em&gt; $\boldsymbol \phi_{ie}$ and a set of &lt;em&gt;ancillary&lt;/em&gt; parameters $\boldsymbol\psi_e$ typically including some measure of &lt;em&gt;marginal&lt;/em&gt; variance $\sigma^2_e$. We can model the location parameter using a generalised linear structure, e.g.&lt;/p&gt;
-
-&lt;p&gt;\[
-g_e(\phi_{ie})= \alpha_0 \,\,[+ \ldots]
+&lt;p&gt;For each individual we consider a marginal distribution $p(e_i \mid \boldsymbol \theta_e)$ indexed by a set of parameters $\boldsymbol \theta_e$ comprising a &lt;em&gt;location&lt;/em&gt; $\boldsymbol \phi_{ie}$ and a set of *ancillary* parameters $\boldsymbol\psi_e$ typically including some measure of *marginal* variance $\sigma^2_e$. We can model the location parameter using a generalised linear structure, e.g.&lt;/p&gt;
+&lt;p&gt;\[ 
+g_e(\phi_{ie})= \alpha_0 ,,[+ \ldots] 
 \]&lt;/p&gt;
-
-&lt;p&gt;where $\alpha_0$ is the intercept and the notation $[+\ldots]$ indicates that other terms (e.g. quantifying the effect of relevant covariates) may or may not be included. In the absence of covariates or assuming that a centered version $x_i^{\star} = (x_i - \bar{x})$ is used, the parameter $\mu_e = g_e^{-1}(\alpha_0)$ represents the population average QALYs. For the costs, we consider a conditional model $p(c_i\mid e_i,\boldsymbol\theta_c)$, which explicitly depends on the QALYs, as well as on a set of quantities $\boldsymbol\theta_c$, again comprising a location $\phi_{ic}$ and ancillary parameters $\boldsymbol \psi_{c}$. For example, when normal distributions are assumed for both $p(e_i \mid \boldsymbol \theta_e)$ and $p(c_i \mid e_i, \boldsymbol \theta_c)$, i.e. bivariate normal on both outcomes, the ancillary parameters $\boldsymbol\psi_c$ include a &lt;em&gt;conditional&lt;/em&gt; variance $\tau^2_c$, which can be expressed as a function of the marginal variance $\sigma^2_c$. More specifically, the conditional variance of $p(c_i \mid e_i, \boldsymbol \theta_c)$ is a function of the marginal effectiveness and cost variances and has the closed form $\tau^2_c=\sigma^2_c - \sigma^2_e \beta^2$, where $\beta=\rho \frac{\sigma_c}{\sigma_e}$ and $\rho$ is the parameter capturing the correlation between the variables.&lt;/p&gt;
-
+&lt;p&gt;where $\alpha_0$ is the intercept and the notation $[+\ldots]$ indicates that other terms (e.g. quantifying the effect of relevant covariates) may or may not be included. In the absence of covariates or assuming that a centered version $x_i^{\star} = (x_i - \bar{x})$ is used, the parameter $\mu_e = g_e^{-1}(\alpha_0)$ represents the population average QALYs. For the costs, we consider a conditional model $p(c_i\mid e_i,\boldsymbol\theta_c)$, which explicitly depends on the QALYs, as well as on a set of quantities $\boldsymbol\theta_c$, again comprising a location $\phi_{ic}$ and ancillary parameters $\boldsymbol \psi_{c}$. For example, when normal distributions are assumed for both $p(e_i \mid \boldsymbol \theta_e)$ and $p(c_i \mid e_i, \boldsymbol \theta_c)$, i.e. bivariate normal on both outcomes, the ancillary parameters $\boldsymbol\psi_c$ include a *conditional* variance $\tau^2_c$, which can be expressed as a function of the marginal variance $\sigma^2_c$. More specifically, the conditional variance of $p(c_i \mid e_i, \boldsymbol \theta_c)$ is a function of the marginal effectiveness and cost variances and has the closed form $\tau^2_c=\sigma^2_c - \sigma^2_e \beta^2$, where $\beta=\rho \frac{\sigma_c}{\sigma_e}$ and $\rho$ is the parameter capturing the correlation between the variables.&lt;/p&gt;
 &lt;p&gt;The location can be modelled as a function of the QALYs as&lt;/p&gt;
-
-&lt;p&gt;\[
-g_c(\phi_{ic}) = \beta_{0} + \beta_{1}(e_{i}-\mu_{e})\,\,[+\ldots]
+&lt;p&gt;\[ 
+g_c(\phi_{ic}) = \beta_{0} + \beta_{1}(e_{i}-\mu_{e}),,[+\ldots] 
 \]&lt;/p&gt;
-
 &lt;p&gt;Here, $(e_i-\mu_e)$ is the centered version of the QALYs, while $\beta_{1}$ quantifies the correlation between costs and QALYs. Assuming other covariates are either also centered or absent, $\mu_c = g_c^{-1}(\beta_{0})$ is the estimated population average cost. The Figure below shows a graphical representation of the general modelling framework.&lt;/p&gt;
-
 
 
 
@@ -481,15 +379,10 @@ g_c(\phi_{ic}) = \beta_{0} + \beta_{1}(e_{i}-\mu_{e})\,\,[+\ldots]
 
 &lt;/figure&gt;
 
-
 &lt;p&gt;The QALYs and cost distributions are represented in terms of combined &lt;em&gt;modules&lt;/em&gt;, the blue and the red boxes, in which the random quantities are linked through logical relationships. This ensures the full characterisation of the uncertainty for each variable in the model. Notably, this is general enough to be extended to any suitable distributional assumption, as well as to handle covariates in either or both the modules.&lt;/p&gt;
-
 &lt;p&gt;The proposed framework allows jointly tackling of the different complexities that affect the data in a relatively easy way by means of its modular structure and flexible choice for the distributions of the QALYs and cost variables. Using the MenSS trial as motivating example, we start from the original analysis and expand the model using alternative specifications that progressively account for an increasing number of complexities in the outcomes. We specifically focus on appropriately modelling spikes at the boundary and missingness, as they have substantial implications in terms of inferences and, crucially, cost-effectiveness results.&lt;/p&gt;
-
 &lt;h1 id=&#34;example&#34;&gt;Example&lt;/h1&gt;
-
-&lt;p&gt;Three model specifications are considered and applied to QALY data from a RCT case study: 1) Normal marginal for the QALYs and Normal conditional for the costs (which is identical to a Bivariate Normal distribution for the two outcomes); 2) Beta marginal for the QALYs and Gamma conditional for the costs; and 3) Hurdle Model. The following Figure shows the observed QALYs in both treatment groups (indicated with black crosses) as well as summaries of the posterior distributions for the imputed values, obtained from each model. Imputations are distinguished based on whether the corresponding baseline utility value is observed or missing (blue or red lines and dots, respectively) and are summarised in terms of posterior mean and $90\%$ HPD intervals.&lt;/p&gt;
-
+&lt;p&gt;Three model specifications are considered and applied to QALY data from a RCT case study: 1) Normal marginal for the QALYs and Normal conditional for the costs (which is identical to a Bivariate Normal distribution for the two outcomes); 2) Beta marginal for the QALYs and Gamma conditional for the costs; and 3) Hurdle Model. The following Figure shows the observed QALYs in both treatment groups (indicated with black crosses) as well as summaries of the posterior distributions for the imputed values, obtained from each model. Imputations are distinguished based on whether the corresponding baseline utility value is observed or missing (blue or red lines and dots, respectively) and are summarised in terms of posterior mean and $90%$ HPD intervals.&lt;/p&gt;
 
 
 
@@ -511,19 +404,14 @@ g_c(\phi_{ic}) = \beta_{0} + \beta_{1}(e_{i}-\mu_{e})\,\,[+\ldots]
 
 &lt;/figure&gt;
 
-
 &lt;p&gt;There are clear differences in the imputed values and corresponding credible intervals between the three models in both treatment groups. Neither the Bivariate Normal nor the Beta-Gamma models  produce imputed values that capture the structural one component in the data. In addition, as to be expected, the Bivariate Normal fails to respect the natural support for the observed QALYs, with many of the imputations exceeding the unit threshold bound. These unrealistic imputed values highlight the inadequacy of the Normal distribution for the data and may lead to distorted inferences. Conversely, imputations under the Hurdle Model are more realistic, as they can replicate values in the whole range of the observed data, including the structural ones. Imputed unit QALYs with no discernible interval are only observed in the intervention group due to the original data composition, i.e. individuals associated with a unit baseline utility and missing QALYs are almost exclusively present in the intervention group.&lt;/p&gt;
-
 &lt;h1 id=&#34;conclusions&#34;&gt;Conclusions&lt;/h1&gt;
-
 &lt;p&gt;We have presented a flexible Bayesian framework that can handle the typical complexities affecting outcome data in CEA, while also being relatively easy to implement using freely available Bayesian software.  This is a key advantage that can encourage practitioners to move away from likely biased methods and promote the use of our framework in routine analyses. In conclusion, the proposed framework can:&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;Jointly model costs and QALYs;&lt;/li&gt;
 &lt;li&gt;Account for skewness and structural values;&lt;/li&gt;
 &lt;li&gt;Assess the robustness of the results under a set of differing missingness assumptions.&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;The original contribution of this work consists in the joint implementation of methods that account for the complexities of the data within a unique and flexible framework that is relatively easy to apply. In the next chapter we will take a step forward in the analysis and present a longitudinal model that can use all observed utility and cost data in the analysis, explore alternative nonignorable missing data assumptions, while simultaneously handling the complexities that affect the data.&lt;/p&gt;
 </description>
     </item>
@@ -534,65 +422,39 @@ g_c(\phi_{ic}) = \beta_{0} + \beta_{1}(e_{i}-\mu_{e})\,\,[+\ldots]
       <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
       
       <guid>/project/missing-data/</guid>
-      <description>
-
-&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
-
+      <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
 &lt;p&gt;Economic evaluation alongside Randomised Clinical Trials (RCTs) is an important and increasingly popular component of the process of technology appraisal. The typical analysis of individual level data involves the comparison of two interventions for which suitable measures of clinical benefits and costs are observed on each patient enrolled in the trial at different time points throughout the follow up. Individual level data from RCTs are almost invariably affected by missingness. The recorded outcome process is often incomplete due to individuals who drop out or are observed intermittently throughout the study, causing some observations to be missing. In most applications, the economic evaluation is performed on the cross-sectional variables, computed using only the data from the individuals who are observed at each time point in the trial (completers), with at most limited sensitivity analysis to missingness assumptions. This, however, is an extremely inefficient approach as the information from the responses of all partially observed subjects is completely lost and it is also likely biased unless the completers are a random sample of the subjects on each arm. The problem of missingness is often embedded within a more complex framework, which makes the modelling task in economic evaluations particularly challenging. Specifically, the effectiveness and cost data typically present a series of complexities that need to be simultaneously addressed to avoid biased results.&lt;/p&gt;
-
 &lt;p&gt;Using a recent randomised trial as our motivating example, we present a Bayesian parametric model for conducting inference on a bivariate health economic longitudinal response. We specify our model to account for the different types of complexities affecting the data while accommodating a sensitivity analysis to explore the impact of alternative missingness assumptions on the inferences and on the decision-making process for health technology assessment.&lt;/p&gt;
-
 &lt;h1 id=&#34;standard-approach&#34;&gt;Standard approach&lt;/h1&gt;
-
 &lt;p&gt;To perform the economic evaluation, aggregated measures for both utilities and costs are typically derived from the longitudinal responses recorded in the study. QALYs ($e_{it}$) and total costs ($c_{it}$) measures are computed as:&lt;/p&gt;
-
 &lt;p&gt;\[
-e_{it}=\sum_{j=1}^{J}(u_{ijt}+u_{ij-1t})\frac{\delta_{j}}{2} \;\;\; \text{and} \;\;\;\  c_{it}=\sum_{j=1}^{J}c_{ijt},
+e_{it}=\sum_{j=1}^{J}(u_{ijt}+u_{ij-1t})\frac{\delta_{j}}{2} ;;; \text{and} ;;;\  c_{it}=\sum_{j=1}^{J}c_{ijt},
 \]&lt;/p&gt;
-
 &lt;p&gt;where $t$ denotes the treatment group, while $\delta_{j}=\frac{\text{Time}_{j}-\text{Time}_{j-1}}{\text{Unit of time}}$ is the percentage of the time unit (typically one year) which is covered between time $j-1$ and $j$ in the trial. The economic evaluation is then performed by applying some parametric model $p(e_{it},c_{it}\mid \boldsymbol \theta)$, indexed by a set of parameters $\boldsymbol \theta$, to these cross-sectional quantities, typically using linear regression methods to account for the imbalance in some baseline variables between treatments. We note that the term cross-sectional here refers to analyses based on variables derived from the combination of repeated measurements collected at different times over the trial duration and not on data collected at a single point in time.
 Finally, QALYs and total costs population mean values are derived from the model:&lt;/p&gt;
-
 &lt;p&gt;\[
-\mu_{et} = \text{E}\left(e_{it} \mid \boldsymbol \theta\right) \;\;\; \text{and} \;\;\; \mu_{ct} = \text{E}\left(c_{it} \mid \boldsymbol \theta \right).
+\mu_{et} = \text{E}\left(e_{it} \mid \boldsymbol \theta\right) ;;; \text{and} ;;; \mu_{ct} = \text{E}\left(c_{it} \mid \boldsymbol \theta \right). 
 \]&lt;/p&gt;
-
 &lt;p&gt;The differences in $\mu_{et}$ and $\mu_{ct}$ between the treatment groups represent the quantities of interest in the economic evaluation and are used in assessing the relative cost-effectiveness of the interventions. This modelling approach has the limitation that $\mu_{et}$ and $\mu_{ct}$ are derived based only on the completers in the study and does not assess the robustness of the results to a range of plausible missingness assumptions. The model also fails to account for the different complexities that affect the utility and cost data in the trial: from the correlation between variables to the skewness and the presence of structural values (zero for the costs and one for the utilities) in both outcomes.&lt;/p&gt;
-
 &lt;h1 id=&#34;longitudinal-model-to-deal-with-missingness&#34;&gt;Longitudinal model to deal with missingness&lt;/h1&gt;
-
 &lt;p&gt;We propose an alternative approach to deal with a missing bivariate outcome in economic evaluations, while simultaneously allowing for the different complexities that typically affect utility and cost data. Our approach includes a longitudinal model that improves the current practice by taking into account the information from all observed data as well as the time dependence between the responses.&lt;/p&gt;
-
 &lt;p&gt;Let $\boldsymbol u_i=(u_{i0},\ldots,u_{iJ})$ and $\boldsymbol c_i=(c_{i0},\ldots,c_{iJ})$ denote the vectors of utilities and costs that were supposed to be observed for subject $i$ at time $j$ in the study, with $j \in {0,1,J}$. We denote with $\boldsymbol y_{ij}=(u_{ij},c_{ij})$ the bivariate outcome for subject $i$ formed by the utility and cost pair at time $j$. We group the individuals according to the missingness patterns and denote with $\boldsymbol r_{ij}=(r^u_{ij},r^c_{ij})$ a pair of indicator variables that take value $1$ if the corresponding outcome for subject $i$ at time $j$ is observed and $0$ otherwise. We denote with $\boldsymbol r_i = (\boldsymbol r_{i0}, \ldots, \boldsymbol r_{iJ})$ the missingness pattern to which subject $i$ belongs, where each pattern is associated with different values for $\boldsymbol r_{ij}$.&lt;/p&gt;
-
 &lt;p&gt;We then define our modelling strategy and factor the joint distribution for the response and missingness as:&lt;/p&gt;
-
 &lt;p&gt;\[
 p(\boldsymbol y, \boldsymbol r \mid \boldsymbol \omega) = p(\boldsymbol y^{\boldsymbol r}_{obs}, \boldsymbol r \mid  \boldsymbol \omega)p(\boldsymbol y^{\boldsymbol r}_{mis} \mid \boldsymbol y^{\boldsymbol r}_{obs}, \boldsymbol r, \boldsymbol \omega)
 \]&lt;/p&gt;
-
 &lt;p&gt;where $\boldsymbol y^{\boldsymbol r}_{obs}$ and $\boldsymbol y^{\boldsymbol r}_{mis}$ indicate the observed and missing responses within pattern $\boldsymbol r$, respectively. This is the extrapolation &lt;em&gt;factorisation&lt;/em&gt; and factors the joint into two components, of which the extrapolation &lt;em&gt;distribution&lt;/em&gt; $p(\boldsymbol y^{\boldsymbol r}_{mis} \mid \boldsymbol y^{\boldsymbol r}_{obs}, \boldsymbol r, \boldsymbol \omega)$ remains unidentified by the data in the absence of unverifiable assumptions about the full data.&lt;/p&gt;
-
 &lt;p&gt;To specify the observed data distribution $p(\boldsymbol y^{\boldsymbol r}_{obs}, \boldsymbol r \mid  \boldsymbol \omega)$ we use a working model $p^{\star}$ for the joint distribution of the response and missingness. Essentially, the idea is to use the working model $p^{\star}(\boldsymbol y, \boldsymbol{r} \mid  \boldsymbol \omega)$ to draw inferences about the distribution of the observed data $p(\boldsymbol y^{\boldsymbol r}_{obs}, \boldsymbol r \mid \boldsymbol \omega)$ by integrating out the missing responses:&lt;/p&gt;
-
 &lt;p&gt;\[
 p(\boldsymbol y^{\boldsymbol r}_{obs}, \boldsymbol r \mid \boldsymbol \omega) = \int p^{\star}(\boldsymbol y, \boldsymbol{r} \mid  \boldsymbol \omega)d \boldsymbol y^{\boldsymbol r}_{mis}.
 \]&lt;/p&gt;
-
 &lt;p&gt;This approach avoids direct specification of the joint distribution of the observed and missing data $p(\boldsymbol y, \boldsymbol r\mid \boldsymbol \omega)$, which has the undesirable consequence of identifying the extrapolation distribution with assumptions that are difficult to check. Indeed, since we use $p^{\star}(\boldsymbol y, \boldsymbol r \mid  \boldsymbol \omega)$ only to obtain a model for $p(\boldsymbol y^{\boldsymbol r}_{obs}, \boldsymbol r \mid  \boldsymbol \omega)$ and not as a basis for inference, the extrapolation distribution is left unidentified. Any inference depending on the observed data distribution may be obtained using the working model as the true model, with the advantage that  it is often easier to specify a model for the the full data $p(\boldsymbol y,\boldsymbol r)$ compared with a model  for the observed data $p(\boldsymbol y^{\boldsymbol r}_{obs},\boldsymbol r)$.&lt;/p&gt;
-
 &lt;p&gt;We specify $p^{\star}$ using a pattern mixture approach, factoring the joint $p(\boldsymbol y,\boldsymbol r \mid \boldsymbol \omega)$ as the product between the marginal distribution of the missingness patterns $p(\boldsymbol r\mid \boldsymbol \psi)$ and the distribution of the response conditional on the patterns $p(\boldsymbol y\mid \boldsymbol r,\boldsymbol \theta)$, respectively indexed by the distinct parameter vectors $\boldsymbol \psi$ and $\boldsymbol \theta$. If missingness is monotone it is possible to summarise the patterns by dropout time and directly model the dropout process. Unfortunately, as it often occurs in trial-based health economic data, missingness in the case study is mostly nonmonotone and the sparsity of the data in most patterns makes it infeasible to fit the response model within each pattern, with the exception of the completers ($\boldsymbol r = \boldsymbol 1$). Thus, we decided to collapse together all the non-completers patterns ($\boldsymbol r \neq \boldsymbol 1$) and fit the model separately to this aggregated pattern and to the completers. The joint distribution has three components. The first is given by the model for the patterns and the model for the completers ($\boldsymbol r = \boldsymbol 1$), where no missingness occurs. The second component is a model for the observed data in the collapsed patterns $\boldsymbol r \neq \boldsymbol 1$ that, together with the first component, form the observed data distribution. The last component is the extrapolation distribution.&lt;/p&gt;
-
 &lt;p&gt;Because the targeted quantities of interest can be derived based on the marginal utility and cost means at each time $j$, in our analysis we do not require the full identification of $p(\boldsymbol y^{\boldsymbol r}_{mis} \mid \boldsymbol y^{\boldsymbol r}_{obs},  \boldsymbol r,\boldsymbol \xi)$. Instead, we only partially identify the extrapolation distribution using &lt;em&gt;partial identifying restrictions&lt;/em&gt;. Specifically, we only require the identification of the marginal means for the missing responses in each pattern. We identify the marginal mean of $\boldsymbol y^{\boldsymbol r}_{mis}$ using the observed values, averaged across $\boldsymbol r^\prime \neq \boldsymbol 1$, and some &lt;em&gt;sensitivity parameters&lt;/em&gt; $\boldsymbol \Delta = (\Delta_u,\Delta_c)$. Therefore, we compute the marginal means by averaging only across the observed components in pattern ${\boldsymbol r}^\prime$ and ignore the components that are missing.&lt;/p&gt;
-
 &lt;p&gt;We start by setting a benchmark assumption with $\boldsymbol \Delta = \boldsymbol 0$, and then explore the sensitivity of the results to alternative scenarios by using different prior distributions on $\boldsymbol \Delta$, calibrated on the observed data. This provides a convenient benchmark scenario from which departures can be explored using alternative informative priors on $\boldsymbol \Delta$. Once the working model has been fitted to the observed data and the extrapolation distribution has been identified, the overall marginal mean for the response model can be computed by marginalising over $\boldsymbol r$, i.e. $\text{E}\left[\boldsymbol Y\right] = \sum_{\boldsymbol r} p(\boldsymbol r)\text{E}\left[\boldsymbol Y \mid \boldsymbol r \right]$.&lt;/p&gt;
-
 &lt;h2 id=&#34;modelling-framework&#34;&gt;Modelling framework&lt;/h2&gt;
-
 &lt;p&gt;The distribution of the observed responses $\boldsymbol y_{ijt}=(u_{ijv},c_{ijt})$ is specified in terms of a model for the utility and cost variables at time $j=0,1,2$, which are jointly modelled without using a multilevel approach and separately by treatment group. In particular, the joint distribution for $\boldsymbol y_{ijt}$ is specified as a series of conditional distributions that capture the dependence between utilities and costs as well as the time dependence.&lt;/p&gt;
-
 &lt;p&gt;Following the recommendations from the published literature, we account for the skewness using Beta and Log-Normal distributions for the utilities and costs, respectively. Since the Beta distribution does not allow for negative values, we scaled the utilities on $[0,1]$ through the transformation $u^{\star}_{ij}=\frac{u_{ij}-\text{min}(\boldsymbol u_{j})}{\text{max}(\boldsymbol u_{j})-\text{min}(\boldsymbol u_{j})}$, and fit the model to these transformed variables. To account for the structural values $u_{ij} = 1$ and $c_{ij} = 0$ we use a hurdle approach by including in the model the indicator variables $d^u_{ij}:=\mathbb{I}(u_{ij}=1)$ and $d^c_{ij}:=\mathbb{I}(c_{ij}=0)$, which take value $1$ if subject $i$ is associated with a structural value at time $j$ and 0 otherwise. The probabilities of observing these values, as well as the mean of each variable, are then modelled conditionally on other variables via linear regressions defined on the logit or log scale. Specifically, at time $j=1,2$, the probability of observing a zero and the mean costs are modelled conditionally on the utilities and costs at the previous times, while the probability of observing a one and the mean utilities are modelled conditionally on the current costs (also at $j=0$) and the utilities at the previous times (only at $j=1,2$). The model is summarised by the following Figure.&lt;/p&gt;
-
 
 
 
@@ -614,15 +476,10 @@ p(\boldsymbol y^{\boldsymbol r}_{obs}, \boldsymbol r \mid \boldsymbol \omega) = 
 
 &lt;/figure&gt;
 
-
 &lt;p&gt;We use partial identifying restrictions to link the observed data distribution $p(\boldsymbol y_{obs},\boldsymbol r)$ to the extrapolation distribution $p(\boldsymbol y_{mis} \mid \boldsymbol y_{obs},\boldsymbol r)$ and consider interpretable deviations from a benchmark scenario to assess how inferences are driven by our assumptions. Specifically, we identify the marginal mean of the missing responses in each pattern $\boldsymbol y^{\boldsymbol r}_{mis}$ by averaging across the corresponding components that are observed and add the sensitivity parameters $\boldsymbol \Delta_j$.&lt;/p&gt;
-
 &lt;p&gt;We define $\boldsymbol \Delta_j=(\Delta_{c_{j}},\Delta_{u_{j}})$ to be time-specific location shifts at the marginal mean in each pattern and set $\boldsymbol \Delta_j = \boldsymbol 0$ as the benchmark scenario. We then explore departures from this benchmark using alternative priors on $\boldsymbol \Delta_j$, which are calibrated using the observed standard deviations for costs and utilities at each time $j$ to define the amplitude of the departures from $\boldsymbol \Delta_j=\boldsymbol 0$.&lt;/p&gt;
-
 &lt;h1 id=&#34;conlcusions&#34;&gt;Conlcusions&lt;/h1&gt;
-
 &lt;p&gt;Missingness represents a threat to economic evaluations as, when dealing with partially-observed data, any analysis makes assumptions about the missing values that cannot be verified from the data at hand. Trial-based analyses are typically conducted on cross-sectional quantities, e.g. QALYs and total costs, which are derived based only on the observed data from the completers in the study. This is an inefficient approach which may discard a substantial proportion of the sample, especially when there is a relatively large number of time points, where individuals are more likely to have some missing value or to drop out from the study. In addition, when there are systematic differences between the responses of the completers and non-completers, which is typically the case when dealing with self-reported outcomes in trial-based analyses, the results based only on the former may be biased and mislead the final assessment. A further concern is that routine analyses typically rely on standard models that ignore or at best fail to properly account for potentially important features in the data such as correlation, skewness, and the presence of structural values.&lt;/p&gt;
-
 &lt;p&gt;Our framework represents a considerable step forward for the handling of missingness in economic evaluations compared with the current practice, which typically relies on methods that assume an ignorable MAR and rarely conducts sensitivity analysis to MNAR departures. Nevertheless, further improvements are certainly possible. For example, a potential area for future work is to increase the flexibility of our approach through a semi-parametric or nonparametric specification for the observed data distribution, which would allow a weakening of the model assumptions and likely further improve the fit of the model to the observed data and address sparse patterns in an automated way. As for the extrapolation distribution, alternative identifying restrictions that introduce the sensitivity parameters via the conditional mean (rather than the marginal mean) could be considered, and their impact on the conclusions assessed in a sensitivity analysis.&lt;/p&gt;
 </description>
     </item>

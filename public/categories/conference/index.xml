@@ -7,27 +7,56 @@
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
     <copyright>`{year}`</copyright>
-    <lastBuildDate>Wed, 03 Jul 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 01 Mar 2020 00:00:00 +0000</lastBuildDate>
     
 	    <atom:link href="/categories/conference/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
+      <title>Lockdown</title>
+      <link>/post/update-march/</link>
+      <pubDate>Sun, 01 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/update-march/</guid>
+      <description>&lt;p&gt;I have to admit, although I expected some fear to spread because of the virus which is currently and quickly infecting the world, I was surprised by the frenzy surrounding
+us, especially in my homecountry (Italy) and particularly in my parents&amp;rsquo; region which is at the moment under lockdown. I will also probably cancel my planned trip home for Eastern
+and perhaps also after that since the situations is still unclear and I may be unable to come back to the UK in the short time. This is pretty scary to all the people living in those
+territories, who are now forbidden to have any sort of public meeting and are strongly recommended to stay at home. I am afraid this will not be enough to stop the virus 
+from spreading but of course it is useful as it is the only way we have if we want to contain it. The hope is that by summer time the heath will reduce the ability of the virus
+to spread and give us some time to come up with a possible vaccine in the next months.&lt;/p&gt;
+&lt;p&gt;There have already been attempts to estimate the fatality ratio of the virus using statistical methods. Here I post the tweet from Andrew Gelman&lt;/p&gt;
+&lt;blockquote class=&#34;twitter-tweet&#34;&gt;&lt;p lang=&#34;en&#34; dir=&#34;ltr&#34;&gt;Post Edited: Coronavirus age-specific fatality ratio, estimated using Stan, and (attempting) to account for underreporting of cases and the time delay to death.  Now with data and code.  And now a link to another paper (also with data and code). &lt;a href=&#34;https://t.co/CSHnXRMtyp&#34;&gt;https://t.co/CSHnXRMtyp&lt;/a&gt;&lt;/p&gt;&amp;mdash; Andrew Gelman (@StatModeling) &lt;a href=&#34;https://twitter.com/StatModeling/status/1236845267275702273?ref_src=twsrc%5Etfw&#34;&gt;March 9, 2020&lt;/a&gt;&lt;/blockquote&gt;
+&lt;script async src=&#34;https://platform.twitter.com/widgets.js&#34; charset=&#34;utf-8&#34;&gt;&lt;/script&gt;
+
+&lt;p&gt;which refers to epidemiologists who tried to use &lt;a href=&#34;https://www.medrxiv.org/content/10.1101/2020.03.04.20031104v1.full.pdf&#34;&gt;STAN&lt;/a&gt; for achieving this objective, although an additional reference
+to another work based on the use of &lt;a href=&#34;https://www.medrxiv.org/content/10.1101/2020.02.14.20023127v1&#34;&gt;differential equation analysis&lt;/a&gt; is also made. However, results 
+are still preliminary and subject to limitations for the type of data and assumptions used. From a statistical perspective I am sure this new epidemic will be interesting to
+study and I guess lots of funding will be devoted to analyse the upcoming data to get a better idea of the actual threat it represents for the people. I am not an epidemiologist,
+so I do not have a big statistical interest in this, although I am pretty much worried as any other person. Hopefully, this will become clearer as time passes and let us just hope
+the number of deaths will not be very high.&lt;/p&gt;
+&lt;p&gt;Sorry about talking about this here, but from time to time I would also like to highlight was is currently happening around me. As for my research, nothing has changed much for me
+at the moment and life as usual continues with another busy upcoming period with lots of boring meetings, reports and standard analyses to do, but hopefully I can also save some time
+to do some methodological work. I am also waiting for the decision about my abstract which I submitted to the &lt;a href=&#34;https://cfp.euhea.eu/conf/euhea2020&#34;&gt;EuHEA conference 2020&lt;/a&gt; and which is supposed to
+be held in Oslo this July. I really hope I have a chance to presenting my work there as I have never been to this specific health economic conference. Fingers crossed! Of course, 
+nobody knows what will happen from here till July and much is to be discussed also with respect to how the spreading of the virus may affect everyone&amp;rsquo;s schedule in the next months.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/3ohhwxaw5OlElXzv8s/giphy.gif&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>HESG Summer Meeting 2019</title>
-      <link>/post/hesg-norwich-2019/hesg-summer-meeting-2019/</link>
+      <link>/post/hesg-summer-meeting-2019/</link>
       <pubDate>Wed, 03 Jul 2019 00:00:00 +0000</pubDate>
       
-      <guid>/post/hesg-norwich-2019/hesg-summer-meeting-2019/</guid>
-      <description>&lt;p&gt;I have just come back form my first Health Economists&amp;rsquo; Study Group (&lt;a href=&#34;https://hesg.org.uk/meetings/summer-2019-university-of-east-anglia/&#34; target=&#34;_blank&#34;&gt;HESG&lt;/a&gt;) meeting, which this year was held at the &lt;a href=&#34;https://www.uea.ac.uk/&#34; target=&#34;_blank&#34;&gt;University of East Anglia&lt;/a&gt; in the beautiful city of Norwich,
-south east of England, and where I presented some preliminary results from one of my on-going works. I have to say, it was a remarkable experience which
-I really liked thanks to a wonderful and welcoming environment. I had the pleasure to talk to many people from different research areas involved in
+      <guid>/post/hesg-summer-meeting-2019/</guid>
+      <description>&lt;p&gt;I have just come back form my first Health Economists&amp;rsquo; Study Group (&lt;a href=&#34;https://hesg.org.uk/meetings/summer-2019-university-of-east-anglia/&#34;&gt;HESG&lt;/a&gt;) meeting, which this year was held at the &lt;a href=&#34;https://www.uea.ac.uk/&#34;&gt;University of East Anglia&lt;/a&gt; in the beautiful city of Norwich, 
+south east of England, and where I presented some preliminary results from one of my on-going works. I have to say, it was a remarkable experience which 
+I really liked thanks to a wonderful and welcoming environment. I had the pleasure to talk to many people from different research areas involved in 
 health economics (both from academia and industry) and to see many different projects and works.&lt;/p&gt;
-
-&lt;p&gt;I particularly enjoy the structure of the meeting, which requires some chair and discussant who have to present and discuss the paper of the authors,
-who are only allowed to provide some clarification if needed. At first I thought this structure of the sessions was strange, but after attending many
-sessions and experiencing this for my own paper, I feel that it is a very good way to encourage discussion about works from different people rather than
+&lt;p&gt;I particularly enjoy the structure of the meeting, which requires some chair and discussant who have to present and discuss the paper of the authors, 
+who are only allowed to provide some clarification if needed. At first I thought this structure of the sessions was strange, but after attending many 
+sessions and experiencing this for my own paper, I feel that it is a very good way to encourage discussion about works from different people rather than 
 just focussing on your own presentation. Plus, the weather and always sunny, it felt like Italy for a few days.&lt;/p&gt;
-
 
 
 
@@ -49,23 +78,19 @@ just focussing on your own presentation. Plus, the weather and always sunny, it 
 
 &lt;/figure&gt;
 
-
-&lt;p&gt;Other nice people and colleagues from HEART and other UCL department came to HESG with me, including &lt;a href=&#34;https://iris.ucl.ac.uk/iris/browse/profile?upi=CSCLA53&#34; target=&#34;_blank&#34;&gt;Caroline&lt;/a&gt; and &lt;a href=&#34;https://www.ucl.ac.uk/comprehensive-clinical-trials-unit/meet-team/health-economics/junior-health-economist-ekaterina-kuznetsova&#34; target=&#34;_blank&#34;&gt;Ekaterina&lt;/a&gt; (aka Katia),
-you can see them in thumbnail of this post. I was also pleased to meet &lt;a href=&#34;https://www.lshtm.ac.uk/aboutus/people/leurent.baptiste&#34; target=&#34;_blank&#34;&gt;Baptiste&lt;/a&gt; from &lt;a href=&#34;https://www.lshtm.ac.uk/&#34; target=&#34;_blank&#34;&gt;LSHTM&lt;/a&gt;, who shares with me the interest in missing data
-methods for cost-effectiveness analysis and who presented some very nice work on that. I had the chance to give some feedback to him and he did the same for me.
-It felt so nice when we started discussing about some aspects of our analyses and after some minutes we simply lost track of time and everyone else disappeared.
-I also had the opportunity to talk about my work with the discussant of my session, &lt;a href=&#34;https://cheme.bangor.ac.uk/CatrinPlumptonBiography.php&#34; target=&#34;_blank&#34;&gt;Catrin Plumpton&lt;/a&gt; from the &lt;a href=&#34;https://cheme.bangor.ac.uk/&#34; target=&#34;_blank&#34;&gt;Centre for Health Economics and Medicines Evaluation&lt;/a&gt;,
+&lt;p&gt;Other nice people and colleagues from HEART and other UCL department came to HESG with me, including &lt;a href=&#34;https://iris.ucl.ac.uk/iris/browse/profile?upi=CSCLA53&#34;&gt;Caroline&lt;/a&gt; and &lt;a href=&#34;https://www.ucl.ac.uk/comprehensive-clinical-trials-unit/meet-team/health-economics/junior-health-economist-ekaterina-kuznetsova&#34;&gt;Ekaterina&lt;/a&gt; (aka Katia), 
+you can see them in thumbnail of this post. I was also pleased to meet &lt;a href=&#34;https://www.lshtm.ac.uk/aboutus/people/leurent.baptiste&#34;&gt;Baptiste&lt;/a&gt; from &lt;a href=&#34;https://www.lshtm.ac.uk/&#34;&gt;LSHTM&lt;/a&gt;, who shares with me the interest in missing data 
+methods for cost-effectiveness analysis and who presented some very nice work on that. I had the chance to give some feedback to him and he did the same for me. 
+It felt so nice when we started discussing about some aspects of our analyses and after some minutes we simply lost track of time and everyone else disappeared. 
+I also had the opportunity to talk about my work with the discussant of my session, &lt;a href=&#34;https://cheme.bangor.ac.uk/CatrinPlumptonBiography.php&#34;&gt;Catrin Plumpton&lt;/a&gt; from the &lt;a href=&#34;https://cheme.bangor.ac.uk/&#34;&gt;Centre for Health Economics and Medicines Evaluation&lt;/a&gt;, 
 who gave me some nice feedback which I really appreciated, especially given her mathematical background.&lt;/p&gt;
-
-&lt;p&gt;An important contribution to the success of the meeting was also given by the wonderful organisation of the event, including an accommodation located very closely
-to the main building of the meeting, plenty of food provided during each day, a nice bus tour of the city and a wonderful conference dinner. I must thank all the people,
-who organised the event who were very extremely nice to us and who were always ready to help us for whatever need we had, with a special mention for &lt;a href=&#34;https://people.uea.ac.uk/emma_mcmanus&#34; target=&#34;_blank&#34;&gt;Emma Mcmanus&lt;/a&gt; who
+&lt;p&gt;An important contribution to the success of the meeting was also given by the wonderful organisation of the event, including an accommodation located very closely 
+to the main building of the meeting, plenty of food provided during each day, a nice bus tour of the city and a wonderful conference dinner. I must thank all the people, 
+who organised the event who were very extremely nice to us and who were always ready to help us for whatever need we had, with a special mention for &lt;a href=&#34;https://people.uea.ac.uk/emma_mcmanus&#34;&gt;Emma Mcmanus&lt;/a&gt; who 
 was amazing.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/cWnICjtVkJJsgGKhyX/giphy.gif&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;In summary, everything was good. Well, almost. Going back to the works presented, as usual, the only less positive note that I would like to make
-is the almost total absence of Bayesian applications. Some authors mentioned that they used some popular Bayesian program, such as &lt;a href=&#34;https://www.mrc-bsu.cam.ac.uk/software/bugs/the-bugs-project-winbugs/&#34; target=&#34;_blank&#34;&gt;WinBUGS&lt;/a&gt;, but this was
+&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/cWnICjtVkJJsgGKhyX/giphy.gif&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;In summary, everything was good. Well, almost. Going back to the works presented, as usual, the only less positive note that I would like to make 
+is the almost total absence of Bayesian applications. Some authors mentioned that they used some popular Bayesian program, such as &lt;a href=&#34;https://www.mrc-bsu.cam.ac.uk/software/bugs/the-bugs-project-winbugs/&#34;&gt;WinBUGS&lt;/a&gt;, but this was 
 mainly related to the usual meta-analysis stuff which is pretty standardised. I hope next time I will be able to see more people going Bayesian as this is what I am.&lt;/p&gt;
 </description>
     </item>

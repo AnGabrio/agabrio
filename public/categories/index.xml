@@ -7,10 +7,37 @@
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
     <copyright>`{year}`</copyright>
-    <lastBuildDate>Sat, 15 Feb 2020 21:13:14 -0500</lastBuildDate>
+    <lastBuildDate>Sun, 01 Mar 2020 00:00:00 +0000</lastBuildDate>
     
 	    <atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>conference</title>
+      <link>/categories/conference/</link>
+      <pubDate>Sun, 01 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/conference/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>news</title>
+      <link>/categories/news/</link>
+      <pubDate>Sun, 01 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/news/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>generalised linear mixed models</title>
+      <link>/categories/generalised-linear-mixed-models/</link>
+      <pubDate>Sat, 15 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/categories/generalised-linear-mixed-models/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>JAGS</title>
@@ -27,15 +54,6 @@
       <pubDate>Sat, 15 Feb 2020 21:13:14 -0500</pubDate>
       
       <guid>/categories/r/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>generalised linear mixed models</title>
-      <link>/categories/generalised-linear-mixed-models/</link>
-      <pubDate>Sat, 15 Feb 2020 21:13:14 -0500</pubDate>
-      
-      <guid>/categories/generalised-linear-mixed-models/</guid>
       <description></description>
     </item>
     
@@ -67,15 +85,6 @@
     </item>
     
     <item>
-      <title>STAN</title>
-      <link>/categories/stan/</link>
-      <pubDate>Tue, 11 Feb 2020 21:13:14 -0500</pubDate>
-      
-      <guid>/categories/stan/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>anova</title>
       <link>/categories/anova/</link>
       <pubDate>Tue, 11 Feb 2020 21:13:14 -0500</pubDate>
@@ -99,6 +108,15 @@
       <pubDate>Tue, 11 Feb 2020 21:13:14 -0500</pubDate>
       
       <guid>/categories/split-plot/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>STAN</title>
+      <link>/categories/stan/</link>
+      <pubDate>Tue, 11 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/categories/stan/</guid>
       <description></description>
     </item>
     
@@ -144,15 +162,6 @@
       <pubDate>Mon, 10 Feb 2020 00:00:00 +0000</pubDate>
       
       <guid>/categories/priment/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>news</title>
-      <link>/categories/news/</link>
-      <pubDate>Mon, 10 Feb 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/categories/news/</guid>
       <description></description>
     </item>
     
@@ -297,15 +306,6 @@
       <pubDate>Sat, 03 Aug 2019 00:00:00 +0000</pubDate>
       
       <guid>/categories/discussion/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>conference</title>
-      <link>/categories/conference/</link>
-      <pubDate>Wed, 03 Jul 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/categories/conference/</guid>
       <description></description>
     </item>
     

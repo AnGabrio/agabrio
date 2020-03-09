@@ -14,21 +14,18 @@
     
     <item>
       <title>MissingHE 1.2.1</title>
-      <link>/post/missinghe-121/missinghe-version121/</link>
+      <link>/post/missinghe-version121/</link>
       <pubDate>Wed, 25 Sep 2019 00:00:00 +0000</pubDate>
       
-      <guid>/post/missinghe-121/missinghe-version121/</guid>
-      <description>&lt;p&gt;I have finally found some time to update the version for my R package &lt;a href=&#34;https://agabrioblog.onrender.com/missingHE/&#34; target=&#34;_blank&#34;&gt;missingHE&lt;/a&gt;, for which version 1.2.1 is now available on &lt;a href=&#34;https://cran.r-project.org/web/packages/missingHE/&#34; target=&#34;_blank&#34;&gt;CRAN&lt;/a&gt;.
+      <guid>/post/missinghe-version121/</guid>
+      <description>&lt;p&gt;I have finally found some time to update the version for my R package &lt;a href=&#34;https://agabrioblog.onrender.com/missingHE/&#34;&gt;missingHE&lt;/a&gt;, for which version 1.2.1 is now available on &lt;a href=&#34;https://cran.r-project.org/web/packages/missingHE/&#34;&gt;CRAN&lt;/a&gt;. 
 I included two main features to the previous version of the package.&lt;/p&gt;
-
 &lt;p&gt;First, I have added a new type of identifying restriction when fitting pattern mixture models through the function &amp;ldquo;pattern&amp;rdquo;. Before, only the complete case
-restriction was available, which identifies the distributions of the missing data with those from the completers. Now the alternative available case restriction is can also be selected, which relies on the distributions that can be identified
+restriction was available, which identifies the distributions of the missing data with those from the completers. Now the alternative available case restriction is can also be selected, which relies on the distributions that can be identified 
 among the non-completers to identify the distributions of the missing data. In this way, people can choose among at least two options for the type of restrictions and compare how this choice may affect the final estimates.&lt;/p&gt;
-
 &lt;p&gt;Second, I added a new accessory function called &amp;ldquo;ppc&amp;rdquo;, which allows to perform posterior predictive checks using the conditional parameters saved from the fitted model to generate replications of the data at each posterior iteration of the model.
-The function implements a relatively large number of checks, mostly taken from the R package &lt;a href=&#34;https://cran.r-project.org/web/packages/bayesplot/&#34; target=&#34;_blank&#34;&gt;bayesplot&lt;/a&gt;, which allow to assess the fit of the model to the observed data by type of outcome (effects and costs) and treatment group (control and intervention).
+The function implements a relatively large number of checks, mostly taken from the R package &lt;a href=&#34;https://cran.r-project.org/web/packages/bayesplot/&#34;&gt;bayesplot&lt;/a&gt;, which allow to assess the fit of the model to the observed data by type of outcome (effects and costs) and treatment group (control and intervention).
 For example, overalyed density plots can be generated to compare the empirical and replicated densities of the data to detect possible failures of the model.&lt;/p&gt;
-
 
 
 
@@ -50,14 +47,11 @@ For example, overalyed density plots can be generated to compare the empirical a
 
 &lt;/figure&gt;
 
-
-&lt;p&gt;I feel this is very important as when fitting a Bayesian model it is crucial to assess whether the model seems to adequately capture the different characteristics of the observed data (e.g. skewness, structural values, etc.).
+&lt;p&gt;I feel this is very important as when fitting a Bayesian model it is crucial to assess whether the model seems to adequately capture the different characteristics of the observed data (e.g. skewness, structural values, etc.). 
 A wide range of predictive checks are available, including histograms (see thumbnail pciture), scatterplots, error intervals, empirical cumulative distribution fucntions, statistcis of interest and many others. In addition ,
 these checks can be performed for each type of missingness model and parametric distribution chosen within missingHE.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/NEvPzZ8bd1V4Y/giphy.gif&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Of course, it is important to remember that, when dealing with missing data the fit of the model can only be checked with respect to the observed values and therefore this
+&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/NEvPzZ8bd1V4Y/giphy.gif&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Of course, it is important to remember that, when dealing with missing data the fit of the model can only be checked with respect to the observed values and therefore this 
 check is only partial since the fit to the unibserved values can never be checked. This is also why it is not meaningful to assess the fit of a model fitted under a missing not at random assumption
 because this is based on information which is not directly available from the data at hand and thus impossible to check.&lt;/p&gt;
 </description>
@@ -65,41 +59,34 @@ because this is based on information which is not directly available from the da
     
     <item>
       <title>Discussing my thesis</title>
-      <link>/post/update-interview/update-interview/</link>
+      <link>/post/update-interview/</link>
       <pubDate>Sun, 15 Sep 2019 00:00:00 +0000</pubDate>
       
-      <guid>/post/update-interview/update-interview/</guid>
-      <description>&lt;p&gt;I have been kindly invited by the amazing person &lt;a href=&#34;https://www.ohe.org/about-us/meet-team/chris-sampson&#34; target=&#34;_blank&#34;&gt;Chris Sampson&lt;/a&gt; to talk about the work I inlcuded in my PhD thesis for his monthly rubric entitled  &amp;ldquo;Thesis Thursday&amp;rdquo; on the &lt;a href=&#34;https://aheblog.com/&#34; target=&#34;_blank&#34;&gt;The Academic Health Economists blog&lt;/a&gt;.&lt;/p&gt;
-
+      <guid>/post/update-interview/</guid>
+      <description>&lt;p&gt;I have been kindly invited by the amazing person &lt;a href=&#34;https://www.ohe.org/about-us/meet-team/chris-sampson&#34;&gt;Chris Sampson&lt;/a&gt; to talk about the work I inlcuded in my PhD thesis for his monthly rubric entitled  &amp;ldquo;Thesis Thursday&amp;rdquo; on the &lt;a href=&#34;https://aheblog.com/&#34;&gt;The Academic Health Economists blog&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;I happily accepted Chris&amp;rsquo;s invitation as I beleive this initiative is really interesting and represents a nice way for newly graduated PhD students to advertise their work while also giving the chance to people interested in health economics to read about some academic work which is typically freely available to everyone.&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://aheblog.com/2019/09/19/thesis-thursday-andrea-gabrio/&#34; target=&#34;_blank&#34;&gt;Here&lt;/a&gt; you can find the full interview, which is not very long and resolves around 5 questions that Chris asked me about my work. I already new this blog but I have never had a proper chance to read through its posts carefully, which is a shame.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/13lTgtSUmqMrlu/giphy.gif&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
-
+&lt;p&gt;&lt;a href=&#34;https://aheblog.com/2019/09/19/thesis-thursday-andrea-gabrio/&#34;&gt;Here&lt;/a&gt; you can find the full interview, which is not very long and resolves around 5 questions that Chris asked me about my work. I already new this blog but I have never had a proper chance to read through its posts carefully, which is a shame.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/13lTgtSUmqMrlu/giphy.gif&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
 &lt;p&gt;I shall promise myself to try to check it more often from now on, using this interview as a nice motivation to do so.
-In fact, there are not many blogs around health economics matters (here a &lt;a href=&#34;https://blog.feedspot.com/health_economics_blogs/&#34; target=&#34;_blank&#34;&gt;non-comprehensive list&lt;/a&gt;), among which The Academic Health Economists and &lt;a href=&#34;http://www.statistica.it/gianluca/blog/&#34; target=&#34;_blank&#34;&gt;Gianluca&amp;rsquo;s blog&lt;/a&gt; are my favourites.&lt;/p&gt;
-
-&lt;p&gt;I hope I will be able to find some time to write some nice posts about some health economic applications of my work in the next future as this is still the most interesting field for me at the moment. I am also the maintainer of another small blog called the &lt;a href=&#34;https://hearteam.blogspot.com/&#34; target=&#34;_blank&#34;&gt;Health Economics Analysis and Research Methods Team (HEART) blog&lt;/a&gt;, where I occasionally write some posts on health economics together with my colleagues from the UCL department of &lt;a href=&#34;https://www.ucl.ac.uk/epidemiology-health-care/research/pcph&#34; target=&#34;_blank&#34;&gt;Primary Care and Population Health&lt;/a&gt;. The blog is still new but I hope it can become more active in the next months.&lt;/p&gt;
+In fact, there are not many blogs around health economics matters (here a &lt;a href=&#34;https://blog.feedspot.com/health_economics_blogs/&#34;&gt;non-comprehensive list&lt;/a&gt;), among which The Academic Health Economists and &lt;a href=&#34;http://www.statistica.it/gianluca/blog/&#34;&gt;Gianluca&amp;rsquo;s blog&lt;/a&gt; are my favourites.&lt;/p&gt;
+&lt;p&gt;I hope I will be able to find some time to write some nice posts about some health economic applications of my work in the next future as this is still the most interesting field for me at the moment. I am also the maintainer of another small blog called the &lt;a href=&#34;https://hearteam.blogspot.com/&#34;&gt;Health Economics Analysis and Research Methods Team (HEART) blog&lt;/a&gt;, where I occasionally write some posts on health economics together with my colleagues from the UCL department of &lt;a href=&#34;https://www.ucl.ac.uk/epidemiology-health-care/research/pcph&#34;&gt;Primary Care and Population Health&lt;/a&gt;. The blog is still new but I hope it can become more active in the next months.&lt;/p&gt;
 </description>
     </item>
     
     <item>
       <title>HESG Summer Meeting 2019</title>
-      <link>/post/hesg-norwich-2019/hesg-summer-meeting-2019/</link>
+      <link>/post/hesg-summer-meeting-2019/</link>
       <pubDate>Wed, 03 Jul 2019 00:00:00 +0000</pubDate>
       
-      <guid>/post/hesg-norwich-2019/hesg-summer-meeting-2019/</guid>
-      <description>&lt;p&gt;I have just come back form my first Health Economists&amp;rsquo; Study Group (&lt;a href=&#34;https://hesg.org.uk/meetings/summer-2019-university-of-east-anglia/&#34; target=&#34;_blank&#34;&gt;HESG&lt;/a&gt;) meeting, which this year was held at the &lt;a href=&#34;https://www.uea.ac.uk/&#34; target=&#34;_blank&#34;&gt;University of East Anglia&lt;/a&gt; in the beautiful city of Norwich,
-south east of England, and where I presented some preliminary results from one of my on-going works. I have to say, it was a remarkable experience which
-I really liked thanks to a wonderful and welcoming environment. I had the pleasure to talk to many people from different research areas involved in
+      <guid>/post/hesg-summer-meeting-2019/</guid>
+      <description>&lt;p&gt;I have just come back form my first Health Economists&amp;rsquo; Study Group (&lt;a href=&#34;https://hesg.org.uk/meetings/summer-2019-university-of-east-anglia/&#34;&gt;HESG&lt;/a&gt;) meeting, which this year was held at the &lt;a href=&#34;https://www.uea.ac.uk/&#34;&gt;University of East Anglia&lt;/a&gt; in the beautiful city of Norwich, 
+south east of England, and where I presented some preliminary results from one of my on-going works. I have to say, it was a remarkable experience which 
+I really liked thanks to a wonderful and welcoming environment. I had the pleasure to talk to many people from different research areas involved in 
 health economics (both from academia and industry) and to see many different projects and works.&lt;/p&gt;
-
-&lt;p&gt;I particularly enjoy the structure of the meeting, which requires some chair and discussant who have to present and discuss the paper of the authors,
-who are only allowed to provide some clarification if needed. At first I thought this structure of the sessions was strange, but after attending many
-sessions and experiencing this for my own paper, I feel that it is a very good way to encourage discussion about works from different people rather than
+&lt;p&gt;I particularly enjoy the structure of the meeting, which requires some chair and discussant who have to present and discuss the paper of the authors, 
+who are only allowed to provide some clarification if needed. At first I thought this structure of the sessions was strange, but after attending many 
+sessions and experiencing this for my own paper, I feel that it is a very good way to encourage discussion about works from different people rather than 
 just focussing on your own presentation. Plus, the weather and always sunny, it felt like Italy for a few days.&lt;/p&gt;
-
 
 
 
@@ -121,162 +108,35 @@ just focussing on your own presentation. Plus, the weather and always sunny, it 
 
 &lt;/figure&gt;
 
-
-&lt;p&gt;Other nice people and colleagues from HEART and other UCL department came to HESG with me, including &lt;a href=&#34;https://iris.ucl.ac.uk/iris/browse/profile?upi=CSCLA53&#34; target=&#34;_blank&#34;&gt;Caroline&lt;/a&gt; and &lt;a href=&#34;https://www.ucl.ac.uk/comprehensive-clinical-trials-unit/meet-team/health-economics/junior-health-economist-ekaterina-kuznetsova&#34; target=&#34;_blank&#34;&gt;Ekaterina&lt;/a&gt; (aka Katia),
-you can see them in thumbnail of this post. I was also pleased to meet &lt;a href=&#34;https://www.lshtm.ac.uk/aboutus/people/leurent.baptiste&#34; target=&#34;_blank&#34;&gt;Baptiste&lt;/a&gt; from &lt;a href=&#34;https://www.lshtm.ac.uk/&#34; target=&#34;_blank&#34;&gt;LSHTM&lt;/a&gt;, who shares with me the interest in missing data
-methods for cost-effectiveness analysis and who presented some very nice work on that. I had the chance to give some feedback to him and he did the same for me.
-It felt so nice when we started discussing about some aspects of our analyses and after some minutes we simply lost track of time and everyone else disappeared.
-I also had the opportunity to talk about my work with the discussant of my session, &lt;a href=&#34;https://cheme.bangor.ac.uk/CatrinPlumptonBiography.php&#34; target=&#34;_blank&#34;&gt;Catrin Plumpton&lt;/a&gt; from the &lt;a href=&#34;https://cheme.bangor.ac.uk/&#34; target=&#34;_blank&#34;&gt;Centre for Health Economics and Medicines Evaluation&lt;/a&gt;,
+&lt;p&gt;Other nice people and colleagues from HEART and other UCL department came to HESG with me, including &lt;a href=&#34;https://iris.ucl.ac.uk/iris/browse/profile?upi=CSCLA53&#34;&gt;Caroline&lt;/a&gt; and &lt;a href=&#34;https://www.ucl.ac.uk/comprehensive-clinical-trials-unit/meet-team/health-economics/junior-health-economist-ekaterina-kuznetsova&#34;&gt;Ekaterina&lt;/a&gt; (aka Katia), 
+you can see them in thumbnail of this post. I was also pleased to meet &lt;a href=&#34;https://www.lshtm.ac.uk/aboutus/people/leurent.baptiste&#34;&gt;Baptiste&lt;/a&gt; from &lt;a href=&#34;https://www.lshtm.ac.uk/&#34;&gt;LSHTM&lt;/a&gt;, who shares with me the interest in missing data 
+methods for cost-effectiveness analysis and who presented some very nice work on that. I had the chance to give some feedback to him and he did the same for me. 
+It felt so nice when we started discussing about some aspects of our analyses and after some minutes we simply lost track of time and everyone else disappeared. 
+I also had the opportunity to talk about my work with the discussant of my session, &lt;a href=&#34;https://cheme.bangor.ac.uk/CatrinPlumptonBiography.php&#34;&gt;Catrin Plumpton&lt;/a&gt; from the &lt;a href=&#34;https://cheme.bangor.ac.uk/&#34;&gt;Centre for Health Economics and Medicines Evaluation&lt;/a&gt;, 
 who gave me some nice feedback which I really appreciated, especially given her mathematical background.&lt;/p&gt;
-
-&lt;p&gt;An important contribution to the success of the meeting was also given by the wonderful organisation of the event, including an accommodation located very closely
-to the main building of the meeting, plenty of food provided during each day, a nice bus tour of the city and a wonderful conference dinner. I must thank all the people,
-who organised the event who were very extremely nice to us and who were always ready to help us for whatever need we had, with a special mention for &lt;a href=&#34;https://people.uea.ac.uk/emma_mcmanus&#34; target=&#34;_blank&#34;&gt;Emma Mcmanus&lt;/a&gt; who
+&lt;p&gt;An important contribution to the success of the meeting was also given by the wonderful organisation of the event, including an accommodation located very closely 
+to the main building of the meeting, plenty of food provided during each day, a nice bus tour of the city and a wonderful conference dinner. I must thank all the people, 
+who organised the event who were very extremely nice to us and who were always ready to help us for whatever need we had, with a special mention for &lt;a href=&#34;https://people.uea.ac.uk/emma_mcmanus&#34;&gt;Emma Mcmanus&lt;/a&gt; who 
 was amazing.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/cWnICjtVkJJsgGKhyX/giphy.gif&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;In summary, everything was good. Well, almost. Going back to the works presented, as usual, the only less positive note that I would like to make
-is the almost total absence of Bayesian applications. Some authors mentioned that they used some popular Bayesian program, such as &lt;a href=&#34;https://www.mrc-bsu.cam.ac.uk/software/bugs/the-bugs-project-winbugs/&#34; target=&#34;_blank&#34;&gt;WinBUGS&lt;/a&gt;, but this was
+&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/cWnICjtVkJJsgGKhyX/giphy.gif&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;In summary, everything was good. Well, almost. Going back to the works presented, as usual, the only less positive note that I would like to make 
+is the almost total absence of Bayesian applications. Some authors mentioned that they used some popular Bayesian program, such as &lt;a href=&#34;https://www.mrc-bsu.cam.ac.uk/software/bugs/the-bugs-project-winbugs/&#34;&gt;WinBUGS&lt;/a&gt;, but this was 
 mainly related to the usual meta-analysis stuff which is pretty standardised. I hope next time I will be able to see more people going Bayesian as this is what I am.&lt;/p&gt;
 </description>
     </item>
     
     <item>
       <title>Understanding health economics in clinical trials</title>
-      <link>/post/introduction-to-health-economics/understanding-health-economics-in-clinical-trials/</link>
+      <link>/post/understanding-health-economics-in-clinical-trials/</link>
       <pubDate>Wed, 03 Jul 2019 00:00:00 +0000</pubDate>
       
-      <guid>/post/introduction-to-health-economics/understanding-health-economics-in-clinical-trials/</guid>
-      <description>&lt;p&gt;As member of the Health Economics Analysis and Research Methods Team (&lt;a href=&#34;https://hearteam.blogspot.com/&#34; target=&#34;_blank&#34;&gt;HEART&lt;/a&gt;), together with my colleagues, on Tuesday 2 July I took part in a 1-day introductory short course entitled “Understanding health economics in clinical trials”, which was designed and delivered by the team. HEART is a new group of health economists who are based in UCL’s Institute of Clinical Trials and Methodology (ICTM), led by &lt;a href=&#34;https://iris.ucl.ac.uk/iris/browse/profile?upi=RMHUN48&#34; target=&#34;_blank&#34;&gt;Rachael Hunter&lt;/a&gt;, and is involved at different levels in the economic components of clinical trials in different trial units at UCL. This short course was aimed at ICTM staff who are not health economists (e.g. trial managers, CIs/PIs, statisticians, data managers, research assistants, etc.) and was designed in response to the need we have identified over the last few years in working on trials as well as in response to colleagues across ICTM. This course was unique as it was intended specifically for non health economists working in trials, who wish to better understand the health economics in their study, and/or the health economist on their study. The course used a mix of lectures, group discussions and practical exercises to help participants consolidate their learning and see how to apply information from the sessions to real studies. No prior knowledge of health economics was assumed.&lt;/p&gt;
-
-&lt;p&gt;I believe the course was a success both in terms of the quality/quantity of the material covered during the six sessions throughout the day, as well as in terms of the positive feedback we received from the participants (almost entirely women, with the exception of two men). Many key and typically not well understood economic topics were discussed during the day, e.g. what are and how QALYs and costs are calculated, the potential limitations and issues of an economic analysis within a trial, or the role played by the protocol and analysis plan in the economic evaluation. My session was related to reporting and interpreting health economic results and I realised that most people who do not routinely deal with health economics may find difficult to grasp certain concepts or tools used in the economic analysis (e.g. what is a cost-effectiveness acceptability curve and how it can be computed). Nevertheless, I must admit that I was surprised by how many people were very motivated to learn these concepts and these &amp;ldquo;difficult&amp;rdquo; methods, often asking questions and making good comments (despite the fact that my session was the last of the course at the end of the day).&lt;br /&gt;
+      <guid>/post/understanding-health-economics-in-clinical-trials/</guid>
+      <description>&lt;p&gt;As member of the Health Economics Analysis and Research Methods Team (&lt;a href=&#34;https://hearteam.blogspot.com/&#34;&gt;HEART&lt;/a&gt;), together with my colleagues, on Tuesday 2 July I took part in a 1-day introductory short course entitled “Understanding health economics in clinical trials”, which was designed and delivered by the team. HEART is a new group of health economists who are based in UCL’s Institute of Clinical Trials and Methodology (ICTM), led by &lt;a href=&#34;https://iris.ucl.ac.uk/iris/browse/profile?upi=RMHUN48&#34;&gt;Rachael Hunter&lt;/a&gt;, and is involved at different levels in the economic components of clinical trials in different trial units at UCL. This short course was aimed at ICTM staff who are not health economists (e.g. trial managers, CIs/PIs, statisticians, data managers, research assistants, etc.) and was designed in response to the need we have identified over the last few years in working on trials as well as in response to colleagues across ICTM. This course was unique as it was intended specifically for non health economists working in trials, who wish to better understand the health economics in their study, and/or the health economist on their study. The course used a mix of lectures, group discussions and practical exercises to help participants consolidate their learning and see how to apply information from the sessions to real studies. No prior knowledge of health economics was assumed.&lt;/p&gt;
+&lt;p&gt;I believe the course was a success both in terms of the quality/quantity of the material covered during the six sessions throughout the day, as well as in terms of the positive feedback we received from the participants (almost entirely women, with the exception of two men). Many key and typically not well understood economic topics were discussed during the day, e.g. what are and how QALYs and costs are calculated, the potential limitations and issues of an economic analysis within a trial, or the role played by the protocol and analysis plan in the economic evaluation. My session was related to reporting and interpreting health economic results and I realised that most people who do not routinely deal with health economics may find difficult to grasp certain concepts or tools used in the economic analysis (e.g. what is a cost-effectiveness acceptability curve and how it can be computed). Nevertheless, I must admit that I was surprised by how many people were very motivated to learn these concepts and these &amp;ldquo;difficult&amp;rdquo; methods, often asking questions and making good comments (despite the fact that my session was the last of the course at the end of the day).   &lt;br&gt;
 We ran this course as a trial as we did not have clear ideas of what an optimal design should be or the number of topics that should be covered for this type of course. We are now confident that the course has a solid structure and that there is a clear demand to learn the basic concepts of health economics, at least among people involved in trial analyses. Following the successful delivery of the course, we are planning to replicate the experience in the future, improving certain aspects of the sessions based on the feedback we received and also considering to open the course to meet the demand of a wider audience.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/bQrVMr3CO3QaY/giphy.gif&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;I have to say that this was an extremely positive experience for me as it was the first time I was involved in this type of projects. Me and my colleagues worked hard to design and prepare the different sessions of the course over the last few months, find the best way to link the arguments across the sessions, provide interesting group activities and materials for the practicals, etc. I have to thank all my colleagues who contributed to the promotion and realisation of this project, with a special mention for &lt;a href=&#34;https://iris.ucl.ac.uk/iris/browse/profile?upi=CSCLA53&#34; target=&#34;_blank&#34;&gt;Caroline Clarke&lt;/a&gt;, who spent a lot of time and effort to organise the course and who personally contributed in giving one of the session of the course. Finally, I would also like to thank my colleague and health economist &lt;a href=&#34;https://www.ucl.ac.uk/comprehensive-clinical-trials-unit/meet-team/health-economics/junior-health-economist-ekaterina-kuznetsova&#34; target=&#34;_blank&#34;&gt;Ekaterina&lt;/a&gt;, with whom I had the pleasure to share the presentation and practical of my session in the course.&lt;/p&gt;
-
+&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/bQrVMr3CO3QaY/giphy.gif&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;I have to say that this was an extremely positive experience for me as it was the first time I was involved in this type of projects. Me and my colleagues worked hard to design and prepare the different sessions of the course over the last few months, find the best way to link the arguments across the sessions, provide interesting group activities and materials for the practicals, etc. I have to thank all my colleagues who contributed to the promotion and realisation of this project, with a special mention for &lt;a href=&#34;https://iris.ucl.ac.uk/iris/browse/profile?upi=CSCLA53&#34;&gt;Caroline Clarke&lt;/a&gt;, who spent a lot of time and effort to organise the course and who personally contributed in giving one of the session of the course. Finally, I would also like to thank my colleague and health economist &lt;a href=&#34;https://www.ucl.ac.uk/comprehensive-clinical-trials-unit/meet-team/health-economics/junior-health-economist-ekaterina-kuznetsova&#34;&gt;Ekaterina&lt;/a&gt;, with whom I had the pleasure to share the presentation and practical of my session in the course.&lt;/p&gt;
 &lt;p&gt;Perhaps the only true negative aspect of the course was the absence of a Bayesian perspective, especially related to the interpretation of the results and the statistical methods that can be used to perform the analysis. Given the generally low familiarity of the people attending the course with statistics, I believe it was reasonable not to further confuse them with another new element into the picture. However, I truly hope that people will become more and more familiar with the importance of using tailored statistical methods in economic evaluations to avoid biased results, and from that point to justify a Bayesian approach, well, at least for me, the step is straightforward!.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>missingHE</title>
-      <link>/missinghe/</link>
-      <pubDate>Mon, 05 Feb 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/missinghe/</guid>
-      <description>
-
-&lt;p&gt;&lt;code&gt;missingHE&lt;/code&gt; is a &lt;code&gt;R&lt;/code&gt; package aimed at providing some useful tools to analysts in order to handle missing outcome data under a Full Bayesian framework in economic evaluations. The package relies on the &lt;code&gt;R&lt;/code&gt; package &lt;code&gt;R2jags&lt;/code&gt; to implement Bayesian methods via the statistical software &lt;code&gt;JAGS&lt;/code&gt;. The package allows to obtain inferences using Markov Chain Monte Carlo (MCMC) methods under a range of modelling approaches and missing data assumptions. The package also contains functions specifically defined to assess model fit and possible issues in model convergence as well as to summarise the main results from the economic analysis.&lt;/p&gt;
-
-&lt;p&gt;Missing data are iteratively imputed using data augmentation methods according to the type of model, distribution and missingness assumptions specified by the user using different arguments in the functions of the package. The posterior distribution of the main quantities of interest (e.g. some suitable measures of costs and clinical benefits) is then summarised to assess the cost-effectiveness of a new intervention ($t=2$) against a standard intervention ($t=1$).&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;missingHE&lt;/code&gt; produces plots which compares the observed and imputed values for both cost and benefit measures in each treatment intervention considered to detect possible concerns about the plausibility of the imputation methods. In addition, the output of &lt;code&gt;missingHE&lt;/code&gt; cab be analysed using different funtions in the &lt;code&gt;R&lt;/code&gt; package &lt;code&gt;BCEA&lt;/code&gt; which produces a synthesis of the decision process given the current evidence and uncertainty, as well as several indicators that can be used to perform Probabilistic Sensitivity Analysis to parameter and model uncertainty.&lt;/p&gt;
-
-
-
-
-  
-
-
-
-
-&lt;figure&gt;
-
-&lt;img src=&#34;/img/imputed.jpg&#34; &gt;
-
-
-
-&lt;figcaption data-pre=&#34;Figure &#34; data-post=&#34;:&#34; &gt;
-  &lt;h4&gt;Example of a graphical output from missingHE&lt;/h4&gt;
-  
-&lt;/figcaption&gt;
-
-&lt;/figure&gt;
-
-
-&lt;h1 id=&#34;example&#34;&gt;Example&lt;/h1&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;library(missingHE)
-model.sel &amp;lt;- selection(data = MenSS, model.eff = e ~ u.0, model.cost = c ~ e, model.me = me ~ 1, model.mc = mc ~ 1, 
-                       type = &amp;quot;MAR&amp;quot;, n.chains = 2, n.iter = 10000, n.burnin = 1000, dist_e = &amp;quot;norm&amp;quot;, dist_c = &amp;quot;norm&amp;quot;)
-summary(model.sel)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt; Cost-effectiveness analysis summary 
- 
- Comparator intervention: intervention 1 
- Reference intervention: intervention 2 
- 
- Parameter estimates under MAR assumption
- 
- Comparator intervention 
-               mean     sd      LB      UB
-mean.effects  0.874  0.017   0.846   0.901
-mean.costs   238.34 52.432 153.541 325.355
-
- Reference intervention 
-                  mean    sd      LB      UB
-mean.effects.1   0.917 0.022   0.881   0.953
-mean.costs.1   186.825 41.26 119.672 254.125
-
- Incremental results 
-                   mean     sd       LB     UB
-delta.effects     0.043  0.028   -0.003  0.089
-delta.costs     -51.514 67.025 -162.862 58.327
-ICER          -1198.431
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;news-and-updates-about-missinghe&#34;&gt;News and updates about &lt;code&gt;missingHE&lt;/code&gt;&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;From 25/09/2019, the updated version (1.2.1) of &lt;code&gt;missingHE&lt;/code&gt; has become available on &lt;a href=&#34;https://cran.r-project.org/web/packages/missingHE/&#34; target=&#34;_blank&#34;&gt;CRAN&lt;/a&gt;, which allows to perform posterior predictive checks for each type of model as a further way to assess the fit of the model to the observed data.&lt;/li&gt;
-&lt;/ul&gt;
-
-
-
-
-  
-
-
-
-
-&lt;figure&gt;
-
-&lt;img src=&#34;/img/plotpred.png&#34; &gt;
-
-
-
-&lt;figcaption data-pre=&#34;Figure &#34; data-post=&#34;:&#34; &gt;
-  &lt;h4&gt;Example of posterior predictive checks in missingHE&lt;/h4&gt;
-  
-&lt;/figcaption&gt;
-
-&lt;/figure&gt;
-
-
-&lt;ul&gt;
-&lt;li&gt;From 07/01/2020, the updated version (1.3.2) of &lt;code&gt;missingHE&lt;/code&gt; has become available on &lt;a href=&#34;https://cran.r-project.org/web/packages/missingHE/&#34; target=&#34;_blank&#34;&gt;CRAN&lt;/a&gt;, which allows to choose among more distributions for the effectiveness measures, including continuous (Gamma, Weibull, Exponential, Logistic), discrete (Poisson, Negative Binomial) and binary (Bernoulli) health outcomes.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h1 id=&#34;installation&#34;&gt;Installation&lt;/h1&gt;
-
-&lt;p&gt;There are two ways of installing &lt;code&gt;missingHE&lt;/code&gt;. A &lt;em&gt;stable&lt;/em&gt; version (currently 1.3.2) is packaged and available from &lt;a href=&#34;https://cran.r-project.org/web/packages/missingHE/&#34; target=&#34;_blank&#34;&gt;CRAN&lt;/a&gt;. You can simply type on your &lt;code&gt;R&lt;/code&gt; terminal&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;install.packages(&amp;quot;missingHE&amp;quot;)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The second way involves using the &lt;em&gt;development&lt;/em&gt; version of &lt;code&gt;missingHE&lt;/code&gt;, which is available from &lt;a href=&#34;https://github.com/AnGabrio/missingHE&#34; target=&#34;_blank&#34;&gt;GitHub&lt;/a&gt; - this will usually be updated more frequently and may be continuously tested. On Windows machines, you need to install a few dependencies, including Rtools first, e.g. by running&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;pkgs &amp;lt;- c(&amp;quot;R2jags&amp;quot;,&amp;quot;Rtools&amp;quot;,&amp;quot;devtools&amp;quot;)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;before installing the package using &lt;code&gt;devtools&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;devtools::install_github(&amp;quot;AnGabrio/missingHE&amp;quot;)
-&lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>
     
@@ -286,27 +146,17 @@ ICER          -1198.431
       <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
       
       <guid>/project/health-economics/</guid>
-      <description>
-
-&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
-
+      <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
 &lt;p&gt;The type of data used in economic evaluations typically come from a range of sources, whose evidence is combined to inform HTA decision-making. Traditionally, relative effectiveness data are derived from &lt;em&gt;randomised controlled clinical trials&lt;/em&gt; (RCTs), while healthcare resource utilisation, costs and preference-based quality of life data may come from the same study that estimated the clinical effectiveness or not. A number of HTA agencies have developed their own methodological guidelines to support the generation of the evidence required to inform their decisions. In this context, the primary role of economic evaluation for HTA is not the estimation of the quantities of interest (e.g. the computation of point or interval estimation, or hypothesis testing), but to aid decision making. The implication of this is that the standard frequentist analyses that rely on power calculations and $P$-values to estimate  statistical and clinical significance, typically used in RCTs, are not well-suited for addressing these HTA requirements.&lt;/p&gt;
-
 &lt;p&gt;It has been argued that, to be consistent with its intended role in HTA, economic evaluation should embrace a decision-theoretic paradigm and develop ideally within a Bayesian statistical framework to inform two decisions&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;whether the treatments under evaluation are cost-effective given the available evidence and&lt;/li&gt;
-&lt;li&gt;whether the level of uncertainty surrounding the decision is acceptable (i.e. the potential benefits are worth the costs of making the wrong decision).&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;whether the level of uncertainty surrounding the decision is acceptable (i.e. the potential benefits are worth the costs of making the wrong decision).&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;This corresponds to quantify the impact of the uncertainty in the evidence on the entire decision-making process (e.g. to what extent the uncertainty in the estimation of the effectiveness of a new intervention affects the decision about whether it is paid for by the public provider).&lt;/p&gt;
-
 &lt;h1 id=&#34;bayesian-methods-in-hta&#34;&gt;Bayesian methods in HTA&lt;/h1&gt;
-
 &lt;p&gt;There are several reasons that make the use of Bayesian methods in economic evaluations particularly appealing. First, Bayesian modelling is naturally embedded in the wider scheme of decision theory; by taking a probabilistic approach, based on decision rules and available information, it is possible to explicitly account for relevant sources of uncertainty in the decision process and obtain an &lt;em&gt;optimal&lt;/em&gt; course of action. Second, Bayesian methods allow extreme flexibility in modelling using computational algorithms such as &lt;em&gt;Markov Chain Monte Carlo&lt;/em&gt; (MCMC) methods; this allows to handle in a relatively easy way the generally sophisticated structure of the relationships and complexities that characterise effectiveness, quality of life and cost data. Third, through the use of prior distributions, the Bayesian approach naturally allows the incorporation of evidence from different sources in the analysis (e.g. expert opinion or multiple studies), which may improve the estimation of the quantities of interest; the process is generally referred to as evidence synthesis and finds its most common application in the use of meta-analytic tools. This may be extremely important when, as it often happens, there is only some partial (imperfect) information to identify the model parameters. In this case analysts are required to develop chain-of-evidence models. When required by the limitations in the evidence base, subjective prior distributions can be specified based on the synthesis and elicitation of expert opinion to identify the model, and their impact on the results can be assessed by presenting or combining the results across a range of plausible alternatives. Finally, under a Bayesian approach, it is straightforward to conduct &lt;em&gt;sensitivity analysis&lt;/em&gt; to properly account for the impact of uncertainty in all inputs of the decision process; this is a required component in the approval or reimbursement of a new intervention for many decision-making bodies, such as NICE in the UK.&lt;/p&gt;
-
 &lt;p&gt;The general process of conducting a Bayesian analysis (with a view of using the results of the model to perform an economic evaluation) can be broken down in several steps, which are graphically summarized in the Figure below.&lt;/p&gt;
-
 
 
 
@@ -328,26 +178,17 @@ ICER          -1198.431
 
 &lt;/figure&gt;
 
-
 &lt;p&gt;The starting point is the identification of the decision problem, which defines the objective of the economic evaluation (e.g. the interventions being compared, the target population, the relevant time horizon). In line with the decision problem, a statistical model is constructed to describe the (by necessity, limited) knowledge of the underlying clinical pathways. This implies, for example, the definition of suitable models to describe variability in potentially observed data (e.g. the number of patients recovering from the disease because of a given treatment), as well as the epistemic uncertainty in the population parameters (e.g.~the underlying probability that a random individual in the target population is cured, if given the treatment under study).  At this point, all the relevant data are identified, collected and quantitatively sytnthesised to derive the estimates of the input parameters of interest for the model.&lt;/p&gt;
-
 &lt;p&gt;These parameter estimates (and associated uncertainties) are then fed to the economic model, with the objective of obtaining some relevant summaries indicating the benefits and costs for each intervention under evaluation. Uncertainty analysis represents some sort of &lt;em&gt;detour&lt;/em&gt; from the straight path going from the statistical model to the decision analysis: if the output of the statistical model allowed us to know with perfect certainty the &lt;em&gt;true&lt;/em&gt; value of the model parameters, then it would be possible to simply run the decision analysis and make the decision.  Of course, even if the statistical model were the &lt;em&gt;true&lt;/em&gt; representation of the underlying data generating process (which it most certainly is not), because the data may be limited in terms of length of follow up, or sample size, the uncertainty in the value of the model parameters would still remain. This &lt;em&gt;parameter&lt;/em&gt; (and &lt;em&gt;structural&lt;/em&gt;) uncertainty is propagated throughout the whole process to evaluate its impact on the decision-making. In some cases, although there might be substantial uncertainty in the model inputs, this may not turn out to modify substantially the output of the decision analysis, i.e. the new treatment would be deemed as optimal irrespectively.  In other cases, however, even a small amount of uncertainty in the inputs could be associated with very serious consequences. In such circumstances, the decision-maker may conclude that the availbale evidence is not sufficient to decide on which intervention to select and require more information before a decision can be made.&lt;/p&gt;
-
 &lt;p&gt;The results of the above analysis can be used to inform policy makers about two related decisions:&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;whether the new intervention is to be considered (on average) &lt;em&gt;value for money&lt;/em&gt;, given the evidence base available at the time of decision, and&lt;/li&gt;
-&lt;li&gt;whether the consequences (in terms of net health loss) of making the wrong decision would warrant further research to reduce this &lt;em&gt;decision uncertaint&lt;/em&gt;.&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;whether the consequences (in terms of net health loss) of making the wrong decision would warrant further research to reduce this &lt;em&gt;decision uncertaint&lt;/em&gt;.&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;While the type and specification of the statistical and economic models vary with the nature of the underlying data (e.g. individual (ILD) level versus aggregated (ALD) data, the decision and uncertainty analyses have a more standardised set up.&lt;/p&gt;
-
 &lt;h1 id=&#34;conclusions&#34;&gt;Conclusions&lt;/h1&gt;
-
 &lt;p&gt;HTA has been slow to adopt Bayesian methods; this could be due to a reluctance to use prior opinions, unfamiliarity, mathematical complexity, lack of software, or conservatism of the healthcare establishment and, in particular, the regulatory~authorities. However, the use of Bayesian approach has been increasingly advocated as an efficient tool to integrate statistical evidence synthesis and parameter estimation with probabilistic decision analysis in an unified framework for HTA. This enables a transparent &lt;em&gt;evidence-based&lt;/em&gt; decision modelling, reflecting the uncertainty and the structural relationships in all the available~data.&lt;/p&gt;
-
 &lt;p&gt;With respect to trial-based analyses, the flexibility and modularity of the Bayesian modelling structure are well-suited to jointly account for the typical complexities that affect ILD. In addition, prior distributions can be used as convenient means to incorporate external information into the model when the evidence from the data is limited or absent (e.g. for missing values). In the context of evidence synthesis, the Bayesian approach is particularly appealing in that it allows for all the uncertainty and correlation induced by the often heterogeneous nature of the evidence (either ALD only or both ALD and ILD) to be synthesised in a way that can be easily integrated within a decision modelling framework.&lt;/p&gt;
-
 &lt;p&gt;The availability and spread of Bayesian software among practitioners since the late 1990s, such as &lt;code&gt;OpenBUGS&lt;/code&gt; or &lt;code&gt;JAGS&lt;/code&gt;, has greatly improved the applicability and reduced the computational costs of these models. Thus, analysts are provided with a powerful framework, which has been termed &lt;em&gt;comprehensive decision modelling&lt;/em&gt;, for simultaneously estimating posterior distributions for parameters based on specified prior knowledge and data evidence, and for translating this into the ultimate measures used in the decision analysis to inform cost-effectiveness conclusions.&lt;/p&gt;
 </description>
     </item>
@@ -358,37 +199,24 @@ ICER          -1198.431
       <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
       
       <guid>/project/bayesian-modelling/</guid>
-      <description>
-
-&lt;h1 id=&#34;modelling-framework&#34;&gt;Modelling Framework&lt;/h1&gt;
-
+      <description>&lt;h1 id=&#34;modelling-framework&#34;&gt;Modelling Framework&lt;/h1&gt;
 &lt;p&gt;We propose a unified Bayesian framework that jointly accounts for the typical complexities of the data (e.g. correlation, skewness, spikes at the boundaries  and missingness), and that can be implemented in a relatively easy way.&lt;/p&gt;
-
-&lt;p&gt;Consider the usual cross-sectional bivariate outcome formed by the QALYs and total cost variables $(e_{it}, c_{it})$ calculated for the $i-$th person in group $t$ of the trial. To simplify the notation, unless necessary, we suppress the treatment indicator $t$.
+&lt;p&gt;Consider the usual cross-sectional bivariate outcome formed by the QALYs and total cost variables $(e_{it}, c_{it})$ calculated for the $i-$th person in group $t$ of the trial. To simplify the notation, unless necessary, we suppress the treatment indicator $t$. 
 We specify the joint distribution $p(e_i,c_i)$ as&lt;/p&gt;
-
 &lt;p&gt;\[
-p(e_i,c_i) = p(c_i)p(e_i\mid c_i) = p(e_i)p(c_i\mid e_i)
+p(e_i,c_i) = p(c_i)p(e_i\mid c_i) = p(e_i)p(c_i\mid e_i) 
 \]&lt;/p&gt;
-
 &lt;p&gt;where, for example, $p(e_i)$ is the &lt;em&gt;marginal&lt;/em&gt; distribution of the QALYs and $p(c_i\mid e_i)$ is the &lt;em&gt;conditional&lt;/em&gt; distribution of the costs given the QALYs. Note that, although the two factorisations are mathematically equivalent, the choice of which to use has different practical implications. From a statistical point of view, the factorisations require the specifications of different statistical models, e.g. $p(e_i)$ or $p(e_i\mid c_i)$, which may have different approximation errors. From a clinical point of view, the two versions make different assumptions about the casual relationships between the outcomes, i.e. either $e_i$ determines $c_i$ or vice versa. We describe our analysis under the assumption that the costs are determined by the effectiveness measures and therefore we specify the joint distribution $p(e_i,c_i)$ in terms of a marginal distribution for the QALYs and a conditional distribution for the costs.&lt;/p&gt;
-
-&lt;p&gt;For each individual we consider a marginal distribution $p(e_i \mid \boldsymbol \theta_e)$ indexed by a set of parameters $\boldsymbol \theta_e$ comprising a &lt;em&gt;location&lt;/em&gt; $\boldsymbol \phi_{ie}$ and a set of &lt;em&gt;ancillary&lt;/em&gt; parameters $\boldsymbol\psi_e$ typically including some measure of &lt;em&gt;marginal&lt;/em&gt; variance $\sigma^2_e$. We can model the location parameter using a generalised linear structure, e.g.&lt;/p&gt;
-
-&lt;p&gt;\[
-g_e(\phi_{ie})= \alpha_0 \,\,[+ \ldots]
+&lt;p&gt;For each individual we consider a marginal distribution $p(e_i \mid \boldsymbol \theta_e)$ indexed by a set of parameters $\boldsymbol \theta_e$ comprising a &lt;em&gt;location&lt;/em&gt; $\boldsymbol \phi_{ie}$ and a set of *ancillary* parameters $\boldsymbol\psi_e$ typically including some measure of *marginal* variance $\sigma^2_e$. We can model the location parameter using a generalised linear structure, e.g.&lt;/p&gt;
+&lt;p&gt;\[ 
+g_e(\phi_{ie})= \alpha_0 ,,[+ \ldots] 
 \]&lt;/p&gt;
-
-&lt;p&gt;where $\alpha_0$ is the intercept and the notation $[+\ldots]$ indicates that other terms (e.g. quantifying the effect of relevant covariates) may or may not be included. In the absence of covariates or assuming that a centered version $x_i^{\star} = (x_i - \bar{x})$ is used, the parameter $\mu_e = g_e^{-1}(\alpha_0)$ represents the population average QALYs. For the costs, we consider a conditional model $p(c_i\mid e_i,\boldsymbol\theta_c)$, which explicitly depends on the QALYs, as well as on a set of quantities $\boldsymbol\theta_c$, again comprising a location $\phi_{ic}$ and ancillary parameters $\boldsymbol \psi_{c}$. For example, when normal distributions are assumed for both $p(e_i \mid \boldsymbol \theta_e)$ and $p(c_i \mid e_i, \boldsymbol \theta_c)$, i.e. bivariate normal on both outcomes, the ancillary parameters $\boldsymbol\psi_c$ include a &lt;em&gt;conditional&lt;/em&gt; variance $\tau^2_c$, which can be expressed as a function of the marginal variance $\sigma^2_c$. More specifically, the conditional variance of $p(c_i \mid e_i, \boldsymbol \theta_c)$ is a function of the marginal effectiveness and cost variances and has the closed form $\tau^2_c=\sigma^2_c - \sigma^2_e \beta^2$, where $\beta=\rho \frac{\sigma_c}{\sigma_e}$ and $\rho$ is the parameter capturing the correlation between the variables.&lt;/p&gt;
-
+&lt;p&gt;where $\alpha_0$ is the intercept and the notation $[+\ldots]$ indicates that other terms (e.g. quantifying the effect of relevant covariates) may or may not be included. In the absence of covariates or assuming that a centered version $x_i^{\star} = (x_i - \bar{x})$ is used, the parameter $\mu_e = g_e^{-1}(\alpha_0)$ represents the population average QALYs. For the costs, we consider a conditional model $p(c_i\mid e_i,\boldsymbol\theta_c)$, which explicitly depends on the QALYs, as well as on a set of quantities $\boldsymbol\theta_c$, again comprising a location $\phi_{ic}$ and ancillary parameters $\boldsymbol \psi_{c}$. For example, when normal distributions are assumed for both $p(e_i \mid \boldsymbol \theta_e)$ and $p(c_i \mid e_i, \boldsymbol \theta_c)$, i.e. bivariate normal on both outcomes, the ancillary parameters $\boldsymbol\psi_c$ include a *conditional* variance $\tau^2_c$, which can be expressed as a function of the marginal variance $\sigma^2_c$. More specifically, the conditional variance of $p(c_i \mid e_i, \boldsymbol \theta_c)$ is a function of the marginal effectiveness and cost variances and has the closed form $\tau^2_c=\sigma^2_c - \sigma^2_e \beta^2$, where $\beta=\rho \frac{\sigma_c}{\sigma_e}$ and $\rho$ is the parameter capturing the correlation between the variables.&lt;/p&gt;
 &lt;p&gt;The location can be modelled as a function of the QALYs as&lt;/p&gt;
-
-&lt;p&gt;\[
-g_c(\phi_{ic}) = \beta_{0} + \beta_{1}(e_{i}-\mu_{e})\,\,[+\ldots]
+&lt;p&gt;\[ 
+g_c(\phi_{ic}) = \beta_{0} + \beta_{1}(e_{i}-\mu_{e}),,[+\ldots] 
 \]&lt;/p&gt;
-
 &lt;p&gt;Here, $(e_i-\mu_e)$ is the centered version of the QALYs, while $\beta_{1}$ quantifies the correlation between costs and QALYs. Assuming other covariates are either also centered or absent, $\mu_c = g_c^{-1}(\beta_{0})$ is the estimated population average cost. The Figure below shows a graphical representation of the general modelling framework.&lt;/p&gt;
-
 
 
 
@@ -410,15 +238,10 @@ g_c(\phi_{ic}) = \beta_{0} + \beta_{1}(e_{i}-\mu_{e})\,\,[+\ldots]
 
 &lt;/figure&gt;
 
-
 &lt;p&gt;The QALYs and cost distributions are represented in terms of combined &lt;em&gt;modules&lt;/em&gt;, the blue and the red boxes, in which the random quantities are linked through logical relationships. This ensures the full characterisation of the uncertainty for each variable in the model. Notably, this is general enough to be extended to any suitable distributional assumption, as well as to handle covariates in either or both the modules.&lt;/p&gt;
-
 &lt;p&gt;The proposed framework allows jointly tackling of the different complexities that affect the data in a relatively easy way by means of its modular structure and flexible choice for the distributions of the QALYs and cost variables. Using the MenSS trial as motivating example, we start from the original analysis and expand the model using alternative specifications that progressively account for an increasing number of complexities in the outcomes. We specifically focus on appropriately modelling spikes at the boundary and missingness, as they have substantial implications in terms of inferences and, crucially, cost-effectiveness results.&lt;/p&gt;
-
 &lt;h1 id=&#34;example&#34;&gt;Example&lt;/h1&gt;
-
-&lt;p&gt;Three model specifications are considered and applied to QALY data from a RCT case study: 1) Normal marginal for the QALYs and Normal conditional for the costs (which is identical to a Bivariate Normal distribution for the two outcomes); 2) Beta marginal for the QALYs and Gamma conditional for the costs; and 3) Hurdle Model. The following Figure shows the observed QALYs in both treatment groups (indicated with black crosses) as well as summaries of the posterior distributions for the imputed values, obtained from each model. Imputations are distinguished based on whether the corresponding baseline utility value is observed or missing (blue or red lines and dots, respectively) and are summarised in terms of posterior mean and $90\%$ HPD intervals.&lt;/p&gt;
-
+&lt;p&gt;Three model specifications are considered and applied to QALY data from a RCT case study: 1) Normal marginal for the QALYs and Normal conditional for the costs (which is identical to a Bivariate Normal distribution for the two outcomes); 2) Beta marginal for the QALYs and Gamma conditional for the costs; and 3) Hurdle Model. The following Figure shows the observed QALYs in both treatment groups (indicated with black crosses) as well as summaries of the posterior distributions for the imputed values, obtained from each model. Imputations are distinguished based on whether the corresponding baseline utility value is observed or missing (blue or red lines and dots, respectively) and are summarised in terms of posterior mean and $90%$ HPD intervals.&lt;/p&gt;
 
 
 
@@ -440,19 +263,14 @@ g_c(\phi_{ic}) = \beta_{0} + \beta_{1}(e_{i}-\mu_{e})\,\,[+\ldots]
 
 &lt;/figure&gt;
 
-
 &lt;p&gt;There are clear differences in the imputed values and corresponding credible intervals between the three models in both treatment groups. Neither the Bivariate Normal nor the Beta-Gamma models  produce imputed values that capture the structural one component in the data. In addition, as to be expected, the Bivariate Normal fails to respect the natural support for the observed QALYs, with many of the imputations exceeding the unit threshold bound. These unrealistic imputed values highlight the inadequacy of the Normal distribution for the data and may lead to distorted inferences. Conversely, imputations under the Hurdle Model are more realistic, as they can replicate values in the whole range of the observed data, including the structural ones. Imputed unit QALYs with no discernible interval are only observed in the intervention group due to the original data composition, i.e. individuals associated with a unit baseline utility and missing QALYs are almost exclusively present in the intervention group.&lt;/p&gt;
-
 &lt;h1 id=&#34;conclusions&#34;&gt;Conclusions&lt;/h1&gt;
-
 &lt;p&gt;We have presented a flexible Bayesian framework that can handle the typical complexities affecting outcome data in CEA, while also being relatively easy to implement using freely available Bayesian software.  This is a key advantage that can encourage practitioners to move away from likely biased methods and promote the use of our framework in routine analyses. In conclusion, the proposed framework can:&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;Jointly model costs and QALYs;&lt;/li&gt;
 &lt;li&gt;Account for skewness and structural values;&lt;/li&gt;
 &lt;li&gt;Assess the robustness of the results under a set of differing missingness assumptions.&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;The original contribution of this work consists in the joint implementation of methods that account for the complexities of the data within a unique and flexible framework that is relatively easy to apply. In the next chapter we will take a step forward in the analysis and present a longitudinal model that can use all observed utility and cost data in the analysis, explore alternative nonignorable missing data assumptions, while simultaneously handling the complexities that affect the data.&lt;/p&gt;
 </description>
     </item>
