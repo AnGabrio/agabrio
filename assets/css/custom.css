@@ -153,6 +153,12 @@ html {
   border-color: #bce8f1;
 }
 
+.alertqueen-note {
+  color: #0A2F6C;
+  background-color: rgb(225, 220, 255); 
+  border-color: #bce8f1;
+}
+
 .alert-warning {
   color: #fff;
   background-color: rgb(238, 88, 99); 

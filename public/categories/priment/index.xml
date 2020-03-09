@@ -33,8 +33,18 @@
 &lt;p&gt;which advertises a new position as health economist in our HEART group for performing health economics using data from clinical trials. I would encourage anyone interested in some good applied health economic work to apply for this position. Deadline 15 March 2020.&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/kHZu4LDtvpY63RT1He/giphy.gif&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;To conclude, I would also like to say that I have done some updates to this website. From the inclusion of new tutorials on the use of &lt;a href=&#34;/jags/&#34;&gt;JAGS&lt;/a&gt; and &lt;a href=&#34;/stan/&#34;&gt;STAN&lt;/a&gt; on different statistical topics, to a restyle of the website. In particular I had fun by playing around with some &lt;code&gt;Markdown&lt;/code&gt; code to add new features, e.g. customised alert notes and emoji that you may find on my &lt;a href=&#34;/authors/agabrio/&#34;&gt;home page&lt;/a&gt;, for example. This took me so much time but I am quite satisfied with the result if I may say so. You really never stop learning new things!&lt;/li&gt;
+&lt;li&gt;To conclude, I would also like to say that I have done some updates to this website. From the inclusion of new tutorials on the use of &lt;a href=&#34;/jags/&#34;&gt;JAGS&lt;/a&gt; and &lt;a href=&#34;/stan/&#34;&gt;STAN&lt;/a&gt; on different statistical topics, to a restyle of the website. In particular I had fun by playing around with some &lt;code&gt;Markdown&lt;/code&gt; code to add new features, e.g. customised alert notes and emoji, for example. Somthing like this:&lt;/li&gt;
 &lt;/ul&gt;
+&lt;div class=&#34;alertqueen alertqueen-note&#34;&gt;
+    &lt;h4 class=&#34;alertqueen-heading;&#34;&gt;&amp;#9819; Queen&#39;s note! &amp;#9819; &lt;/h4&gt;
+  &lt;div&gt;
+        &lt;hr&gt;
+    I 👍 $\rm \LaTeX$ very much.
+        &lt;hr&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;This took me so much time but I am quite satisfied with the result if I may say so. You really never stop learning new things!&lt;/p&gt;
 </description>
     </item>
     
