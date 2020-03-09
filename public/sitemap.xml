@@ -8,12 +8,12 @@
   </url>
   
   <url>
-    <loc>/</loc>
+    <loc>/authors/andrea-gabrio/</loc>
     <lastmod>2020-03-01T12:34:03+01:00</lastmod>
   </url>
   
   <url>
-    <loc>/authors/andrea-gabrio/</loc>
+    <loc>/</loc>
     <lastmod>2020-03-01T12:34:03+01:00</lastmod>
   </url>
   
@@ -78,12 +78,12 @@
   </url>
   
   <url>
-    <loc>/categories/jags/</loc>
+    <loc>/tags/jags/</loc>
     <lastmod>2020-02-15T21:13:14-05:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/jags/</loc>
+    <loc>/categories/jags/</loc>
     <lastmod>2020-02-15T21:13:14-05:00</lastmod>
   </url>
   
@@ -98,12 +98,12 @@
   </url>
   
   <url>
-    <loc>/categories/generalised-linear-models/</loc>
+    <loc>/tags/generalised-linear-models/</loc>
     <lastmod>2020-02-14T21:13:14-05:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/generalised-linear-models/</loc>
+    <loc>/categories/generalised-linear-models/</loc>
     <lastmod>2020-02-14T21:13:14-05:00</lastmod>
   </url>
   
@@ -118,17 +118,12 @@
   </url>
   
   <url>
-    <loc>/tags/frequency-analysis/</loc>
-    <lastmod>2020-02-12T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/categories/frequency-analysis/</loc>
     <lastmod>2020-02-12T21:13:14-05:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/goodness-of-fit-tests/</loc>
+    <loc>/tags/frequency-analysis/</loc>
     <lastmod>2020-02-12T21:13:14-05:00</lastmod>
   </url>
   
@@ -138,17 +133,22 @@
   </url>
   
   <url>
+    <loc>/tags/goodness-of-fit-tests/</loc>
+    <lastmod>2020-02-12T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/jags/gof-tests-jags/gof-tests-jags/</loc>
     <lastmod>2020-02-12T21:13:14-05:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/anova/</loc>
+    <loc>/categories/anova/</loc>
     <lastmod>2020-02-11T21:13:14-05:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/anova/</loc>
+    <loc>/tags/anova/</loc>
     <lastmod>2020-02-11T21:13:14-05:00</lastmod>
   </url>
   
@@ -178,22 +178,22 @@
   </url>
   
   <url>
-    <loc>/categories/split-plot/</loc>
-    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/tags/split-plot/</loc>
     <lastmod>2020-02-11T21:13:14-05:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/stan/</loc>
+    <loc>/categories/split-plot/</loc>
     <lastmod>2020-02-11T21:13:14-05:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/stan/</loc>
+    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/stan/</loc>
     <lastmod>2020-02-11T21:13:14-05:00</lastmod>
   </url>
   
@@ -223,12 +223,12 @@
   </url>
   
   <url>
-    <loc>/categories/randomised-complete-block/</loc>
+    <loc>/tags/randomised-complete-block/</loc>
     <lastmod>2020-02-10T21:13:14-05:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/randomised-complete-block/</loc>
+    <loc>/categories/randomised-complete-block/</loc>
     <lastmod>2020-02-10T21:13:14-05:00</lastmod>
   </url>
   
@@ -303,12 +303,12 @@
   </url>
   
   <url>
-    <loc>/tags/heterogeneity/</loc>
+    <loc>/categories/heterogeneity/</loc>
     <lastmod>2020-02-07T21:13:14-05:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/heterogeneity/</loc>
+    <loc>/tags/heterogeneity/</loc>
     <lastmod>2020-02-07T21:13:14-05:00</lastmod>
   </url>
   
@@ -353,12 +353,12 @@
   </url>
   
   <url>
-    <loc>/categories/factorial-designs/</loc>
+    <loc>/tags/factorial-designs/</loc>
     <lastmod>2020-02-06T21:13:14-05:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/factorial-designs/</loc>
+    <loc>/categories/factorial-designs/</loc>
     <lastmod>2020-02-06T21:13:14-05:00</lastmod>
   </url>
   
