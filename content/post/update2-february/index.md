@@ -39,9 +39,8 @@ which advertises a new position as health economist in our HEART group for perfo
 
 ![](https://media.giphy.com/media/kHZu4LDtvpY63RT1He/giphy.gif)
 
-* To conclude, I would also like to say that I have done some updates to this website. From the inclusion of new tutorials on the use of [JAGS]({{< ref "/JAGS/_index.md" >}}) and [STAN]({{< ref "/STAN/_index.md" >}}) on different statistical topics, to a restyle of the website. In particular I had fun by playing around with some `Markdown` code to add new features, e.g. customised alert notes and emoji that you may find on my [home page]({{< ref "/authors/agabrio/_index.md" >}}), for example. This took me so much time but I am quite satisfied with the result if I may say so. You really never stop learning new things! 
- 
- 
+* To conclude, I would also like to say that I have done some updates to this website. From the inclusion of new tutorials on the use of [JAGS]({{< ref "JAGS/_index.md" >}}) and [STAN]({{< ref "STAN/_index.md" >}}) on different statistical topics, to a restyle of the website. In particular I had fun by playing around with some `Markdown` code to add new features, e.g. customised alert notes and emoji that you may find on my [home page]({{< ref "agabrio/_index.md" >}}), for example. This took me so much time but I am quite satisfied with the result if I may say so. You really never stop learning new things! 
+  
  
 
 

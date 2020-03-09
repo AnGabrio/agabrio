@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Missing data on Andrea Gabrio</title>
+    <title>Missing Data on Andrea Gabrio</title>
     <link>/tags/missing-data/</link>
-    <description>Recent content in Missing data on Andrea Gabrio</description>
+    <description>Recent content in Missing Data on Andrea Gabrio</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
     <copyright>`{year}`</copyright>
@@ -145,6 +145,101 @@ because this is based on information which is not directly available from the da
       
       <guid>/talk/hesymposium2018/</guid>
       <description></description>
+    </item>
+    
+    <item>
+      <title>missingHE</title>
+      <link>/missinghe/</link>
+      <pubDate>Mon, 05 Feb 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/missinghe/</guid>
+      <description>&lt;p&gt;&lt;code&gt;missingHE&lt;/code&gt; is a &lt;code&gt;R&lt;/code&gt; package aimed at providing some useful tools to analysts in order to handle missing outcome data under a Full Bayesian framework in economic evaluations. The package relies on the &lt;code&gt;R&lt;/code&gt; package &lt;code&gt;R2jags&lt;/code&gt; to implement Bayesian methods via the statistical software &lt;code&gt;JAGS&lt;/code&gt;. The package allows to obtain inferences using Markov Chain Monte Carlo (MCMC) methods under a range of modelling approaches and missing data assumptions. The package also contains functions specifically defined to assess model fit and possible issues in model convergence as well as to summarise the main results from the economic analysis.&lt;/p&gt;
+&lt;p&gt;Missing data are iteratively imputed using data augmentation methods according to the type of model, distribution and missingness assumptions specified by the user using different arguments in the functions of the package. The posterior distribution of the main quantities of interest (e.g. some suitable measures of costs and clinical benefits) is then summarised to assess the cost-effectiveness of a new intervention ($t=2$) against a standard intervention ($t=1$).&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;missingHE&lt;/code&gt; produces plots which compares the observed and imputed values for both cost and benefit measures in each treatment intervention considered to detect possible concerns about the plausibility of the imputation methods. In addition, the output of &lt;code&gt;missingHE&lt;/code&gt; cab be analysed using different funtions in the &lt;code&gt;R&lt;/code&gt; package &lt;code&gt;BCEA&lt;/code&gt; which produces a synthesis of the decision process given the current evidence and uncertainty, as well as several indicators that can be used to perform Probabilistic Sensitivity Analysis to parameter and model uncertainty.&lt;/p&gt;
+
+
+
+  
+
+
+
+
+&lt;figure&gt;
+
+&lt;img src=&#34;/img/imputed.jpg&#34; &gt;
+
+
+
+&lt;figcaption data-pre=&#34;Figure &#34; data-post=&#34;:&#34; &gt;
+  &lt;h4&gt;Example of a graphical output from missingHE&lt;/h4&gt;
+  
+&lt;/figcaption&gt;
+
+&lt;/figure&gt;
+
+&lt;h1 id=&#34;example&#34;&gt;Example&lt;/h1&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;library&lt;/span&gt;(missingHE)
+model.sel &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;selection&lt;/span&gt;(data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; MenSS, model.eff &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; e &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; u.0, model.cost &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; c &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; e, model.me &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; me &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, model.mc &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; mc &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, 
+                       type &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;MAR&amp;#34;&lt;/span&gt;, n.chains &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;, n.iter &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;10000&lt;/span&gt;, n.burnin &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1000&lt;/span&gt;, dist_e &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;norm&amp;#34;&lt;/span&gt;, dist_c &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;norm&amp;#34;&lt;/span&gt;)
+&lt;span style=&#34;color:#a6e22e&#34;&gt;summary&lt;/span&gt;(model.sel)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt; Cost&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;effectiveness analysis summary 
+ 
+ Comparator intervention&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; intervention &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; 
+ Reference intervention&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; intervention &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; 
+ 
+ Parameter estimates under MAR assumption
+ 
+ Comparator intervention 
+               mean     sd      LB      UB
+mean.effects  &lt;span style=&#34;color:#ae81ff&#34;&gt;0.874&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;0.017&lt;/span&gt;   &lt;span style=&#34;color:#ae81ff&#34;&gt;0.846&lt;/span&gt;   &lt;span style=&#34;color:#ae81ff&#34;&gt;0.901&lt;/span&gt;
+mean.costs   &lt;span style=&#34;color:#ae81ff&#34;&gt;238.34&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;52.432&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;153.541&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;325.355&lt;/span&gt;
+
+ Reference intervention 
+                  mean    sd      LB      UB
+mean.effects.1   &lt;span style=&#34;color:#ae81ff&#34;&gt;0.917&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.022&lt;/span&gt;   &lt;span style=&#34;color:#ae81ff&#34;&gt;0.881&lt;/span&gt;   &lt;span style=&#34;color:#ae81ff&#34;&gt;0.953&lt;/span&gt;
+mean.costs.1   &lt;span style=&#34;color:#ae81ff&#34;&gt;186.825&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;41.26&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;119.672&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;254.125&lt;/span&gt;
+
+ Incremental results 
+                   mean     sd       LB     UB
+delta.effects     &lt;span style=&#34;color:#ae81ff&#34;&gt;0.043&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;0.028&lt;/span&gt;   &lt;span style=&#34;color:#ae81ff&#34;&gt;-0.003&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;0.089&lt;/span&gt;
+delta.costs     &lt;span style=&#34;color:#ae81ff&#34;&gt;-51.514&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;67.025&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;-162.862&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;58.327&lt;/span&gt;
+ICER          &lt;span style=&#34;color:#ae81ff&#34;&gt;-1198.431&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;news-and-updates-about-missinghe&#34;&gt;News and updates about &lt;code&gt;missingHE&lt;/code&gt;&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;From 25/09/2019, the updated version (1.2.1) of &lt;code&gt;missingHE&lt;/code&gt; has become available on &lt;a href=&#34;https://cran.r-project.org/web/packages/missingHE/&#34;&gt;CRAN&lt;/a&gt;, which allows to perform posterior predictive checks for each type of model as a further way to assess the fit of the model to the observed data.&lt;/li&gt;
+&lt;/ul&gt;
+
+
+
+  
+
+
+
+
+&lt;figure&gt;
+
+&lt;img src=&#34;/img/plotpred.png&#34; &gt;
+
+
+
+&lt;figcaption data-pre=&#34;Figure &#34; data-post=&#34;:&#34; &gt;
+  &lt;h4&gt;Example of posterior predictive checks in missingHE&lt;/h4&gt;
+  
+&lt;/figcaption&gt;
+
+&lt;/figure&gt;
+
+&lt;ul&gt;
+&lt;li&gt;From 07/01/2020, the updated version (1.3.2) of &lt;code&gt;missingHE&lt;/code&gt; has become available on &lt;a href=&#34;https://cran.r-project.org/web/packages/missingHE/&#34;&gt;CRAN&lt;/a&gt;, which allows to choose among more distributions for the effectiveness measures, including continuous (Gamma, Weibull, Exponential, Logistic), discrete (Poisson, Negative Binomial) and binary (Bernoulli) health outcomes.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;installation&#34;&gt;Installation&lt;/h1&gt;
+&lt;p&gt;There are two ways of installing &lt;code&gt;missingHE&lt;/code&gt;. A &lt;em&gt;stable&lt;/em&gt; version (currently 1.3.2) is packaged and available from &lt;a href=&#34;https://cran.r-project.org/web/packages/missingHE/&#34;&gt;CRAN&lt;/a&gt;. You can simply type on your &lt;code&gt;R&lt;/code&gt; terminal&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;install.packages&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;missingHE&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The second way involves using the &lt;em&gt;development&lt;/em&gt; version of &lt;code&gt;missingHE&lt;/code&gt;, which is available from &lt;a href=&#34;https://github.com/AnGabrio/missingHE&#34;&gt;GitHub&lt;/a&gt; - this will usually be updated more frequently and may be continuously tested. On Windows machines, you need to install a few dependencies, including Rtools first, e.g. by running&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;pkgs &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;R2jags&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Rtools&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;devtools&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;before installing the package using &lt;code&gt;devtools&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;devtools&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;install_github&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;AnGabrio/missingHE&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
     </item>
     
     <item>

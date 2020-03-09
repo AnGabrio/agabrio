@@ -84,7 +84,7 @@
   
   
   
-  <link rel="stylesheet" href="/css/academic.min.a71200610c21759266bff163bb521d95.css">
+  <link rel="stylesheet" href="/css/academic.min.9fc0e8e21f0c426d6fe14b41e528c3c0.css">
 
   
     
@@ -462,7 +462,7 @@
 <h1 id="example">Example</h1>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#a6e22e">library</span>(missingHE)
 model.sel <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">selection</span>(data <span style="color:#f92672">=</span> MenSS, model.eff <span style="color:#f92672">=</span> e <span style="color:#f92672">~</span> u.0, model.cost <span style="color:#f92672">=</span> c <span style="color:#f92672">~</span> e, model.me <span style="color:#f92672">=</span> me <span style="color:#f92672">~</span> <span style="color:#ae81ff">1</span>, model.mc <span style="color:#f92672">=</span> mc <span style="color:#f92672">~</span> <span style="color:#ae81ff">1</span>, 
-                       type <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">MAR&#34;</span>, n.chains <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>, n.iter <span style="color:#f92672">=</span> <span style="color:#ae81ff">10000</span>, n.burnin <span style="color:#f92672">=</span> <span style="color:#ae81ff">1000</span>, dist_e <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">norm&#34;</span>, dist_c <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">norm&#34;</span>)
+                       type <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;MAR&#34;</span>, n.chains <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>, n.iter <span style="color:#f92672">=</span> <span style="color:#ae81ff">10000</span>, n.burnin <span style="color:#f92672">=</span> <span style="color:#ae81ff">1000</span>, dist_e <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;norm&#34;</span>, dist_c <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;norm&#34;</span>)
 <span style="color:#a6e22e">summary</span>(model.sel)
 </code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"> Cost<span style="color:#f92672">-</span>effectiveness analysis summary 
  
@@ -516,11 +516,11 @@ ICER          <span style="color:#ae81ff">-1198.431</span>
 </ul>
 <h1 id="installation">Installation</h1>
 <p>There are two ways of installing <code>missingHE</code>. A <em>stable</em> version (currently 1.3.2) is packaged and available from <a href="https://cran.r-project.org/web/packages/missingHE/">CRAN</a>. You can simply type on your <code>R</code> terminal</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#a6e22e">install.packages</span>(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">missingHE&#34;</span>)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#a6e22e">install.packages</span>(<span style="color:#e6db74">&#34;missingHE&#34;</span>)
 </code></pre></div><p>The second way involves using the <em>development</em> version of <code>missingHE</code>, which is available from <a href="https://github.com/AnGabrio/missingHE">GitHub</a> - this will usually be updated more frequently and may be continuously tested. On Windows machines, you need to install a few dependencies, including Rtools first, e.g. by running</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">pkgs <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">c</span>(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">R2jags&#34;</span>,<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Rtools&#34;</span>,<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">devtools&#34;</span>)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">pkgs <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">c</span>(<span style="color:#e6db74">&#34;R2jags&#34;</span>,<span style="color:#e6db74">&#34;Rtools&#34;</span>,<span style="color:#e6db74">&#34;devtools&#34;</span>)
 </code></pre></div><p>before installing the package using <code>devtools</code>:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">devtools<span style="color:#f92672">::</span><span style="color:#a6e22e">install_github</span>(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">AnGabrio/missingHE&#34;</span>)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">devtools<span style="color:#f92672">::</span><span style="color:#a6e22e">install_github</span>(<span style="color:#e6db74">&#34;AnGabrio/missingHE&#34;</span>)
 </code></pre></div></div>
   
 
