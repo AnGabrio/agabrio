@@ -63,12 +63,12 @@
   </url>
   
   <url>
-    <loc>/categories/generalised-linear-mixed-models/</loc>
+    <loc>/tags/generalised-linear-mixed-models/</loc>
     <lastmod>2020-02-15T21:13:14-05:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/generalised-linear-mixed-models/</loc>
+    <loc>/categories/generalised-linear-mixed-models/</loc>
     <lastmod>2020-02-15T21:13:14-05:00</lastmod>
   </url>
   
@@ -78,12 +78,12 @@
   </url>
   
   <url>
-    <loc>/tags/jags/</loc>
+    <loc>/categories/jags/</loc>
     <lastmod>2020-02-15T21:13:14-05:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/jags/</loc>
+    <loc>/tags/jags/</loc>
     <lastmod>2020-02-15T21:13:14-05:00</lastmod>
   </url>
   
@@ -98,12 +98,12 @@
   </url>
   
   <url>
-    <loc>/tags/generalised-linear-models/</loc>
+    <loc>/categories/generalised-linear-models/</loc>
     <lastmod>2020-02-14T21:13:14-05:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/generalised-linear-models/</loc>
+    <loc>/tags/generalised-linear-models/</loc>
     <lastmod>2020-02-14T21:13:14-05:00</lastmod>
   </url>
   
@@ -168,12 +168,12 @@
   </url>
   
   <url>
-    <loc>/tags/repeated-measures/</loc>
+    <loc>/categories/repeated-measures/</loc>
     <lastmod>2020-02-11T21:13:14-05:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/repeated-measures/</loc>
+    <loc>/tags/repeated-measures/</loc>
     <lastmod>2020-02-11T21:13:14-05:00</lastmod>
   </url>
   
@@ -188,12 +188,12 @@
   </url>
   
   <url>
-    <loc>/tags/stan/</loc>
+    <loc>/categories/stan/</loc>
     <lastmod>2020-02-11T21:13:14-05:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/stan/</loc>
+    <loc>/tags/stan/</loc>
     <lastmod>2020-02-11T21:13:14-05:00</lastmod>
   </url>
   
@@ -303,22 +303,22 @@
   </url>
   
   <url>
-    <loc>/categories/heterogeneity/</loc>
-    <lastmod>2020-02-07T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/tags/heterogeneity/</loc>
     <lastmod>2020-02-07T21:13:14-05:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/heteroskedasticity/</loc>
+    <loc>/categories/heterogeneity/</loc>
     <lastmod>2020-02-07T21:13:14-05:00</lastmod>
   </url>
   
   <url>
     <loc>/categories/heteroskedasticity/</loc>
+    <lastmod>2020-02-07T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/heteroskedasticity/</loc>
     <lastmod>2020-02-07T21:13:14-05:00</lastmod>
   </url>
   
@@ -353,12 +353,12 @@
   </url>
   
   <url>
-    <loc>/tags/factorial-designs/</loc>
+    <loc>/categories/factorial-designs/</loc>
     <lastmod>2020-02-06T21:13:14-05:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/factorial-designs/</loc>
+    <loc>/tags/factorial-designs/</loc>
     <lastmod>2020-02-06T21:13:14-05:00</lastmod>
   </url>
   
