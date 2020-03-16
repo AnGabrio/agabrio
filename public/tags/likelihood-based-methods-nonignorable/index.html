@@ -373,7 +373,7 @@
         
 
         <li class="nav-item">
-          <a class="nav-link " href="/missingdata/"><span>Missing Data</span></a>
+          <a class="nav-link " href="/rubric/"><span>Missing Data</span></a>
         </li>
 
         
@@ -439,22 +439,7 @@
     <h2><a href="/missmethods/likelihood-based-methods-nonignorable/">Likelihood Based Inference with Incomplete Data (Nonignorable)</a></h2>
     <div class="article-style">
       
-      In many cases, analysis methods for missing data are based on the ignorable likelihood
-\[L_{ign}\left(\theta \mid Y_0, X \right) \propto f\left(Y_0 \mid X, \theta \right),\]
-regarded as a function of the parameters \(\theta\) for fixed observed data \(Y_0\) and some fully observed covariates \(X\). The density \(f(Y_0 \mid X, \theta)\) is obtained by integrating out the missing data \(Y_1\) from the joint density \(f(Y \mid X, \theta)=f(Y_0,Y_1\mid X, \theta)\).
-      
-    </div>
-  </div>
-  
-  <div>
-    <h2><a href="/missmethods/pattern-mixture-models/">Pattern Mixture Models</a></h2>
-    <div class="article-style">
-      
-      It is possible to summarise the steps involved in drawing inference from incomplete data as (Daniels and Hogan (2008)):
-Specification of a full data model for the response and missingness indicators \(f(y,r)\)
-Specification of the prior distribution (within a Bayesian approach)
-Sampling from the posterior distribution of full data parameters, given the observed data \(Y_{obs}\) and the missingness indicators \(R\)
-Identification of a full data model, particularly the part involving the missing data \(Y_{mis}\), requires making unverifiable assumptions about the full data model \(f(y,r)\).
+      Specific methods are required to make inference under nonignorable nonresponse assumptions, that is when the value of the variable that is missing is related to some values which are not observed by the analyst (e.g. the missing values themselves)
       
     </div>
   </div>
@@ -463,11 +448,16 @@ regarded as a function of the parameters \(\theta\) for fixed observed data \(Y_
     <h2><a href="/missmethods/selection-models/">Selection Models</a></h2>
     <div class="article-style">
       
-      It is possible to summarise the steps involved in drawing inference from incomplete data as (Daniels and Hogan (2008)):
-Specification of a full data model for the response and missingness indicators \(f(y,r)\)
-Specification of the prior distribution (within a Bayesian approach)
-Sampling from the posterior distribution of full data parameters, given the observed data \(Y_{obs}\) and the missingness indicators \(R\)
-Identification of a full data model, particularly the part involving the missing data \(Y_{mis}\), requires making unverifiable assumptions about the full data model \(f(y,r)\).
+      Selection Models (SM) are typically used to handle nonignorable missingness. They factorise the joint likelihood of measurement process and missingness process into a marginal density of the measurement process and the density of the missingness process conditional on the outcomes, which describes the missing data selection based on the complete data.
+      
+    </div>
+  </div>
+  
+  <div>
+    <h2><a href="/missmethods/pattern-mixture-models/">Pattern Mixture Models</a></h2>
+    <div class="article-style">
+      
+      Pattern Mixture Models (PMM) are typically used to handle nonignorable missingness. They factorise the joint likelihood of measurement process and missingness process into a marginal density of the missingness process and the density of the measurement process conditional on the missing data patterns, where the model of interest is fitted for each pattern.
       
     </div>
   </div>
@@ -476,11 +466,7 @@ regarded as a function of the parameters \(\theta\) for fixed observed data \(Y_
     <h2><a href="/missmethods/shared-parameter-models/">Shared Parameter Models</a></h2>
     <div class="article-style">
       
-      It is possible to summarise the steps involved in drawing inference from incomplete data as (Daniels and Hogan (2008)):
-Specification of a full data model for the response and missingness indicators \(f(y,r)\)
-Specification of the prior distribution (within a Bayesian approach)
-Sampling from the posterior distribution of full data parameters, given the observed data \(Y_{obs}\) and the missingness indicators \(R\)
-Identification of a full data model, particularly the part involving the missing data \(Y_{mis}\), requires making unverifiable assumptions about the full data model \(f(y,r)\).
+      Shared Parameter Models (SPM) are typically used to handle nonignorable missingness. In these models a random effect is shared between the repeated measures model and the missing data mechanism model
       
     </div>
   </div>

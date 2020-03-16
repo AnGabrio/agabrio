@@ -1,11 +1,12 @@
 ---
 title: Selection Models
-summary: 
+summary: Selection Models (SM) are typically used to handle nonignorable missingness. They factorise the joint likelihood of measurement process and missingness process into a marginal density of the measurement process and the density of the missingness process conditional on the outcomes, which describes the missing data selection based on the complete data.
 tags:
 - Selection Models
 - Full Data Models under MNAR 
 - Likelihood Based Methods Nonignorable
 date: "2016-04-27T00:00:00Z"
+weight: 2
 
 # Optional external URL for project (replaces project detail page).
 external_link: ""
@@ -43,6 +44,7 @@ url_poster: ""
 # slides: example
 ---
 
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 
 
 <p>It is possible to summarise the steps involved in drawing inference from incomplete data as (<span class="citation">Daniels and Hogan (2008)</span>):</p>
@@ -93,7 +95,7 @@ h\left(t_j \mid \bar{Y}_{j}\right) = \text{Prob}\left(R_j = 0 \mid R_{j-1} = 1, 
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1>References</h1>
-<div id="refs" class="references">
+<div id="refs" class="references hanging-indent">
 <div id="ref-daniels2008missing">
 <p>Daniels, Michael J, and Joseph W Hogan. 2008. <em>Missing Data in Longitudinal Studies: Strategies for Bayesian Modeling and Sensitivity Analysis</em>. Chapman; Hall/CRC.</p>
 </div>

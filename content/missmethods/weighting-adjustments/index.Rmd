@@ -1,6 +1,6 @@
 ---
 title: Weighting Adjustments
-summary: 
+summary: Weighting to compensate for nonresponse attaches weights to subjects included in the analysis to restore the representation in the original sample which is distorted because of missing values
 tags:
 - Weighting Methods
 - Semiparametric Methods
@@ -8,6 +8,7 @@ tags:
 - Inverse Probability Weighting
 - Augmented Inverse Probability Weighting
 date: "2016-04-27T00:00:00Z"
+weight: 3
 
 # Optional external URL for project (replaces project detail page).
 external_link: ""

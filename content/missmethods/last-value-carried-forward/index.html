@@ -1,6 +1,6 @@
 ---
 title: Implicit Single Imputation 
-summary: 
+summary: Implicit Single imputation denotes a method not based on an explicit model which replaces a missing datum with a single value. In this method the sample size is retrieved. However, the imputed values are assumed to be the real values that would have been observed when the data would have been complete
 tags:
 - Explicit Single Imputation
 - Implicit Single Imputation
@@ -9,6 +9,7 @@ tags:
 - Predictive Mean Matching
 - Last Value Carried Forward
 date: "2016-04-27T00:00:00Z"
+weight: 2
 
 # Optional external URL for project (replaces project detail page).
 external_link: ""
@@ -46,6 +47,7 @@ url_poster: ""
 # slides: example
 ---
 
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 
 
 <p>All case deletion methods, such as <em>Complete Case Analysis</em>(CCA) or <em>Available Case Analysis</em>(ACA) make no use of units with partially observed data, when estimating the marginal distribution of the variables under study or the covariation between variables. Clearly, this is inefficient and a tempting alternative would be to <em>impute</em> or “fill in” the unobserved data with some plausible values. When a single value is used to replace each missing data, we talk about <em>Single Imputation</em>(SI) methods and, according to the precedure used to generate these imputations, different SI methods can be used. In general, the idea of imputing the missing values is really appealing as it allows to recover the full sample on which standard complete data methods can be applied to derive the estimates of interest.</p>
@@ -95,7 +97,7 @@ d(i,j)=(\hat{y}(x_i)-\hat{y}(x_j))^2,
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1>References</h1>
-<div id="refs" class="references">
+<div id="refs" class="references hanging-indent">
 <div id="ref-little2019statistical">
 <p>Little, Roderick JA, and Donald B Rubin. 2019. <em>Statistical Analysis with Missing Data</em>. Vol. 793. John Wiley &amp; Sons.</p>
 </div>

@@ -1,6 +1,6 @@
 ---
 title: Augmented Inverse Probability Weighting
-summary: 
+summary: Augmented Inverse Probability Weighting (AIPW) is a IPW technique that derives estimators using a combination of the propensity score and the regression model. This approach has the attractive doubly robust property that estimators are consistent as long as either the propensity score or the outcome regression model is correctly specified
 tags:
 - Weighting Methods
 - Semiparametric Methods
@@ -8,6 +8,7 @@ tags:
 - Inverse Probability Weighting
 - Augmented Inverse Probability Weighting
 date: "2016-04-27T00:00:00Z"
+weight: 2
 
 # Optional external URL for project (replaces project detail page).
 external_link: ""
@@ -45,6 +46,7 @@ url_poster: ""
 # slides: example
 ---
 
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 
 
 <p>A general problem associated with the implementatio of <em>Inverse Probability Weighting</em> (IPW) methods is that information in some available data is ignored by focussing only on the complete cases (<span class="citation">Schafer and Graham (2002)</span>). This has provided room to extend these methods to make a more efficient use of the available information through the incorporation of an “augmentation” term, which lead to the development of the so called <em>Augmented Inverse Probability Weighting</em> (AIPW) methods. These approaches extend IPW methods by creating predictions from a model to recover the information in the incomplete units and applying IPW to the residuals from the model (<span class="citation">Little and Rubin (2019)</span>).</p>
@@ -103,7 +105,7 @@ p(c=1 \mid y,z)=p(c=1 \mid z)=\pi(z),
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1>References</h1>
-<div id="refs" class="references">
+<div id="refs" class="references hanging-indent">
 <div id="ref-bang2005doubly">
 <p>Bang, Heejung, and James M Robins. 2005. “Doubly Robust Estimation in Missing Data and Causal Inference Models.” <em>Biometrics</em> 61 (4): 962–73.</p>
 </div>

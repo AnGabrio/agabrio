@@ -1,6 +1,6 @@
 ---
 title: Augmented Inverse Probability Weighting
-summary: 
+summary: Augmented Inverse Probability Weighting (AIPW) is a IPW technique that derives estimators using a combination of the propensity score and the regression model. This approach has the attractive doubly robust property that estimators are consistent as long as either the propensity score or the outcome regression model is correctly specified
 tags:
 - Weighting Methods
 - Semiparametric Methods
@@ -8,6 +8,7 @@ tags:
 - Inverse Probability Weighting
 - Augmented Inverse Probability Weighting
 date: "2016-04-27T00:00:00Z"
+weight: 2
 
 # Optional external URL for project (replaces project detail page).
 external_link: ""

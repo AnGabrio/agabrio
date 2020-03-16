@@ -1,6 +1,6 @@
 ---
 title: Explicit Single Imputation 
-summary: 
+summary: Explicit Single imputation denotes a method based on an explicit model which replaces a missing datum with a single value. In this method the sample size is retrieved. However, the imputed values are assumed to be the real values that would have been observed when the data would have been complete
 tags:
 - Explicit Single Imputation
 - Implicit Single Imputation
@@ -9,6 +9,7 @@ tags:
 - Regression Imputation
 - Stochastic Regression Imputation
 date: "2016-04-27T00:00:00Z"
+weight: 1
 
 # Optional external URL for project (replaces project detail page).
 external_link: ""

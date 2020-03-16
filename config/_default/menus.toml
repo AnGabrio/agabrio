@@ -42,8 +42,8 @@
   
 [[main]]
   name = "Missing Data"
-  url = "missingdata/"
-  identifier = "missingdata"
+  url = "rubric/"
+  identifier = "rubric"
   weight = 80
 
 [[main]]

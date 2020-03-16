@@ -1,10 +1,11 @@
 ---
 title: Introduction to Bayesian Inference 
-summary: 
+summary: Bayesian inference is a method of statistical inference in which Bayes theorem is used to update the probability for a hypothesis as more evidence or information becomes available
 tags:
 - Bayesian Inference
 - Likelihood Based Methods Ignorable
 date: "2016-04-27T00:00:00Z"
+weight: 2
 
 # Optional external URL for project (replaces project detail page).
 external_link: ""

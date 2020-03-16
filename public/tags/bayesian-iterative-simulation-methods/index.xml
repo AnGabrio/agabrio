@@ -19,6 +19,7 @@
       
       <guid>/missmethods/bayesian-methods/</guid>
       <description>
+&lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
 
 
 &lt;p&gt;A useful alternative approach to &lt;em&gt;Maximum Likelihood&lt;/em&gt;(ML) methods, particularly when the sample size is small, is to include a reasonable prior distribution for the parameters and compute the posterior distribution of the parameters of interest. The posterior distribution for a model with ignorable missingness is&lt;/p&gt;
@@ -88,7 +89,7 @@ B=\frac{T}{D-1}\sum_{d=1}^D(\bar{\psi}_{d.} - \bar{\psi}_{..})^2, \;\;\; \text{a
 &lt;/div&gt;
 &lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
 &lt;h1&gt;References&lt;/h1&gt;
-&lt;div id=&#34;refs&#34; class=&#34;references&#34;&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references hanging-indent&#34;&gt;
 &lt;div id=&#34;ref-gelfand1990sampling&#34;&gt;
 &lt;p&gt;Gelfand, Alan E, and Adrian FM Smith. 1990. “Sampling-Based Approaches to Calculating Marginal Densities.” &lt;em&gt;Journal of the American Statistical Association&lt;/em&gt; 85 (410): 398–409.&lt;/p&gt;
 &lt;/div&gt;

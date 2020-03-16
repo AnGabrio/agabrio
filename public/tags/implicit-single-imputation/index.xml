@@ -19,6 +19,7 @@
       
       <guid>/missmethods/mean-imputation/</guid>
       <description>
+&lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
 &lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
 
 
@@ -175,7 +176,7 @@ CD
 &lt;/div&gt;
 &lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
 &lt;h1&gt;References&lt;/h1&gt;
-&lt;div id=&#34;refs&#34; class=&#34;references&#34;&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references hanging-indent&#34;&gt;
 &lt;div id=&#34;ref-buck1960method&#34;&gt;
 &lt;p&gt;Buck, Samuel F. 1960. “A Method of Estimation of Missing Values in Multivariate Data Suitable for Use with an Electronic Computer.” &lt;em&gt;Journal of the Royal Statistical Society: Series B (Methodological)&lt;/em&gt; 22 (2): 302–6.&lt;/p&gt;
 &lt;/div&gt;
@@ -200,6 +201,7 @@ CD
       
       <guid>/missmethods/last-value-carried-forward/</guid>
       <description>
+&lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
 
 
 &lt;p&gt;All case deletion methods, such as &lt;em&gt;Complete Case Analysis&lt;/em&gt;(CCA) or &lt;em&gt;Available Case Analysis&lt;/em&gt;(ACA) make no use of units with partially observed data, when estimating the marginal distribution of the variables under study or the covariation between variables. Clearly, this is inefficient and a tempting alternative would be to &lt;em&gt;impute&lt;/em&gt; or “fill in” the unobserved data with some plausible values. When a single value is used to replace each missing data, we talk about &lt;em&gt;Single Imputation&lt;/em&gt;(SI) methods and, according to the precedure used to generate these imputations, different SI methods can be used. In general, the idea of imputing the missing values is really appealing as it allows to recover the full sample on which standard complete data methods can be applied to derive the estimates of interest.&lt;/p&gt;
@@ -249,7 +251,7 @@ d(i,j)=(\hat{y}(x_i)-\hat{y}(x_j))^2,
 &lt;/div&gt;
 &lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
 &lt;h1&gt;References&lt;/h1&gt;
-&lt;div id=&#34;refs&#34; class=&#34;references&#34;&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references hanging-indent&#34;&gt;
 &lt;div id=&#34;ref-little2019statistical&#34;&gt;
 &lt;p&gt;Little, Roderick JA, and Donald B Rubin. 2019. &lt;em&gt;Statistical Analysis with Missing Data&lt;/em&gt;. Vol. 793. John Wiley &amp;amp; Sons.&lt;/p&gt;
 &lt;/div&gt;

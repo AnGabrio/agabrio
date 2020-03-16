@@ -28,7 +28,7 @@
   
     
   
-  <meta name="description" content="Complete case analysis (CCA), also known as case or listwise deletion (LD), is one of the oldest methods to handle missing data and consists in discarding any unit or case whose information is incomplete. Only the cases with observed values for all the variables under consideration are used in the analysis. For example, suppose we have a data set formed by \(i=1,\ldots,n\) individuals and that we want to fit a linear regression on some outcome variable \(y_i\) using some other variables \(x_{i1},\ldots,x_{ik}\) as covariates.">
+  <meta name="description" content="Complete case analysis is the term used to describe a statistical analysis that only includes participants for which we do not have missing data on the variables of interest">
 
   
   <link rel="alternate" hreflang="en-us" href="/missmethods/complete-case-analysis/">
@@ -122,7 +122,7 @@
   <meta property="og:site_name" content="Andrea Gabrio">
   <meta property="og:url" content="/missmethods/complete-case-analysis/">
   <meta property="og:title" content="Complete Case Analysis | Andrea Gabrio">
-  <meta property="og:description" content="Complete case analysis (CCA), also known as case or listwise deletion (LD), is one of the oldest methods to handle missing data and consists in discarding any unit or case whose information is incomplete. Only the cases with observed values for all the variables under consideration are used in the analysis. For example, suppose we have a data set formed by \(i=1,\ldots,n\) individuals and that we want to fit a linear regression on some outcome variable \(y_i\) using some other variables \(x_{i1},\ldots,x_{ik}\) as covariates."><meta property="og:image" content="/img/icon-192.png">
+  <meta property="og:description" content="Complete case analysis is the term used to describe a statistical analysis that only includes participants for which we do not have missing data on the variables of interest"><meta property="og:image" content="/img/icon-192.png">
   <meta property="og:locale" content="en-us">
   
   <meta property="article:published_time" content="2016-04-27T00:00:00&#43;00:00">
@@ -372,7 +372,7 @@
         
 
         <li class="nav-item">
-          <a class="nav-link " href="/missingdata/"><span>Missing Data</span></a>
+          <a class="nav-link " href="/rubric/"><span>Missing Data</span></a>
         </li>
 
         
@@ -533,6 +533,7 @@
 
     <div class="article-style" itemprop="articleBody">
       
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 
 
 <p><em>Complete case analysis</em> (CCA), also known as <em>case</em> or <em>listwise deletion</em> (LD), is one of the oldest methods to handle missing data and consists in discarding any unit or case whose information is incomplete. Only the cases with observed values for all the variables under consideration are used in the analysis. For example, suppose we have a data set formed by <span class="math inline">\(i=1,\ldots,n\)</span> individuals and that we want to fit a linear regression on some outcome variable <span class="math inline">\(y_i\)</span> using some other variables <span class="math inline">\(x_{i1},\ldots,x_{ik}\)</span> as covariates. CCA uses only the subset of cases with observed values on all the variables included in the analysis (<em>completers</em>).</p>
@@ -585,7 +586,7 @@
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1>References</h1>
-<div id="refs" class="references">
+<div id="refs" class="references hanging-indent">
 <div id="ref-glynn1986regression">
 <p>Glynn, RJ, and NM Laird. 1986. “Regression Estimates and Missing Data: Complete Case Analysis.” <em>Cambridge MA: Harvard School of Public Health, Department of Biostatistics</em>.</p>
 </div>

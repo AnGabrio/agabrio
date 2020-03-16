@@ -48,7 +48,6 @@ subtitle = "In this rubric I attempt to give  an overview on the research for ha
     name = "Likelihood Based Methods Nonignorable"
     tag = "Likelihood Based Methods Nonignorable"
 
-
 [design]
   # Choose how many columns the section has. Valid values: 1 or 2.
   columns = "2"
@@ -57,10 +56,10 @@ subtitle = "In this rubric I attempt to give  an overview on the research for ha
   #   1 = List
   #   3 = Card
   #   5 = Showcase
-  view = 1
+  view = 2
 
   # For Showcase view, flip alternate rows?
-  flip_alt_rows = false
+  flip_alt_rows = true
 
 [design.background]
   # Apply a background color, gradient, or image.

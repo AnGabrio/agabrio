@@ -1,6 +1,6 @@
 ---
 title: Inverse Probability Weighting
-summary: 
+summary: The inverse probability weighting (IPW) approach preserves the semiparametric structure of the underlying model of substantive interest and clearly separates the model of substantive interest from the model used to account for the missing data
 tags:
 - Weighting Methods
 - Semiparametric Methods
@@ -8,6 +8,7 @@ tags:
 - Inverse Probability Weighting
 - Augmented Inverse Probability Weighting
 date: "2016-04-27T00:00:00Z"
+weight: 1
 
 # Optional external URL for project (replaces project detail page).
 external_link: ""
@@ -45,6 +46,7 @@ url_poster: ""
 # slides: example
 ---
 
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 
 
 <p>In certain cases, it is possible to reduce biases from case deletion by the application of weights. After incomplete cases are removed, the remaining complete cases can be weighted so that their distribution more closely resembles that of the full sample with respect to auxiliary variables. <em>Weighting methods</em> can eliminate bias due to differential response related to the variables used to model the response probabilities, but it cannot correct for biases related to variables that are unused or unmeasured (<span class="citation">Little and Rubin (2019)</span>). <span class="citation">Robins, Rotnitzky, and Zhao (1994)</span> introduced <em>Inverse Probability Weighting</em> (IPW) as a weighted regression approach that require an explicit model for the missingness but relaxes some of the parametric assumptions in the data model. Their method is an extension of <em>Generalized Estimating Equations</em> (GEE), a popular technique for modeling marginal or populationaveraged relationships between a response variable and predictors (<span class="citation">Zeger, Liang, and Albert (1988)</span>).</p>
@@ -94,7 +96,7 @@ p(c=1 \mid y,z)=p(c=1 \mid z)=\pi(z),
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1>References</h1>
-<div id="refs" class="references">
+<div id="refs" class="references hanging-indent">
 <div id="ref-liang1986longitudinal">
 <p>Liang, Kung-Yee, and Scott L Zeger. 1986. “Longitudinal Data Analysis Using Generalized Linear Models.” <em>Biometrika</em> 73 (1): 13–22.</p>
 </div>

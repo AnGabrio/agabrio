@@ -13,105 +13,80 @@
     
     
     <item>
-      <title>Bayesian Iterative Simulation Methods</title>
-      <link>/missmethods/bayesian-methods/</link>
+      <title>Likelihood Based Inference with Incomplete Data (Nonignorable)</title>
+      <link>/missmethods/likelihood-based-methods-nonignorable/</link>
       <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
       
-      <guid>/missmethods/bayesian-methods/</guid>
+      <guid>/missmethods/likelihood-based-methods-nonignorable/</guid>
       <description>
+&lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
 
 
-&lt;p&gt;A useful alternative approach to &lt;em&gt;Maximum Likelihood&lt;/em&gt;(ML) methods, particularly when the sample size is small, is to include a reasonable prior distribution for the parameters and compute the posterior distribution of the parameters of interest. The posterior distribution for a model with ignorable missingness is&lt;/p&gt;
+&lt;p&gt;In many cases, analysis methods for missing data are based on the ignorable likelihood&lt;/p&gt;
 &lt;p&gt;\[
-p(\theta \mid Y_0, M) \equiv p(\theta \mid Y_0) \propto p(\theta)f(Y_0 \mid \theta),
+L_{ign}\left(\theta \mid Y_0, X \right) \propto f\left(Y_0 \mid X, \theta \right),
 \]&lt;/p&gt;
-&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(p(\theta)\)&lt;/span&gt; is the prior and &lt;span class=&#34;math inline&#34;&gt;\(f(Y_0 \mid \theta)\)&lt;/span&gt; is the density of the observed data &lt;span class=&#34;math inline&#34;&gt;\(Y_0\)&lt;/span&gt;. Simulation from the posterior without iteration can be accomplished if the likelihood can be factored into complete data components, while for general patterns of missing data, Bayesian simulation requires iteration.&lt;/p&gt;
-&lt;div id=&#34;data-augmentation&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;Data Augmentation&lt;/h2&gt;
-&lt;p&gt;&lt;em&gt;Data Augmentation&lt;/em&gt;(&lt;span class=&#34;citation&#34;&gt;Tanner and Wong (1987)&lt;/span&gt;), or DA, is an iterative method of simulating the posteiror distribution of &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; that combines features of the &lt;em&gt;Expecation Maximisation&lt;/em&gt;(EM) algorithm and &lt;em&gt;Multiple Imputation&lt;/em&gt;(MI). Starting with an initial draw &lt;span class=&#34;math inline&#34;&gt;\(\theta_0\)&lt;/span&gt; from an approximation to the posterior, then given the value &lt;span class=&#34;math inline&#34;&gt;\(\theta_t\)&lt;/span&gt; at iteration &lt;span class=&#34;math inline&#34;&gt;\(t\)&lt;/span&gt;:&lt;/p&gt;
-&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
-&lt;li&gt;&lt;p&gt;Draw &lt;span class=&#34;math inline&#34;&gt;\(Y_{1,t+1}\)&lt;/span&gt; with density &lt;span class=&#34;math inline&#34;&gt;\(p(Y_1 \mid Y_0, \theta_t)\)&lt;/span&gt; (I step).&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;Draw &lt;span class=&#34;math inline&#34;&gt;\(\theta_{t+1}\)&lt;/span&gt; with density &lt;span class=&#34;math inline&#34;&gt;\(p(\theta \mid Y_0, Y_{1,t+1})\)&lt;/span&gt; (P step).&lt;/p&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;The procedure is motivated by the fact that the distributions in these two steps are often much easier to draw from than either of the posteriors &lt;span class=&#34;math inline&#34;&gt;\(p(Y_1 \mid Y_0)\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(p(\theta \mid Y_0)\)&lt;/span&gt;, or the joint posterior &lt;span class=&#34;math inline&#34;&gt;\(p(\theta, Y_1 \mid Y_0)\)&lt;/span&gt;. The procedure can be shown to eventually yield a draw from the joint posterior of &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; given &lt;span class=&#34;math inline&#34;&gt;\(Y_0\)&lt;/span&gt;, in the sense that as &lt;span class=&#34;math inline&#34;&gt;\(t\)&lt;/span&gt; tends to infinity this sequence converges to a draw from the joint distribution.&lt;/p&gt;
-&lt;div id=&#34;bivariate-normal-data-example&#34; class=&#34;section level3&#34;&gt;
-&lt;h3&gt;Bivariate Normal Data Example&lt;/h3&gt;
-&lt;p&gt;Suppose having a sample &lt;span class=&#34;math inline&#34;&gt;\(y_i=(y_{1i},y_{2i})\)&lt;/span&gt; from a Bivariate Normal distribution for &lt;span class=&#34;math inline&#34;&gt;\(i=1,\ldots,n\)&lt;/span&gt; units, with mean vector &lt;span class=&#34;math inline&#34;&gt;\(\mu=(\mu_1,\mu_2)\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(2\times2\)&lt;/span&gt; covariance matrix &lt;span class=&#34;math inline&#34;&gt;\(\Sigma\)&lt;/span&gt;. Assume that one group of units has &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt; observed and &lt;span class=&#34;math inline&#34;&gt;\(Y_2\)&lt;/span&gt; missing, while a second group of units has both variables observed and a third group of units has &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt; missing and &lt;span class=&#34;math inline&#34;&gt;\(Y_2\)&lt;/span&gt; observed. Under DA methods, each iteration &lt;span class=&#34;math inline&#34;&gt;\(t\)&lt;/span&gt; consists of an I step and a P step. In the first, missing data are replaced with draws from its conditional distribution given the observed data and current values of the parameters (rather then its conditional mean as in the EM algorithm). Because units are conditionally independent given the parameters, each missing &lt;span class=&#34;math inline&#34;&gt;\(y_{2i}\)&lt;/span&gt; is drawn independently as&lt;/p&gt;
+&lt;p&gt;regarded as a function of the parameters &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; for fixed observed data &lt;span class=&#34;math inline&#34;&gt;\(Y_0\)&lt;/span&gt; and some fully observed covariates &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt;. The density &lt;span class=&#34;math inline&#34;&gt;\(f(Y_0 \mid X, \theta)\)&lt;/span&gt; is obtained by integrating out the missing data &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt; from the joint density &lt;span class=&#34;math inline&#34;&gt;\(f(Y \mid X, \theta)=f(Y_0,Y_1\mid X, \theta)\)&lt;/span&gt;. Sufficient conditions for basing inference about &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; on the ignorbale likelihood are that the missingness mechanism is &lt;em&gt;Missing At Random&lt;/em&gt;(MAR) and the parameters of the model of analysis &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; and those of the missingness mechanism &lt;span class=&#34;math inline&#34;&gt;\(\psi\)&lt;/span&gt; are distinct. Here we focus our attention on the situations where the missingness mechanism is &lt;em&gt;Missing Not At Random&lt;/em&gt;(MNAR) and valid &lt;em&gt;Maximum Likelihood&lt;/em&gt;(ML), &lt;em&gt;Bayesian&lt;/em&gt; and &lt;em&gt;Multiple Imputation&lt;/em&gt;(MI) inferences generally need to be based on the full likelihood&lt;/p&gt;
 &lt;p&gt;\[
-y_{2i,t+1} \sim N\left(\beta_{20t} + \beta_{21t}y_{1i}, \sigma^2_{2t} \right),
+L_{full}\left(\theta, \psi \mid Y_0, X, M \right) \propto f\left(Y_0, M \mid X, \theta, \psi \right),
 \]&lt;/p&gt;
-&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\beta_{20t},\beta_{21t}\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2_{2t}\)&lt;/span&gt; are the &lt;span class=&#34;math inline&#34;&gt;\(t\)&lt;/span&gt;-th iterates of the regression parameters of &lt;span class=&#34;math inline&#34;&gt;\(Y_2\)&lt;/span&gt; on &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt;. Analogously, each missing &lt;span class=&#34;math inline&#34;&gt;\(y_{1i}\)&lt;/span&gt; is drawn independently as&lt;/p&gt;
+&lt;p&gt;regarded as a function of &lt;span class=&#34;math inline&#34;&gt;\((\theta,\psi)\)&lt;/span&gt; for fixed &lt;span class=&#34;math inline&#34;&gt;\((Y_0,M)\)&lt;/span&gt;. Here, &lt;span class=&#34;math inline&#34;&gt;\(f(Y_0,M\mid \theta, \psi)\)&lt;/span&gt; is obtained by integrating out &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt; from the joint density &lt;span class=&#34;math inline&#34;&gt;\(f(Y,M \mid X, \theta, \psi)\)&lt;/span&gt;. Two main approaches for formulating MNAR models can be distinguished, namely &lt;em&gt;selection models&lt;/em&gt;(SM) and &lt;em&gt;pattern mixture models&lt;/em&gt;(PMM).&lt;/p&gt;
+&lt;div id=&#34;selection-and-pattern-mixture-models&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Selection and Pattern Mixture Models&lt;/h2&gt;
+&lt;p&gt;SMs factor the joint distribution of &lt;span class=&#34;math inline&#34;&gt;\(m_i\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; as&lt;/p&gt;
 &lt;p&gt;\[
-y_{1i,t+1} \sim N\left(\beta_{10t} + \beta_{11t}y_{2i}, \sigma^2_{1t} \right),
+f(m_i,y_i \mid x_i, \theta, \psi) = f(y_i \mid x_i, \theta)f(m_i \mid x_i,y_i,\psi),
 \]&lt;/p&gt;
-&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\beta_{10t},\beta_{11t}\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2_{1t}\)&lt;/span&gt; are the &lt;span class=&#34;math inline&#34;&gt;\(t\)&lt;/span&gt;-th iterates of the regression parameters of &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt; on &lt;span class=&#34;math inline&#34;&gt;\(Y_2\)&lt;/span&gt;. In the second step, these drawn values are treated as if they were the observed values and one draw of the bivariate Normal parameters is made from the complete data posterior. In the limit, the draws are from the joint posterior of the missing values and the parameters. Thus, a run of DA generates both a draw from the posterior predictive distribution of &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt; and a draw from the posterior of &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt;, and the procedure can be run &lt;span class=&#34;math inline&#34;&gt;\(D\)&lt;/span&gt; times to obtain &lt;span class=&#34;math inline&#34;&gt;\(D\)&lt;/span&gt; iid draws from the joint posterior of &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt;. Unlike the EM, estimates of the sampling covariance matrix from the filled-in data can be computed without any corrections to the estimated variances because draws from the posterior predictive distribution of the missing values are imputed in the I step of DA, rather than the conditional means as in the E step of EM. The loss of efficiency from imputing draws is limited when the posterior mean from DA is computed over many draws from the posterior.&lt;/p&gt;
+&lt;p&gt;where the first factor is the distribution of &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; in the population while the second factor is the missingness mechanism, with &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\psi\)&lt;/span&gt; which are assumed to be distinct. Alternatively, PMMs factor the joint distribution as&lt;/p&gt;
+&lt;p&gt;\[
+f(m_i,y_i \mid x_i, \theta, \psi) = f(y_i \mid x_i, m_i,\xi)f(m_i \mid x_i),
+\]&lt;/p&gt;
+&lt;p&gt;where the first factor is the distribution of &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; in the strata defined by different patterns of missingness &lt;span class=&#34;math inline&#34;&gt;\(m_i\)&lt;/span&gt; while the second factor models the probabilities of the different patterns, with &lt;span class=&#34;math inline&#34;&gt;\(\xi\)&lt;/span&gt; which are assumed to be distinct (&lt;span class=&#34;citation&#34;&gt;Little (1993)&lt;/span&gt;,&lt;span class=&#34;citation&#34;&gt;Little and Rubin (2019)&lt;/span&gt;). The distinction between the two factorisations becomes clearer when considering a specific example.&lt;/p&gt;
+&lt;p&gt;Suppose thta missing values are confined to a single variable and let &lt;span class=&#34;math inline&#34;&gt;\(y_i=(y_{i,1},y_{i2})\)&lt;/span&gt; be a bivariate response outcome where &lt;span class=&#34;math inline&#34;&gt;\(y_{i1}\)&lt;/span&gt; is fully observed and &lt;span class=&#34;math inline&#34;&gt;\(y_{i2}\)&lt;/span&gt; is observed for &lt;span class=&#34;math inline&#34;&gt;\(i=1,\ldots,n_{cc}\)&lt;/span&gt; but missing for &lt;span class=&#34;math inline&#34;&gt;\(i=n_{cc}+1,\ldots,n\)&lt;/span&gt;. Let &lt;span class=&#34;math inline&#34;&gt;\(m_{i2}\)&lt;/span&gt; be the missingness indicator for &lt;span class=&#34;math inline&#34;&gt;\(y_{i2}\)&lt;/span&gt;, then a PMM factors the denisty of &lt;span class=&#34;math inline&#34;&gt;\(Y_0\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(M\)&lt;/span&gt; given &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt; as&lt;/p&gt;
+&lt;p&gt;\[
+f(y_0, M \mid X, \xi)=\prod_{i=1}^{n_{cc}}f(y_{i1},y_{i2}\mid x_i, m_{i2}=0,\xi)Pr(m_{i2}=0 \mid x_i, \omega) \times \prod_{i=n_{cc}+1}^{n}f(y_{i1} \mid x_i, m_{i2}=1,\xi)Pr(m_{i2}=1 \mid x_i, \omega).
+\]&lt;/p&gt;
+&lt;p&gt;This expression shows that there are no data with which to estimate directly the distribution &lt;span class=&#34;math inline&#34;&gt;\(f(y_{i2} \mid x_i, m_{i2}=1,\xi)\)&lt;/span&gt;, because all units with &lt;span class=&#34;math inline&#34;&gt;\(m_{i2}=1\)&lt;/span&gt; have &lt;span class=&#34;math inline&#34;&gt;\(y_{i2}\)&lt;/span&gt; missing. Under MAR, this is identified using the distribution of the observed data &lt;span class=&#34;math inline&#34;&gt;\(f(y_{i2} \mid x_i, m_{i2}=1,\xi)=f(y_{i2} \mid x_i, m_{i2}=0,\xi)\)&lt;/span&gt;, while under MNAR it must be identified using other assumptions. The SM formulation is&lt;/p&gt;
+&lt;p&gt;\[
+f(y_i, m_{i2} \mid \theta, \psi) = f(y_{i1} \mid x_i, \theta)f(y_{i2} \mid x_i, y_{i1},\theta)f(m_{i2}\mid x_i,y_{i1},y_{i2},\psi).
+\]&lt;/p&gt;
+&lt;p&gt;Typically, the missingness mechanism &lt;span class=&#34;math inline&#34;&gt;\(f(m_{i2} \mid x_i,y_{i1},y_{i2},\psi)\)&lt;/span&gt; is modelled using some additive probit or logit regression of &lt;span class=&#34;math inline&#34;&gt;\(m_{i2}\)&lt;/span&gt; on &lt;span class=&#34;math inline&#34;&gt;\(x_i\)&lt;/span&gt;,&lt;span class=&#34;math inline&#34;&gt;\(y_{i1}\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(y_{i2}\)&lt;/span&gt;. However, the coefficient of &lt;span class=&#34;math inline&#34;&gt;\(y_{i2}\)&lt;/span&gt; in this regression is not directly estimable from the data and hence the model cannot be fully estimated without extra assumptions.&lt;/p&gt;
+&lt;div id=&#34;normal-models-for-mnar-data&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Normal Models for MNAR data&lt;/h3&gt;
+&lt;p&gt;Assume we have a complete sample &lt;span class=&#34;math inline&#34;&gt;\((y_i,x_i)\)&lt;/span&gt; on a continuous variable &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; and a set of fully observed covariates &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt;, for &lt;span class=&#34;math inline&#34;&gt;\(i=1,\ldots,n\)&lt;/span&gt;. Suppose that &lt;span class=&#34;math inline&#34;&gt;\(i=1,\ldots,n_{cc}\)&lt;/span&gt; units are observed while the remaining &lt;span class=&#34;math inline&#34;&gt;\(i=n_{cc}+1,\ldots,n\)&lt;/span&gt; units are missing, with &lt;span class=&#34;math inline&#34;&gt;\(m_i\)&lt;/span&gt; being the corresponding missingness indicator. Heckman (&lt;span class=&#34;citation&#34;&gt;Heckman (1976)&lt;/span&gt;) proposed the following selection model to handle missingness:&lt;/p&gt;
+&lt;p&gt;\[
+y_i \mid x_i, \theta, \psi \sim N(\beta_0 + \beta_1x_i, \sigma^2) \;\;\; \text{and} \;\;\; m_i \mid x_i,y_i,\theta,\psi \sim Bern\left(\Phi(\psi_0 + \psi_1x_i + \psi_2y_i) \right),
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\theta=(\beta_0,\beta_1,\sigma^2)\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\Phi\)&lt;/span&gt; denotes the probit (cumulative normal) distribution function. Note that if &lt;span class=&#34;math inline&#34;&gt;\(\psi_2=0\)&lt;/span&gt;, the missing data are MAR, while if &lt;span class=&#34;math inline&#34;&gt;\(\psi_2 \neq 0\)&lt;/span&gt; the missing data are MNAR since missingness in &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; depends on the unobserved value of &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt;. This model can be estimated using either a two-step least squares method, ML in combination with an EM algorithm, or a Bayesian approach. The main issue is the lack of information about &lt;span class=&#34;math inline&#34;&gt;\(\psi_2\)&lt;/span&gt;, which can be partly identified through the specific assumptions about the distribution of the observed data of &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt;. This, however, makes the implicit assumption that the assumed distribution can well described the distribution of the complete (observed and missing) data which can never be tested or checked. An alternative approach is to use a PMM factorisation and model:&lt;/p&gt;
+&lt;p&gt;\[
+y_i \mid m_i=m,x_i,\xi,\omega \sim N(\beta_0^m + \beta_1^mx_i, \sigma^{2m})\;\;\; \text{and} \;\;\; m_i \mid x_i,\xi,\omega \sim Bern\left(\Phi(\omega_0 + \omega_1x_i) \right),
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\xi=(\beta_0^m,\beta_1^m,\sigma^{2m},\;\;\; m=0,1)\)&lt;/span&gt;. This model implies that the distribution of &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; given &lt;span class=&#34;math inline&#34;&gt;\(x_i\)&lt;/span&gt; in the population is a mixture of two normal distributions with mean&lt;/p&gt;
+&lt;p&gt;\[
+\left[1 - \Phi(\omega_0 + \omega_1x_i) \right] \left[\beta_0^0 + \beta_1^0 x_i \right] + \left[\Phi(\omega_0 + \omega_1x_i) \right] \left[\beta_0^1 + \beta_1^1 x_i \right].
+\]&lt;/p&gt;
+&lt;p&gt;The parameters &lt;span class=&#34;math inline&#34;&gt;\((\beta_0^0,\beta_1^0,\sigma^{20},\omega)\)&lt;/span&gt; can be estimated from the data but the parameters &lt;span class=&#34;math inline&#34;&gt;\((\beta_0^1,\beta_1^1,\sigma^{21})\)&lt;/span&gt; are not estimable because &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; is missing when &lt;span class=&#34;math inline&#34;&gt;\(m_i=1\)&lt;/span&gt;. Under MAR, the distribution of &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; given &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt; is the same for units with &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; observed and missing, such that &lt;span class=&#34;math inline&#34;&gt;\(\beta_0^0=\beta_0^1=\beta_0\)&lt;/span&gt; (as well as for &lt;span class=&#34;math inline&#34;&gt;\(\beta_1\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt;). Under MNAR, other assumptions are needed to esitmate the parameters indexed by &lt;span class=&#34;math inline&#34;&gt;\(m=1\)&lt;/span&gt;.&lt;/p&gt;
+&lt;p&gt;Some final considerations:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Both SM and PMM model the joint distribution of &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(M\)&lt;/span&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;The SM formulation is more natural when the substantive interest concerns the relationship between &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt; in the population. However, these parameters can also be derived in PMM by averaging the patterns specific parameters over the missingness patterns.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;The PMM factorisation is more transparent in terms of the underlying assumptions about the unidentified parameters of the model, while SM tends to impose some obscure constraints in order to identify these parameters, which are also difficult to interpret.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Given specific assumptions to identify all the parameters in the model, PMMs are often easier to fit than SMs. In addition, imputations of the missing values are based on the predictive distribution of &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; given &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(M=0\)&lt;/span&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;These considerations seem to favour PMM over SM as MNAR approaches, especially when considering &lt;em&gt;sensitivity analysis&lt;/em&gt;. Bayesian approaches can also be used to identify these models, by assigning prior distributions which can be used to identify those parameters which cannot be estimated from the data. Justifications for the choice of these priors are therefore necessary to ensure the plausibility of the assumptions assessed and the impact of these assumptions on the posterior inference.&lt;/p&gt;
 &lt;/div&gt;
-&lt;/div&gt;
-&lt;div id=&#34;the-gibbs-sampler&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;The Gibbs’ Sampler&lt;/h2&gt;
-&lt;p&gt;The &lt;em&gt;Gibbs’s sampler&lt;/em&gt; is an iterative simulation method that is designed to yield draws from the joint posterior distribution in the case of a general pattern of missingness and provides a Bayesian analogous to the &lt;em&gt;Expectation Conditonal Maximisation &lt;/em&gt;(ECM) algorithm for ML estimation. The Gibbs’ sampler eventually generates a draw from the distribution &lt;span class=&#34;math inline&#34;&gt;\(p(x_1,\ldots,x_J)\)&lt;/span&gt; of a set of &lt;span class=&#34;math inline&#34;&gt;\(J\)&lt;/span&gt; random variables &lt;span class=&#34;math inline&#34;&gt;\(X_1,\ldots,X_J\)&lt;/span&gt; in settings where draws from the joint distribution are hard to compute but draws from the conditional distributions &lt;span class=&#34;math inline&#34;&gt;\(p(x_j \mid x_1,\ldots,x_{j-1},x_{j+1},\ldots, x_J)\)&lt;/span&gt; are relatively easy to compute. Initial values &lt;span class=&#34;math inline&#34;&gt;\(x_{10},\ldots,x_{J0}\)&lt;/span&gt; are chosen in some way and then, given current values of &lt;span class=&#34;math inline&#34;&gt;\(x_{1t},\ldots,x_{Jt}\)&lt;/span&gt; at iteration &lt;span class=&#34;math inline&#34;&gt;\(t\)&lt;/span&gt;, new values are found by drawing from the following sequence of conditional distributions:&lt;/p&gt;
-&lt;p&gt;\[
-x_{1t+1} \sim p\left(x_1 \mid x_{2t},\ldots,x_{Jt} \right),
-\]&lt;/p&gt;
-&lt;p&gt;\[
-x_{2t+1} \sim p\left(x_2 \mid x_{1t+1},\ldots,x_{Jt} \right),
-\]&lt;/p&gt;
-&lt;p&gt;up to&lt;/p&gt;
-&lt;p&gt;\[
-x_{Jt+1} \sim p\left(x_J \mid x_{2t+1},\ldots,x_{J-1t+1} \right).
-\]&lt;/p&gt;
-&lt;p&gt;It can be shown that, under general conditions, the sequence of &lt;span class=&#34;math inline&#34;&gt;\(J\)&lt;/span&gt; iterates converges to a draw from the joint posterior of the variables. When &lt;span class=&#34;math inline&#34;&gt;\(J=2\)&lt;/span&gt;, the Gibbs’ sampler is the same as DA if &lt;span class=&#34;math inline&#34;&gt;\(x_1=Y_1\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(x_2=\theta\)&lt;/span&gt; and the distributions condition on &lt;span class=&#34;math inline&#34;&gt;\(Y_0\)&lt;/span&gt;. We can then obtain a draw from the joint posterior of &lt;span class=&#34;math inline&#34;&gt;\(Y_1,\theta \mid Y_0\)&lt;/span&gt; by applying the Gibbs’ sampler, where at iteration &lt;span class=&#34;math inline&#34;&gt;\(t\)&lt;/span&gt; for the &lt;span class=&#34;math inline&#34;&gt;\(d\)&lt;/span&gt;-th imputed data set:&lt;/p&gt;
-&lt;p&gt;\[
-Y^d_{1t+1} \sim p\left(Y_1 \mid Y_0, \theta^d_{t}\right) \;\;\; \text{and} \;\;\; \theta^d_{t+1} \sim p\left(\theta \mid Y^d_{1t+1}, Y_0\right),
-\]&lt;/p&gt;
-&lt;p&gt;such that one run of the sampler converges to a draw from the posterior predictive distribution of &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt; and a draw from the posterior of &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt;. The sampler can be run independently &lt;span class=&#34;math inline&#34;&gt;\(D\)&lt;/span&gt; times to generate &lt;span class=&#34;math inline&#34;&gt;\(D\)&lt;/span&gt; iid draws from the approximate joint posterior of &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt;. The values of &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt; are multiple imputations of the missing values, drawn from their posterior predictive distribution.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div id=&#34;assessing-convergence&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;Assessing Convergence&lt;/h2&gt;
-&lt;p&gt;Assessing convergence of the sequence of draws to the target distribution is more difficult than assessing convergence of an EM-type algorithm because there is no single target quantity to monitor like the maximum value of the likelihood. Methods have been proposed to assess convergence of a single sequence (&lt;span class=&#34;citation&#34;&gt;Geyer (1992)&lt;/span&gt;), but a more reliable approach is to simulate &lt;span class=&#34;math inline&#34;&gt;\(D&amp;gt;1\)&lt;/span&gt; sequences with starting values dispersed throughout the parameter space, and the convergence of all quantities of interest can then be monitored by comparing variation between and within simulated sequences, until the “within” variation roughly equals the “between” variation. The idea is that when the distribution of each simulated sequence is close enough to the distribution of all the sequences mixed together, they can all be approximating the target distribution. &lt;span class=&#34;citation&#34;&gt;Gelman and Rubin (1992)&lt;/span&gt; developed an explicit monitoring statistic based on the following idea. For each scalar estimand &lt;span class=&#34;math inline&#34;&gt;\(\psi\)&lt;/span&gt;, label the draws from &lt;span class=&#34;math inline&#34;&gt;\(D\)&lt;/span&gt; parallel sequences as &lt;span class=&#34;math inline&#34;&gt;\(\psi^d_{t}\)&lt;/span&gt;, for &lt;span class=&#34;math inline&#34;&gt;\(t=1,\ldots,T\)&lt;/span&gt; iterations and &lt;span class=&#34;math inline&#34;&gt;\(d=1,\ldots,D\)&lt;/span&gt; sequences, and compute the between &lt;span class=&#34;math inline&#34;&gt;\(B\)&lt;/span&gt; and within &lt;span class=&#34;math inline&#34;&gt;\(\bar{V}\)&lt;/span&gt; sequence variances as:&lt;/p&gt;
-&lt;p&gt;\[
-B=\frac{T}{D-1}\sum_{d=1}^D(\bar{\psi}_{d.} - \bar{\psi}_{..})^2, \;\;\; \text{and} \;\;\; \bar{V}=\frac{1}{D}\sum_{d=1}^D s^2_{d},
-\]&lt;/p&gt;
-&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\bar{\psi}_{d.}=\frac{1}{T}\sum_{t=1}^T \psi_{dt}\)&lt;/span&gt;, &lt;span class=&#34;math inline&#34;&gt;\(\bar{\psi}_{..}=\frac{1}{D}\sum_{d=1}^D \bar{\psi}_{d}\)&lt;/span&gt;, and &lt;span class=&#34;math inline&#34;&gt;\(s^2_{d}=\frac{1}{T-1}\sum_{t=1}^T(\psi_{dt} - \bar{\psi}_{d.})^2\)&lt;/span&gt;. We can then estimate the marginal posterior variance of the estimand as&lt;/p&gt;
-&lt;p&gt;\[
-\widehat{Var}(\psi \mid Y_0) = \frac{T-1}{T}\hat{V} + \frac{1}{T} B,
-\]&lt;/p&gt;
-&lt;p&gt;which will &lt;em&gt;overestimate&lt;/em&gt; the marginal posterior variance assuming the starting distribution is appropriately over-dispersed but is &lt;em&gt;unbiased&lt;/em&gt; under stationarity (starting distribution equals the target distribution). For any finte &lt;span class=&#34;math inline&#34;&gt;\(T\)&lt;/span&gt;, the within variance &lt;span class=&#34;math inline&#34;&gt;\(\hat{V}\)&lt;/span&gt; will &lt;em&gt;underestimate&lt;/em&gt; the marginal variance because individual sequences have not had time to range over all the target distribution and should have smaller variance then B. In the limit as &lt;span class=&#34;math inline&#34;&gt;\(T \rightarrow \infty\)&lt;/span&gt; the expecation of &lt;span class=&#34;math inline&#34;&gt;\(\hat{V}\)&lt;/span&gt; approaches the marginal variance. These facts suggest monitoring convergence by estimating the factor by which the scale of the current distribution for &lt;span class=&#34;math inline&#34;&gt;\(\psi\)&lt;/span&gt; might be reduced if the simulations were continued. This is the &lt;em&gt;potential scale reduction factor&lt;/em&gt; and is estimated by&lt;/p&gt;
-&lt;p&gt;\[
-\sqrt{\hat{R}} = \sqrt{\frac{\widehat{Var}(\psi \mid Y_0)}{\hat{V}}},
-\]&lt;/p&gt;
-&lt;p&gt;which declines to 1 as &lt;span class=&#34;math inline&#34;&gt;\(T \rightarrow \infty\)&lt;/span&gt;. When this quantity is high, there is evidence to proceed the simulations further to improve our inference about the target distribution.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div id=&#34;other-simulation-methods&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;Other Simulation Methods&lt;/h2&gt;
-&lt;p&gt;When draws from the sequence of conditional distributions forming the Gibbs’ sampler are not easy to obtain, other simulation approaches are needed. Among these there are the &lt;em&gt;Sequential Imputation&lt;/em&gt; (&lt;span class=&#34;citation&#34;&gt;Kong, Liu, and Wong (1994)&lt;/span&gt;), &lt;em&gt;Sampling Imprtance Resampling&lt;/em&gt; (&lt;span class=&#34;citation&#34;&gt;Gelfand and Smith (1990)&lt;/span&gt;), &lt;em&gt;Rejection Sampling&lt;/em&gt; (&lt;span class=&#34;citation&#34;&gt;Von Neumann and others (1951)&lt;/span&gt;). One of these alternatives are the &lt;em&gt;Metropolis-Hastings&lt;/em&gt; (&lt;span class=&#34;citation&#34;&gt;Metropolis et al. (1953)&lt;/span&gt;) algorithms, of which the Gibbs’ sampler is a particular case, which constitute the so-called &lt;em&gt;Markov Chain Monte Carlo&lt;/em&gt; (MCMC) algorithms as the sequence of iterates forms a Markov Chain (&lt;span class=&#34;citation&#34;&gt;Gelman et al. (2013)&lt;/span&gt;).&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
 &lt;h1&gt;References&lt;/h1&gt;
-&lt;div id=&#34;refs&#34; class=&#34;references&#34;&gt;
-&lt;div id=&#34;ref-gelfand1990sampling&#34;&gt;
-&lt;p&gt;Gelfand, Alan E, and Adrian FM Smith. 1990. “Sampling-Based Approaches to Calculating Marginal Densities.” &lt;em&gt;Journal of the American Statistical Association&lt;/em&gt; 85 (410): 398–409.&lt;/p&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references hanging-indent&#34;&gt;
+&lt;div id=&#34;ref-heckman1976common&#34;&gt;
+&lt;p&gt;Heckman, James J. 1976. “The Common Structure of Statistical Models of Truncation, Sample Selection and Limited Dependent Variables and a Simple Estimator for Such Models.” In &lt;em&gt;Annals of Economic and Social Measurement, Volume 5, Number 4&lt;/em&gt;, 475–92. NBER.&lt;/p&gt;
 &lt;/div&gt;
-&lt;div id=&#34;ref-gelman2013bayesian&#34;&gt;
-&lt;p&gt;Gelman, Andrew, John B Carlin, Hal S Stern, David B Dunson, Aki Vehtari, and Donald B Rubin. 2013. &lt;em&gt;Bayesian Data Analysis&lt;/em&gt;. Chapman; Hall/CRC.&lt;/p&gt;
+&lt;div id=&#34;ref-little1993pattern&#34;&gt;
+&lt;p&gt;Little, Roderick JA. 1993. “Pattern-Mixture Models for Multivariate Incomplete Data.” &lt;em&gt;Journal of the American Statistical Association&lt;/em&gt; 88 (421): 125–34.&lt;/p&gt;
 &lt;/div&gt;
-&lt;div id=&#34;ref-gelman1992single&#34;&gt;
-&lt;p&gt;Gelman, Andrew, and Donald B Rubin. 1992. “A Single Series from the Gibbs Sampler Provides a False Sense of Security.” &lt;em&gt;Bayesian Statistics&lt;/em&gt; 4: 625–31.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div id=&#34;ref-geyer1992practical&#34;&gt;
-&lt;p&gt;Geyer, Charles J. 1992. “Practical Markov Chain Monte Carlo.” &lt;em&gt;Statistical Science&lt;/em&gt;, 473–83.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div id=&#34;ref-kong1994sequential&#34;&gt;
-&lt;p&gt;Kong, Augustine, Jun S Liu, and Wing Hung Wong. 1994. “Sequential Imputations and Bayesian Missing Data Problems.” &lt;em&gt;Journal of the American Statistical Association&lt;/em&gt; 89 (425): 278–88.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div id=&#34;ref-metropolis1953equation&#34;&gt;
-&lt;p&gt;Metropolis, Nicholas, Arianna W Rosenbluth, Marshall N Rosenbluth, Augusta H Teller, and Edward Teller. 1953. “Equation of State Calculations by Fast Computing Machines.” &lt;em&gt;The Journal of Chemical Physics&lt;/em&gt; 21 (6): 1087–92.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div id=&#34;ref-tanner1987calculation&#34;&gt;
-&lt;p&gt;Tanner, Martin A, and Wing Hung Wong. 1987. “The Calculation of Posterior Distributions by Data Augmentation.” &lt;em&gt;Journal of the American Statistical Association&lt;/em&gt; 82 (398): 528–40.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div id=&#34;ref-von1951general&#34;&gt;
-&lt;p&gt;Von Neumann, John, and others. 1951. “The General and Logical Theory of Automata.” &lt;em&gt;1951&lt;/em&gt;, 1–41.&lt;/p&gt;
+&lt;div id=&#34;ref-little2019statistical&#34;&gt;
+&lt;p&gt;Little, Roderick JA, and Donald B Rubin. 2019. &lt;em&gt;Statistical Analysis with Missing Data&lt;/em&gt;. Vol. 793. John Wiley &amp;amp; Sons.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
@@ -125,6 +100,7 @@ B=\frac{T}{D-1}\sum_{d=1}^D(\bar{\psi}_{d.} - \bar{\psi}_{..})^2, \;\;\; \text{a
       
       <guid>/missmethods/likelihood-based-methods-ignorable2/</guid>
       <description>
+&lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
 
 
 &lt;p&gt;Bayesian inference offers a convenient framework to analyse missing data as it draws no distinction between missing values and parameters, both interprted as unobserved quantities who are associated with a joint posterior distribution conditional on the observed data. In this section, I review basic concepts of Bayesian inference based on fully observed data, with notation and structure mostly taken from &lt;span class=&#34;citation&#34;&gt;Gelman et al. (2013)&lt;/span&gt;.&lt;/p&gt;
@@ -300,7 +276,7 @@ p(y \mid \beta)=\prod_{i=1}^n {n_i \choose y_i} {e^{\eta_i} \choose 1+e^{\eta_i}
 &lt;/div&gt;
 &lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
 &lt;h1&gt;References&lt;/h1&gt;
-&lt;div id=&#34;refs&#34; class=&#34;references&#34;&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references hanging-indent&#34;&gt;
 &lt;div id=&#34;ref-gelman2013bayesian&#34;&gt;
 &lt;p&gt;Gelman, Andrew, John B Carlin, Hal S Stern, David B Dunson, Aki Vehtari, and Donald B Rubin. 2013. &lt;em&gt;Bayesian Data Analysis&lt;/em&gt;. Chapman; Hall/CRC.&lt;/p&gt;
 &lt;/div&gt;
@@ -316,6 +292,7 @@ p(y \mid \beta)=\prod_{i=1}^n {n_i \choose y_i} {e^{\eta_i} \choose 1+e^{\eta_i}
       
       <guid>/missmethods/likelihood-based-methods-ignorable3/</guid>
       <description>
+&lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
 
 
 &lt;p&gt;As for the inference under complete data, inference under incomplete data consists in deriving the likelihood for the parameters based on the available data, either using a &lt;em&gt;Maximum Likelihood&lt;/em&gt; (ML) approach (solving the likelihood equation) or using the &lt;em&gt;Bayes’ rule&lt;/em&gt; incorporating a prior distribution (performing necessary integrations to obtain the posterior distribution). However, asymptotic standard errors obtained from the information matrix, are more questionable when dealing with missing data since the sample will not be typically iid and results that imply the large sample normality of the likelihood function do not immediately apply. More complications arise when dealing with the process that lead to some of the data to be missing. This can be explained with a simple example.&lt;/p&gt;
@@ -408,7 +385,7 @@ l_{ign}\left(\mu, \Sigma \mid y_{0} \right) = \log\left(L_{ign}\left(\mu,\Sigma 
 &lt;/div&gt;
 &lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
 &lt;h1&gt;References&lt;/h1&gt;
-&lt;div id=&#34;refs&#34; class=&#34;references&#34;&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references hanging-indent&#34;&gt;
 &lt;div id=&#34;ref-little2019statistical&#34;&gt;
 &lt;p&gt;Little, Roderick JA, and Donald B Rubin. 2019. &lt;em&gt;Statistical Analysis with Missing Data&lt;/em&gt;. Vol. 793. John Wiley &amp;amp; Sons.&lt;/p&gt;
 &lt;/div&gt;
@@ -418,79 +395,106 @@ l_{ign}\left(\mu, \Sigma \mid y_{0} \right) = \log\left(L_{ign}\left(\mu,\Sigma 
     </item>
     
     <item>
-      <title>Likelihood Based Inference with Incomplete Data (Nonignorable)</title>
-      <link>/missmethods/likelihood-based-methods-nonignorable/</link>
+      <title>Bayesian Iterative Simulation Methods</title>
+      <link>/missmethods/bayesian-methods/</link>
       <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
       
-      <guid>/missmethods/likelihood-based-methods-nonignorable/</guid>
+      <guid>/missmethods/bayesian-methods/</guid>
       <description>
+&lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
 
 
-&lt;p&gt;In many cases, analysis methods for missing data are based on the ignorable likelihood&lt;/p&gt;
+&lt;p&gt;A useful alternative approach to &lt;em&gt;Maximum Likelihood&lt;/em&gt;(ML) methods, particularly when the sample size is small, is to include a reasonable prior distribution for the parameters and compute the posterior distribution of the parameters of interest. The posterior distribution for a model with ignorable missingness is&lt;/p&gt;
 &lt;p&gt;\[
-L_{ign}\left(\theta \mid Y_0, X \right) \propto f\left(Y_0 \mid X, \theta \right),
+p(\theta \mid Y_0, M) \equiv p(\theta \mid Y_0) \propto p(\theta)f(Y_0 \mid \theta),
 \]&lt;/p&gt;
-&lt;p&gt;regarded as a function of the parameters &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; for fixed observed data &lt;span class=&#34;math inline&#34;&gt;\(Y_0\)&lt;/span&gt; and some fully observed covariates &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt;. The density &lt;span class=&#34;math inline&#34;&gt;\(f(Y_0 \mid X, \theta)\)&lt;/span&gt; is obtained by integrating out the missing data &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt; from the joint density &lt;span class=&#34;math inline&#34;&gt;\(f(Y \mid X, \theta)=f(Y_0,Y_1\mid X, \theta)\)&lt;/span&gt;. Sufficient conditions for basing inference about &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; on the ignorbale likelihood are that the missingness mechanism is &lt;em&gt;Missing At Random&lt;/em&gt;(MAR) and the parameters of the model of analysis &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; and those of the missingness mechanism &lt;span class=&#34;math inline&#34;&gt;\(\psi\)&lt;/span&gt; are distinct. Here we focus our attention on the situations where the missingness mechanism is &lt;em&gt;Missing Not At Random&lt;/em&gt;(MNAR) and valid &lt;em&gt;Maximum Likelihood&lt;/em&gt;(ML), &lt;em&gt;Bayesian&lt;/em&gt; and &lt;em&gt;Multiple Imputation&lt;/em&gt;(MI) inferences generally need to be based on the full likelihood&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(p(\theta)\)&lt;/span&gt; is the prior and &lt;span class=&#34;math inline&#34;&gt;\(f(Y_0 \mid \theta)\)&lt;/span&gt; is the density of the observed data &lt;span class=&#34;math inline&#34;&gt;\(Y_0\)&lt;/span&gt;. Simulation from the posterior without iteration can be accomplished if the likelihood can be factored into complete data components, while for general patterns of missing data, Bayesian simulation requires iteration.&lt;/p&gt;
+&lt;div id=&#34;data-augmentation&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Data Augmentation&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;Data Augmentation&lt;/em&gt;(&lt;span class=&#34;citation&#34;&gt;Tanner and Wong (1987)&lt;/span&gt;), or DA, is an iterative method of simulating the posteiror distribution of &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; that combines features of the &lt;em&gt;Expecation Maximisation&lt;/em&gt;(EM) algorithm and &lt;em&gt;Multiple Imputation&lt;/em&gt;(MI). Starting with an initial draw &lt;span class=&#34;math inline&#34;&gt;\(\theta_0\)&lt;/span&gt; from an approximation to the posterior, then given the value &lt;span class=&#34;math inline&#34;&gt;\(\theta_t\)&lt;/span&gt; at iteration &lt;span class=&#34;math inline&#34;&gt;\(t\)&lt;/span&gt;:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;p&gt;Draw &lt;span class=&#34;math inline&#34;&gt;\(Y_{1,t+1}\)&lt;/span&gt; with density &lt;span class=&#34;math inline&#34;&gt;\(p(Y_1 \mid Y_0, \theta_t)\)&lt;/span&gt; (I step).&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Draw &lt;span class=&#34;math inline&#34;&gt;\(\theta_{t+1}\)&lt;/span&gt; with density &lt;span class=&#34;math inline&#34;&gt;\(p(\theta \mid Y_0, Y_{1,t+1})\)&lt;/span&gt; (P step).&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;The procedure is motivated by the fact that the distributions in these two steps are often much easier to draw from than either of the posteriors &lt;span class=&#34;math inline&#34;&gt;\(p(Y_1 \mid Y_0)\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(p(\theta \mid Y_0)\)&lt;/span&gt;, or the joint posterior &lt;span class=&#34;math inline&#34;&gt;\(p(\theta, Y_1 \mid Y_0)\)&lt;/span&gt;. The procedure can be shown to eventually yield a draw from the joint posterior of &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; given &lt;span class=&#34;math inline&#34;&gt;\(Y_0\)&lt;/span&gt;, in the sense that as &lt;span class=&#34;math inline&#34;&gt;\(t\)&lt;/span&gt; tends to infinity this sequence converges to a draw from the joint distribution.&lt;/p&gt;
+&lt;div id=&#34;bivariate-normal-data-example&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Bivariate Normal Data Example&lt;/h3&gt;
+&lt;p&gt;Suppose having a sample &lt;span class=&#34;math inline&#34;&gt;\(y_i=(y_{1i},y_{2i})\)&lt;/span&gt; from a Bivariate Normal distribution for &lt;span class=&#34;math inline&#34;&gt;\(i=1,\ldots,n\)&lt;/span&gt; units, with mean vector &lt;span class=&#34;math inline&#34;&gt;\(\mu=(\mu_1,\mu_2)\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(2\times2\)&lt;/span&gt; covariance matrix &lt;span class=&#34;math inline&#34;&gt;\(\Sigma\)&lt;/span&gt;. Assume that one group of units has &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt; observed and &lt;span class=&#34;math inline&#34;&gt;\(Y_2\)&lt;/span&gt; missing, while a second group of units has both variables observed and a third group of units has &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt; missing and &lt;span class=&#34;math inline&#34;&gt;\(Y_2\)&lt;/span&gt; observed. Under DA methods, each iteration &lt;span class=&#34;math inline&#34;&gt;\(t\)&lt;/span&gt; consists of an I step and a P step. In the first, missing data are replaced with draws from its conditional distribution given the observed data and current values of the parameters (rather then its conditional mean as in the EM algorithm). Because units are conditionally independent given the parameters, each missing &lt;span class=&#34;math inline&#34;&gt;\(y_{2i}\)&lt;/span&gt; is drawn independently as&lt;/p&gt;
 &lt;p&gt;\[
-L_{full}\left(\theta, \psi \mid Y_0, X, M \right) \propto f\left(Y_0, M \mid X, \theta, \psi \right),
+y_{2i,t+1} \sim N\left(\beta_{20t} + \beta_{21t}y_{1i}, \sigma^2_{2t} \right),
 \]&lt;/p&gt;
-&lt;p&gt;regarded as a function of &lt;span class=&#34;math inline&#34;&gt;\((\theta,\psi)\)&lt;/span&gt; for fixed &lt;span class=&#34;math inline&#34;&gt;\((Y_0,M)\)&lt;/span&gt;. Here, &lt;span class=&#34;math inline&#34;&gt;\(f(Y_0,M\mid \theta, \psi)\)&lt;/span&gt; is obtained by integrating out &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt; from the joint density &lt;span class=&#34;math inline&#34;&gt;\(f(Y,M \mid X, \theta, \psi)\)&lt;/span&gt;. Two main approaches for formulating MNAR models can be distinguished, namely &lt;em&gt;selection models&lt;/em&gt;(SM) and &lt;em&gt;pattern mixture models&lt;/em&gt;(PMM).&lt;/p&gt;
-&lt;div id=&#34;selection-and-pattern-mixture-models&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;Selection and Pattern Mixture Models&lt;/h2&gt;
-&lt;p&gt;SMs factor the joint distribution of &lt;span class=&#34;math inline&#34;&gt;\(m_i\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; as&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\beta_{20t},\beta_{21t}\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2_{2t}\)&lt;/span&gt; are the &lt;span class=&#34;math inline&#34;&gt;\(t\)&lt;/span&gt;-th iterates of the regression parameters of &lt;span class=&#34;math inline&#34;&gt;\(Y_2\)&lt;/span&gt; on &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt;. Analogously, each missing &lt;span class=&#34;math inline&#34;&gt;\(y_{1i}\)&lt;/span&gt; is drawn independently as&lt;/p&gt;
 &lt;p&gt;\[
-f(m_i,y_i \mid x_i, \theta, \psi) = f(y_i \mid x_i, \theta)f(m_i \mid x_i,y_i,\psi),
+y_{1i,t+1} \sim N\left(\beta_{10t} + \beta_{11t}y_{2i}, \sigma^2_{1t} \right),
 \]&lt;/p&gt;
-&lt;p&gt;where the first factor is the distribution of &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; in the population while the second factor is the missingness mechanism, with &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\psi\)&lt;/span&gt; which are assumed to be distinct. Alternatively, PMMs factor the joint distribution as&lt;/p&gt;
-&lt;p&gt;\[
-f(m_i,y_i \mid x_i, \theta, \psi) = f(y_i \mid x_i, m_i,\xi)f(m_i \mid x_i),
-\]&lt;/p&gt;
-&lt;p&gt;where the first factor is the distribution of &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; in the strata defined by different patterns of missingness &lt;span class=&#34;math inline&#34;&gt;\(m_i\)&lt;/span&gt; while the second factor models the probabilities of the different patterns, with &lt;span class=&#34;math inline&#34;&gt;\(\xi\)&lt;/span&gt; which are assumed to be distinct (&lt;span class=&#34;citation&#34;&gt;Little (1993)&lt;/span&gt;,&lt;span class=&#34;citation&#34;&gt;Little and Rubin (2019)&lt;/span&gt;). The distinction between the two factorisations becomes clearer when considering a specific example.&lt;/p&gt;
-&lt;p&gt;Suppose thta missing values are confined to a single variable and let &lt;span class=&#34;math inline&#34;&gt;\(y_i=(y_{i,1},y_{i2})\)&lt;/span&gt; be a bivariate response outcome where &lt;span class=&#34;math inline&#34;&gt;\(y_{i1}\)&lt;/span&gt; is fully observed and &lt;span class=&#34;math inline&#34;&gt;\(y_{i2}\)&lt;/span&gt; is observed for &lt;span class=&#34;math inline&#34;&gt;\(i=1,\ldots,n_{cc}\)&lt;/span&gt; but missing for &lt;span class=&#34;math inline&#34;&gt;\(i=n_{cc}+1,\ldots,n\)&lt;/span&gt;. Let &lt;span class=&#34;math inline&#34;&gt;\(m_{i2}\)&lt;/span&gt; be the missingness indicator for &lt;span class=&#34;math inline&#34;&gt;\(y_{i2}\)&lt;/span&gt;, then a PMM factors the denisty of &lt;span class=&#34;math inline&#34;&gt;\(Y_0\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(M\)&lt;/span&gt; given &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt; as&lt;/p&gt;
-&lt;p&gt;\[
-f(y_0, M \mid X, \xi)=\prod_{i=1}^{n_{cc}}f(y_{i1},y_{i2}\mid x_i, m_{i2}=0,\xi)Pr(m_{i2}=0 \mid x_i, \omega) \times \prod_{i=n_{cc}+1}^{n}f(y_{i1} \mid x_i, m_{i2}=1,\xi)Pr(m_{i2}=1 \mid x_i, \omega).
-\]&lt;/p&gt;
-&lt;p&gt;This expression shows that there are no data with which to estimate directly the distribution &lt;span class=&#34;math inline&#34;&gt;\(f(y_{i2} \mid x_i, m_{i2}=1,\xi)\)&lt;/span&gt;, because all units with &lt;span class=&#34;math inline&#34;&gt;\(m_{i2}=1\)&lt;/span&gt; have &lt;span class=&#34;math inline&#34;&gt;\(y_{i2}\)&lt;/span&gt; missing. Under MAR, this is identified using the distribution of the observed data &lt;span class=&#34;math inline&#34;&gt;\(f(y_{i2} \mid x_i, m_{i2}=1,\xi)=f(y_{i2} \mid x_i, m_{i2}=0,\xi)\)&lt;/span&gt;, while under MNAR it must be identified using other assumptions. The SM formulation is&lt;/p&gt;
-&lt;p&gt;\[
-f(y_i, m_{i2} \mid \theta, \psi) = f(y_{i1} \mid x_i, \theta)f(y_{i2} \mid x_i, y_{i1},\theta)f(m_{i2}\mid x_i,y_{i1},y_{i2},\psi).
-\]&lt;/p&gt;
-&lt;p&gt;Typically, the missingness mechanism &lt;span class=&#34;math inline&#34;&gt;\(f(m_{i2} \mid x_i,y_{i1},y_{i2},\psi)\)&lt;/span&gt; is modelled using some additive probit or logit regression of &lt;span class=&#34;math inline&#34;&gt;\(m_{i2}\)&lt;/span&gt; on &lt;span class=&#34;math inline&#34;&gt;\(x_i\)&lt;/span&gt;,&lt;span class=&#34;math inline&#34;&gt;\(y_{i1}\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(y_{i2}\)&lt;/span&gt;. However, the coefficient of &lt;span class=&#34;math inline&#34;&gt;\(y_{i2}\)&lt;/span&gt; in this regression is not directly estimable from the data and hence the model cannot be fully estimated without extra assumptions.&lt;/p&gt;
-&lt;div id=&#34;normal-models-for-mnar-data&#34; class=&#34;section level3&#34;&gt;
-&lt;h3&gt;Normal Models for MNAR data&lt;/h3&gt;
-&lt;p&gt;Assume we have a complete sample &lt;span class=&#34;math inline&#34;&gt;\((y_i,x_i)\)&lt;/span&gt; on a continuous variable &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; and a set of fully observed covariates &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt;, for &lt;span class=&#34;math inline&#34;&gt;\(i=1,\ldots,n\)&lt;/span&gt;. Suppose that &lt;span class=&#34;math inline&#34;&gt;\(i=1,\ldots,n_{cc}\)&lt;/span&gt; units are observed while the remaining &lt;span class=&#34;math inline&#34;&gt;\(i=n_{cc}+1,\ldots,n\)&lt;/span&gt; units are missing, with &lt;span class=&#34;math inline&#34;&gt;\(m_i\)&lt;/span&gt; being the corresponding missingness indicator. Heckman (&lt;span class=&#34;citation&#34;&gt;Heckman (1976)&lt;/span&gt;) proposed the following selection model to handle missingness:&lt;/p&gt;
-&lt;p&gt;\[
-y_i \mid x_i, \theta, \psi \sim N(\beta_0 + \beta_1x_i, \sigma^2) \;\;\; \text{and} \;\;\; m_i \mid x_i,y_i,\theta,\psi \sim Bern\left(\Phi(\psi_0 + \psi_1x_i + \psi_2y_i) \right),
-\]&lt;/p&gt;
-&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\theta=(\beta_0,\beta_1,\sigma^2)\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\Phi\)&lt;/span&gt; denotes the probit (cumulative normal) distribution function. Note that if &lt;span class=&#34;math inline&#34;&gt;\(\psi_2=0\)&lt;/span&gt;, the missing data are MAR, while if &lt;span class=&#34;math inline&#34;&gt;\(\psi_2 \neq 0\)&lt;/span&gt; the missing data are MNAR since missingness in &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; depends on the unobserved value of &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt;. This model can be estimated using either a two-step least squares method, ML in combination with an EM algorithm, or a Bayesian approach. The main issue is the lack of information about &lt;span class=&#34;math inline&#34;&gt;\(\psi_2\)&lt;/span&gt;, which can be partly identified through the specific assumptions about the distribution of the observed data of &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt;. This, however, makes the implicit assumption that the assumed distribution can well described the distribution of the complete (observed and missing) data which can never be tested or checked. An alternative approach is to use a PMM factorisation and model:&lt;/p&gt;
-&lt;p&gt;\[
-y_i \mid m_i=m,x_i,\xi,\omega \sim N(\beta_0^m + \beta_1^mx_i, \sigma^{2m})\;\;\; \text{and} \;\;\; m_i \mid x_i,\xi,\omega \sim Bern\left(\Phi(\omega_0 + \omega_1x_i) \right),
-\]&lt;/p&gt;
-&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\xi=(\beta_0^m,\beta_1^m,\sigma^{2m},\;\;\; m=0,1)\)&lt;/span&gt;. This model implies that the distribution of &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; given &lt;span class=&#34;math inline&#34;&gt;\(x_i\)&lt;/span&gt; in the population is a mixture of two normal distributions with mean&lt;/p&gt;
-&lt;p&gt;\[
-\left[1 - \Phi(\omega_0 + \omega_1x_i) \right] \left[\beta_0^0 + \beta_1^0 x_i \right] + \left[\Phi(\omega_0 + \omega_1x_i) \right] \left[\beta_0^1 + \beta_1^1 x_i \right].
-\]&lt;/p&gt;
-&lt;p&gt;The parameters &lt;span class=&#34;math inline&#34;&gt;\((\beta_0^0,\beta_1^0,\sigma^{20},\omega)\)&lt;/span&gt; can be estimated from the data but the parameters &lt;span class=&#34;math inline&#34;&gt;\((\beta_0^1,\beta_1^1,\sigma^{21})\)&lt;/span&gt; are not estimable because &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; is missing when &lt;span class=&#34;math inline&#34;&gt;\(m_i=1\)&lt;/span&gt;. Under MAR, the distribution of &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; given &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt; is the same for units with &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; observed and missing, such that &lt;span class=&#34;math inline&#34;&gt;\(\beta_0^0=\beta_0^1=\beta_0\)&lt;/span&gt; (as well as for &lt;span class=&#34;math inline&#34;&gt;\(\beta_1\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt;). Under MNAR, other assumptions are needed to esitmate the parameters indexed by &lt;span class=&#34;math inline&#34;&gt;\(m=1\)&lt;/span&gt;.&lt;/p&gt;
-&lt;p&gt;Some final considerations:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;p&gt;Both SM and PMM model the joint distribution of &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(M\)&lt;/span&gt;.&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;The SM formulation is more natural when the substantive interest concerns the relationship between &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt; in the population. However, these parameters can also be derived in PMM by averaging the patterns specific parameters over the missingness patterns.&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;The PMM factorisation is more transparent in terms of the underlying assumptions about the unidentified parameters of the model, while SM tends to impose some obscure constraints in order to identify these parameters, which are also difficult to interpret.&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;Given specific assumptions to identify all the parameters in the model, PMMs are often easier to fit than SMs. In addition, imputations of the missing values are based on the predictive distribution of &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; given &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(M=0\)&lt;/span&gt;.&lt;/p&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;These considerations seem to favour PMM over SM as MNAR approaches, especially when considering &lt;em&gt;sensitivity analysis&lt;/em&gt;. Bayesian approaches can also be used to identify these models, by assigning prior distributions which can be used to identify those parameters which cannot be estimated from the data. Justifications for the choice of these priors are therefore necessary to ensure the plausibility of the assumptions assessed and the impact of these assumptions on the posterior inference.&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\beta_{10t},\beta_{11t}\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2_{1t}\)&lt;/span&gt; are the &lt;span class=&#34;math inline&#34;&gt;\(t\)&lt;/span&gt;-th iterates of the regression parameters of &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt; on &lt;span class=&#34;math inline&#34;&gt;\(Y_2\)&lt;/span&gt;. In the second step, these drawn values are treated as if they were the observed values and one draw of the bivariate Normal parameters is made from the complete data posterior. In the limit, the draws are from the joint posterior of the missing values and the parameters. Thus, a run of DA generates both a draw from the posterior predictive distribution of &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt; and a draw from the posterior of &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt;, and the procedure can be run &lt;span class=&#34;math inline&#34;&gt;\(D\)&lt;/span&gt; times to obtain &lt;span class=&#34;math inline&#34;&gt;\(D\)&lt;/span&gt; iid draws from the joint posterior of &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt;. Unlike the EM, estimates of the sampling covariance matrix from the filled-in data can be computed without any corrections to the estimated variances because draws from the posterior predictive distribution of the missing values are imputed in the I step of DA, rather than the conditional means as in the E step of EM. The loss of efficiency from imputing draws is limited when the posterior mean from DA is computed over many draws from the posterior.&lt;/p&gt;
 &lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-gibbs-sampler&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The Gibbs’ Sampler&lt;/h2&gt;
+&lt;p&gt;The &lt;em&gt;Gibbs’s sampler&lt;/em&gt; is an iterative simulation method that is designed to yield draws from the joint posterior distribution in the case of a general pattern of missingness and provides a Bayesian analogous to the &lt;em&gt;Expectation Conditonal Maximisation &lt;/em&gt;(ECM) algorithm for ML estimation. The Gibbs’ sampler eventually generates a draw from the distribution &lt;span class=&#34;math inline&#34;&gt;\(p(x_1,\ldots,x_J)\)&lt;/span&gt; of a set of &lt;span class=&#34;math inline&#34;&gt;\(J\)&lt;/span&gt; random variables &lt;span class=&#34;math inline&#34;&gt;\(X_1,\ldots,X_J\)&lt;/span&gt; in settings where draws from the joint distribution are hard to compute but draws from the conditional distributions &lt;span class=&#34;math inline&#34;&gt;\(p(x_j \mid x_1,\ldots,x_{j-1},x_{j+1},\ldots, x_J)\)&lt;/span&gt; are relatively easy to compute. Initial values &lt;span class=&#34;math inline&#34;&gt;\(x_{10},\ldots,x_{J0}\)&lt;/span&gt; are chosen in some way and then, given current values of &lt;span class=&#34;math inline&#34;&gt;\(x_{1t},\ldots,x_{Jt}\)&lt;/span&gt; at iteration &lt;span class=&#34;math inline&#34;&gt;\(t\)&lt;/span&gt;, new values are found by drawing from the following sequence of conditional distributions:&lt;/p&gt;
+&lt;p&gt;\[
+x_{1t+1} \sim p\left(x_1 \mid x_{2t},\ldots,x_{Jt} \right),
+\]&lt;/p&gt;
+&lt;p&gt;\[
+x_{2t+1} \sim p\left(x_2 \mid x_{1t+1},\ldots,x_{Jt} \right),
+\]&lt;/p&gt;
+&lt;p&gt;up to&lt;/p&gt;
+&lt;p&gt;\[
+x_{Jt+1} \sim p\left(x_J \mid x_{2t+1},\ldots,x_{J-1t+1} \right).
+\]&lt;/p&gt;
+&lt;p&gt;It can be shown that, under general conditions, the sequence of &lt;span class=&#34;math inline&#34;&gt;\(J\)&lt;/span&gt; iterates converges to a draw from the joint posterior of the variables. When &lt;span class=&#34;math inline&#34;&gt;\(J=2\)&lt;/span&gt;, the Gibbs’ sampler is the same as DA if &lt;span class=&#34;math inline&#34;&gt;\(x_1=Y_1\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(x_2=\theta\)&lt;/span&gt; and the distributions condition on &lt;span class=&#34;math inline&#34;&gt;\(Y_0\)&lt;/span&gt;. We can then obtain a draw from the joint posterior of &lt;span class=&#34;math inline&#34;&gt;\(Y_1,\theta \mid Y_0\)&lt;/span&gt; by applying the Gibbs’ sampler, where at iteration &lt;span class=&#34;math inline&#34;&gt;\(t\)&lt;/span&gt; for the &lt;span class=&#34;math inline&#34;&gt;\(d\)&lt;/span&gt;-th imputed data set:&lt;/p&gt;
+&lt;p&gt;\[
+Y^d_{1t+1} \sim p\left(Y_1 \mid Y_0, \theta^d_{t}\right) \;\;\; \text{and} \;\;\; \theta^d_{t+1} \sim p\left(\theta \mid Y^d_{1t+1}, Y_0\right),
+\]&lt;/p&gt;
+&lt;p&gt;such that one run of the sampler converges to a draw from the posterior predictive distribution of &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt; and a draw from the posterior of &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt;. The sampler can be run independently &lt;span class=&#34;math inline&#34;&gt;\(D\)&lt;/span&gt; times to generate &lt;span class=&#34;math inline&#34;&gt;\(D\)&lt;/span&gt; iid draws from the approximate joint posterior of &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt;. The values of &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt; are multiple imputations of the missing values, drawn from their posterior predictive distribution.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;assessing-convergence&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Assessing Convergence&lt;/h2&gt;
+&lt;p&gt;Assessing convergence of the sequence of draws to the target distribution is more difficult than assessing convergence of an EM-type algorithm because there is no single target quantity to monitor like the maximum value of the likelihood. Methods have been proposed to assess convergence of a single sequence (&lt;span class=&#34;citation&#34;&gt;Geyer (1992)&lt;/span&gt;), but a more reliable approach is to simulate &lt;span class=&#34;math inline&#34;&gt;\(D&amp;gt;1\)&lt;/span&gt; sequences with starting values dispersed throughout the parameter space, and the convergence of all quantities of interest can then be monitored by comparing variation between and within simulated sequences, until the “within” variation roughly equals the “between” variation. The idea is that when the distribution of each simulated sequence is close enough to the distribution of all the sequences mixed together, they can all be approximating the target distribution. &lt;span class=&#34;citation&#34;&gt;Gelman and Rubin (1992)&lt;/span&gt; developed an explicit monitoring statistic based on the following idea. For each scalar estimand &lt;span class=&#34;math inline&#34;&gt;\(\psi\)&lt;/span&gt;, label the draws from &lt;span class=&#34;math inline&#34;&gt;\(D\)&lt;/span&gt; parallel sequences as &lt;span class=&#34;math inline&#34;&gt;\(\psi^d_{t}\)&lt;/span&gt;, for &lt;span class=&#34;math inline&#34;&gt;\(t=1,\ldots,T\)&lt;/span&gt; iterations and &lt;span class=&#34;math inline&#34;&gt;\(d=1,\ldots,D\)&lt;/span&gt; sequences, and compute the between &lt;span class=&#34;math inline&#34;&gt;\(B\)&lt;/span&gt; and within &lt;span class=&#34;math inline&#34;&gt;\(\bar{V}\)&lt;/span&gt; sequence variances as:&lt;/p&gt;
+&lt;p&gt;\[
+B=\frac{T}{D-1}\sum_{d=1}^D(\bar{\psi}_{d.} - \bar{\psi}_{..})^2, \;\;\; \text{and} \;\;\; \bar{V}=\frac{1}{D}\sum_{d=1}^D s^2_{d},
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\bar{\psi}_{d.}=\frac{1}{T}\sum_{t=1}^T \psi_{dt}\)&lt;/span&gt;, &lt;span class=&#34;math inline&#34;&gt;\(\bar{\psi}_{..}=\frac{1}{D}\sum_{d=1}^D \bar{\psi}_{d}\)&lt;/span&gt;, and &lt;span class=&#34;math inline&#34;&gt;\(s^2_{d}=\frac{1}{T-1}\sum_{t=1}^T(\psi_{dt} - \bar{\psi}_{d.})^2\)&lt;/span&gt;. We can then estimate the marginal posterior variance of the estimand as&lt;/p&gt;
+&lt;p&gt;\[
+\widehat{Var}(\psi \mid Y_0) = \frac{T-1}{T}\hat{V} + \frac{1}{T} B,
+\]&lt;/p&gt;
+&lt;p&gt;which will &lt;em&gt;overestimate&lt;/em&gt; the marginal posterior variance assuming the starting distribution is appropriately over-dispersed but is &lt;em&gt;unbiased&lt;/em&gt; under stationarity (starting distribution equals the target distribution). For any finte &lt;span class=&#34;math inline&#34;&gt;\(T\)&lt;/span&gt;, the within variance &lt;span class=&#34;math inline&#34;&gt;\(\hat{V}\)&lt;/span&gt; will &lt;em&gt;underestimate&lt;/em&gt; the marginal variance because individual sequences have not had time to range over all the target distribution and should have smaller variance then B. In the limit as &lt;span class=&#34;math inline&#34;&gt;\(T \rightarrow \infty\)&lt;/span&gt; the expecation of &lt;span class=&#34;math inline&#34;&gt;\(\hat{V}\)&lt;/span&gt; approaches the marginal variance. These facts suggest monitoring convergence by estimating the factor by which the scale of the current distribution for &lt;span class=&#34;math inline&#34;&gt;\(\psi\)&lt;/span&gt; might be reduced if the simulations were continued. This is the &lt;em&gt;potential scale reduction factor&lt;/em&gt; and is estimated by&lt;/p&gt;
+&lt;p&gt;\[
+\sqrt{\hat{R}} = \sqrt{\frac{\widehat{Var}(\psi \mid Y_0)}{\hat{V}}},
+\]&lt;/p&gt;
+&lt;p&gt;which declines to 1 as &lt;span class=&#34;math inline&#34;&gt;\(T \rightarrow \infty\)&lt;/span&gt;. When this quantity is high, there is evidence to proceed the simulations further to improve our inference about the target distribution.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;other-simulation-methods&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Other Simulation Methods&lt;/h2&gt;
+&lt;p&gt;When draws from the sequence of conditional distributions forming the Gibbs’ sampler are not easy to obtain, other simulation approaches are needed. Among these there are the &lt;em&gt;Sequential Imputation&lt;/em&gt; (&lt;span class=&#34;citation&#34;&gt;Kong, Liu, and Wong (1994)&lt;/span&gt;), &lt;em&gt;Sampling Imprtance Resampling&lt;/em&gt; (&lt;span class=&#34;citation&#34;&gt;Gelfand and Smith (1990)&lt;/span&gt;), &lt;em&gt;Rejection Sampling&lt;/em&gt; (&lt;span class=&#34;citation&#34;&gt;Von Neumann and others (1951)&lt;/span&gt;). One of these alternatives are the &lt;em&gt;Metropolis-Hastings&lt;/em&gt; (&lt;span class=&#34;citation&#34;&gt;Metropolis et al. (1953)&lt;/span&gt;) algorithms, of which the Gibbs’ sampler is a particular case, which constitute the so-called &lt;em&gt;Markov Chain Monte Carlo&lt;/em&gt; (MCMC) algorithms as the sequence of iterates forms a Markov Chain (&lt;span class=&#34;citation&#34;&gt;Gelman et al. (2013)&lt;/span&gt;).&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
 &lt;h1&gt;References&lt;/h1&gt;
-&lt;div id=&#34;refs&#34; class=&#34;references&#34;&gt;
-&lt;div id=&#34;ref-heckman1976common&#34;&gt;
-&lt;p&gt;Heckman, James J. 1976. “The Common Structure of Statistical Models of Truncation, Sample Selection and Limited Dependent Variables and a Simple Estimator for Such Models.” In &lt;em&gt;Annals of Economic and Social Measurement, Volume 5, Number 4&lt;/em&gt;, 475–92. NBER.&lt;/p&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references hanging-indent&#34;&gt;
+&lt;div id=&#34;ref-gelfand1990sampling&#34;&gt;
+&lt;p&gt;Gelfand, Alan E, and Adrian FM Smith. 1990. “Sampling-Based Approaches to Calculating Marginal Densities.” &lt;em&gt;Journal of the American Statistical Association&lt;/em&gt; 85 (410): 398–409.&lt;/p&gt;
 &lt;/div&gt;
-&lt;div id=&#34;ref-little1993pattern&#34;&gt;
-&lt;p&gt;Little, Roderick JA. 1993. “Pattern-Mixture Models for Multivariate Incomplete Data.” &lt;em&gt;Journal of the American Statistical Association&lt;/em&gt; 88 (421): 125–34.&lt;/p&gt;
+&lt;div id=&#34;ref-gelman2013bayesian&#34;&gt;
+&lt;p&gt;Gelman, Andrew, John B Carlin, Hal S Stern, David B Dunson, Aki Vehtari, and Donald B Rubin. 2013. &lt;em&gt;Bayesian Data Analysis&lt;/em&gt;. Chapman; Hall/CRC.&lt;/p&gt;
 &lt;/div&gt;
-&lt;div id=&#34;ref-little2019statistical&#34;&gt;
-&lt;p&gt;Little, Roderick JA, and Donald B Rubin. 2019. &lt;em&gt;Statistical Analysis with Missing Data&lt;/em&gt;. Vol. 793. John Wiley &amp;amp; Sons.&lt;/p&gt;
+&lt;div id=&#34;ref-gelman1992single&#34;&gt;
+&lt;p&gt;Gelman, Andrew, and Donald B Rubin. 1992. “A Single Series from the Gibbs Sampler Provides a False Sense of Security.” &lt;em&gt;Bayesian Statistics&lt;/em&gt; 4: 625–31.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-geyer1992practical&#34;&gt;
+&lt;p&gt;Geyer, Charles J. 1992. “Practical Markov Chain Monte Carlo.” &lt;em&gt;Statistical Science&lt;/em&gt;, 473–83.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-kong1994sequential&#34;&gt;
+&lt;p&gt;Kong, Augustine, Jun S Liu, and Wing Hung Wong. 1994. “Sequential Imputations and Bayesian Missing Data Problems.” &lt;em&gt;Journal of the American Statistical Association&lt;/em&gt; 89 (425): 278–88.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-metropolis1953equation&#34;&gt;
+&lt;p&gt;Metropolis, Nicholas, Arianna W Rosenbluth, Marshall N Rosenbluth, Augusta H Teller, and Edward Teller. 1953. “Equation of State Calculations by Fast Computing Machines.” &lt;em&gt;The Journal of Chemical Physics&lt;/em&gt; 21 (6): 1087–92.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-tanner1987calculation&#34;&gt;
+&lt;p&gt;Tanner, Martin A, and Wing Hung Wong. 1987. “The Calculation of Posterior Distributions by Data Augmentation.” &lt;em&gt;Journal of the American Statistical Association&lt;/em&gt; 82 (398): 528–40.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-von1951general&#34;&gt;
+&lt;p&gt;Von Neumann, John, and others. 1951. “The General and Logical Theory of Automata.” &lt;em&gt;1951&lt;/em&gt;, 1–41.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;

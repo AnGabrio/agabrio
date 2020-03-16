@@ -373,7 +373,7 @@
         
 
         <li class="nav-item">
-          <a class="nav-link " href="/missingdata/"><span>Missing Data</span></a>
+          <a class="nav-link  active" href="/rubric/"><span>Missing Data</span></a>
         </li>
 
         
@@ -439,49 +439,7 @@
     <h2><a href="/missmethods/joint-multiple-imputation/">Joint Multiple Imputation</a></h2>
     <div class="article-style">
       
-      Multiple Imputation(MI) refers to the procedure of replacing each missing value by a set of \(H\geq 2\) imputed values. These are ordered in the sense that \(H\) completed data sets can be created from the sets of imputations, where the first imputed value replaces the missing value in the first completed data set, the second imputed value in the second completed data set, and so on. Next, standard complete data methods are used to analyse each completed data set.
-      
-    </div>
-  </div>
-  
-  <div>
-    <h2><a href="/missmethods/likelihood-based-methods-ignorable3/">Likelihood Based Inference with Incomplete Data</a></h2>
-    <div class="article-style">
-      
-      As for the inference under complete data, inference under incomplete data consists in deriving the likelihood for the parameters based on the available data, either using a Maximum Likelihood (ML) approach (solving the likelihood equation) or using the Bayes’ rule incorporating a prior distribution (performing necessary integrations to obtain the posterior distribution). However, asymptotic standard errors obtained from the information matrix, are more questionable when dealing with missing data since the sample will not be typically iid and results that imply the large sample normality of the likelihood function do not immediately apply.
-      
-    </div>
-  </div>
-  
-  <div>
-    <h2><a href="/missmethods/likelihood-based-methods-nonignorable/">Likelihood Based Inference with Incomplete Data (Nonignorable)</a></h2>
-    <div class="article-style">
-      
-      In many cases, analysis methods for missing data are based on the ignorable likelihood
-\[L_{ign}\left(\theta \mid Y_0, X \right) \propto f\left(Y_0 \mid X, \theta \right),\]
-regarded as a function of the parameters \(\theta\) for fixed observed data \(Y_0\) and some fully observed covariates \(X\). The density \(f(Y_0 \mid X, \theta)\) is obtained by integrating out the missing data \(Y_1\) from the joint density \(f(Y \mid X, \theta)=f(Y_0,Y_1\mid X, \theta)\).
-      
-    </div>
-  </div>
-  
-  <div>
-    <h2><a href="/missmethods/multiple-imputation-by-chained-equations/">Multiple Imputation by Chained Equations</a></h2>
-    <div class="article-style">
-      
-      Multiple Imputation(MI) refers to the procedure of replacing each missing value by a set of \(H\geq 2\) imputed values. These are ordered in the sense that \(H\) completed data sets can be created from the sets of imputations, where the first imputed value replaces the missing value in the first completed data set, the second imputed value in the second completed data set, and so on. Next, standard complete data methods are used to analyse each completed data set.
-      
-    </div>
-  </div>
-  
-  <div>
-    <h2><a href="/missmethods/pattern-mixture-models/">Pattern Mixture Models</a></h2>
-    <div class="article-style">
-      
-      It is possible to summarise the steps involved in drawing inference from incomplete data as (Daniels and Hogan (2008)):
-Specification of a full data model for the response and missingness indicators \(f(y,r)\)
-Specification of the prior distribution (within a Bayesian approach)
-Sampling from the posterior distribution of full data parameters, given the observed data \(Y_{obs}\) and the missingness indicators \(R\)
-Identification of a full data model, particularly the part involving the missing data \(Y_{mis}\), requires making unverifiable assumptions about the full data model \(f(y,r)\).
+      Joint Multiple Imputation (JOMO) commonly assumes that the incomplete variables follow a multivariate normal distribution, often referred to as multivariate normal imputation and, under this assumption, provides rigorous standard errors for the fitted parameters
       
     </div>
   </div>
@@ -490,24 +448,25 @@ regarded as a function of the parameters \(\theta\) for fixed observed data \(Y_
     <h2><a href="/missmethods/selection-models/">Selection Models</a></h2>
     <div class="article-style">
       
-      It is possible to summarise the steps involved in drawing inference from incomplete data as (Daniels and Hogan (2008)):
-Specification of a full data model for the response and missingness indicators \(f(y,r)\)
-Specification of the prior distribution (within a Bayesian approach)
-Sampling from the posterior distribution of full data parameters, given the observed data \(Y_{obs}\) and the missingness indicators \(R\)
-Identification of a full data model, particularly the part involving the missing data \(Y_{mis}\), requires making unverifiable assumptions about the full data model \(f(y,r)\).
+      Selection Models (SM) are typically used to handle nonignorable missingness. They factorise the joint likelihood of measurement process and missingness process into a marginal density of the measurement process and the density of the missingness process conditional on the outcomes, which describes the missing data selection based on the complete data.
       
     </div>
   </div>
   
   <div>
-    <h2><a href="/missmethods/shared-parameter-models/">Shared Parameter Models</a></h2>
+    <h2><a href="/missmethods/likelihood-based-methods-ignorable3/">Likelihood Based Inference with Incomplete Data</a></h2>
     <div class="article-style">
       
-      It is possible to summarise the steps involved in drawing inference from incomplete data as (Daniels and Hogan (2008)):
-Specification of a full data model for the response and missingness indicators \(f(y,r)\)
-Specification of the prior distribution (within a Bayesian approach)
-Sampling from the posterior distribution of full data parameters, given the observed data \(Y_{obs}\) and the missingness indicators \(R\)
-Identification of a full data model, particularly the part involving the missing data \(Y_{mis}\), requires making unverifiable assumptions about the full data model \(f(y,r)\).
+      When making inference with missing data, any statistical method must rely on either explicit or implicit assumptions about the mechanism which lead some of the values to be missing
+      
+    </div>
+  </div>
+  
+  <div>
+    <h2><a href="/missmethods/pattern-mixture-models/">Pattern Mixture Models</a></h2>
+    <div class="article-style">
+      
+      Pattern Mixture Models (PMM) are typically used to handle nonignorable missingness. They factorise the joint likelihood of measurement process and missingness process into a marginal density of the missingness process and the density of the measurement process conditional on the missing data patterns, where the model of interest is fitted for each pattern.
       
     </div>
   </div>
@@ -516,7 +475,34 @@ regarded as a function of the parameters \(\theta\) for fixed observed data \(Y_
     <h2><a href="/missmethods/weighting-adjustments/">Weighting Adjustments</a></h2>
     <div class="article-style">
       
-      The notion of reducing bias due to missingness through reweighting methods has its root in the survey literature and the basic idea is closely related to weighting in randomisation inference for finite population surveys (Little and Rubin (2019)). In particular, in probability sampling, a unit selected from a target population with probability \(\pi_i\) can be thought as “representing” \(\pi^{-1}_i\) units in the population and hence should be given weight \(\pi^{-1}_i\) when estimating population quantities.
+      Weighting to compensate for nonresponse attaches weights to subjects included in the analysis to restore the representation in the original sample which is distorted because of missing values
+      
+    </div>
+  </div>
+  
+  <div>
+    <h2><a href="/missmethods/em-algorithm/">Expectation Maximisation Algorithm</a></h2>
+    <div class="article-style">
+      
+      An Expectation–Maximization (EM) algorithm is an iterative method to find maximum likelihood or maximum a posteriori estimates of parameters in statistical models, where the model depends on unobserved latent variables
+      
+    </div>
+  </div>
+  
+  <div>
+    <h2><a href="/missmethods/shared-parameter-models/">Shared Parameter Models</a></h2>
+    <div class="article-style">
+      
+      Shared Parameter Models (SPM) are typically used to handle nonignorable missingness. In these models a random effect is shared between the repeated measures model and the missing data mechanism model
+      
+    </div>
+  </div>
+  
+  <div>
+    <h2><a href="/missmethods/bayesian-methods/">Bayesian Iterative Simulation Methods</a></h2>
+    <div class="article-style">
+      
+      The most popular class of Bayesian iterative methods is called Markov chain Monte Carlo (MCMC), which comprises different algorithms for sampling from a probability distribution. The more steps that are included, the more closely the distribution of the sample matches the actual desired distribution
       
     </div>
   </div>

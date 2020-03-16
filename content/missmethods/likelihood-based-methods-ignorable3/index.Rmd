@@ -1,11 +1,12 @@
 ---
 title: Likelihood Based Inference with Incomplete Data
-summary: 
+summary: When making inference with missing data, any statistical method must rely on either explicit or implicit assumptions about the mechanism which lead some of the values to be missing
 tags:
 - Maximum Likelihood Estimation
 - Bayesian Inference
 - Likelihood Based Methods Ignorable
 date: "2016-04-27T00:00:00Z"
+weight: 3
 
 # Optional external URL for project (replaces project detail page).
 external_link: ""

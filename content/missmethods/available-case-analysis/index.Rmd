@@ -1,12 +1,13 @@
 ---
 title: Available Case Analysis
-summary: 
+summary: Available-case analysis also arises when a researcher simply excludes a variable or set of variables from the analysis because of their missing-data rates
 tags:
 - Delete Case Methods
 - Available Case Analysis
 - Listwise Deletion
 - Complete Case Analysis
 date: "2016-04-27T00:00:00Z"
+weight: 2
 
 # Optional external URL for project (replaces project detail page).
 external_link: ""

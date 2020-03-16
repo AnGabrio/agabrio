@@ -13,12 +13,103 @@
     
     
     <item>
+      <title>Inverse Probability Weighting</title>
+      <link>/missmethods/inverse-probability-weighting/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/missmethods/inverse-probability-weighting/</guid>
+      <description>
+&lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;p&gt;In certain cases, it is possible to reduce biases from case deletion by the application of weights. After incomplete cases are removed, the remaining complete cases can be weighted so that their distribution more closely resembles that of the full sample with respect to auxiliary variables. &lt;em&gt;Weighting methods&lt;/em&gt; can eliminate bias due to differential response related to the variables used to model the response probabilities, but it cannot correct for biases related to variables that are unused or unmeasured (&lt;span class=&#34;citation&#34;&gt;Little and Rubin (2019)&lt;/span&gt;). &lt;span class=&#34;citation&#34;&gt;Robins, Rotnitzky, and Zhao (1994)&lt;/span&gt; introduced &lt;em&gt;Inverse Probability Weighting&lt;/em&gt; (IPW) as a weighted regression approach that require an explicit model for the missingness but relaxes some of the parametric assumptions in the data model. Their method is an extension of &lt;em&gt;Generalized Estimating Equations&lt;/em&gt; (GEE), a popular technique for modeling marginal or populationaveraged relationships between a response variable and predictors (&lt;span class=&#34;citation&#34;&gt;Zeger, Liang, and Albert (1988)&lt;/span&gt;).&lt;/p&gt;
+&lt;p&gt;Let &lt;span class=&#34;math inline&#34;&gt;\(y_i=(y_{i1},\ldots,y_{iK})\)&lt;/span&gt; denote a vector of variables for unit &lt;span class=&#34;math inline&#34;&gt;\(i\)&lt;/span&gt; subject to missing values with &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; being fully observed for &lt;span class=&#34;math inline&#34;&gt;\(i=1\ldots,n_r\)&lt;/span&gt; units and partially-observed for &lt;span class=&#34;math inline&#34;&gt;\(i=n_r+1,\ldots,n\)&lt;/span&gt; units. Define &lt;span class=&#34;math inline&#34;&gt;\(m_i=1\)&lt;/span&gt; if &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; is incomplete and &lt;span class=&#34;math inline&#34;&gt;\(m_i=0\)&lt;/span&gt; if complete. Let &lt;span class=&#34;math inline&#34;&gt;\(x_i=(x_{i1},\ldots,x_{ip})\)&lt;/span&gt; denote a vector of fully observed covariates and suppose the interest is in estimating the mean of the distribution of &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; given &lt;span class=&#34;math inline&#34;&gt;\(x_i\)&lt;/span&gt;, having the form &lt;span class=&#34;math inline&#34;&gt;\(g(x_i,\beta)\)&lt;/span&gt;, where &lt;span class=&#34;math inline&#34;&gt;\(g()\)&lt;/span&gt; is a possibly non-linear regression function indexed by a parameter &lt;span class=&#34;math inline&#34;&gt;\(\beta\)&lt;/span&gt; of dimension &lt;span class=&#34;math inline&#34;&gt;\(d\)&lt;/span&gt;. Let also &lt;span class=&#34;math inline&#34;&gt;\(z_i=(z_{i1},\ldots,z_{iq})\)&lt;/span&gt; be a vector of fully observed auxiliary variables that potentially predictive of missingness but are not included in the model for &lt;span class=&#34;math inline&#34;&gt;\(y_i \mid x_i\)&lt;/span&gt;. When there are no missing data, a consistent estimate of &lt;span class=&#34;math inline&#34;&gt;\(\beta\)&lt;/span&gt; is given by the solution to the following GEE, under mild regularity conditions (&lt;span class=&#34;citation&#34;&gt;Liang and Zeger (1986)&lt;/span&gt;),&lt;/p&gt;
+&lt;p&gt;\[
+\sum_{i=1}^n = D_i(x_i,\beta)(y_i-g(x_i,\beta))=0,
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(D_i(x_i,\beta)\)&lt;/span&gt; is a suitably chosen &lt;span class=&#34;math inline&#34;&gt;\((d\times k)\)&lt;/span&gt; matrix of known functions of &lt;span class=&#34;math inline&#34;&gt;\(x_i\)&lt;/span&gt;. With missing data, the equation is applied only to the complete cases (&lt;span class=&#34;math inline&#34;&gt;\(n_{r}\)&lt;/span&gt;), which yields consistent estimates provided that&lt;/p&gt;
+&lt;p&gt;\[
+p(m_i=1 \mid x_i,y_i,z_i,\phi)=p(m_i=1\mid x_i,\phi),
+\]&lt;/p&gt;
+&lt;p&gt;that is, missingness does not depend on &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; or &lt;span class=&#34;math inline&#34;&gt;\(z_i\)&lt;/span&gt; after conditioning on &lt;span class=&#34;math inline&#34;&gt;\(x_i\)&lt;/span&gt;. IPW GEE methods (&lt;span class=&#34;citation&#34;&gt;Robins and Rotnitzky (1995)&lt;/span&gt;) replace the equation with&lt;/p&gt;
+&lt;p&gt;\[
+\sum_{i=1}^{n_r} = w_i(\hat{\alpha})D_i(x_i,\beta)(y_i-g(x_i,\beta))=0,
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(w_i(\hat{\alpha})=\frac{1}{p(x_i,z_i \mid \hat{\alpha})}\)&lt;/span&gt;, with &lt;span class=&#34;math inline&#34;&gt;\(p(x_i,z_i \mid \hat{\alpha})\)&lt;/span&gt; being an estimate of the probability of being a complete unit, obtained for example via logistic regressions on &lt;span class=&#34;math inline&#34;&gt;\(m_i\)&lt;/span&gt; on &lt;span class=&#34;math inline&#34;&gt;\(x_i\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(z_i\)&lt;/span&gt;. If the logistic regression is correctly specified, IPW GEE yields a consistent estimator of &lt;span class=&#34;math inline&#34;&gt;\(\beta\)&lt;/span&gt; provided that&lt;/p&gt;
+&lt;p&gt;\[
+p(m_i=1 \mid x_i,y_i,z_i,\phi)=p(m_i=1\mid x_i,z_i\phi).
+\]&lt;/p&gt;
+&lt;div id=&#34;example&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Example&lt;/h2&gt;
+&lt;p&gt;Suppose the full data consists of a single outcome variable &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; and an additional variable &lt;span class=&#34;math inline&#34;&gt;\(z\)&lt;/span&gt; and that the objective is to estimate the population outcome mean &lt;span class=&#34;math inline&#34;&gt;\(\mu=\text{E}[y]\)&lt;/span&gt;. If data were fully observed for &lt;span class=&#34;math inline&#34;&gt;\(i=1,\ldots,n\)&lt;/span&gt; individuals, an obvious estimator of &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; would be the sample outcome mean&lt;/p&gt;
+&lt;p&gt;\[
+\bar{y}=\frac{1}{n}\sum_{i=1}^ny_i,
+\]&lt;/p&gt;
+&lt;p&gt;which is equivalent to the solution to the estimating equation &lt;span class=&#34;math inline&#34;&gt;\(\sum_{i=1}^n(y_i-\mu)=0\)&lt;/span&gt;. When &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; is partially observed (while &lt;span class=&#34;math inline&#34;&gt;\(Z\)&lt;/span&gt; is always fully observed), individuals may fall into one of two missingness patterns &lt;span class=&#34;math inline&#34;&gt;\(r=(r_{y},r_{z})\)&lt;/span&gt;, namely &lt;span class=&#34;math inline&#34;&gt;\(r=(1,1)\)&lt;/span&gt; if both variables are observed or &lt;span class=&#34;math inline&#34;&gt;\(r=(1,0)\)&lt;/span&gt; if &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; is missing. Let &lt;span class=&#34;math inline&#34;&gt;\(c=1\)&lt;/span&gt; if &lt;span class=&#34;math inline&#34;&gt;\(r=(1,1)\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(c=0\)&lt;/span&gt; otherwise, so that the observed data can be summarised as &lt;span class=&#34;math inline&#34;&gt;\((c,cy,z)\)&lt;/span&gt;. Assuming that missingness only depends on &lt;span class=&#34;math inline&#34;&gt;\(z\)&lt;/span&gt;, that is&lt;/p&gt;
+&lt;p&gt;\[
+p(c=1 \mid y,z)=p(c=1 \mid z)=\pi(z),
+\]&lt;/p&gt;
+&lt;p&gt;then the missing data mechanism is &lt;em&gt;Missing At Random&lt;/em&gt; (MAR). Under these conditions, the sample mean of the complete cases &lt;span class=&#34;math inline&#34;&gt;\(\bar{y}_{cc}=\frac{\sum_{i=1}^nc_iy_i}{c_i}\)&lt;/span&gt;, i.e. the solution to the equation &lt;span class=&#34;math inline&#34;&gt;\(\sum_{i=1}^nc_i(y_i-\mu)=0\)&lt;/span&gt;, is not a consistent estimator of &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt;. To correct for this, the IPW complete case estimating equation&lt;/p&gt;
+&lt;p&gt;\[
+\sum_{i=1}^n\frac{c_i}{\pi(z_i)}(y_i-\mu)=0,
+\]&lt;/p&gt;
+&lt;p&gt;can be used to weight the contribution of each complete case by the inverse of &lt;span class=&#34;math inline&#34;&gt;\(\pi(z_i)\)&lt;/span&gt;. The solution of the equation corresponds to the IPW estimator&lt;/p&gt;
+&lt;p&gt;\[
+\mu_{ipw}=\left(\sum_{i=1}^n \frac{c_i}{\pi(z_i)} \right)^{-1} \sum_{i=1}^n \frac{c_iy_i}{\pi(z_i)},
+\]&lt;/p&gt;
+&lt;p&gt;which is unbiased under MAR and for &lt;span class=&#34;math inline&#34;&gt;\(\pi(z)&amp;gt;0\)&lt;/span&gt;. In case you want to have a look at the &lt;a href=&#34;https://www4.stat.ncsu.edu/~davidian/st790/notes/chap5.pdf&#34;&gt;proof&lt;/a&gt; of this I put here the link. In most situations &lt;span class=&#34;math inline&#34;&gt;\(\pi(z_i)\)&lt;/span&gt; is not known and must be estimated from the data, typically posing some model for &lt;span class=&#34;math inline&#34;&gt;\(p(c=1 \mid z, \hat{\alpha})\)&lt;/span&gt;, indexed by some parameter &lt;span class=&#34;math inline&#34;&gt;\(\hat{\alpha}\)&lt;/span&gt;, for example a logistic regression&lt;/p&gt;
+&lt;p&gt;\[
+\text{logit}(\pi)=\alpha_0 + \alpha_1z.
+\]&lt;/p&gt;
+&lt;p&gt;Of course, if the model for &lt;span class=&#34;math inline&#34;&gt;\(\pi(z)\)&lt;/span&gt; is misspecified, &lt;span class=&#34;math inline&#34;&gt;\(\mu_{ipw}\)&lt;/span&gt; can be an inconsistent estimator. In addition, IPW methods typically used data only from the completers discarding all the partially observed values, which is clearly inefficient.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;conclusions&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Conclusions&lt;/h2&gt;
+&lt;p&gt;Thus, IPW estimators can correct for the bias of unweighted estimators due to the dependence of the missingness mechanism on &lt;span class=&#34;math inline&#34;&gt;\(z_i\)&lt;/span&gt; (&lt;span class=&#34;citation&#34;&gt;Schafer and Graham (2002)&lt;/span&gt;). The basic intuition of IPW methods is that each subject’s contribution to the weighted &lt;em&gt;Complete Case Analysis&lt;/em&gt; (CCA) is replicated &lt;span class=&#34;math inline&#34;&gt;\(w_i\)&lt;/span&gt; times in order to account once for herself and &lt;span class=&#34;math inline&#34;&gt;\((1-w_i)\)&lt;/span&gt; times for those subjects with the same responses and covariates who are missing. These models are called &lt;em&gt;semiparametric&lt;/em&gt; because they apart from requiring the regression equation to have a specific form, they do not specify any probability distribution for the response variable (&lt;span class=&#34;citation&#34;&gt;Molenberghs et al. (2014)&lt;/span&gt;). Older GEE methods can accommodate missing values only if they are &lt;em&gt;Missing Completely At Random&lt;/em&gt; (MCAR), while more recent methods allow them to be MAR or even &lt;em&gt;Missing Not At Random&lt;/em&gt; (MNAR), provided that a model for the missingness is correctly specified (&lt;span class=&#34;citation&#34;&gt;Robins, Rotnitzky, and Zhao (1995)&lt;/span&gt;,&lt;span class=&#34;citation&#34;&gt;Rotnitzky, Robins, and Scharfstein (1998)&lt;/span&gt;).&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
+&lt;h1&gt;References&lt;/h1&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references hanging-indent&#34;&gt;
+&lt;div id=&#34;ref-liang1986longitudinal&#34;&gt;
+&lt;p&gt;Liang, Kung-Yee, and Scott L Zeger. 1986. “Longitudinal Data Analysis Using Generalized Linear Models.” &lt;em&gt;Biometrika&lt;/em&gt; 73 (1): 13–22.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-little2019statistical&#34;&gt;
+&lt;p&gt;Little, Roderick JA, and Donald B Rubin. 2019. &lt;em&gt;Statistical Analysis with Missing Data&lt;/em&gt;. Vol. 793. John Wiley &amp;amp; Sons.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-molenberghs2014handbook&#34;&gt;
+&lt;p&gt;Molenberghs, Geert, Garrett Fitzmaurice, Michael G Kenward, Anastasios Tsiatis, and Geert Verbeke. 2014. &lt;em&gt;Handbook of Missing Data Methodology&lt;/em&gt;. Chapman; Hall/CRC.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-robins1995semiparametric&#34;&gt;
+&lt;p&gt;Robins, James M, and Andrea Rotnitzky. 1995. “Semiparametric Efficiency in Multivariate Regression Models with Missing Data.” &lt;em&gt;Journal of the American Statistical Association&lt;/em&gt; 90 (429): 122–29.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-robins1994estimation&#34;&gt;
+&lt;p&gt;Robins, James M, Andrea Rotnitzky, and Lue Ping Zhao. 1994. “Estimation of Regression Coefficients When Some Regressors Are Not Always Observed.” &lt;em&gt;Journal of the American Statistical Association&lt;/em&gt; 89 (427): 846–66.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-robins1995analysis&#34;&gt;
+&lt;p&gt;———. 1995. “Analysis of Semiparametric Regression Models for Repeated Outcomes in the Presence of Missing Data.” &lt;em&gt;Journal of the American Statistical Association&lt;/em&gt; 90 (429): 106–21.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-rotnitzky1998semiparametric&#34;&gt;
+&lt;p&gt;Rotnitzky, Andrea, James M Robins, and Daniel O Scharfstein. 1998. “Semiparametric Regression for Repeated Outcomes with Nonignorable Nonresponse.” &lt;em&gt;Journal of the American Statistical Association&lt;/em&gt; 93 (444): 1321–39.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-schafer2002missing&#34;&gt;
+&lt;p&gt;Schafer, Joseph L, and John W Graham. 2002. “Missing Data: Our View of the State of the Art.” &lt;em&gt;Psychological Methods&lt;/em&gt; 7 (2): 147.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-zeger1988models&#34;&gt;
+&lt;p&gt;Zeger, Scott L, Kung-Yee Liang, and Paul S Albert. 1988. “Models for Longitudinal Data: A Generalized Estimating Equation Approach.” &lt;em&gt;Biometrics&lt;/em&gt;, 1049–60.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Augmented Inverse Probability Weighting</title>
       <link>/missmethods/augmented-inverse-probability-weighting/</link>
       <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
       
       <guid>/missmethods/augmented-inverse-probability-weighting/</guid>
       <description>
+&lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
 
 
 &lt;p&gt;A general problem associated with the implementatio of &lt;em&gt;Inverse Probability Weighting&lt;/em&gt; (IPW) methods is that information in some available data is ignored by focussing only on the complete cases (&lt;span class=&#34;citation&#34;&gt;Schafer and Graham (2002)&lt;/span&gt;). This has provided room to extend these methods to make a more efficient use of the available information through the incorporation of an “augmentation” term, which lead to the development of the so called &lt;em&gt;Augmented Inverse Probability Weighting&lt;/em&gt; (AIPW) methods. These approaches extend IPW methods by creating predictions from a model to recover the information in the incomplete units and applying IPW to the residuals from the model (&lt;span class=&#34;citation&#34;&gt;Little and Rubin (2019)&lt;/span&gt;).&lt;/p&gt;
@@ -77,7 +168,7 @@ p(c=1 \mid y,z)=p(c=1 \mid z)=\pi(z),
 &lt;/div&gt;
 &lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
 &lt;h1&gt;References&lt;/h1&gt;
-&lt;div id=&#34;refs&#34; class=&#34;references&#34;&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references hanging-indent&#34;&gt;
 &lt;div id=&#34;ref-bang2005doubly&#34;&gt;
 &lt;p&gt;Bang, Heejung, and James M Robins. 2005. “Doubly Robust Estimation in Missing Data and Causal Inference Models.” &lt;em&gt;Biometrics&lt;/em&gt; 61 (4): 962–73.&lt;/p&gt;
 &lt;/div&gt;
@@ -111,101 +202,13 @@ p(c=1 \mid y,z)=p(c=1 \mid z)=\pi(z),
     </item>
     
     <item>
-      <title>Inverse Probability Weighting</title>
-      <link>/missmethods/inverse-probability-weighting/</link>
-      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/missmethods/inverse-probability-weighting/</guid>
-      <description>
-
-
-&lt;p&gt;In certain cases, it is possible to reduce biases from case deletion by the application of weights. After incomplete cases are removed, the remaining complete cases can be weighted so that their distribution more closely resembles that of the full sample with respect to auxiliary variables. &lt;em&gt;Weighting methods&lt;/em&gt; can eliminate bias due to differential response related to the variables used to model the response probabilities, but it cannot correct for biases related to variables that are unused or unmeasured (&lt;span class=&#34;citation&#34;&gt;Little and Rubin (2019)&lt;/span&gt;). &lt;span class=&#34;citation&#34;&gt;Robins, Rotnitzky, and Zhao (1994)&lt;/span&gt; introduced &lt;em&gt;Inverse Probability Weighting&lt;/em&gt; (IPW) as a weighted regression approach that require an explicit model for the missingness but relaxes some of the parametric assumptions in the data model. Their method is an extension of &lt;em&gt;Generalized Estimating Equations&lt;/em&gt; (GEE), a popular technique for modeling marginal or populationaveraged relationships between a response variable and predictors (&lt;span class=&#34;citation&#34;&gt;Zeger, Liang, and Albert (1988)&lt;/span&gt;).&lt;/p&gt;
-&lt;p&gt;Let &lt;span class=&#34;math inline&#34;&gt;\(y_i=(y_{i1},\ldots,y_{iK})\)&lt;/span&gt; denote a vector of variables for unit &lt;span class=&#34;math inline&#34;&gt;\(i\)&lt;/span&gt; subject to missing values with &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; being fully observed for &lt;span class=&#34;math inline&#34;&gt;\(i=1\ldots,n_r\)&lt;/span&gt; units and partially-observed for &lt;span class=&#34;math inline&#34;&gt;\(i=n_r+1,\ldots,n\)&lt;/span&gt; units. Define &lt;span class=&#34;math inline&#34;&gt;\(m_i=1\)&lt;/span&gt; if &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; is incomplete and &lt;span class=&#34;math inline&#34;&gt;\(m_i=0\)&lt;/span&gt; if complete. Let &lt;span class=&#34;math inline&#34;&gt;\(x_i=(x_{i1},\ldots,x_{ip})\)&lt;/span&gt; denote a vector of fully observed covariates and suppose the interest is in estimating the mean of the distribution of &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; given &lt;span class=&#34;math inline&#34;&gt;\(x_i\)&lt;/span&gt;, having the form &lt;span class=&#34;math inline&#34;&gt;\(g(x_i,\beta)\)&lt;/span&gt;, where &lt;span class=&#34;math inline&#34;&gt;\(g()\)&lt;/span&gt; is a possibly non-linear regression function indexed by a parameter &lt;span class=&#34;math inline&#34;&gt;\(\beta\)&lt;/span&gt; of dimension &lt;span class=&#34;math inline&#34;&gt;\(d\)&lt;/span&gt;. Let also &lt;span class=&#34;math inline&#34;&gt;\(z_i=(z_{i1},\ldots,z_{iq})\)&lt;/span&gt; be a vector of fully observed auxiliary variables that potentially predictive of missingness but are not included in the model for &lt;span class=&#34;math inline&#34;&gt;\(y_i \mid x_i\)&lt;/span&gt;. When there are no missing data, a consistent estimate of &lt;span class=&#34;math inline&#34;&gt;\(\beta\)&lt;/span&gt; is given by the solution to the following GEE, under mild regularity conditions (&lt;span class=&#34;citation&#34;&gt;Liang and Zeger (1986)&lt;/span&gt;),&lt;/p&gt;
-&lt;p&gt;\[
-\sum_{i=1}^n = D_i(x_i,\beta)(y_i-g(x_i,\beta))=0,
-\]&lt;/p&gt;
-&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(D_i(x_i,\beta)\)&lt;/span&gt; is a suitably chosen &lt;span class=&#34;math inline&#34;&gt;\((d\times k)\)&lt;/span&gt; matrix of known functions of &lt;span class=&#34;math inline&#34;&gt;\(x_i\)&lt;/span&gt;. With missing data, the equation is applied only to the complete cases (&lt;span class=&#34;math inline&#34;&gt;\(n_{r}\)&lt;/span&gt;), which yields consistent estimates provided that&lt;/p&gt;
-&lt;p&gt;\[
-p(m_i=1 \mid x_i,y_i,z_i,\phi)=p(m_i=1\mid x_i,\phi),
-\]&lt;/p&gt;
-&lt;p&gt;that is, missingness does not depend on &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; or &lt;span class=&#34;math inline&#34;&gt;\(z_i\)&lt;/span&gt; after conditioning on &lt;span class=&#34;math inline&#34;&gt;\(x_i\)&lt;/span&gt;. IPW GEE methods (&lt;span class=&#34;citation&#34;&gt;Robins and Rotnitzky (1995)&lt;/span&gt;) replace the equation with&lt;/p&gt;
-&lt;p&gt;\[
-\sum_{i=1}^{n_r} = w_i(\hat{\alpha})D_i(x_i,\beta)(y_i-g(x_i,\beta))=0,
-\]&lt;/p&gt;
-&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(w_i(\hat{\alpha})=\frac{1}{p(x_i,z_i \mid \hat{\alpha})}\)&lt;/span&gt;, with &lt;span class=&#34;math inline&#34;&gt;\(p(x_i,z_i \mid \hat{\alpha})\)&lt;/span&gt; being an estimate of the probability of being a complete unit, obtained for example via logistic regressions on &lt;span class=&#34;math inline&#34;&gt;\(m_i\)&lt;/span&gt; on &lt;span class=&#34;math inline&#34;&gt;\(x_i\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(z_i\)&lt;/span&gt;. If the logistic regression is correctly specified, IPW GEE yields a consistent estimator of &lt;span class=&#34;math inline&#34;&gt;\(\beta\)&lt;/span&gt; provided that&lt;/p&gt;
-&lt;p&gt;\[
-p(m_i=1 \mid x_i,y_i,z_i,\phi)=p(m_i=1\mid x_i,z_i\phi).
-\]&lt;/p&gt;
-&lt;div id=&#34;example&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;Example&lt;/h2&gt;
-&lt;p&gt;Suppose the full data consists of a single outcome variable &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; and an additional variable &lt;span class=&#34;math inline&#34;&gt;\(z\)&lt;/span&gt; and that the objective is to estimate the population outcome mean &lt;span class=&#34;math inline&#34;&gt;\(\mu=\text{E}[y]\)&lt;/span&gt;. If data were fully observed for &lt;span class=&#34;math inline&#34;&gt;\(i=1,\ldots,n\)&lt;/span&gt; individuals, an obvious estimator of &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; would be the sample outcome mean&lt;/p&gt;
-&lt;p&gt;\[
-\bar{y}=\frac{1}{n}\sum_{i=1}^ny_i,
-\]&lt;/p&gt;
-&lt;p&gt;which is equivalent to the solution to the estimating equation &lt;span class=&#34;math inline&#34;&gt;\(\sum_{i=1}^n(y_i-\mu)=0\)&lt;/span&gt;. When &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; is partially observed (while &lt;span class=&#34;math inline&#34;&gt;\(Z\)&lt;/span&gt; is always fully observed), individuals may fall into one of two missingness patterns &lt;span class=&#34;math inline&#34;&gt;\(r=(r_{y},r_{z})\)&lt;/span&gt;, namely &lt;span class=&#34;math inline&#34;&gt;\(r=(1,1)\)&lt;/span&gt; if both variables are observed or &lt;span class=&#34;math inline&#34;&gt;\(r=(1,0)\)&lt;/span&gt; if &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; is missing. Let &lt;span class=&#34;math inline&#34;&gt;\(c=1\)&lt;/span&gt; if &lt;span class=&#34;math inline&#34;&gt;\(r=(1,1)\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(c=0\)&lt;/span&gt; otherwise, so that the observed data can be summarised as &lt;span class=&#34;math inline&#34;&gt;\((c,cy,z)\)&lt;/span&gt;. Assuming that missingness only depends on &lt;span class=&#34;math inline&#34;&gt;\(z\)&lt;/span&gt;, that is&lt;/p&gt;
-&lt;p&gt;\[
-p(c=1 \mid y,z)=p(c=1 \mid z)=\pi(z),
-\]&lt;/p&gt;
-&lt;p&gt;then the missing data mechanism is &lt;em&gt;Missing At Random&lt;/em&gt; (MAR). Under these conditions, the sample mean of the complete cases &lt;span class=&#34;math inline&#34;&gt;\(\bar{y}_{cc}=\frac{\sum_{i=1}^nc_iy_i}{c_i}\)&lt;/span&gt;, i.e. the solution to the equation &lt;span class=&#34;math inline&#34;&gt;\(\sum_{i=1}^nc_i(y_i-\mu)=0\)&lt;/span&gt;, is not a consistent estimator of &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt;. To correct for this, the IPW complete case estimating equation&lt;/p&gt;
-&lt;p&gt;\[
-\sum_{i=1}^n\frac{c_i}{\pi(z_i)}(y_i-\mu)=0,
-\]&lt;/p&gt;
-&lt;p&gt;can be used to weight the contribution of each complete case by the inverse of &lt;span class=&#34;math inline&#34;&gt;\(\pi(z_i)\)&lt;/span&gt;. The solution of the equation corresponds to the IPW estimator&lt;/p&gt;
-&lt;p&gt;\[
-\mu_{ipw}=\left(\sum_{i=1}^n \frac{c_i}{\pi(z_i)} \right)^{-1} \sum_{i=1}^n \frac{c_iy_i}{\pi(z_i)},
-\]&lt;/p&gt;
-&lt;p&gt;which is unbiased under MAR and for &lt;span class=&#34;math inline&#34;&gt;\(\pi(z)&amp;gt;0\)&lt;/span&gt;. In case you want to have a look at the &lt;a href=&#34;https://www4.stat.ncsu.edu/~davidian/st790/notes/chap5.pdf&#34;&gt;proof&lt;/a&gt; of this I put here the link. In most situations &lt;span class=&#34;math inline&#34;&gt;\(\pi(z_i)\)&lt;/span&gt; is not known and must be estimated from the data, typically posing some model for &lt;span class=&#34;math inline&#34;&gt;\(p(c=1 \mid z, \hat{\alpha})\)&lt;/span&gt;, indexed by some parameter &lt;span class=&#34;math inline&#34;&gt;\(\hat{\alpha}\)&lt;/span&gt;, for example a logistic regression&lt;/p&gt;
-&lt;p&gt;\[
-\text{logit}(\pi)=\alpha_0 + \alpha_1z.
-\]&lt;/p&gt;
-&lt;p&gt;Of course, if the model for &lt;span class=&#34;math inline&#34;&gt;\(\pi(z)\)&lt;/span&gt; is misspecified, &lt;span class=&#34;math inline&#34;&gt;\(\mu_{ipw}\)&lt;/span&gt; can be an inconsistent estimator. In addition, IPW methods typically used data only from the completers discarding all the partially observed values, which is clearly inefficient.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div id=&#34;conclusions&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;Conclusions&lt;/h2&gt;
-&lt;p&gt;Thus, IPW estimators can correct for the bias of unweighted estimators due to the dependence of the missingness mechanism on &lt;span class=&#34;math inline&#34;&gt;\(z_i\)&lt;/span&gt; (&lt;span class=&#34;citation&#34;&gt;Schafer and Graham (2002)&lt;/span&gt;). The basic intuition of IPW methods is that each subject’s contribution to the weighted &lt;em&gt;Complete Case Analysis&lt;/em&gt; (CCA) is replicated &lt;span class=&#34;math inline&#34;&gt;\(w_i\)&lt;/span&gt; times in order to account once for herself and &lt;span class=&#34;math inline&#34;&gt;\((1-w_i)\)&lt;/span&gt; times for those subjects with the same responses and covariates who are missing. These models are called &lt;em&gt;semiparametric&lt;/em&gt; because they apart from requiring the regression equation to have a specific form, they do not specify any probability distribution for the response variable (&lt;span class=&#34;citation&#34;&gt;Molenberghs et al. (2014)&lt;/span&gt;). Older GEE methods can accommodate missing values only if they are &lt;em&gt;Missing Completely At Random&lt;/em&gt; (MCAR), while more recent methods allow them to be MAR or even &lt;em&gt;Missing Not At Random&lt;/em&gt; (MNAR), provided that a model for the missingness is correctly specified (&lt;span class=&#34;citation&#34;&gt;Robins, Rotnitzky, and Zhao (1995)&lt;/span&gt;,&lt;span class=&#34;citation&#34;&gt;Rotnitzky, Robins, and Scharfstein (1998)&lt;/span&gt;).&lt;/p&gt;
-&lt;/div&gt;
-&lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
-&lt;h1&gt;References&lt;/h1&gt;
-&lt;div id=&#34;refs&#34; class=&#34;references&#34;&gt;
-&lt;div id=&#34;ref-liang1986longitudinal&#34;&gt;
-&lt;p&gt;Liang, Kung-Yee, and Scott L Zeger. 1986. “Longitudinal Data Analysis Using Generalized Linear Models.” &lt;em&gt;Biometrika&lt;/em&gt; 73 (1): 13–22.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div id=&#34;ref-little2019statistical&#34;&gt;
-&lt;p&gt;Little, Roderick JA, and Donald B Rubin. 2019. &lt;em&gt;Statistical Analysis with Missing Data&lt;/em&gt;. Vol. 793. John Wiley &amp;amp; Sons.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div id=&#34;ref-molenberghs2014handbook&#34;&gt;
-&lt;p&gt;Molenberghs, Geert, Garrett Fitzmaurice, Michael G Kenward, Anastasios Tsiatis, and Geert Verbeke. 2014. &lt;em&gt;Handbook of Missing Data Methodology&lt;/em&gt;. Chapman; Hall/CRC.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div id=&#34;ref-robins1995semiparametric&#34;&gt;
-&lt;p&gt;Robins, James M, and Andrea Rotnitzky. 1995. “Semiparametric Efficiency in Multivariate Regression Models with Missing Data.” &lt;em&gt;Journal of the American Statistical Association&lt;/em&gt; 90 (429): 122–29.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div id=&#34;ref-robins1994estimation&#34;&gt;
-&lt;p&gt;Robins, James M, Andrea Rotnitzky, and Lue Ping Zhao. 1994. “Estimation of Regression Coefficients When Some Regressors Are Not Always Observed.” &lt;em&gt;Journal of the American Statistical Association&lt;/em&gt; 89 (427): 846–66.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div id=&#34;ref-robins1995analysis&#34;&gt;
-&lt;p&gt;———. 1995. “Analysis of Semiparametric Regression Models for Repeated Outcomes in the Presence of Missing Data.” &lt;em&gt;Journal of the American Statistical Association&lt;/em&gt; 90 (429): 106–21.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div id=&#34;ref-rotnitzky1998semiparametric&#34;&gt;
-&lt;p&gt;Rotnitzky, Andrea, James M Robins, and Daniel O Scharfstein. 1998. “Semiparametric Regression for Repeated Outcomes with Nonignorable Nonresponse.” &lt;em&gt;Journal of the American Statistical Association&lt;/em&gt; 93 (444): 1321–39.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div id=&#34;ref-schafer2002missing&#34;&gt;
-&lt;p&gt;Schafer, Joseph L, and John W Graham. 2002. “Missing Data: Our View of the State of the Art.” &lt;em&gt;Psychological Methods&lt;/em&gt; 7 (2): 147.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div id=&#34;ref-zeger1988models&#34;&gt;
-&lt;p&gt;Zeger, Scott L, Kung-Yee Liang, and Paul S Albert. 1988. “Models for Longitudinal Data: A Generalized Estimating Equation Approach.” &lt;em&gt;Biometrics&lt;/em&gt;, 1049–60.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-</description>
-    </item>
-    
-    <item>
       <title>Weighting Adjustments</title>
       <link>/missmethods/weighting-adjustments/</link>
       <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
       
       <guid>/missmethods/weighting-adjustments/</guid>
       <description>
+&lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
 &lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
 
 
@@ -294,7 +297,7 @@ p(m\mid \rho(X,\phi),y,\phi)=p(m\mid \rho(X,\phi),\phi),
 &lt;/div&gt;
 &lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
 &lt;h1&gt;References&lt;/h1&gt;
-&lt;div id=&#34;refs&#34; class=&#34;references&#34;&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references hanging-indent&#34;&gt;
 &lt;div id=&#34;ref-cassel1983some&#34;&gt;
 &lt;p&gt;Cassel, Claes M, Carl-Erik Sarndal, and Jan H Wretman. 1983. “Some Uses of Statistical Models in Connection with the Nonresponse Problem.” &lt;em&gt;Incomplete Data in Sample Surveys&lt;/em&gt; 3: 143–60.&lt;/p&gt;
 &lt;/div&gt;

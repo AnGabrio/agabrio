@@ -373,7 +373,7 @@
         
 
         <li class="nav-item">
-          <a class="nav-link " href="/missingdata/"><span>Missing Data</span></a>
+          <a class="nav-link " href="/rubric/"><span>Missing Data</span></a>
         </li>
 
         
@@ -436,12 +436,10 @@
   
   
   <div>
-    <h2><a href="/missmethods/bayesian-methods/">Bayesian Iterative Simulation Methods</a></h2>
+    <h2><a href="/missmethods/likelihood-based-methods-nonignorable/">Likelihood Based Inference with Incomplete Data (Nonignorable)</a></h2>
     <div class="article-style">
       
-      A useful alternative approach to Maximum Likelihood(ML) methods, particularly when the sample size is small, is to include a reasonable prior distribution for the parameters and compute the posterior distribution of the parameters of interest. The posterior distribution for a model with ignorable missingness is
-\[p(\theta \mid Y_0, M) \equiv p(\theta \mid Y_0) \propto p(\theta)f(Y_0 \mid \theta),\]
-where \(p(\theta)\) is the prior and \(f(Y_0 \mid \theta)\) is the density of the observed data \(Y_0\).
+      Specific methods are required to make inference under nonignorable nonresponse assumptions, that is when the value of the variable that is missing is related to some values which are not observed by the analyst (e.g. the missing values themselves)
       
     </div>
   </div>
@@ -450,8 +448,7 @@ where \(p(\theta)\) is the prior and \(f(Y_0 \mid \theta)\) is the density of th
     <h2><a href="/missmethods/likelihood-based-methods-ignorable2/">Introduction to Bayesian Inference</a></h2>
     <div class="article-style">
       
-      Bayesian inference offers a convenient framework to analyse missing data as it draws no distinction between missing values and parameters, both interprted as unobserved quantities who are associated with a joint posterior distribution conditional on the observed data. In this section, I review basic concepts of Bayesian inference based on fully observed data, with notation and structure mostly taken from Gelman et al. (2013).
-Bayesian Inference for Complete DataBayesian inference is the process of fitting a probability model to a set of data \(Y\) and summarising the results by a probability distribution on the parameters \(\theta\) of the model and on unobserved quantities \(\tilde{Y}\) (e.
+      Bayesian inference is a method of statistical inference in which Bayes theorem is used to update the probability for a hypothesis as more evidence or information becomes available
       
     </div>
   </div>
@@ -460,18 +457,16 @@ Bayesian Inference for Complete DataBayesian inference is the process of fittin
     <h2><a href="/missmethods/likelihood-based-methods-ignorable3/">Likelihood Based Inference with Incomplete Data</a></h2>
     <div class="article-style">
       
-      As for the inference under complete data, inference under incomplete data consists in deriving the likelihood for the parameters based on the available data, either using a Maximum Likelihood (ML) approach (solving the likelihood equation) or using the Bayes’ rule incorporating a prior distribution (performing necessary integrations to obtain the posterior distribution). However, asymptotic standard errors obtained from the information matrix, are more questionable when dealing with missing data since the sample will not be typically iid and results that imply the large sample normality of the likelihood function do not immediately apply.
+      When making inference with missing data, any statistical method must rely on either explicit or implicit assumptions about the mechanism which lead some of the values to be missing
       
     </div>
   </div>
   
   <div>
-    <h2><a href="/missmethods/likelihood-based-methods-nonignorable/">Likelihood Based Inference with Incomplete Data (Nonignorable)</a></h2>
+    <h2><a href="/missmethods/bayesian-methods/">Bayesian Iterative Simulation Methods</a></h2>
     <div class="article-style">
       
-      In many cases, analysis methods for missing data are based on the ignorable likelihood
-\[L_{ign}\left(\theta \mid Y_0, X \right) \propto f\left(Y_0 \mid X, \theta \right),\]
-regarded as a function of the parameters \(\theta\) for fixed observed data \(Y_0\) and some fully observed covariates \(X\). The density \(f(Y_0 \mid X, \theta)\) is obtained by integrating out the missing data \(Y_1\) from the joint density \(f(Y \mid X, \theta)=f(Y_0,Y_1\mid X, \theta)\).
+      The most popular class of Bayesian iterative methods is called Markov chain Monte Carlo (MCMC), which comprises different algorithms for sampling from a probability distribution. The more steps that are included, the more closely the distribution of the sample matches the actual desired distribution
       
     </div>
   </div>

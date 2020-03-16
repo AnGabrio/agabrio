@@ -373,7 +373,7 @@
         
 
         <li class="nav-item">
-          <a class="nav-link " href="/missingdata/"><span>Missing Data</span></a>
+          <a class="nav-link " href="/rubric/"><span>Missing Data</span></a>
         </li>
 
         
@@ -436,21 +436,10 @@
   
   
   <div>
-    <h2><a href="/missmethods/bayesian-methods/">Bayesian Iterative Simulation Methods</a></h2>
+    <h2><a href="/missmethods/likelihood-based-methods-ignorable/">Introduction to Maximum Likelihood Estimation</a></h2>
     <div class="article-style">
       
-      A useful alternative approach to Maximum Likelihood(ML) methods, particularly when the sample size is small, is to include a reasonable prior distribution for the parameters and compute the posterior distribution of the parameters of interest. The posterior distribution for a model with ignorable missingness is
-\[p(\theta \mid Y_0, M) \equiv p(\theta \mid Y_0) \propto p(\theta)f(Y_0 \mid \theta),\]
-where \(p(\theta)\) is the prior and \(f(Y_0 \mid \theta)\) is the density of the observed data \(Y_0\).
-      
-    </div>
-  </div>
-  
-  <div>
-    <h2><a href="/missmethods/em-algorithm/">Expectation Maximisation Algorithm</a></h2>
-    <div class="article-style">
-      
-      Patterns of incomplete data in practice often do not have the forms that allow explicit Maximum Likelihood(ML) estimates to be calculated. Suppose we have a model for the complete data \(Y\), with density \(f(Y\mid \theta)\), indexed by the set of unknown parameters \(\theta\). Writing \(Y=(Y_0,Y_1)\) in terms of the observed \(Y_0\) and missing \(Y_1\) components, and assuming that the missingness mechanism is Missing At Random(MAR), we want to maximise the likelihood
+      Maximum Likelihood Estimation (MLE) is a method of estimating the parameters of a probability distribution by maximising a likelihood function, so that under the assumed statistical model the observed data is most probable
       
     </div>
   </div>
@@ -459,18 +448,7 @@ where \(p(\theta)\) is the prior and \(f(Y_0 \mid \theta)\) is the density of th
     <h2><a href="/missmethods/likelihood-based-methods-ignorable2/">Introduction to Bayesian Inference</a></h2>
     <div class="article-style">
       
-      Bayesian inference offers a convenient framework to analyse missing data as it draws no distinction between missing values and parameters, both interprted as unobserved quantities who are associated with a joint posterior distribution conditional on the observed data. In this section, I review basic concepts of Bayesian inference based on fully observed data, with notation and structure mostly taken from Gelman et al. (2013).
-Bayesian Inference for Complete DataBayesian inference is the process of fitting a probability model to a set of data \(Y\) and summarising the results by a probability distribution on the parameters \(\theta\) of the model and on unobserved quantities \(\tilde{Y}\) (e.
-      
-    </div>
-  </div>
-  
-  <div>
-    <h2><a href="/missmethods/likelihood-based-methods-ignorable/">Introduction to Maximum Likelihood Estimation</a></h2>
-    <div class="article-style">
-      
-      A possible approach to analyse missing data is to use methods based on the likelihood function under specific modelling assumptions. In this section, I review maximum likelihood methods based on fully observed data alone.
-Maximum Likelihood Methods for Complete DataLet \(Y\) denote the set of data, which are assumed to be generated according to a certain probability density function \(f(Y= y,\mid \theta)=f(y \mid \theta)\) indexed by the set of parameters \(\theta\), which lies on the parameter space \(\Theta\) (i.
+      Bayesian inference is a method of statistical inference in which Bayes theorem is used to update the probability for a hypothesis as more evidence or information becomes available
       
     </div>
   </div>
@@ -479,7 +457,25 @@ Maximum Likelihood Methods for Complete DataLet \(Y\) denote the set of data, w
     <h2><a href="/missmethods/likelihood-based-methods-ignorable3/">Likelihood Based Inference with Incomplete Data</a></h2>
     <div class="article-style">
       
-      As for the inference under complete data, inference under incomplete data consists in deriving the likelihood for the parameters based on the available data, either using a Maximum Likelihood (ML) approach (solving the likelihood equation) or using the Bayes’ rule incorporating a prior distribution (performing necessary integrations to obtain the posterior distribution). However, asymptotic standard errors obtained from the information matrix, are more questionable when dealing with missing data since the sample will not be typically iid and results that imply the large sample normality of the likelihood function do not immediately apply.
+      When making inference with missing data, any statistical method must rely on either explicit or implicit assumptions about the mechanism which lead some of the values to be missing
+      
+    </div>
+  </div>
+  
+  <div>
+    <h2><a href="/missmethods/em-algorithm/">Expectation Maximisation Algorithm</a></h2>
+    <div class="article-style">
+      
+      An Expectation–Maximization (EM) algorithm is an iterative method to find maximum likelihood or maximum a posteriori estimates of parameters in statistical models, where the model depends on unobserved latent variables
+      
+    </div>
+  </div>
+  
+  <div>
+    <h2><a href="/missmethods/bayesian-methods/">Bayesian Iterative Simulation Methods</a></h2>
+    <div class="article-style">
+      
+      The most popular class of Bayesian iterative methods is called Markov chain Monte Carlo (MCMC), which comprises different algorithms for sampling from a probability distribution. The more steps that are included, the more closely the distribution of the sample matches the actual desired distribution
       
     </div>
   </div>

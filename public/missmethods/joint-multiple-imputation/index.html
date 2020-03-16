@@ -28,7 +28,7 @@
   
     
   
-  <meta name="description" content="Multiple Imputation(MI) refers to the procedure of replacing each missing value by a set of \(H\geq 2\) imputed values. These are ordered in the sense that \(H\) completed data sets can be created from the sets of imputations, where the first imputed value replaces the missing value in the first completed data set, the second imputed value in the second completed data set, and so on. Next, standard complete data methods are used to analyse each completed data set.">
+  <meta name="description" content="Joint Multiple Imputation (JOMO) commonly assumes that the incomplete variables follow a multivariate normal distribution, often referred to as multivariate normal imputation and, under this assumption, provides rigorous standard errors for the fitted parameters">
 
   
   <link rel="alternate" hreflang="en-us" href="/missmethods/joint-multiple-imputation/">
@@ -122,7 +122,7 @@
   <meta property="og:site_name" content="Andrea Gabrio">
   <meta property="og:url" content="/missmethods/joint-multiple-imputation/">
   <meta property="og:title" content="Joint Multiple Imputation | Andrea Gabrio">
-  <meta property="og:description" content="Multiple Imputation(MI) refers to the procedure of replacing each missing value by a set of \(H\geq 2\) imputed values. These are ordered in the sense that \(H\) completed data sets can be created from the sets of imputations, where the first imputed value replaces the missing value in the first completed data set, the second imputed value in the second completed data set, and so on. Next, standard complete data methods are used to analyse each completed data set."><meta property="og:image" content="/img/icon-192.png">
+  <meta property="og:description" content="Joint Multiple Imputation (JOMO) commonly assumes that the incomplete variables follow a multivariate normal distribution, often referred to as multivariate normal imputation and, under this assumption, provides rigorous standard errors for the fitted parameters"><meta property="og:image" content="/img/icon-192.png">
   <meta property="og:locale" content="en-us">
   
   <meta property="article:published_time" content="2016-04-27T00:00:00&#43;00:00">
@@ -372,7 +372,7 @@
         
 
         <li class="nav-item">
-          <a class="nav-link " href="/missingdata/"><span>Missing Data</span></a>
+          <a class="nav-link " href="/rubric/"><span>Missing Data</span></a>
         </li>
 
         
@@ -533,6 +533,7 @@
 
     <div class="article-style" itemprop="articleBody">
       
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 
 
 <p><em>Multiple Imputation</em>(MI) refers to the procedure of replacing each missing value by a set of <span class="math inline">\(H\geq 2\)</span> imputed values. These are ordered in the sense that <span class="math inline">\(H\)</span> completed data sets can be created from the sets of imputations, where the first imputed value replaces the missing value in the first completed data set, the second imputed value in the second completed data set, and so on. Next, standard complete data methods are used to analyse each completed data set. When the <span class="math inline">\(H\)</span> sets of imputations are repeated random draws from the predictive distribution of the missing data under a particular model of missingness, the <span class="math inline">\(H\)</span> completed data inferences can be combined to form one inference that properly reflects uncertainty due to missing values under that model. In general, MI procedures can be summarised in three main steps:</p>
@@ -591,7 +592,7 @@ an essential part of MI. For this reason, it is natural (but not essential) to m
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1>References</h1>
-<div id="refs" class="references">
+<div id="refs" class="references hanging-indent">
 <div id="ref-allison2005imputation">
 <p>Allison, Paul D. 2005. “Imputation of Categorical Variables with Proc Mi.” <em>SUGI 30 Proceedings</em> 113 (30): 1–14.</p>
 </div>

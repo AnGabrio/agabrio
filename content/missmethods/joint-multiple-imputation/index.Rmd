@@ -1,11 +1,12 @@
 ---
 title: Joint Multiple Imputation 
-summary: 
+summary: Joint Multiple Imputation (JOMO) commonly assumes that the incomplete variables follow a multivariate normal distribution, often referred to as multivariate normal imputation and, under this assumption, provides rigorous standard errors for the fitted parameters
 tags:
 - Joint Multiple Imputation
 - Multiple Imputation by Chained Equations
 - Multiple Imputation
 date: "2016-04-27T00:00:00Z"
+weight: 2
 
 # Optional external URL for project (replaces project detail page).
 external_link: ""

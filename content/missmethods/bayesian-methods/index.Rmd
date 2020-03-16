@@ -1,11 +1,12 @@
 ---
 title: Bayesian Iterative Simulation Methods
-summary: 
+summary: The most popular class of Bayesian iterative methods is called Markov chain Monte Carlo (MCMC), which comprises different algorithms for sampling from a probability distribution. The more steps that are included, the more closely the distribution of the sample matches the actual desired distribution
 tags:
 - Bayesian Iterative Simulation Methods
 - Bayesian Inference
 - Likelihood Based Methods Ignorable
 date: "2016-04-27T00:00:00Z"
+weight: 5
 
 # Optional external URL for project (replaces project detail page).
 external_link: ""

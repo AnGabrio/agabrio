@@ -28,7 +28,7 @@
   
     
   
-  <meta name="description" content="As for the inference under complete data, inference under incomplete data consists in deriving the likelihood for the parameters based on the available data, either using a Maximum Likelihood (ML) approach (solving the likelihood equation) or using the Bayes’ rule incorporating a prior distribution (performing necessary integrations to obtain the posterior distribution). However, asymptotic standard errors obtained from the information matrix, are more questionable when dealing with missing data since the sample will not be typically iid and results that imply the large sample normality of the likelihood function do not immediately apply.">
+  <meta name="description" content="When making inference with missing data, any statistical method must rely on either explicit or implicit assumptions about the mechanism which lead some of the values to be missing">
 
   
   <link rel="alternate" hreflang="en-us" href="/missmethods/likelihood-based-methods-ignorable3/">
@@ -122,7 +122,7 @@
   <meta property="og:site_name" content="Andrea Gabrio">
   <meta property="og:url" content="/missmethods/likelihood-based-methods-ignorable3/">
   <meta property="og:title" content="Likelihood Based Inference with Incomplete Data | Andrea Gabrio">
-  <meta property="og:description" content="As for the inference under complete data, inference under incomplete data consists in deriving the likelihood for the parameters based on the available data, either using a Maximum Likelihood (ML) approach (solving the likelihood equation) or using the Bayes’ rule incorporating a prior distribution (performing necessary integrations to obtain the posterior distribution). However, asymptotic standard errors obtained from the information matrix, are more questionable when dealing with missing data since the sample will not be typically iid and results that imply the large sample normality of the likelihood function do not immediately apply."><meta property="og:image" content="/img/icon-192.png">
+  <meta property="og:description" content="When making inference with missing data, any statistical method must rely on either explicit or implicit assumptions about the mechanism which lead some of the values to be missing"><meta property="og:image" content="/img/icon-192.png">
   <meta property="og:locale" content="en-us">
   
   <meta property="article:published_time" content="2016-04-27T00:00:00&#43;00:00">
@@ -372,7 +372,7 @@
         
 
         <li class="nav-item">
-          <a class="nav-link " href="/missingdata/"><span>Missing Data</span></a>
+          <a class="nav-link " href="/rubric/"><span>Missing Data</span></a>
         </li>
 
         
@@ -533,6 +533,7 @@
 
     <div class="article-style" itemprop="articleBody">
       
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 
 
 <p>As for the inference under complete data, inference under incomplete data consists in deriving the likelihood for the parameters based on the available data, either using a <em>Maximum Likelihood</em> (ML) approach (solving the likelihood equation) or using the <em>Bayes’ rule</em> incorporating a prior distribution (performing necessary integrations to obtain the posterior distribution). However, asymptotic standard errors obtained from the information matrix, are more questionable when dealing with missing data since the sample will not be typically iid and results that imply the large sample normality of the likelihood function do not immediately apply. More complications arise when dealing with the process that lead to some of the data to be missing. This can be explained with a simple example.</p>
@@ -625,7 +626,7 @@ l_{ign}\left(\mu, \Sigma \mid y_{0} \right) = \log\left(L_{ign}\left(\mu,\Sigma 
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1>References</h1>
-<div id="refs" class="references">
+<div id="refs" class="references hanging-indent">
 <div id="ref-little2019statistical">
 <p>Little, Roderick JA, and Donald B Rubin. 2019. <em>Statistical Analysis with Missing Data</em>. Vol. 793. John Wiley &amp; Sons.</p>
 </div>

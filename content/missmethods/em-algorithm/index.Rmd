@@ -1,10 +1,11 @@
 ---
 title: Expectation Maximisation Algorithm
-summary: 
+summary: An Expectation–Maximization (EM) algorithm is an iterative method to find maximum likelihood or maximum a posteriori estimates of parameters in statistical models, where the model depends on unobserved latent variables
 tags:
 - Expectation Maximisation Algorithm
 - Likelihood Based Methods Ignorable
 date: "2016-04-27T00:00:00Z"
+weight: 4
 
 # Optional external URL for project (replaces project detail page).
 external_link: ""

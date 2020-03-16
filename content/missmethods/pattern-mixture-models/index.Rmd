@@ -1,11 +1,12 @@
 ---
 title: Pattern Mixture Models
-summary: 
+summary: Pattern Mixture Models (PMM) are typically used to handle nonignorable missingness. They factorise the joint likelihood of measurement process and missingness process into a marginal density of the missingness process and the density of the measurement process conditional on the missing data patterns, where the model of interest is fitted for each pattern.
 tags:
 - Pattern Mixture Models
 - Full Data Models under MNAR 
 - Likelihood Based Methods Nonignorable
 date: "2016-04-27T00:00:00Z"
+weight: 3
 
 # Optional external URL for project (replaces project detail page).
 external_link: ""

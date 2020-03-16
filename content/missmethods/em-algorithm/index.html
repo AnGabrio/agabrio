@@ -1,10 +1,11 @@
 ---
 title: Expectation Maximisation Algorithm
-summary: 
+summary: An Expectation–Maximization (EM) algorithm is an iterative method to find maximum likelihood or maximum a posteriori estimates of parameters in statistical models, where the model depends on unobserved latent variables
 tags:
 - Expectation Maximisation Algorithm
 - Likelihood Based Methods Ignorable
 date: "2016-04-27T00:00:00Z"
+weight: 4
 
 # Optional external URL for project (replaces project detail page).
 external_link: ""
@@ -42,6 +43,7 @@ url_poster: ""
 # slides: example
 ---
 
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 
 
 <p>Patterns of incomplete data in practice often do not have the forms that allow explicit <em>Maximum Likelihood</em>(ML) estimates to be calculated. Suppose we have a model for the complete data <span class="math inline">\(Y\)</span>, with density <span class="math inline">\(f(Y\mid \theta)\)</span>, indexed by the set of unknown parameters <span class="math inline">\(\theta\)</span>. Writing <span class="math inline">\(Y=(Y_0,Y_1)\)</span> in terms of the observed <span class="math inline">\(Y_0\)</span> and missing <span class="math inline">\(Y_1\)</span> components, and assuming that the missingness mechanism is <em>Missing At Random</em>(MAR), we want to maximise the likelihood</p>
@@ -100,7 +102,7 @@ E\left(\sum_{i=1}^{n}y^2_i \mid \theta_t, Y_0 \right) = \sum_{i=1}^{n_{cc}}y^2_i
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1>References</h1>
-<div id="refs" class="references">
+<div id="refs" class="references hanging-indent">
 <div id="ref-dempster1977maximum">
 <p>Dempster, Arthur P, Nan M Laird, and Donald B Rubin. 1977. “Maximum Likelihood from Incomplete Data via the Em Algorithm.” <em>Journal of the Royal Statistical Society: Series B (Methodological)</em> 39 (1): 1–22.</p>
 </div>

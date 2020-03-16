@@ -1,11 +1,12 @@
 ---
 title: Likelihood Based Inference with Incomplete Data (Nonignorable)
-summary: 
+summary: Specific methods are required to make inference under nonignorable nonresponse assumptions, that is when the value of the variable that is missing is related to some values which are not observed by the analyst (e.g. the missing values themselves)
 tags:
 - Maximum Likelihood Estimation
 - Bayesian Inference
 - Likelihood Based Methods Nonignorable
 date: "2016-04-27T00:00:00Z"
+weight: 1
 
 # Optional external URL for project (replaces project detail page).
 external_link: ""

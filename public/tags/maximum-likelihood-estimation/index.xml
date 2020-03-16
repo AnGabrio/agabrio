@@ -19,6 +19,7 @@
       
       <guid>/missmethods/likelihood-based-methods-ignorable/</guid>
       <description>
+&lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
 
 
 &lt;p&gt;A possible approach to analyse missing data is to use methods based on the likelihood function under specific modelling assumptions. In this section, I review maximum likelihood methods based on fully observed data alone.&lt;/p&gt;
@@ -169,7 +170,7 @@ l(\theta \mid y,x)=\sum_{i=1}^n \left[\frac{\left(y_i\delta\left(x_i,\beta\right
 &lt;/div&gt;
 &lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
 &lt;h1&gt;References&lt;/h1&gt;
-&lt;div id=&#34;refs&#34; class=&#34;references&#34;&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references hanging-indent&#34;&gt;
 &lt;div id=&#34;ref-anderson1962introduction&#34;&gt;
 &lt;p&gt;Anderson, Theodore Wilbur. 1962. “An Introduction to Multivariate Statistical Analysis.” Wiley New York.&lt;/p&gt;
 &lt;/div&gt;
@@ -188,12 +189,94 @@ l(\theta \mid y,x)=\sum_{i=1}^n \left[\frac{\left(y_i\delta\left(x_i,\beta\right
     </item>
     
     <item>
+      <title>Likelihood Based Inference with Incomplete Data (Nonignorable)</title>
+      <link>/missmethods/likelihood-based-methods-nonignorable/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/missmethods/likelihood-based-methods-nonignorable/</guid>
+      <description>
+&lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;p&gt;In many cases, analysis methods for missing data are based on the ignorable likelihood&lt;/p&gt;
+&lt;p&gt;\[
+L_{ign}\left(\theta \mid Y_0, X \right) \propto f\left(Y_0 \mid X, \theta \right),
+\]&lt;/p&gt;
+&lt;p&gt;regarded as a function of the parameters &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; for fixed observed data &lt;span class=&#34;math inline&#34;&gt;\(Y_0\)&lt;/span&gt; and some fully observed covariates &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt;. The density &lt;span class=&#34;math inline&#34;&gt;\(f(Y_0 \mid X, \theta)\)&lt;/span&gt; is obtained by integrating out the missing data &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt; from the joint density &lt;span class=&#34;math inline&#34;&gt;\(f(Y \mid X, \theta)=f(Y_0,Y_1\mid X, \theta)\)&lt;/span&gt;. Sufficient conditions for basing inference about &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; on the ignorbale likelihood are that the missingness mechanism is &lt;em&gt;Missing At Random&lt;/em&gt;(MAR) and the parameters of the model of analysis &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; and those of the missingness mechanism &lt;span class=&#34;math inline&#34;&gt;\(\psi\)&lt;/span&gt; are distinct. Here we focus our attention on the situations where the missingness mechanism is &lt;em&gt;Missing Not At Random&lt;/em&gt;(MNAR) and valid &lt;em&gt;Maximum Likelihood&lt;/em&gt;(ML), &lt;em&gt;Bayesian&lt;/em&gt; and &lt;em&gt;Multiple Imputation&lt;/em&gt;(MI) inferences generally need to be based on the full likelihood&lt;/p&gt;
+&lt;p&gt;\[
+L_{full}\left(\theta, \psi \mid Y_0, X, M \right) \propto f\left(Y_0, M \mid X, \theta, \psi \right),
+\]&lt;/p&gt;
+&lt;p&gt;regarded as a function of &lt;span class=&#34;math inline&#34;&gt;\((\theta,\psi)\)&lt;/span&gt; for fixed &lt;span class=&#34;math inline&#34;&gt;\((Y_0,M)\)&lt;/span&gt;. Here, &lt;span class=&#34;math inline&#34;&gt;\(f(Y_0,M\mid \theta, \psi)\)&lt;/span&gt; is obtained by integrating out &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt; from the joint density &lt;span class=&#34;math inline&#34;&gt;\(f(Y,M \mid X, \theta, \psi)\)&lt;/span&gt;. Two main approaches for formulating MNAR models can be distinguished, namely &lt;em&gt;selection models&lt;/em&gt;(SM) and &lt;em&gt;pattern mixture models&lt;/em&gt;(PMM).&lt;/p&gt;
+&lt;div id=&#34;selection-and-pattern-mixture-models&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Selection and Pattern Mixture Models&lt;/h2&gt;
+&lt;p&gt;SMs factor the joint distribution of &lt;span class=&#34;math inline&#34;&gt;\(m_i\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; as&lt;/p&gt;
+&lt;p&gt;\[
+f(m_i,y_i \mid x_i, \theta, \psi) = f(y_i \mid x_i, \theta)f(m_i \mid x_i,y_i,\psi),
+\]&lt;/p&gt;
+&lt;p&gt;where the first factor is the distribution of &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; in the population while the second factor is the missingness mechanism, with &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\psi\)&lt;/span&gt; which are assumed to be distinct. Alternatively, PMMs factor the joint distribution as&lt;/p&gt;
+&lt;p&gt;\[
+f(m_i,y_i \mid x_i, \theta, \psi) = f(y_i \mid x_i, m_i,\xi)f(m_i \mid x_i),
+\]&lt;/p&gt;
+&lt;p&gt;where the first factor is the distribution of &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; in the strata defined by different patterns of missingness &lt;span class=&#34;math inline&#34;&gt;\(m_i\)&lt;/span&gt; while the second factor models the probabilities of the different patterns, with &lt;span class=&#34;math inline&#34;&gt;\(\xi\)&lt;/span&gt; which are assumed to be distinct (&lt;span class=&#34;citation&#34;&gt;Little (1993)&lt;/span&gt;,&lt;span class=&#34;citation&#34;&gt;Little and Rubin (2019)&lt;/span&gt;). The distinction between the two factorisations becomes clearer when considering a specific example.&lt;/p&gt;
+&lt;p&gt;Suppose thta missing values are confined to a single variable and let &lt;span class=&#34;math inline&#34;&gt;\(y_i=(y_{i,1},y_{i2})\)&lt;/span&gt; be a bivariate response outcome where &lt;span class=&#34;math inline&#34;&gt;\(y_{i1}\)&lt;/span&gt; is fully observed and &lt;span class=&#34;math inline&#34;&gt;\(y_{i2}\)&lt;/span&gt; is observed for &lt;span class=&#34;math inline&#34;&gt;\(i=1,\ldots,n_{cc}\)&lt;/span&gt; but missing for &lt;span class=&#34;math inline&#34;&gt;\(i=n_{cc}+1,\ldots,n\)&lt;/span&gt;. Let &lt;span class=&#34;math inline&#34;&gt;\(m_{i2}\)&lt;/span&gt; be the missingness indicator for &lt;span class=&#34;math inline&#34;&gt;\(y_{i2}\)&lt;/span&gt;, then a PMM factors the denisty of &lt;span class=&#34;math inline&#34;&gt;\(Y_0\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(M\)&lt;/span&gt; given &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt; as&lt;/p&gt;
+&lt;p&gt;\[
+f(y_0, M \mid X, \xi)=\prod_{i=1}^{n_{cc}}f(y_{i1},y_{i2}\mid x_i, m_{i2}=0,\xi)Pr(m_{i2}=0 \mid x_i, \omega) \times \prod_{i=n_{cc}+1}^{n}f(y_{i1} \mid x_i, m_{i2}=1,\xi)Pr(m_{i2}=1 \mid x_i, \omega).
+\]&lt;/p&gt;
+&lt;p&gt;This expression shows that there are no data with which to estimate directly the distribution &lt;span class=&#34;math inline&#34;&gt;\(f(y_{i2} \mid x_i, m_{i2}=1,\xi)\)&lt;/span&gt;, because all units with &lt;span class=&#34;math inline&#34;&gt;\(m_{i2}=1\)&lt;/span&gt; have &lt;span class=&#34;math inline&#34;&gt;\(y_{i2}\)&lt;/span&gt; missing. Under MAR, this is identified using the distribution of the observed data &lt;span class=&#34;math inline&#34;&gt;\(f(y_{i2} \mid x_i, m_{i2}=1,\xi)=f(y_{i2} \mid x_i, m_{i2}=0,\xi)\)&lt;/span&gt;, while under MNAR it must be identified using other assumptions. The SM formulation is&lt;/p&gt;
+&lt;p&gt;\[
+f(y_i, m_{i2} \mid \theta, \psi) = f(y_{i1} \mid x_i, \theta)f(y_{i2} \mid x_i, y_{i1},\theta)f(m_{i2}\mid x_i,y_{i1},y_{i2},\psi).
+\]&lt;/p&gt;
+&lt;p&gt;Typically, the missingness mechanism &lt;span class=&#34;math inline&#34;&gt;\(f(m_{i2} \mid x_i,y_{i1},y_{i2},\psi)\)&lt;/span&gt; is modelled using some additive probit or logit regression of &lt;span class=&#34;math inline&#34;&gt;\(m_{i2}\)&lt;/span&gt; on &lt;span class=&#34;math inline&#34;&gt;\(x_i\)&lt;/span&gt;,&lt;span class=&#34;math inline&#34;&gt;\(y_{i1}\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(y_{i2}\)&lt;/span&gt;. However, the coefficient of &lt;span class=&#34;math inline&#34;&gt;\(y_{i2}\)&lt;/span&gt; in this regression is not directly estimable from the data and hence the model cannot be fully estimated without extra assumptions.&lt;/p&gt;
+&lt;div id=&#34;normal-models-for-mnar-data&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Normal Models for MNAR data&lt;/h3&gt;
+&lt;p&gt;Assume we have a complete sample &lt;span class=&#34;math inline&#34;&gt;\((y_i,x_i)\)&lt;/span&gt; on a continuous variable &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; and a set of fully observed covariates &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt;, for &lt;span class=&#34;math inline&#34;&gt;\(i=1,\ldots,n\)&lt;/span&gt;. Suppose that &lt;span class=&#34;math inline&#34;&gt;\(i=1,\ldots,n_{cc}\)&lt;/span&gt; units are observed while the remaining &lt;span class=&#34;math inline&#34;&gt;\(i=n_{cc}+1,\ldots,n\)&lt;/span&gt; units are missing, with &lt;span class=&#34;math inline&#34;&gt;\(m_i\)&lt;/span&gt; being the corresponding missingness indicator. Heckman (&lt;span class=&#34;citation&#34;&gt;Heckman (1976)&lt;/span&gt;) proposed the following selection model to handle missingness:&lt;/p&gt;
+&lt;p&gt;\[
+y_i \mid x_i, \theta, \psi \sim N(\beta_0 + \beta_1x_i, \sigma^2) \;\;\; \text{and} \;\;\; m_i \mid x_i,y_i,\theta,\psi \sim Bern\left(\Phi(\psi_0 + \psi_1x_i + \psi_2y_i) \right),
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\theta=(\beta_0,\beta_1,\sigma^2)\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\Phi\)&lt;/span&gt; denotes the probit (cumulative normal) distribution function. Note that if &lt;span class=&#34;math inline&#34;&gt;\(\psi_2=0\)&lt;/span&gt;, the missing data are MAR, while if &lt;span class=&#34;math inline&#34;&gt;\(\psi_2 \neq 0\)&lt;/span&gt; the missing data are MNAR since missingness in &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; depends on the unobserved value of &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt;. This model can be estimated using either a two-step least squares method, ML in combination with an EM algorithm, or a Bayesian approach. The main issue is the lack of information about &lt;span class=&#34;math inline&#34;&gt;\(\psi_2\)&lt;/span&gt;, which can be partly identified through the specific assumptions about the distribution of the observed data of &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt;. This, however, makes the implicit assumption that the assumed distribution can well described the distribution of the complete (observed and missing) data which can never be tested or checked. An alternative approach is to use a PMM factorisation and model:&lt;/p&gt;
+&lt;p&gt;\[
+y_i \mid m_i=m,x_i,\xi,\omega \sim N(\beta_0^m + \beta_1^mx_i, \sigma^{2m})\;\;\; \text{and} \;\;\; m_i \mid x_i,\xi,\omega \sim Bern\left(\Phi(\omega_0 + \omega_1x_i) \right),
+\]&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\xi=(\beta_0^m,\beta_1^m,\sigma^{2m},\;\;\; m=0,1)\)&lt;/span&gt;. This model implies that the distribution of &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; given &lt;span class=&#34;math inline&#34;&gt;\(x_i\)&lt;/span&gt; in the population is a mixture of two normal distributions with mean&lt;/p&gt;
+&lt;p&gt;\[
+\left[1 - \Phi(\omega_0 + \omega_1x_i) \right] \left[\beta_0^0 + \beta_1^0 x_i \right] + \left[\Phi(\omega_0 + \omega_1x_i) \right] \left[\beta_0^1 + \beta_1^1 x_i \right].
+\]&lt;/p&gt;
+&lt;p&gt;The parameters &lt;span class=&#34;math inline&#34;&gt;\((\beta_0^0,\beta_1^0,\sigma^{20},\omega)\)&lt;/span&gt; can be estimated from the data but the parameters &lt;span class=&#34;math inline&#34;&gt;\((\beta_0^1,\beta_1^1,\sigma^{21})\)&lt;/span&gt; are not estimable because &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; is missing when &lt;span class=&#34;math inline&#34;&gt;\(m_i=1\)&lt;/span&gt;. Under MAR, the distribution of &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; given &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt; is the same for units with &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; observed and missing, such that &lt;span class=&#34;math inline&#34;&gt;\(\beta_0^0=\beta_0^1=\beta_0\)&lt;/span&gt; (as well as for &lt;span class=&#34;math inline&#34;&gt;\(\beta_1\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt;). Under MNAR, other assumptions are needed to esitmate the parameters indexed by &lt;span class=&#34;math inline&#34;&gt;\(m=1\)&lt;/span&gt;.&lt;/p&gt;
+&lt;p&gt;Some final considerations:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Both SM and PMM model the joint distribution of &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(M\)&lt;/span&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;The SM formulation is more natural when the substantive interest concerns the relationship between &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt; in the population. However, these parameters can also be derived in PMM by averaging the patterns specific parameters over the missingness patterns.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;The PMM factorisation is more transparent in terms of the underlying assumptions about the unidentified parameters of the model, while SM tends to impose some obscure constraints in order to identify these parameters, which are also difficult to interpret.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Given specific assumptions to identify all the parameters in the model, PMMs are often easier to fit than SMs. In addition, imputations of the missing values are based on the predictive distribution of &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; given &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(M=0\)&lt;/span&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;These considerations seem to favour PMM over SM as MNAR approaches, especially when considering &lt;em&gt;sensitivity analysis&lt;/em&gt;. Bayesian approaches can also be used to identify these models, by assigning prior distributions which can be used to identify those parameters which cannot be estimated from the data. Justifications for the choice of these priors are therefore necessary to ensure the plausibility of the assumptions assessed and the impact of these assumptions on the posterior inference.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
+&lt;h1&gt;References&lt;/h1&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references hanging-indent&#34;&gt;
+&lt;div id=&#34;ref-heckman1976common&#34;&gt;
+&lt;p&gt;Heckman, James J. 1976. “The Common Structure of Statistical Models of Truncation, Sample Selection and Limited Dependent Variables and a Simple Estimator for Such Models.” In &lt;em&gt;Annals of Economic and Social Measurement, Volume 5, Number 4&lt;/em&gt;, 475–92. NBER.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-little1993pattern&#34;&gt;
+&lt;p&gt;Little, Roderick JA. 1993. “Pattern-Mixture Models for Multivariate Incomplete Data.” &lt;em&gt;Journal of the American Statistical Association&lt;/em&gt; 88 (421): 125–34.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-little2019statistical&#34;&gt;
+&lt;p&gt;Little, Roderick JA, and Donald B Rubin. 2019. &lt;em&gt;Statistical Analysis with Missing Data&lt;/em&gt;. Vol. 793. John Wiley &amp;amp; Sons.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Likelihood Based Inference with Incomplete Data</title>
       <link>/missmethods/likelihood-based-methods-ignorable3/</link>
       <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
       
       <guid>/missmethods/likelihood-based-methods-ignorable3/</guid>
       <description>
+&lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
 
 
 &lt;p&gt;As for the inference under complete data, inference under incomplete data consists in deriving the likelihood for the parameters based on the available data, either using a &lt;em&gt;Maximum Likelihood&lt;/em&gt; (ML) approach (solving the likelihood equation) or using the &lt;em&gt;Bayes’ rule&lt;/em&gt; incorporating a prior distribution (performing necessary integrations to obtain the posterior distribution). However, asymptotic standard errors obtained from the information matrix, are more questionable when dealing with missing data since the sample will not be typically iid and results that imply the large sample normality of the likelihood function do not immediately apply. More complications arise when dealing with the process that lead to some of the data to be missing. This can be explained with a simple example.&lt;/p&gt;
@@ -286,87 +369,7 @@ l_{ign}\left(\mu, \Sigma \mid y_{0} \right) = \log\left(L_{ign}\left(\mu,\Sigma 
 &lt;/div&gt;
 &lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
 &lt;h1&gt;References&lt;/h1&gt;
-&lt;div id=&#34;refs&#34; class=&#34;references&#34;&gt;
-&lt;div id=&#34;ref-little2019statistical&#34;&gt;
-&lt;p&gt;Little, Roderick JA, and Donald B Rubin. 2019. &lt;em&gt;Statistical Analysis with Missing Data&lt;/em&gt;. Vol. 793. John Wiley &amp;amp; Sons.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Likelihood Based Inference with Incomplete Data (Nonignorable)</title>
-      <link>/missmethods/likelihood-based-methods-nonignorable/</link>
-      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/missmethods/likelihood-based-methods-nonignorable/</guid>
-      <description>
-
-
-&lt;p&gt;In many cases, analysis methods for missing data are based on the ignorable likelihood&lt;/p&gt;
-&lt;p&gt;\[
-L_{ign}\left(\theta \mid Y_0, X \right) \propto f\left(Y_0 \mid X, \theta \right),
-\]&lt;/p&gt;
-&lt;p&gt;regarded as a function of the parameters &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; for fixed observed data &lt;span class=&#34;math inline&#34;&gt;\(Y_0\)&lt;/span&gt; and some fully observed covariates &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt;. The density &lt;span class=&#34;math inline&#34;&gt;\(f(Y_0 \mid X, \theta)\)&lt;/span&gt; is obtained by integrating out the missing data &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt; from the joint density &lt;span class=&#34;math inline&#34;&gt;\(f(Y \mid X, \theta)=f(Y_0,Y_1\mid X, \theta)\)&lt;/span&gt;. Sufficient conditions for basing inference about &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; on the ignorbale likelihood are that the missingness mechanism is &lt;em&gt;Missing At Random&lt;/em&gt;(MAR) and the parameters of the model of analysis &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; and those of the missingness mechanism &lt;span class=&#34;math inline&#34;&gt;\(\psi\)&lt;/span&gt; are distinct. Here we focus our attention on the situations where the missingness mechanism is &lt;em&gt;Missing Not At Random&lt;/em&gt;(MNAR) and valid &lt;em&gt;Maximum Likelihood&lt;/em&gt;(ML), &lt;em&gt;Bayesian&lt;/em&gt; and &lt;em&gt;Multiple Imputation&lt;/em&gt;(MI) inferences generally need to be based on the full likelihood&lt;/p&gt;
-&lt;p&gt;\[
-L_{full}\left(\theta, \psi \mid Y_0, X, M \right) \propto f\left(Y_0, M \mid X, \theta, \psi \right),
-\]&lt;/p&gt;
-&lt;p&gt;regarded as a function of &lt;span class=&#34;math inline&#34;&gt;\((\theta,\psi)\)&lt;/span&gt; for fixed &lt;span class=&#34;math inline&#34;&gt;\((Y_0,M)\)&lt;/span&gt;. Here, &lt;span class=&#34;math inline&#34;&gt;\(f(Y_0,M\mid \theta, \psi)\)&lt;/span&gt; is obtained by integrating out &lt;span class=&#34;math inline&#34;&gt;\(Y_1\)&lt;/span&gt; from the joint density &lt;span class=&#34;math inline&#34;&gt;\(f(Y,M \mid X, \theta, \psi)\)&lt;/span&gt;. Two main approaches for formulating MNAR models can be distinguished, namely &lt;em&gt;selection models&lt;/em&gt;(SM) and &lt;em&gt;pattern mixture models&lt;/em&gt;(PMM).&lt;/p&gt;
-&lt;div id=&#34;selection-and-pattern-mixture-models&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;Selection and Pattern Mixture Models&lt;/h2&gt;
-&lt;p&gt;SMs factor the joint distribution of &lt;span class=&#34;math inline&#34;&gt;\(m_i\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; as&lt;/p&gt;
-&lt;p&gt;\[
-f(m_i,y_i \mid x_i, \theta, \psi) = f(y_i \mid x_i, \theta)f(m_i \mid x_i,y_i,\psi),
-\]&lt;/p&gt;
-&lt;p&gt;where the first factor is the distribution of &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; in the population while the second factor is the missingness mechanism, with &lt;span class=&#34;math inline&#34;&gt;\(\theta\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\psi\)&lt;/span&gt; which are assumed to be distinct. Alternatively, PMMs factor the joint distribution as&lt;/p&gt;
-&lt;p&gt;\[
-f(m_i,y_i \mid x_i, \theta, \psi) = f(y_i \mid x_i, m_i,\xi)f(m_i \mid x_i),
-\]&lt;/p&gt;
-&lt;p&gt;where the first factor is the distribution of &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; in the strata defined by different patterns of missingness &lt;span class=&#34;math inline&#34;&gt;\(m_i\)&lt;/span&gt; while the second factor models the probabilities of the different patterns, with &lt;span class=&#34;math inline&#34;&gt;\(\xi\)&lt;/span&gt; which are assumed to be distinct (&lt;span class=&#34;citation&#34;&gt;Little (1993)&lt;/span&gt;,&lt;span class=&#34;citation&#34;&gt;Little and Rubin (2019)&lt;/span&gt;). The distinction between the two factorisations becomes clearer when considering a specific example.&lt;/p&gt;
-&lt;p&gt;Suppose thta missing values are confined to a single variable and let &lt;span class=&#34;math inline&#34;&gt;\(y_i=(y_{i,1},y_{i2})\)&lt;/span&gt; be a bivariate response outcome where &lt;span class=&#34;math inline&#34;&gt;\(y_{i1}\)&lt;/span&gt; is fully observed and &lt;span class=&#34;math inline&#34;&gt;\(y_{i2}\)&lt;/span&gt; is observed for &lt;span class=&#34;math inline&#34;&gt;\(i=1,\ldots,n_{cc}\)&lt;/span&gt; but missing for &lt;span class=&#34;math inline&#34;&gt;\(i=n_{cc}+1,\ldots,n\)&lt;/span&gt;. Let &lt;span class=&#34;math inline&#34;&gt;\(m_{i2}\)&lt;/span&gt; be the missingness indicator for &lt;span class=&#34;math inline&#34;&gt;\(y_{i2}\)&lt;/span&gt;, then a PMM factors the denisty of &lt;span class=&#34;math inline&#34;&gt;\(Y_0\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(M\)&lt;/span&gt; given &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt; as&lt;/p&gt;
-&lt;p&gt;\[
-f(y_0, M \mid X, \xi)=\prod_{i=1}^{n_{cc}}f(y_{i1},y_{i2}\mid x_i, m_{i2}=0,\xi)Pr(m_{i2}=0 \mid x_i, \omega) \times \prod_{i=n_{cc}+1}^{n}f(y_{i1} \mid x_i, m_{i2}=1,\xi)Pr(m_{i2}=1 \mid x_i, \omega).
-\]&lt;/p&gt;
-&lt;p&gt;This expression shows that there are no data with which to estimate directly the distribution &lt;span class=&#34;math inline&#34;&gt;\(f(y_{i2} \mid x_i, m_{i2}=1,\xi)\)&lt;/span&gt;, because all units with &lt;span class=&#34;math inline&#34;&gt;\(m_{i2}=1\)&lt;/span&gt; have &lt;span class=&#34;math inline&#34;&gt;\(y_{i2}\)&lt;/span&gt; missing. Under MAR, this is identified using the distribution of the observed data &lt;span class=&#34;math inline&#34;&gt;\(f(y_{i2} \mid x_i, m_{i2}=1,\xi)=f(y_{i2} \mid x_i, m_{i2}=0,\xi)\)&lt;/span&gt;, while under MNAR it must be identified using other assumptions. The SM formulation is&lt;/p&gt;
-&lt;p&gt;\[
-f(y_i, m_{i2} \mid \theta, \psi) = f(y_{i1} \mid x_i, \theta)f(y_{i2} \mid x_i, y_{i1},\theta)f(m_{i2}\mid x_i,y_{i1},y_{i2},\psi).
-\]&lt;/p&gt;
-&lt;p&gt;Typically, the missingness mechanism &lt;span class=&#34;math inline&#34;&gt;\(f(m_{i2} \mid x_i,y_{i1},y_{i2},\psi)\)&lt;/span&gt; is modelled using some additive probit or logit regression of &lt;span class=&#34;math inline&#34;&gt;\(m_{i2}\)&lt;/span&gt; on &lt;span class=&#34;math inline&#34;&gt;\(x_i\)&lt;/span&gt;,&lt;span class=&#34;math inline&#34;&gt;\(y_{i1}\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(y_{i2}\)&lt;/span&gt;. However, the coefficient of &lt;span class=&#34;math inline&#34;&gt;\(y_{i2}\)&lt;/span&gt; in this regression is not directly estimable from the data and hence the model cannot be fully estimated without extra assumptions.&lt;/p&gt;
-&lt;div id=&#34;normal-models-for-mnar-data&#34; class=&#34;section level3&#34;&gt;
-&lt;h3&gt;Normal Models for MNAR data&lt;/h3&gt;
-&lt;p&gt;Assume we have a complete sample &lt;span class=&#34;math inline&#34;&gt;\((y_i,x_i)\)&lt;/span&gt; on a continuous variable &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; and a set of fully observed covariates &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt;, for &lt;span class=&#34;math inline&#34;&gt;\(i=1,\ldots,n\)&lt;/span&gt;. Suppose that &lt;span class=&#34;math inline&#34;&gt;\(i=1,\ldots,n_{cc}\)&lt;/span&gt; units are observed while the remaining &lt;span class=&#34;math inline&#34;&gt;\(i=n_{cc}+1,\ldots,n\)&lt;/span&gt; units are missing, with &lt;span class=&#34;math inline&#34;&gt;\(m_i\)&lt;/span&gt; being the corresponding missingness indicator. Heckman (&lt;span class=&#34;citation&#34;&gt;Heckman (1976)&lt;/span&gt;) proposed the following selection model to handle missingness:&lt;/p&gt;
-&lt;p&gt;\[
-y_i \mid x_i, \theta, \psi \sim N(\beta_0 + \beta_1x_i, \sigma^2) \;\;\; \text{and} \;\;\; m_i \mid x_i,y_i,\theta,\psi \sim Bern\left(\Phi(\psi_0 + \psi_1x_i + \psi_2y_i) \right),
-\]&lt;/p&gt;
-&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\theta=(\beta_0,\beta_1,\sigma^2)\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\Phi\)&lt;/span&gt; denotes the probit (cumulative normal) distribution function. Note that if &lt;span class=&#34;math inline&#34;&gt;\(\psi_2=0\)&lt;/span&gt;, the missing data are MAR, while if &lt;span class=&#34;math inline&#34;&gt;\(\psi_2 \neq 0\)&lt;/span&gt; the missing data are MNAR since missingness in &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; depends on the unobserved value of &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt;. This model can be estimated using either a two-step least squares method, ML in combination with an EM algorithm, or a Bayesian approach. The main issue is the lack of information about &lt;span class=&#34;math inline&#34;&gt;\(\psi_2\)&lt;/span&gt;, which can be partly identified through the specific assumptions about the distribution of the observed data of &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt;. This, however, makes the implicit assumption that the assumed distribution can well described the distribution of the complete (observed and missing) data which can never be tested or checked. An alternative approach is to use a PMM factorisation and model:&lt;/p&gt;
-&lt;p&gt;\[
-y_i \mid m_i=m,x_i,\xi,\omega \sim N(\beta_0^m + \beta_1^mx_i, \sigma^{2m})\;\;\; \text{and} \;\;\; m_i \mid x_i,\xi,\omega \sim Bern\left(\Phi(\omega_0 + \omega_1x_i) \right),
-\]&lt;/p&gt;
-&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\xi=(\beta_0^m,\beta_1^m,\sigma^{2m},\;\;\; m=0,1)\)&lt;/span&gt;. This model implies that the distribution of &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; given &lt;span class=&#34;math inline&#34;&gt;\(x_i\)&lt;/span&gt; in the population is a mixture of two normal distributions with mean&lt;/p&gt;
-&lt;p&gt;\[
-\left[1 - \Phi(\omega_0 + \omega_1x_i) \right] \left[\beta_0^0 + \beta_1^0 x_i \right] + \left[\Phi(\omega_0 + \omega_1x_i) \right] \left[\beta_0^1 + \beta_1^1 x_i \right].
-\]&lt;/p&gt;
-&lt;p&gt;The parameters &lt;span class=&#34;math inline&#34;&gt;\((\beta_0^0,\beta_1^0,\sigma^{20},\omega)\)&lt;/span&gt; can be estimated from the data but the parameters &lt;span class=&#34;math inline&#34;&gt;\((\beta_0^1,\beta_1^1,\sigma^{21})\)&lt;/span&gt; are not estimable because &lt;span class=&#34;math inline&#34;&gt;\(y_i\)&lt;/span&gt; is missing when &lt;span class=&#34;math inline&#34;&gt;\(m_i=1\)&lt;/span&gt;. Under MAR, the distribution of &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; given &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt; is the same for units with &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; observed and missing, such that &lt;span class=&#34;math inline&#34;&gt;\(\beta_0^0=\beta_0^1=\beta_0\)&lt;/span&gt; (as well as for &lt;span class=&#34;math inline&#34;&gt;\(\beta_1\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\sigma^2\)&lt;/span&gt;). Under MNAR, other assumptions are needed to esitmate the parameters indexed by &lt;span class=&#34;math inline&#34;&gt;\(m=1\)&lt;/span&gt;.&lt;/p&gt;
-&lt;p&gt;Some final considerations:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;p&gt;Both SM and PMM model the joint distribution of &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(M\)&lt;/span&gt;.&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;The SM formulation is more natural when the substantive interest concerns the relationship between &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt; in the population. However, these parameters can also be derived in PMM by averaging the patterns specific parameters over the missingness patterns.&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;The PMM factorisation is more transparent in terms of the underlying assumptions about the unidentified parameters of the model, while SM tends to impose some obscure constraints in order to identify these parameters, which are also difficult to interpret.&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;Given specific assumptions to identify all the parameters in the model, PMMs are often easier to fit than SMs. In addition, imputations of the missing values are based on the predictive distribution of &lt;span class=&#34;math inline&#34;&gt;\(Y\)&lt;/span&gt; given &lt;span class=&#34;math inline&#34;&gt;\(X\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(M=0\)&lt;/span&gt;.&lt;/p&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;These considerations seem to favour PMM over SM as MNAR approaches, especially when considering &lt;em&gt;sensitivity analysis&lt;/em&gt;. Bayesian approaches can also be used to identify these models, by assigning prior distributions which can be used to identify those parameters which cannot be estimated from the data. Justifications for the choice of these priors are therefore necessary to ensure the plausibility of the assumptions assessed and the impact of these assumptions on the posterior inference.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
-&lt;h1&gt;References&lt;/h1&gt;
-&lt;div id=&#34;refs&#34; class=&#34;references&#34;&gt;
-&lt;div id=&#34;ref-heckman1976common&#34;&gt;
-&lt;p&gt;Heckman, James J. 1976. “The Common Structure of Statistical Models of Truncation, Sample Selection and Limited Dependent Variables and a Simple Estimator for Such Models.” In &lt;em&gt;Annals of Economic and Social Measurement, Volume 5, Number 4&lt;/em&gt;, 475–92. NBER.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div id=&#34;ref-little1993pattern&#34;&gt;
-&lt;p&gt;Little, Roderick JA. 1993. “Pattern-Mixture Models for Multivariate Incomplete Data.” &lt;em&gt;Journal of the American Statistical Association&lt;/em&gt; 88 (421): 125–34.&lt;/p&gt;
-&lt;/div&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references hanging-indent&#34;&gt;
 &lt;div id=&#34;ref-little2019statistical&#34;&gt;
 &lt;p&gt;Little, Roderick JA, and Donald B Rubin. 2019. &lt;em&gt;Statistical Analysis with Missing Data&lt;/em&gt;. Vol. 793. John Wiley &amp;amp; Sons.&lt;/p&gt;
 &lt;/div&gt;

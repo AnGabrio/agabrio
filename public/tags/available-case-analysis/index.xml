@@ -19,6 +19,7 @@
       
       <guid>/missmethods/available-case-analysis/</guid>
       <description>
+&lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
 
 
 &lt;p&gt;Complete case analysis (CCA) can be particularly inefficient for data sets with a large number of variables which are partially observed. An alternative approach that can be used to conduct univariate analyses in known as &lt;em&gt;Available Case Analysis&lt;/em&gt; (ACA), which uses all the available cases, separately for each variable under examination, to estimate the quantities of interest.&lt;/p&gt;
@@ -49,7 +50,7 @@ s^{\star}_{jk} = \frac{\sum_{i \in I_{ac}}(y_{ij}-\bar{y}_{j})(y_{ik}-\bar{y}_{k
 &lt;/div&gt;
 &lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
 &lt;h1&gt;References&lt;/h1&gt;
-&lt;div id=&#34;refs&#34; class=&#34;references&#34;&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references hanging-indent&#34;&gt;
 &lt;div id=&#34;ref-azen1981conclusions&#34;&gt;
 &lt;p&gt;Azen, S, and M Van Guilder. 1981. “Conclusions Regarding Algorithms for Handling Incomplete Data.” &lt;em&gt;1981 Proceedings of the Statistical Computing Section&lt;/em&gt;, 53–56.&lt;/p&gt;
 &lt;/div&gt;

@@ -1,6 +1,6 @@
 ---
 title: Inverse Probability Weighting
-summary: 
+summary: The inverse probability weighting (IPW) approach preserves the semiparametric structure of the underlying model of substantive interest and clearly separates the model of substantive interest from the model used to account for the missing data
 tags:
 - Weighting Methods
 - Semiparametric Methods
@@ -8,6 +8,7 @@ tags:
 - Inverse Probability Weighting
 - Augmented Inverse Probability Weighting
 date: "2016-04-27T00:00:00Z"
+weight: 1
 
 # Optional external URL for project (replaces project detail page).
 external_link: ""

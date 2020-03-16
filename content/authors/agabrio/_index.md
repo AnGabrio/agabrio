@@ -16,7 +16,6 @@ education:
   - course: BSc in Economics
     institution: University of Pavia (Italy)
     year: 2012
-email: "ucakgab@ucl.ac.uk"
 interests:
 - Missing Data
 - Bayesian Statistics

@@ -1,11 +1,12 @@
 ---
 title: Complete Case Analysis
-summary: 
+summary: Complete case analysis is the term used to describe a statistical analysis that only includes participants for which we do not have missing data on the variables of interest
 tags:
 - Delete Case Methods
 - Complete Case Analysis
 - Listwise Deletion
 date: "2016-04-27T00:00:00Z"
+weight: 1
 
 # Optional external URL for project (replaces project detail page).
 external_link: ""
