@@ -268,7 +268,7 @@ writeLines(rstanString, con = "Modelbasic.stan")
 
 Next, we put the data into a list to be passed to `STAN`, define the nodes (parameters and derivatives) to monitor and the chain parameters.
 
-```{r chain_model, eval=FALSE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
+```{r chain_model, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 #prepare data
 y1<-data$y1
 y2<-data$y2
@@ -303,16 +303,16 @@ datalist <- list(y1=y1,y2=y2,ngames=ngames,nteams=nteams,home_team=home_team,awa
 params <- c("mu","home","gamma","delta","beta0_att","beta0_def",
             "beta1_att","beta1_def","beta1_ser","beta1_blo","theta1",
             "theta2","loglik_y1","loglik_y2","loglik_ds","loglik_dg")
-burnInSteps = 2000
+burnInSteps = 500
 nChains = 2
-numSavedSteps = 10000
+numSavedSteps = 2000
 thinSteps = 1
 nIter = ceiling((numSavedSteps * thinSteps)/nChains)
 ```
 
 Start the `STAN` model (check the model, load data into the model, specify the number of chains and compile the model). Run the `STAN` code via the `rstan` package and the `stan` function. 
 
-```{r fit_model, eval=FALSE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
+```{r fit_model, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 model_stan<- stan(data = datalist, file = "Modelbasic.stan", 
                        chains = nChains, pars = params, iter = nIter, 
                        warmup = burnInSteps, thin = thinSteps)
@@ -321,9 +321,9 @@ print(model_stan, pars =c("mu","home","gamma","delta","beta0_att",
                           "beta1_ser","beta1_blo"))
 ```
 
-The diagnostic results are not perfect, perhaps I should run the algorithm a bit longer to get better results as a total of $5000$ iterations does not seem enough. Here I do not bother to save time. To get an idea about posterior results I can plot at the average marginal mean offensive and defensive skills for each of the $12$ teams in the league using the following code.
+The diagnostic results are not perfect, perhaps I should run the algorithm a bit longer to get better results as a total of $1000$ iterations does not seem enough. Here I do not bother to save time. To get an idea about posterior results I can plot at the average marginal mean offensive and defensive skills for each of the $12$ teams in the league using the following code.
  
-```{r effects, eval=FALSE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
+```{r effects, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 #plot att vs def effext by team
 model_stan_par<-extract(model_stan)
 
@@ -344,7 +344,7 @@ Different clusters of teams can be easily detected and suggest a different perfo
 
 Using the generated MCMC samples I can now look at some diagnostic measures. For example, we can assess convergence of the chains using the function `mcmc_combo` in the package `bayesplot` which provides a summary of convergence diagnostics using different graphics. We consider the marginal skill parameters for four teams to give an example. 
 
-```{r mcmc_diag, eval=FALSE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
+```{r mcmc_diag, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 mcmc_combo(model_stan, pars=c("beta0_att[1]","beta0_att[2]",
                               "beta0_att[3]","beta0_att[4]"))
 mcmc_combo(model_stan, pars=c("beta0_def[1]","beta0_def[2]",
@@ -355,7 +355,7 @@ mcmc_combo(model_stan, pars=c("beta0_def[1]","beta0_def[2]",
 
 We can finally assess the fit of the model to the data by computing posterior predictive checks, where we use the posterior values of the parameters to sample a large number of replications for the data. We then use these to generate different types of results and compare them with the actual results to detect possible misfits of the model.
 
-```{r ppc, eval=FALSE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
+```{r ppc, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 #obtain parameters to generate replications
 y1.pred<-y2.pred<-matrix(NA,length(model_stan_par$home),132)
 ds.pred<-dg.pred<-matrix(NA,length(model_stan_par$home),132)
@@ -525,17 +525,18 @@ tot.wins.final<-cbind(tot.wins.obs,tot.wins.med)
 
 Here, for each team, we compare the predicted and observed total number of points scored in the matches, the number of won/lost matches, and the league points scored based on a replicated and the original season results. 
 
-```{r results_points, eval=FALSE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
+```{r results_points, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 #summarise pred results
 res.final.obs<-cbind(res.y[,1],res.y.neg[,1],tot.wins.final[,1],tot.scores.final[,1])
 res.final.pred<-cbind(res.y[,2],res.y.neg[,2],tot.wins.final[,2],tot.scores.final[,2])
 res.final<-cbind(res.final.obs,res.final.pred)
+colnames(res.final)<-c("scored","conc'd","wins","points","scored","conc'd","wins","points")
 knitr::kable(res.final, "pandoc", align = "c")
 ```
 
-Predicted results are not so bad, especially when looking at the number of league points scored by the teams between the replicated and observed season which are quite similar. These results suggest that the model seems to predict in a reasonable way the league results. To further assess this aspect, we consider two plots. The first compares the ranking of the teams across a large number of replications of the season based on the number of wins, losses and league points gained for each team.
+Predicted results (the last four columns in the table) are not so bad, especially when looking at the number of league points scored by the teams between the replicated and observed season which are quite similar. These results suggest that the model seems to predict in a reasonable way the league results. To further assess this aspect, we consider two plots. The first compares the ranking of the teams across a large number of replications of the season based on the number of wins, losses and league points gained for each team.
 
-```{r plot1, eval=FALSE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
+```{r plot1, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 #summarise pred results
 res.matrix<-matrix(NA,length(tot.team.list),12)
 colnames(res.matrix)<-names
@@ -607,7 +608,7 @@ The mean rankings of the teams are in line with those observed in the actual sea
 
 The second plot compares the points trend throughout the season for each team with respect to the trend predicted by the model based on the replicated results for each match in the season.
 
-```{r plot2, eval=FALSE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
+```{r plot2, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 #########plot for cumlative points over simulated season
 points.list<-cum.points.list<-list()
 for(i in 1:nrow(res.matrix)){

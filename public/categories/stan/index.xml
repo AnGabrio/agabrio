@@ -19,6 +19,7 @@
       
       <guid>/stan/glmm-stan/glmm-stan/</guid>
       <description>
+&lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
 
 
 &lt;p&gt;This tutorial will focus on the use of Bayesian estimation to fit simple linear regression models. &lt;code&gt;BUGS&lt;/code&gt; (Bayesian inference Using &lt;em&gt;Gibbs Sampling&lt;/em&gt;) is an algorithm and supporting language (resembling &lt;code&gt;R&lt;/code&gt;) dedicated to performing the Gibbs sampling implementation of &lt;em&gt;Markov Chain Monte Carlo&lt;/em&gt; (MCMC) method. Dialects of the &lt;code&gt;BUGS&lt;/code&gt; language are implemented within three main projects:&lt;/p&gt;
@@ -268,19 +269,242 @@
 &amp;gt; params &amp;lt;- c(&amp;quot;mu&amp;quot;,&amp;quot;home&amp;quot;,&amp;quot;gamma&amp;quot;,&amp;quot;delta&amp;quot;,&amp;quot;beta0_att&amp;quot;,&amp;quot;beta0_def&amp;quot;,
 +             &amp;quot;beta1_att&amp;quot;,&amp;quot;beta1_def&amp;quot;,&amp;quot;beta1_ser&amp;quot;,&amp;quot;beta1_blo&amp;quot;,&amp;quot;theta1&amp;quot;,
 +             &amp;quot;theta2&amp;quot;,&amp;quot;loglik_y1&amp;quot;,&amp;quot;loglik_y2&amp;quot;,&amp;quot;loglik_ds&amp;quot;,&amp;quot;loglik_dg&amp;quot;)
-&amp;gt; burnInSteps = 2000
+&amp;gt; burnInSteps = 500
 &amp;gt; nChains = 2
-&amp;gt; numSavedSteps = 10000
+&amp;gt; numSavedSteps = 2000
 &amp;gt; thinSteps = 1
 &amp;gt; nIter = ceiling((numSavedSteps * thinSteps)/nChains)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;Start the &lt;code&gt;STAN&lt;/code&gt; model (check the model, load data into the model, specify the number of chains and compile the model). Run the &lt;code&gt;STAN&lt;/code&gt; code via the &lt;code&gt;rstan&lt;/code&gt; package and the &lt;code&gt;stan&lt;/code&gt; function.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; model_stan&amp;lt;- stan(data = datalist, file = &amp;quot;Modelbasic.stan&amp;quot;, 
 +                        chains = nChains, pars = params, iter = nIter, 
 +                        warmup = burnInSteps, thin = thinSteps)
+
+SAMPLING FOR MODEL &amp;#39;Modelbasic&amp;#39; NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 0.001 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 10 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:   1 / 1000 [  0%]  (Warmup)
+Chain 1: Iteration: 100 / 1000 [ 10%]  (Warmup)
+Chain 1: Iteration: 200 / 1000 [ 20%]  (Warmup)
+Chain 1: Iteration: 300 / 1000 [ 30%]  (Warmup)
+Chain 1: Iteration: 400 / 1000 [ 40%]  (Warmup)
+Chain 1: Iteration: 500 / 1000 [ 50%]  (Warmup)
+Chain 1: Iteration: 501 / 1000 [ 50%]  (Sampling)
+Chain 1: Iteration: 600 / 1000 [ 60%]  (Sampling)
+Chain 1: Iteration: 700 / 1000 [ 70%]  (Sampling)
+Chain 1: Iteration: 800 / 1000 [ 80%]  (Sampling)
+Chain 1: Iteration: 900 / 1000 [ 90%]  (Sampling)
+Chain 1: Iteration: 1000 / 1000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 72.275 seconds (Warm-up)
+Chain 1:                81.918 seconds (Sampling)
+Chain 1:                154.193 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL &amp;#39;Modelbasic&amp;#39; NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 0 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:   1 / 1000 [  0%]  (Warmup)
+Chain 2: Iteration: 100 / 1000 [ 10%]  (Warmup)
+Chain 2: Iteration: 200 / 1000 [ 20%]  (Warmup)
+Chain 2: Iteration: 300 / 1000 [ 30%]  (Warmup)
+Chain 2: Iteration: 400 / 1000 [ 40%]  (Warmup)
+Chain 2: Iteration: 500 / 1000 [ 50%]  (Warmup)
+Chain 2: Iteration: 501 / 1000 [ 50%]  (Sampling)
+Chain 2: Iteration: 600 / 1000 [ 60%]  (Sampling)
+Chain 2: Iteration: 700 / 1000 [ 70%]  (Sampling)
+Chain 2: Iteration: 800 / 1000 [ 80%]  (Sampling)
+Chain 2: Iteration: 900 / 1000 [ 90%]  (Sampling)
+Chain 2: Iteration: 1000 / 1000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 65.843 seconds (Warm-up)
+Chain 2:                80.38 seconds (Sampling)
+Chain 2:                146.223 seconds (Total)
+Chain 2: 
 &amp;gt; print(model_stan, pars =c(&amp;quot;mu&amp;quot;,&amp;quot;home&amp;quot;,&amp;quot;gamma&amp;quot;,&amp;quot;delta&amp;quot;,&amp;quot;beta0_att&amp;quot;,
 +                           &amp;quot;beta0_def&amp;quot;,&amp;quot;beta1_att&amp;quot;,&amp;quot;beta1_def&amp;quot;,
-+                           &amp;quot;beta1_ser&amp;quot;,&amp;quot;beta1_blo&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;The diagnostic results are not perfect, perhaps I should run the algorithm a bit longer to get better results as a total of &lt;span class=&#34;math inline&#34;&gt;\(5000\)&lt;/span&gt; iterations does not seem enough. Here I do not bother to save time. To get an idea about posterior results I can plot at the average marginal mean offensive and defensive skills for each of the &lt;span class=&#34;math inline&#34;&gt;\(12\)&lt;/span&gt; teams in the league using the following code.&lt;/p&gt;
++                           &amp;quot;beta1_ser&amp;quot;,&amp;quot;beta1_blo&amp;quot;))
+Inference for Stan model: Modelbasic.
+2 chains, each with iter=1000; warmup=500; thin=1; 
+post-warmup draws per chain=500, total post-warmup draws=1000.
+
+                mean se_mean    sd    2.5%    25%    50%    75%  97.5% n_eff
+mu              6.88   40.69 42.08  -49.79 -32.01   1.64  45.81  71.34     1
+home           -2.43   40.69 42.08  -66.90 -41.36   2.80  36.45  54.23     1
+gamma[1]      -81.77    7.94 19.69 -124.06 -94.10 -77.67 -67.84 -47.99     6
+gamma[2]        0.42    0.06  0.14    0.20   0.32   0.40   0.49   0.75     7
+gamma[3]        0.42    0.03  0.09    0.24   0.36   0.42   0.49   0.61    11
+delta[1]       -9.40    1.07  3.79  -16.54 -12.13  -9.31  -6.82  -2.42    13
+delta[2]        0.44    0.02  0.07    0.32   0.38   0.44   0.50   0.56    16
+delta[3]       -0.33    0.01  0.05   -0.43  -0.37  -0.32  -0.29  -0.21    20
+delta[4]       -2.33    0.28  1.02   -4.57  -2.99  -2.32  -1.46  -0.66    13
+beta0_att[1]    0.00    0.00  0.02   -0.04  -0.02   0.00   0.01   0.04   465
+beta0_att[2]    0.06    0.00  0.02    0.02   0.04   0.05   0.07   0.10   120
+beta0_att[3]    0.02    0.00  0.02   -0.03   0.01   0.02   0.03   0.06   534
+beta0_att[4]    0.03    0.00  0.02   -0.01   0.02   0.03   0.04   0.07   178
+beta0_att[5]   -0.05    0.00  0.02   -0.09  -0.06  -0.05  -0.03  -0.01    59
+beta0_att[6]   -0.09    0.00  0.02   -0.14  -0.11  -0.09  -0.08  -0.05    29
+beta0_att[7]    0.04    0.00  0.02    0.00   0.03   0.04   0.06   0.08   314
+beta0_att[8]    0.04    0.00  0.02    0.00   0.03   0.04   0.05   0.08   291
+beta0_att[9]   -0.03    0.00  0.02   -0.07  -0.04  -0.03  -0.01   0.02   524
+beta0_att[10]   0.00    0.00  0.02   -0.03  -0.01   0.00   0.02   0.04   353
+beta0_att[11]  -0.01    0.00  0.02   -0.05  -0.02  -0.01   0.01   0.03   625
+beta0_att[12]  -0.01    0.00  0.02   -0.05  -0.02  -0.01   0.00   0.03   701
+beta0_def[1]    0.07    0.00  0.02    0.02   0.05   0.07   0.08   0.11   172
+beta0_def[2]    0.02    0.00  0.02   -0.03   0.00   0.02   0.04   0.06   135
+beta0_def[3]    0.08    0.00  0.02    0.04   0.07   0.08   0.10   0.12   417
+beta0_def[4]   -0.10    0.00  0.03   -0.14  -0.11  -0.10  -0.08  -0.04   173
+beta0_def[5]    0.02    0.00  0.02   -0.03   0.00   0.02   0.03   0.06    78
+beta0_def[6]    0.03    0.00  0.02   -0.02   0.01   0.03   0.04   0.07   520
+beta0_def[7]    0.02    0.00  0.02   -0.02   0.01   0.02   0.04   0.06   348
+beta0_def[8]   -0.05    0.00  0.02   -0.10  -0.06  -0.05  -0.03   0.00   267
+beta0_def[9]   -0.01    0.00  0.02   -0.06  -0.03  -0.01   0.01   0.04   208
+beta0_def[10]   0.04    0.00  0.02    0.00   0.02   0.04   0.05   0.08   250
+beta0_def[11]   0.02    0.00  0.02   -0.02   0.01   0.02   0.04   0.07   217
+beta0_def[12]  -0.14    0.00  0.02   -0.19  -0.16  -0.14  -0.13  -0.10    80
+beta1_att[1]   -0.69    0.05  0.31   -1.32  -0.89  -0.70  -0.52  -0.05    41
+beta1_att[2]   -0.76    0.08  0.40   -1.63  -0.99  -0.75  -0.51   0.10    28
+beta1_att[3]    0.24    0.06  0.32   -0.40   0.04   0.24   0.45   0.88    30
+beta1_att[4]    0.47    0.04  0.23    0.05   0.31   0.47   0.63   0.91    39
+beta1_att[5]   -0.69    0.06  0.34   -1.39  -0.91  -0.68  -0.46  -0.05    31
+beta1_att[6]   -0.21    0.04  0.30   -0.82  -0.40  -0.22  -0.02   0.39    57
+beta1_att[7]   -0.48    0.05  0.32   -1.11  -0.69  -0.49  -0.26   0.13    51
+beta1_att[8]    0.69    0.05  0.35   -0.07   0.48   0.71   0.91   1.28    43
+beta1_att[9]   -0.32    0.05  0.33   -0.97  -0.56  -0.32  -0.09   0.28    42
+beta1_att[10]   0.31    0.07  0.34   -0.29   0.07   0.29   0.56   0.98    27
+beta1_att[11]   1.20    0.14  0.39    0.34   1.00   1.24   1.46   1.91     8
+beta1_att[12]   0.26    0.06  0.31   -0.36   0.05   0.26   0.46   0.85    28
+beta1_def[1]   -0.09    0.02  0.12   -0.33  -0.19  -0.08   0.00   0.13    50
+beta1_def[2]    0.19    0.02  0.13   -0.07   0.09   0.18   0.27   0.47    76
+beta1_def[3]   -0.02    0.02  0.14   -0.29  -0.11  -0.02   0.07   0.29    60
+beta1_def[4]    0.21    0.02  0.16   -0.09   0.11   0.22   0.32   0.49    56
+beta1_def[5]   -0.25    0.03  0.16   -0.57  -0.36  -0.24  -0.13   0.05    34
+beta1_def[6]    0.03    0.02  0.16   -0.27  -0.08   0.04   0.15   0.34    44
+beta1_def[7]   -0.12    0.01  0.13   -0.37  -0.21  -0.12  -0.04   0.13    78
+beta1_def[8]   -0.42    0.02  0.14   -0.70  -0.52  -0.42  -0.31  -0.16    50
+beta1_def[9]   -0.20    0.02  0.13   -0.48  -0.29  -0.19  -0.12   0.06    55
+beta1_def[10]   0.16    0.01  0.12   -0.06   0.08   0.16   0.24   0.37    66
+beta1_def[11]  -0.08    0.02  0.14   -0.33  -0.19  -0.07   0.01   0.18    33
+beta1_def[12]   0.59    0.06  0.18    0.23   0.46   0.60   0.72   0.93     8
+beta1_ser[1]   -0.05    0.08  0.47   -0.88  -0.38  -0.08   0.23   0.94    38
+beta1_ser[2]   -1.56    0.11  0.54   -2.63  -1.93  -1.58  -1.21  -0.48    22
+beta1_ser[3]    0.61    0.11  0.54   -0.65   0.29   0.61   0.97   1.66    23
+beta1_ser[4]    0.27    0.06  0.35   -0.38   0.03   0.25   0.54   0.90    38
+beta1_ser[5]    0.70    0.11  0.52   -0.41   0.35   0.65   1.06   1.69    22
+beta1_ser[6]   -0.46    0.12  0.63   -1.74  -0.88  -0.42  -0.02   0.72    30
+beta1_ser[7]   -1.13    0.08  0.43   -1.97  -1.41  -1.11  -0.81  -0.38    30
+beta1_ser[8]    2.01    0.10  0.47    1.10   1.66   2.02   2.34   2.89    22
+beta1_ser[9]   -0.65    0.13  0.55   -1.80  -1.00  -0.59  -0.27   0.33    18
+beta1_ser[10]  -0.59    0.07  0.37   -1.31  -0.86  -0.56  -0.33   0.05    32
+beta1_ser[11]   1.81    0.15  0.54    0.84   1.38   1.81   2.21   2.88    14
+beta1_ser[12]  -0.95    0.07  0.42   -1.70  -1.26  -0.97  -0.61  -0.16    33
+beta1_blo[1]   -0.05    0.01  0.08   -0.23  -0.10  -0.04   0.00   0.09    46
+beta1_blo[2]    0.11    0.04  0.10   -0.05   0.04   0.10   0.16   0.35     6
+beta1_blo[3]   -0.07    0.01  0.07   -0.21  -0.12  -0.07  -0.03   0.05    24
+beta1_blo[4]   -0.03    0.01  0.05   -0.14  -0.06  -0.03   0.00   0.06    66
+beta1_blo[5]    0.02    0.01  0.07   -0.09  -0.02   0.02   0.07   0.17    85
+beta1_blo[6]    0.02    0.01  0.06   -0.09  -0.02   0.02   0.06   0.12    79
+beta1_blo[7]    0.08    0.01  0.06   -0.01   0.04   0.08   0.12   0.21    58
+beta1_blo[8]    0.07    0.01  0.08   -0.06   0.02   0.07   0.12   0.24    44
+beta1_blo[9]   -0.01    0.01  0.07   -0.14  -0.06  -0.01   0.03   0.12    45
+beta1_blo[10]  -0.05    0.01  0.05   -0.15  -0.08  -0.05  -0.02   0.03    83
+beta1_blo[11]  -0.05    0.01  0.06   -0.18  -0.10  -0.05  -0.01   0.08    81
+beta1_blo[12]  -0.03    0.01  0.06   -0.17  -0.07  -0.03   0.01   0.10    59
+              Rhat
+mu            4.07
+home          4.07
+gamma[1]      1.55
+gamma[2]      1.57
+gamma[3]      1.14
+delta[1]      1.11
+delta[2]      1.20
+delta[3]      1.09
+delta[4]      1.20
+beta0_att[1]  1.01
+beta0_att[2]  1.04
+beta0_att[3]  1.01
+beta0_att[4]  1.02
+beta0_att[5]  1.05
+beta0_att[6]  1.11
+beta0_att[7]  1.00
+beta0_att[8]  1.01
+beta0_att[9]  1.00
+beta0_att[10] 1.01
+beta0_att[11] 1.00
+beta0_att[12] 1.00
+beta0_def[1]  1.01
+beta0_def[2]  1.01
+beta0_def[3]  1.01
+beta0_def[4]  1.00
+beta0_def[5]  1.07
+beta0_def[6]  1.00
+beta0_def[7]  1.01
+beta0_def[8]  1.01
+beta0_def[9]  1.03
+beta0_def[10] 1.00
+beta0_def[11] 1.01
+beta0_def[12] 1.03
+beta1_att[1]  1.06
+beta1_att[2]  1.01
+beta1_att[3]  1.06
+beta1_att[4]  1.05
+beta1_att[5]  1.10
+beta1_att[6]  1.02
+beta1_att[7]  1.02
+beta1_att[8]  1.07
+beta1_att[9]  1.04
+beta1_att[10] 1.09
+beta1_att[11] 1.22
+beta1_att[12] 1.09
+beta1_def[1]  1.01
+beta1_def[2]  1.03
+beta1_def[3]  1.05
+beta1_def[4]  1.05
+beta1_def[5]  1.10
+beta1_def[6]  1.01
+beta1_def[7]  1.03
+beta1_def[8]  1.12
+beta1_def[9]  1.03
+beta1_def[10] 1.05
+beta1_def[11] 1.05
+beta1_def[12] 1.22
+beta1_ser[1]  1.04
+beta1_ser[2]  1.06
+beta1_ser[3]  1.07
+beta1_ser[4]  1.06
+beta1_ser[5]  1.09
+beta1_ser[6]  1.00
+beta1_ser[7]  1.07
+beta1_ser[8]  1.24
+beta1_ser[9]  1.13
+beta1_ser[10] 1.16
+beta1_ser[11] 1.17
+beta1_ser[12] 1.05
+beta1_blo[1]  1.02
+beta1_blo[2]  1.22
+beta1_blo[3]  1.10
+beta1_blo[4]  1.07
+beta1_blo[5]  1.02
+beta1_blo[6]  1.02
+beta1_blo[7]  1.06
+beta1_blo[8]  1.06
+beta1_blo[9]  1.09
+beta1_blo[10] 1.05
+beta1_blo[11] 1.02
+beta1_blo[12] 1.04
+
+Samples were drawn using NUTS(diag_e) at Wed Mar 25 14:32:21 2020.
+For each parameter, n_eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor on split chains (at 
+convergence, Rhat=1).&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The diagnostic results are not perfect, perhaps I should run the algorithm a bit longer to get better results as a total of &lt;span class=&#34;math inline&#34;&gt;\(1000\)&lt;/span&gt; iterations does not seem enough. Here I do not bother to save time. To get an idea about posterior results I can plot at the average marginal mean offensive and defensive skills for each of the &lt;span class=&#34;math inline&#34;&gt;\(12\)&lt;/span&gt; teams in the league using the following code.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; #plot att vs def effext by team
 &amp;gt; model_stan_par&amp;lt;-extract(model_stan)
 &amp;gt; 
@@ -293,15 +517,18 @@
 &amp;gt; abline(v=0)
 &amp;gt; abline(h=0)
 &amp;gt; text(beta0.att,beta0.def,names,cex = 0.8, adj = c(0.4,1.3))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/glmm-stan/2020-02-01-glmm-stan_files/figure-html/effects-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Different clusters of teams can be easily detected and suggest a different performance of the teams based on their average offensive and defensive skills. Those associated with higher offensive (to the right) and lower defensive (to the bottom) effects are the ones with the best performance across the season.&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;mcmc-diagnostics&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;MCMC diagnostics&lt;/h2&gt;
 &lt;p&gt;Using the generated MCMC samples I can now look at some diagnostic measures. For example, we can assess convergence of the chains using the function &lt;code&gt;mcmc_combo&lt;/code&gt; in the package &lt;code&gt;bayesplot&lt;/code&gt; which provides a summary of convergence diagnostics using different graphics. We consider the marginal skill parameters for four teams to give an example.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc_combo(model_stan, pars=c(&amp;quot;beta0_att[1]&amp;quot;,&amp;quot;beta0_att[2]&amp;quot;,
-+                               &amp;quot;beta0_att[3]&amp;quot;,&amp;quot;beta0_att[4]&amp;quot;))
-&amp;gt; mcmc_combo(model_stan, pars=c(&amp;quot;beta0_def[1]&amp;quot;,&amp;quot;beta0_def[2]&amp;quot;,
++                               &amp;quot;beta0_att[3]&amp;quot;,&amp;quot;beta0_att[4]&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/glmm-stan/2020-02-01-glmm-stan_files/figure-html/mcmc_diag-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc_combo(model_stan, pars=c(&amp;quot;beta0_def[1]&amp;quot;,&amp;quot;beta0_def[2]&amp;quot;,
 +                               &amp;quot;beta0_def[3]&amp;quot;,&amp;quot;beta0_def[4]&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/glmm-stan/2020-02-01-glmm-stan_files/figure-html/mcmc_diag-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;model-validation&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Model validation&lt;/h2&gt;
@@ -476,8 +703,158 @@
 &amp;gt; res.final.obs&amp;lt;-cbind(res.y[,1],res.y.neg[,1],tot.wins.final[,1],tot.scores.final[,1])
 &amp;gt; res.final.pred&amp;lt;-cbind(res.y[,2],res.y.neg[,2],tot.wins.final[,2],tot.scores.final[,2])
 &amp;gt; res.final&amp;lt;-cbind(res.final.obs,res.final.pred)
+&amp;gt; colnames(res.final)&amp;lt;-c(&amp;quot;scored&amp;quot;,&amp;quot;conc&amp;#39;d&amp;quot;,&amp;quot;wins&amp;quot;,&amp;quot;points&amp;quot;,&amp;quot;scored&amp;quot;,&amp;quot;conc&amp;#39;d&amp;quot;,&amp;quot;wins&amp;quot;,&amp;quot;points&amp;quot;)
 &amp;gt; knitr::kable(res.final, &amp;quot;pandoc&amp;quot;, align = &amp;quot;c&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Predicted results are not so bad, especially when looking at the number of league points scored by the teams between the replicated and observed season which are quite similar. These results suggest that the model seems to predict in a reasonable way the league results. To further assess this aspect, we consider two plots. The first compares the ranking of the teams across a large number of replications of the season based on the number of wins, losses and league points gained for each team.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th&gt;&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;scored&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;conc’d&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;wins&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;points&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;scored&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;conc’d&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;wins&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;points&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td&gt;Bergamo&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1848&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;2025&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;7&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;19&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1851&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;2013&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;7&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;20&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td&gt;Busto Arsizio&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1999&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1927&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;12&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;39&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1969&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1926&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;12&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;37&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td&gt;Casalmaggiore&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1922&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;2051&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;6&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;23&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1912&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;2031&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;7&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;23&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td&gt;Conegliano&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1960&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1696&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;17&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;50&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1944&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1719&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;18&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;50&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td&gt;Filottrano&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1781&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1961&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;7&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;19&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1806&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1952&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;6&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;18&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td&gt;Legnano&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1642&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1903&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;5&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;11&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1686&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1892&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;4&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;16&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td&gt;Monza&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;2003&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1943&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;13&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;37&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1979&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1934&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;13&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;38&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td&gt;Novara&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1987&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1776&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;17&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;51&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1970&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1787&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;17&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;51&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td&gt;Pesaro&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1776&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1820&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;10&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;32&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1791&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1819&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;11&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;32&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td&gt;Piacenza&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1888&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1939&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;12&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;33&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1884&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1928&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;9&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;30&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td&gt;San Casciano&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1807&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1881&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;8&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;27&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1809&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1874&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;9&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;29&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td&gt;Scandicci&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1865&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1556&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;18&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;50&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1869&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1591&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;18&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;51&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Predicted results (the last four columns in the table) are not so bad, especially when looking at the number of league points scored by the teams between the replicated and observed season which are quite similar. These results suggest that the model seems to predict in a reasonable way the league results. To further assess this aspect, we consider two plots. The first compares the ranking of the teams across a large number of replications of the season based on the number of wins, losses and league points gained for each team.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; #summarise pred results
 &amp;gt; res.matrix&amp;lt;-matrix(NA,length(tot.team.list),12)
 &amp;gt; colnames(res.matrix)&amp;lt;-names
@@ -543,6 +920,7 @@
 +   labs(y=&amp;quot;&amp;quot;, x=&amp;quot;&amp;quot;) + scale_fill_viridis(discrete = T) + 
 +   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_rect(fill = &amp;quot;white&amp;quot;),
 +         axis.line = element_line(colour = &amp;quot;black&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/glmm-stan/2020-02-01-glmm-stan_files/figure-html/plot1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;The mean rankings of the teams are in line with those observed in the actual season, while also providing uncertainty about the chance of each team to end in a particular position in the league (only percentages above &lt;span class=&#34;math inline&#34;&gt;\(10\%\)&lt;/span&gt; are shown for clarity).&lt;/p&gt;
 &lt;p&gt;The second plot compares the points trend throughout the season for each team with respect to the trend predicted by the model based on the replicated results for each match in the season.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; #########plot for cumlative points over simulated season
@@ -610,6 +988,7 @@
 +   lines(rep(1:22), cum.points.list[[7]][,i], lty=1,lwd=1,col=&amp;quot;red&amp;quot;)
 +   text(5,50,unique(levels(names))[i],pos = 1, cex = 1)
 + }&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/glmm-stan/2020-02-01-glmm-stan_files/figure-html/plot2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;The observed trends (black lines) are pretty much matched by the trends predicted by the model (red lines) for most of the teams with few exceptions. This suggests that, although the model seems to have a good predictive ability, in some cases there are still margins of improvement. In my original paper I have improved the model using a different parameterisation where I tried to account for the dependence between the latent skill parameters using a scaled inverse Wishart distribution for the covariance matrix of the random effects. Here I do not consider this model here, which lead to some improvements compared with the basic Poisson model.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
@@ -621,7 +1000,7 @@ could improve the predictive power of the model. However, this would introduce a
 &lt;/div&gt;
 &lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
 &lt;h1&gt;References&lt;/h1&gt;
-&lt;div id=&#34;refs&#34; class=&#34;references&#34;&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references hanging-indent&#34;&gt;
 &lt;div id=&#34;ref-gabrio2020bayesian&#34;&gt;
 &lt;p&gt;Gabrio, Andrea. 2020. “Bayesian Hierarchical Models for the Prediction of Volleyball Results.” &lt;em&gt;Journal of Applied Statistics&lt;/em&gt;, 1–21.&lt;/p&gt;
 &lt;/div&gt;
