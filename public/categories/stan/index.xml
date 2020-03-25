@@ -7,10 +7,634 @@
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
     <copyright>`{year}`</copyright>
-    <lastBuildDate>Tue, 11 Feb 2020 21:13:14 -0500</lastBuildDate>
+    <lastBuildDate>Sat, 15 Feb 2020 21:13:14 -0500</lastBuildDate>
     
 	    <atom:link href="/categories/stan/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Generalised Linear Mixed Models - STAN</title>
+      <link>/stan/glmm-stan/glmm-stan/</link>
+      <pubDate>Sat, 15 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/stan/glmm-stan/glmm-stan/</guid>
+      <description>
+
+
+&lt;p&gt;This tutorial will focus on the use of Bayesian estimation to fit simple linear regression models. &lt;code&gt;BUGS&lt;/code&gt; (Bayesian inference Using &lt;em&gt;Gibbs Sampling&lt;/em&gt;) is an algorithm and supporting language (resembling &lt;code&gt;R&lt;/code&gt;) dedicated to performing the Gibbs sampling implementation of &lt;em&gt;Markov Chain Monte Carlo&lt;/em&gt; (MCMC) method. Dialects of the &lt;code&gt;BUGS&lt;/code&gt; language are implemented within three main projects:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;OpenBUGS&lt;/strong&gt; - written in component pascal.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;JAGS&lt;/strong&gt; - (Just Another Gibbs Sampler) - written in &lt;code&gt;C++&lt;/code&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;STAN&lt;/strong&gt; - a dedicated Bayesian modelling framework written in &lt;code&gt;C++&lt;/code&gt; and implementing &lt;em&gt;Hamiltonian&lt;/em&gt; MCMC samplers.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Whilst the above programs can be used stand-alone, they do offer the rich data pre-processing and graphical capabilities of &lt;code&gt;R&lt;/code&gt;, and thus, they are best accessed from within &lt;code&gt;R&lt;/code&gt; itself. As such there are multiple packages devoted to interfacing with the various software implementations:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;R2OpenBUGS&lt;/em&gt; - interfaces with &lt;code&gt;OpenBUGS&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;R2jags&lt;/em&gt; - interfaces with &lt;code&gt;JAGS&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;rstan&lt;/em&gt; - interfaces with &lt;code&gt;STAN&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This tutorial will demonstrate how to fit models in &lt;code&gt;STAN&lt;/code&gt; (&lt;span class=&#34;citation&#34;&gt;Gelman, Lee, and Guo (2015)&lt;/span&gt;) using the package &lt;code&gt;rstan&lt;/code&gt; (&lt;span class=&#34;citation&#34;&gt;Stan Development Team (2018)&lt;/span&gt;) as interface, which also requires to load some other packages.&lt;/p&gt;
+&lt;div id=&#34;overview&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Overview&lt;/h1&gt;
+&lt;p&gt;In some respects, &lt;em&gt;Generalized Linear Mixed effects Models&lt;/em&gt; (GLMM) are a hierarchical extension of &lt;em&gt;Generalized linear models&lt;/em&gt; (GLM) in a similar manner that Linear Mixed effects Models (LMM) are a hierarchical extension of Linear Models (LM). However, whilst the Gaussian (normal) distribution facilitates a relatively straight way of generating the marginal likelihood of the observed response by integrating likelihoods across all possible (and unobserved) levels of a random effect to yield parameter estimates, the same cannot be said for other distributions. Consequently various approximations have been developed to estimate the fixed and random parameters for GLMM’s:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;Penalized quasi-likelihood&lt;/strong&gt; (PQL). This method approximates a quasi-likelihood by iterative fitting of (re)weighted linear mixed effects models based on the fit of GLM fit. Specifically, it estimates the fixed effects parameters by fitting a GLM that incorporates a correlation (variance-covariance) structure resulting from a LMM and then refits a LMM to re-estimate the variance-covariance structure by using the variance structure from the previous GLM. The cycle continues to iterate until either the fit improvement is below a threshold or a defined number of iterations has occurred. Whilst this is a relatively simple approach, that enables us to leverage methodologies for accommodating heterogeneity and spatial/temporal autocorrelation, it is known to perform poorly (estimates biased towards large variance) for Poisson distributions when the expected value is less than &lt;span class=&#34;math inline&#34;&gt;\(5\)&lt;/span&gt; and for binary data when the expected number of successes or failures are less than &lt;span class=&#34;math inline&#34;&gt;\(5\)&lt;/span&gt;. Moreover, as it approximates quasi-likelihood rather than likelihood, likelihood based inference and information criterion methods (such as likelihood ratio tests and AIC) are not appropriate with this approach. Instead, Wald tests are required for inference.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;Laplace approximation&lt;/strong&gt;. This approach utilises a second-order Taylor series expansion to approximate (a mathematical technique for approximating the properties of a function around a point by taking multiple derivatives of the function and summing them together) the likelihood function. If we assume that the likelihood function is approximately normal and thus a quadratic function on a log scale, we can use second-order Taylor series expansion to approximate this likelihood. Whilst this approach is considered to be more accurate than PQL, it is considerably slower and unable to accommodate alternative variance and correlation structures.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;Gauss-Hermite quadrature&lt;/strong&gt; (GHQ). This approach approximates the marginal likelihood by approximating the value of integrals at specific points (quadratures). This technique can be further adapted by allowing the number of quadratures and their weights to be optimized via a set of rules.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;Markov-chain Monte-Carlo&lt;/strong&gt; (MCMC). This takes a bruit force approach by recreating the likelihood by traversing the likelihood function with sequential sampling proportional to the likelihood. Although this approach is very robust (when the posteriors have converged), they are computationally very intense. Interestingly, some (including Andrew Gelman) argue that PQL, Laplace and GHQ do not yield estimates. Rather they are only approximations of estimates. By contrast, as MCMC methods are able to integrate over all levels by bruit force, the resulting parameters are indeed true estimates.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;We will focus on the last approach which is the more general among the ones considered here and which is based on a Bayesian approach, which can be very flexible and accurate, yet very slow and complex.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;hierarchical-poisson-regression&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Hierarchical Poisson regression&lt;/h1&gt;
+&lt;p&gt;The model I will be developing is a Bayesian hierarchical Poisson regression model which I used for the modelling of match results in volleyball, also available as a published &lt;a href=&#34;https://www.tandfonline.com/doi/full/10.1080/02664763.2020.1723506?casa_token=5NyZAGE970gAAAAA%3AjcSlhut9cztg1nQheK_Z3NZPUuKvwUAcodvBD7g47amY1Cb-ViZZFt-ikcaYhU7o7sIzwEOOcEgH&#34;&gt;paper&lt;/a&gt;. The objective of the analysis is to model the match results from the season 2017-2018 of &lt;em&gt;Serie A1&lt;/em&gt;, the premium Italian female volleyball league. In total there were &lt;span class=&#34;math inline&#34;&gt;\(136\)&lt;/span&gt; games (rows) in the dataset each with information regarding which was the home and away team, what these teams scored, whether the match ended with &lt;span class=&#34;math inline&#34;&gt;\(4\)&lt;/span&gt; or &lt;span class=&#34;math inline&#34;&gt;\(5\)&lt;/span&gt; sets, and additional in-game statistics such as number of attacks, digs, serves, and blocks for each team in each match. The point outcomes of the teams in the games are assumed to be distributed according to a Poisson distribution. This model is similar to other models used for the modelling of football results, where the points scored by the home and away teams are defined as a function of latent attacking and defensive skills of the teams estimated across the games.&lt;/p&gt;
+&lt;p&gt;The peculiar (and novel) aspect of the model is that it takes into account the features of volleyball to generate plausible game results and league points scored by the teams across the season. In particular, for modelling purposes it is important to accout for the following aspects. 1) according to the current scoring system, matches are played until a team wins a total of three sets, with each set typically going to &lt;span class=&#34;math inline&#34;&gt;\(25\)&lt;/span&gt; points. However, if the two teams won two sets each, the third set then goes only up to &lt;span class=&#34;math inline&#34;&gt;\(15\)&lt;/span&gt; points. 2) a team must win each set by &lt;span class=&#34;math inline&#34;&gt;\(2\)&lt;/span&gt; points. If the score is tied with even numbers, both teams have to continue playing the set until a &lt;span class=&#34;math inline&#34;&gt;\(2\)&lt;/span&gt;-point lead is obtained. Otherwise, points keep accumulating until one team wins with a margin of victory of &lt;span class=&#34;math inline&#34;&gt;\(2\)&lt;/span&gt; points, even if the score is greater than &lt;span class=&#34;math inline&#34;&gt;\(25\)&lt;/span&gt; or &lt;span class=&#34;math inline&#34;&gt;\(15\)&lt;/span&gt; points. 3) in professional volleyball leagues, the teams get points according to set numbers at the end of all matches in the league. More specifically, the team points are awarded as follows: if the match is won &lt;span class=&#34;math inline&#34;&gt;\(3–0\)&lt;/span&gt; or &lt;span class=&#34;math inline&#34;&gt;\(3–1\)&lt;/span&gt;, &lt;span class=&#34;math inline&#34;&gt;\(3\)&lt;/span&gt; points are assigned to the winner and &lt;span class=&#34;math inline&#34;&gt;\(0\)&lt;/span&gt; points to the loser; if the match is won &lt;span class=&#34;math inline&#34;&gt;\(3–2\)&lt;/span&gt;, &lt;span class=&#34;math inline&#34;&gt;\(2\)&lt;/span&gt; points are assigned to the winner and &lt;span class=&#34;math inline&#34;&gt;\(1\)&lt;/span&gt; point to the loser.&lt;/p&gt;
+&lt;p&gt;The model is a Bayesian hierarchical analysis of volleyball data which allows to jointly predict match results and team rankings in national leagues. I use data from the women’s volleyball Italian Serie A1 &lt;span class=&#34;math inline&#34;&gt;\(2017–2018\)&lt;/span&gt; season as a motivating example to implement and validate the model.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;loading-the-data&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Loading the data&lt;/h1&gt;
+&lt;p&gt;I start by loading libraries, reading in the data and preprocessing it for &lt;code&gt;STAN&lt;/code&gt;. In the original verison of the analysis I used &lt;code&gt;JAGS&lt;/code&gt; and a slightly more complicated model which I do not consider here, but that you may consult in my paper if interested (&lt;span class=&#34;citation&#34;&gt;Gabrio (2020)&lt;/span&gt;).&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; library(plyr)
+&amp;gt; library(dplyr)
+&amp;gt; library(rstan)
+&amp;gt; library(bayesplot)
+&amp;gt; library(boot)
+&amp;gt; library(ggplot2)
+&amp;gt; library(scales)
+&amp;gt; library(RColorBrewer)
+&amp;gt; library(viridis)
+&amp;gt; set.seed(12345)  # for reproducibility
+&amp;gt; 
+&amp;gt; #load data
+&amp;gt; data&amp;lt;-read.csv(file = &amp;quot;Volley_prepro_v1.csv&amp;quot;,header = T)
+&amp;gt; data$home.team&amp;lt;-as.factor(data$home.team)
+&amp;gt; data$away.team&amp;lt;-as.factor(data$away.team)
+&amp;gt; data$bloeff1&amp;lt;-(data$bloper1-data$bloinv1)/(data$blo1+data$bloper1)
+&amp;gt; data$bloeff2&amp;lt;-(data$bloper2-data$bloinv2)/(data$blo2+data$bloper2)
+&amp;gt; data_stat1&amp;lt;-ddply(data, .(h), summarise, meanatteff1=mean(atteff1),meansereff1=mean(sereff1),
++                   meandefeff1=mean(defeff1),meanbloeff1=mean(bloeff1))
+&amp;gt; data_stat2&amp;lt;-ddply(data, .(a), summarise, meanatteff2=mean(atteff2),meansereff2=mean(sereff2),
++                   meandefeff2=mean(defeff2),meanbloeff2=mean(bloeff2))
+&amp;gt; #center cov grand mean
+&amp;gt; atteff1.cen&amp;lt;-data$atteff1-mean(data$atteff1)
+&amp;gt; sereff1.cen&amp;lt;-data$sereff1-mean(data$sereff1)
+&amp;gt; bloeff1.cen&amp;lt;-data$bloeff1-mean(data$bloeff1)
+&amp;gt; defeff1.cen&amp;lt;-data$defeff1-mean(data$defeff1)
+&amp;gt; 
+&amp;gt; atteff2.cen&amp;lt;-data$atteff2-mean(data$atteff2)
+&amp;gt; sereff2.cen&amp;lt;-data$sereff2-mean(data$sereff2)
+&amp;gt; bloeff2.cen&amp;lt;-data$bloeff2-mean(data$bloeff2)
+&amp;gt; defeff2.cen&amp;lt;-data$defeff2-mean(data$defeff2)&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;data-check&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Data check&lt;/h2&gt;
+&lt;p&gt;How are the number of points for each team in a volleyball match distributed? Well, let’s start by assuming that both teams have many chances at making a point and that each team have the same probability of scoring each point chance. Given these assumptions the distribution of the number of points for each team should be well captured by a Poisson distribution. A quick and dirty comparison between the actual distribution of the number of scored goals and a Poisson distribution having the same mean number of scored goals support this notion.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; par(mfcol = c(2, 1), mar = rep(2.2, 4))
+&amp;gt; hist(c(data$y2, data$y1), xlim = c(40, 120), breaks = 8,main = &amp;quot;Distribution of the number of points\nscored by a team in a match.&amp;quot;)
+&amp;gt; mean_goals &amp;lt;- mean(c(data$y2, data$y1))
+&amp;gt; hist(rpois(9999, mean_goals), xlim = c(40, 120), breaks = 8 ,main = &amp;quot;Random draw from a Poisson distribution with\nthe same mean as the distribution above.&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/STAN/glmm-stan/2020-02-01-glmm-stan_files/figure-html/data_check-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;model-fitting&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Model fitting&lt;/h2&gt;
+&lt;p&gt;All teams aren’t equally good and it will be assumed that all teams have a latent skill variable and the skill of a team minus the skill of the opposing team defines the predicted outcome of a game. As the number of goals are assumed to be Poisson distributed it is natural that the skills of the teams are on the log scale of the mean of the distribution. The distribution of the number of goals for the home team &lt;span class=&#34;math inline&#34;&gt;\(i\)&lt;/span&gt; when facing the away team &lt;span class=&#34;math inline&#34;&gt;\(j\)&lt;/span&gt; is then&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \text{Points} \sim \text{Pois}(\lambda)\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where &lt;span class=&#34;math inline&#34;&gt;\(\log(\lambda)=\mu + \text{home} + \text{skill}_i - \text{skill}_j\)&lt;/span&gt;. &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; is a constant, while home is the advantage for the team hosting the game which is typically assumed to be constant for all the teams and throughout the season. The point outcome of a match between home team &lt;span class=&#34;math inline&#34;&gt;\(i\)&lt;/span&gt; and away team &lt;span class=&#34;math inline&#34;&gt;\(j\)&lt;/span&gt; is modeled as:&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \text{HomePoins}_{ij} \sim \text{Pois}(\lambda_{\text{home},ij}),\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \text{AwayPoints}_{ij} \sim \text{Pois}(\lambda_{\text{away},ij}),\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \log(\lambda_{\text{home},ij}) = \mu + \text{home} + \text{skill}_i - \text{skill}_j, \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \log(\lambda_{\text{away},ij}) = \mu + \text{skill}_j - \text{skill}_i. \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;The skill parameters for the home and away teams are specified as a function of a set of attack and defense skills, which in turn are a linear function of different in-game statistics including the number of attacks, digs, serves and blocks for each team:&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \text{skill}_i = \alpha_{0i} + \alpha_{1i}\text{attacks} + \alpha_{2i}\text{serves} + , \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \text{skill}_j = \beta_{0j} + \beta_{1j}\text{digs} + \beta_{2j}\text{blocks}, \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;The distribution of two indicator variables, related to whether or not the fifth set was played (&lt;span class=&#34;math inline&#34;&gt;\(d^s\)&lt;/span&gt;) and whether the home team was the winner (&lt;span class=&#34;math inline&#34;&gt;\(d^g\)&lt;/span&gt;) in each match, are aslo included in the model. These are modelled as:&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ d^s \sim \text{Bernoulli}(\pi^s) \;\;\; \text{and} \;\;\; d^g \sim \text{Bernoulli}(\pi^g), \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;where the corresponding probabilities are specified as&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \text{logit}(\pi^s) = \gamma_{0} + \gamma_1\text{HomePoins}_{i} + \gamma_2\text{AwayPoins}_{j}, \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \text{logit}(\pi^g) = \delta_{0} + \delta_1\text{HomePoins}_{i} + \delta_2\text{AwayPoins}_{j} + \delta_3d^g. \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;I set the prior distributions over &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\text{home}\)&lt;/span&gt; to:&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \text{home} \sim N(0, 10000) \;\;\; \text{and} \;\;\; \mu \sim N(0, 10000),\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;weakly informative priors on &lt;span class=&#34;math inline&#34;&gt;\(\boldsymbol \gamma\)&lt;/span&gt;, &lt;span class=&#34;math inline&#34;&gt;\(\boldsymbol \delta\)&lt;/span&gt;, and set the priors on the skill of all &lt;span class=&#34;math inline&#34;&gt;\(n\)&lt;/span&gt; teams using a hierarchical approach to :&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \text{skill}_{1,\ldots,n} \sim N(\mu_{\text{teams}}, \sigma^2_{\text{teams}}),\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;so that teams are assumed to have similar but not identical mean and variance parameters for thier skill parameters. Turning this into a &lt;code&gt;STAN&lt;/code&gt; model requires some minor adjustments. I have to “anchor” the sum of team skills to a constant otherwise the mean skill can drift away freely (&lt;em&gt;sum to zero constraint&lt;/em&gt;) and the model cannot be identified. Doing these adjustments results in the following model description:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; rstanString&amp;lt;-&amp;quot;
++ data{
++ int&amp;lt;lower=1&amp;gt; nteams; // number of teams
++ int&amp;lt;lower=1&amp;gt; ngames; // number of games
++ int&amp;lt;lower=1, upper=nteams&amp;gt; home_team[ngames]; // home team ID (1, ..., 12)
++ int&amp;lt;lower=1, upper=nteams&amp;gt; away_team[ngames]; // away team ID (1, ..., 12)
++ vector [ngames] att_eff1; // in game statistics for number of attacks (home)
++ vector [ngames] ser_eff1; // in game statistics for number of serves (home)
++ vector [ngames] def_eff2; // in game statistics for number of digs (away)
++ vector [ngames] blo_eff2; // in game statistics for number of blocks (away)
++ vector [ngames] att_eff2; // in game statistics for number of attacks (away)
++ vector [ngames] ser_eff2; // in game statistics for number of serves (away)
++ vector [ngames] def_eff1; // in game statistics for number of digs (home)
++ vector [ngames] blo_eff1; // in game statistics for number of blocks (home)
++ int&amp;lt;lower=0&amp;gt; y1[ngames]; // number of points scored by home team
++ int&amp;lt;lower=0&amp;gt; y2[ngames]; // number of points scored by away team
++ int&amp;lt;lower=0, upper=1&amp;gt; ds[ngames]; // indicator for number of sets played (3/4 or 5)
++ int&amp;lt;lower=0, upper=1&amp;gt; dg[ngames]; // indicator for winning of the match for home team
++ }
++ parameters{
++ real home;
++ real mu;
++ real mu0_att;
++ real mu0_def;
++ real&amp;lt;lower=0&amp;gt; sigma0_att;
++ real&amp;lt;lower=0&amp;gt; sigma0_def;
++ real mu1_att;
++ real mu1_def;
++ real&amp;lt;lower=0&amp;gt; sigma1_att;
++ real&amp;lt;lower=0&amp;gt; sigma1_def;
++ real mu1_ser;
++ real mu1_blo;
++ real&amp;lt;lower=0&amp;gt; sigma1_ser;
++ real&amp;lt;lower=0&amp;gt; sigma1_blo;
++ vector [nteams] beta0_att_star;
++ vector [nteams] beta1_att_star;
++ vector [nteams] beta1_ser_star;
++ vector [nteams] beta0_def_star;
++ vector [nteams] beta1_def_star;
++ vector [nteams] beta1_blo_star;
++ real gamma[3];
++ real delta[4];
++ }
++ transformed parameters{
++ //Trick to code the sum-to-zero constraint
++ vector [nteams] beta0_att;
++ vector [nteams] beta1_att;
++ vector [nteams] beta1_ser;
++ vector [nteams] beta0_def;
++ vector [nteams] beta1_def;
++ vector [nteams] beta1_blo;
++ vector&amp;lt;lower=0&amp;gt;[ngames] theta1;
++ vector&amp;lt;lower=0&amp;gt;[ngames] theta2;
++ beta0_att = beta0_att_star - mean(beta0_att_star);
++ beta1_att = beta1_att_star - mean(beta1_att_star);
++ beta1_ser = beta1_ser_star - mean(beta1_ser_star);
++ beta0_def = beta0_def_star - mean(beta0_def_star);
++ beta1_def = beta1_def_star - mean(beta1_def_star);
++ beta1_blo = beta1_blo_star - mean(beta1_blo_star);
++  for (g in 1:ngames) {
++     theta1[g] = exp(home + mu + beta0_att[home_team[g]] + beta1_att[home_team[g]]*att_eff1[g] + beta1_ser[home_team[g]]*ser_eff1[g] + 
++              beta0_def[away_team[g]] + beta1_def[away_team[g]]*def_eff2[g] + beta1_blo[away_team[g]]*blo_eff2[g]); 
++     theta2[g] = exp(home + mu + beta0_att[away_team[g]] + beta1_att[away_team[g]]*att_eff1[g] + beta1_ser[away_team[g]]*ser_eff1[g] + 
++              beta0_def[home_team[g]] + beta1_def[home_team[g]]*def_eff2[g] + beta1_blo[home_team[g]]*blo_eff2[g]); 
++  }
++ }
++ model {
++ //priors
++ home ~ normal(0, 100);
++ mu ~ normal(0, 100);
++ mu0_att ~ normal(0, 100);
++ mu0_def ~ normal(0, 100);
++ sigma0_att ~ uniform(0, 100);
++ sigma0_def ~ uniform(0, 100);
++ mu1_att ~ normal(0, 100);
++ mu1_def ~ normal(0, 100);
++ sigma1_att ~ uniform(0, 100);
++ sigma1_def ~ uniform(0, 100);
++ mu1_ser ~ normal(0, 100);
++ mu1_blo ~ normal(0, 100);
++ sigma1_ser ~ uniform(0, 100);
++ sigma1_blo ~ uniform(0, 100);
++ gamma ~ normal(0, 100);
++ delta ~ normal(0, 100);
++ beta0_att_star ~ normal(mu0_att, sigma0_att);
++ beta0_def_star ~ normal(mu0_def, sigma0_def);
++ beta1_att_star ~ normal(mu1_att, sigma1_att);
++ beta1_def_star ~ normal(mu1_def, sigma1_def);
++ beta1_ser_star ~ normal(mu1_ser, sigma1_ser);
++ beta1_blo_star ~ normal(mu1_blo, sigma1_blo);
++ // likelihood
++  for (g in 1:ngames) {
++   y1[g] ~ poisson(theta1[g]);
++   y2[g] ~ poisson(theta2[g]);
++   ds[g] ~ bernoulli_logit(gamma[1] + gamma[2]*y1[g] + gamma[3]*y2[g]);
++   dg[g] ~ bernoulli_logit(delta[1] + delta[2]*y1[g] + delta[3]*y2[g] + delta[4]*ds[g]);
++  }
++ }
++ generated quantities{
++ // loglikelihood 
++ vector[ngames] loglik_y1;
++ vector[ngames] loglik_y2;
++ vector[ngames] loglik_ds;
++ vector[ngames] loglik_dg;
++  for (g in 1:ngames) {
++   loglik_y1[g] = poisson_lpmf(y1[g]| theta1[g]);
++   loglik_y2[g] = poisson_lpmf(y2[g]| theta2[g]);
++   loglik_ds[g] = bernoulli_logit_lpmf(ds[g]| gamma[1] + gamma[2]*y1[g] + gamma[3]*y2[g]);
++   loglik_dg[g] = bernoulli_logit_lpmf(dg[g]| delta[1] + delta[2]*y1[g] + delta[3]*y2[g] + delta[4]*ds[g]);
++  }
++ }
++ 
++ &amp;quot;
+&amp;gt; 
+&amp;gt; ## write the model to a text file
+&amp;gt; writeLines(rstanString, con = &amp;quot;Modelbasic.stan&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Next, we put the data into a list to be passed to &lt;code&gt;STAN&lt;/code&gt;, define the nodes (parameters and derivatives) to monitor and the chain parameters.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; #prepare data
+&amp;gt; y1&amp;lt;-data$y1
+&amp;gt; y2&amp;lt;-data$y2
+&amp;gt; ngames&amp;lt;-max(data$Game)
+&amp;gt; nteams&amp;lt;-max(data$h)
+&amp;gt; home_team&amp;lt;-data$h
+&amp;gt; away_team&amp;lt;-data$a
+&amp;gt; 
+&amp;gt; att_eff1&amp;lt;-data$atteff1
+&amp;gt; att_eff2&amp;lt;-data$atteff2
+&amp;gt; ser_eff1&amp;lt;-data$sereff1
+&amp;gt; ser_eff2&amp;lt;-data$sereff2
+&amp;gt; blo_eff1&amp;lt;-data$bloeff1
+&amp;gt; blo_eff2&amp;lt;-data$bloeff2
+&amp;gt; def_eff1&amp;lt;-data$defeff1
+&amp;gt; def_eff2&amp;lt;-data$defeff2
+&amp;gt; 
+&amp;gt; att_eff1&amp;lt;-atteff1.cen
+&amp;gt; att_eff2&amp;lt;-atteff2.cen
+&amp;gt; ser_eff1&amp;lt;-sereff1.cen
+&amp;gt; ser_eff2&amp;lt;-sereff2.cen
+&amp;gt; blo_eff1&amp;lt;-bloeff1.cen
+&amp;gt; blo_eff2&amp;lt;-bloeff2.cen
+&amp;gt; def_eff1&amp;lt;-defeff1.cen
+&amp;gt; def_eff2&amp;lt;-defeff2.cen
+&amp;gt; 
+&amp;gt; ds&amp;lt;-ifelse(data$settot==5,1,0)
+&amp;gt; dg&amp;lt;-ifelse(data$set1&amp;gt;data$set2,1,0)
+&amp;gt; 
+&amp;gt; #pre-processing
+&amp;gt; datalist &amp;lt;- list(y1=y1,y2=y2,ngames=ngames,nteams=nteams,home_team=home_team,away_team=away_team,att_eff1=att_eff1,att_eff2=att_eff2,def_eff1=def_eff1,def_eff2=def_eff2,ser_eff1=ser_eff1,ser_eff2=ser_eff2,blo_eff1=blo_eff1,blo_eff2=blo_eff2,ds=ds, dg=dg)
+&amp;gt; params &amp;lt;- c(&amp;quot;mu&amp;quot;,&amp;quot;home&amp;quot;,&amp;quot;gamma&amp;quot;,&amp;quot;delta&amp;quot;,&amp;quot;beta0_att&amp;quot;,&amp;quot;beta0_def&amp;quot;,
++             &amp;quot;beta1_att&amp;quot;,&amp;quot;beta1_def&amp;quot;,&amp;quot;beta1_ser&amp;quot;,&amp;quot;beta1_blo&amp;quot;,&amp;quot;theta1&amp;quot;,
++             &amp;quot;theta2&amp;quot;,&amp;quot;loglik_y1&amp;quot;,&amp;quot;loglik_y2&amp;quot;,&amp;quot;loglik_ds&amp;quot;,&amp;quot;loglik_dg&amp;quot;)
+&amp;gt; burnInSteps = 2000
+&amp;gt; nChains = 2
+&amp;gt; numSavedSteps = 10000
+&amp;gt; thinSteps = 1
+&amp;gt; nIter = ceiling((numSavedSteps * thinSteps)/nChains)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Start the &lt;code&gt;STAN&lt;/code&gt; model (check the model, load data into the model, specify the number of chains and compile the model). Run the &lt;code&gt;STAN&lt;/code&gt; code via the &lt;code&gt;rstan&lt;/code&gt; package and the &lt;code&gt;stan&lt;/code&gt; function.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; model_stan&amp;lt;- stan(data = datalist, file = &amp;quot;Modelbasic.stan&amp;quot;, 
++                        chains = nChains, pars = params, iter = nIter, 
++                        warmup = burnInSteps, thin = thinSteps)
+&amp;gt; print(model_stan, pars =c(&amp;quot;mu&amp;quot;,&amp;quot;home&amp;quot;,&amp;quot;gamma&amp;quot;,&amp;quot;delta&amp;quot;,&amp;quot;beta0_att&amp;quot;,
++                           &amp;quot;beta0_def&amp;quot;,&amp;quot;beta1_att&amp;quot;,&amp;quot;beta1_def&amp;quot;,
++                           &amp;quot;beta1_ser&amp;quot;,&amp;quot;beta1_blo&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The diagnostic results are not perfect, perhaps I should run the algorithm a bit longer to get better results as a total of &lt;span class=&#34;math inline&#34;&gt;\(5000\)&lt;/span&gt; iterations does not seem enough. Here I do not bother to save time. To get an idea about posterior results I can plot at the average marginal mean offensive and defensive skills for each of the &lt;span class=&#34;math inline&#34;&gt;\(12\)&lt;/span&gt; teams in the league using the following code.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; #plot att vs def effext by team
+&amp;gt; model_stan_par&amp;lt;-extract(model_stan)
+&amp;gt; 
+&amp;gt; beta0.att&amp;lt;-apply(model_stan_par$beta0_att, 2, mean)
+&amp;gt; beta0.def&amp;lt;-apply(model_stan_par$beta0_def, 2, mean)
+&amp;gt; names&amp;lt;-unique(data.frame(data$home.team,data$h)[order(data$h),][,1])
+&amp;gt; 
+&amp;gt; plot(beta0.att,beta0.def, main = &amp;quot;&amp;quot;, type = &amp;quot;n&amp;quot;, xlab = &amp;quot;Mean attack effect&amp;quot;, ylab = &amp;quot;Mean defence effect&amp;quot;, xlim=c(-0.13,0.08), ylim=c(-0.18,0.1))
+&amp;gt; points(beta0.att,beta0.def, pch=16, col=&amp;quot;red&amp;quot;,cex = 1.2)
+&amp;gt; abline(v=0)
+&amp;gt; abline(h=0)
+&amp;gt; text(beta0.att,beta0.def,names,cex = 0.8, adj = c(0.4,1.3))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Different clusters of teams can be easily detected and suggest a different performance of the teams based on their average offensive and defensive skills. Those associated with higher offensive (to the right) and lower defensive (to the bottom) effects are the ones with the best performance across the season.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;mcmc-diagnostics&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;MCMC diagnostics&lt;/h2&gt;
+&lt;p&gt;Using the generated MCMC samples I can now look at some diagnostic measures. For example, we can assess convergence of the chains using the function &lt;code&gt;mcmc_combo&lt;/code&gt; in the package &lt;code&gt;bayesplot&lt;/code&gt; which provides a summary of convergence diagnostics using different graphics. We consider the marginal skill parameters for four teams to give an example.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; mcmc_combo(model_stan, pars=c(&amp;quot;beta0_att[1]&amp;quot;,&amp;quot;beta0_att[2]&amp;quot;,
++                               &amp;quot;beta0_att[3]&amp;quot;,&amp;quot;beta0_att[4]&amp;quot;))
+&amp;gt; mcmc_combo(model_stan, pars=c(&amp;quot;beta0_def[1]&amp;quot;,&amp;quot;beta0_def[2]&amp;quot;,
++                               &amp;quot;beta0_def[3]&amp;quot;,&amp;quot;beta0_def[4]&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;model-validation&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Model validation&lt;/h2&gt;
+&lt;p&gt;We can finally assess the fit of the model to the data by computing posterior predictive checks, where we use the posterior values of the parameters to sample a large number of replications for the data. We then use these to generate different types of results and compare them with the actual results to detect possible misfits of the model.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; #obtain parameters to generate replications
+&amp;gt; y1.pred&amp;lt;-y2.pred&amp;lt;-matrix(NA,length(model_stan_par$home),132)
+&amp;gt; ds.pred&amp;lt;-dg.pred&amp;lt;-matrix(NA,length(model_stan_par$home),132)
+&amp;gt; pi.s&amp;lt;-pi.g&amp;lt;-matrix(NA,length(model_stan_par$home),132)
+&amp;gt; y1.mat&amp;lt;-y2.mat&amp;lt;-ds.mat&amp;lt;-matrix(NA,length(model_stan_par$home),132)
+&amp;gt; for(i in 1:length(model_stan_par$home)){
++  y1.mat[i,]&amp;lt;-y1
++  y2.mat[i,]&amp;lt;-y2
++  ds.mat[i,]&amp;lt;-ds
++  pi.s[i,]&amp;lt;-inv.logit(model_stan_par$gamma[i,1] + model_stan_par$gamma[i,2]*y1.mat[i,] + model_stan_par$gamma[i,3]*y2.mat[i,])
++  pi.g[i,]&amp;lt;-inv.logit(model_stan_par$delta[i,1] + model_stan_par$delta[i,2]*y1.mat[i,] + model_stan_par$delta[i,3]*y2.mat[i,] + model_stan_par$delta[i,4]*ds.mat[i,])
++ }
+&amp;gt; 
+&amp;gt; #generate predictions
+&amp;gt; set.seed(3456)
+&amp;gt; for(i in 1:length(model_stan_par$home)){
++   y1.pred[i,]&amp;lt;-rpois(n=132,lambda = model_stan_par$theta1[i,])
++   y2.pred[i,]&amp;lt;-rpois(n=132,lambda = model_stan_par$theta2[i,])
++   ds.pred[i,]&amp;lt;-rbinom(n=132, size = 1,prob = pi.s[i,])
++   dg.pred[i,]&amp;lt;-rbinom(n=132, size = 1,prob = pi.g[i,])
++ }
+&amp;gt; 
+&amp;gt; #compute prediction points
+&amp;gt; results&amp;lt;-list()
+&amp;gt; for(i in 1:1000){
++   results[[i]]&amp;lt;-data.frame(y1.pred[i,],y2.pred[i,],ds.pred[i,],dg.pred[i,],data$h,data$a) 
++   results[[i]]$points.home&amp;lt;-ifelse(results[[i]]$ds.pred.i...==0 &amp;amp; results[[i]]$dg.pred.i...==1,3,0)
++   results[[i]]$points.home&amp;lt;-ifelse(results[[i]]$ds.pred.i...==1 &amp;amp; results[[i]]$dg.pred.i...==1,2,results[[i]]$points.home)
++   results[[i]]$points.home&amp;lt;-ifelse(results[[i]]$ds.pred.i...==1 &amp;amp; results[[i]]$dg.pred.i...==0,1,results[[i]]$points.home)
++   
++   results[[i]]$points.away&amp;lt;-ifelse(results[[i]]$ds.pred.i...==0 &amp;amp; results[[i]]$dg.pred.i...==0,3,0)
++   results[[i]]$points.away&amp;lt;-ifelse(results[[i]]$ds.pred.i...==1 &amp;amp; results[[i]]$dg.pred.i...==0,2,results[[i]]$points.away)
++   results[[i]]$points.away&amp;lt;-ifelse(results[[i]]$ds.pred.i...==1 &amp;amp; results[[i]]$dg.pred.i...==1,1,results[[i]]$points.away)
++ }
+&amp;gt; 
+&amp;gt; #compare results for scores by team
+&amp;gt; tot.y1.list&amp;lt;-tot.y2.list&amp;lt;-list()
+&amp;gt; for(i in 1:1000){
++   tot.y1.list[[i]]&amp;lt;-ddply(results[[i]], .(data.h), summarise, totscorehome=sum(y1.pred.i...))
++   tot.y2.list[[i]]&amp;lt;-ddply(results[[i]], .(data.a), summarise, totscoreaway=sum(y2.pred.i...))
++ }
+&amp;gt; tot.y1.list.neg&amp;lt;-tot.y2.list.neg&amp;lt;-list()
+&amp;gt; for(i in 1:1000){
++   tot.y1.list.neg[[i]]&amp;lt;-ddply(results[[i]], .(data.h), summarise, totscorehomeneg=sum(y2.pred.i...))
++   tot.y2.list.neg[[i]]&amp;lt;-ddply(results[[i]], .(data.a), summarise, totscoreawayneg=sum(y1.pred.i...))
++ }
+&amp;gt; 
+&amp;gt; 
+&amp;gt; tot.y1.list.mat&amp;lt;-tot.y2.list.mat&amp;lt;-matrix(NA,1000,12)
+&amp;gt; tot.y1.list.neg.mat&amp;lt;-tot.y2.list.neg.mat&amp;lt;-matrix(NA,1000,12)
+&amp;gt; for(i in 1:1000){
++   tot.y1.list.mat[i,]&amp;lt;-tot.y1.list[[i]][,2]
++   tot.y2.list.mat[i,]&amp;lt;-tot.y2.list[[i]][,2]
++   tot.y1.list.neg.mat[i,]&amp;lt;-tot.y1.list.neg[[i]][,2]
++   tot.y2.list.neg.mat[i,]&amp;lt;-tot.y2.list.neg[[i]][,2]
++ }
+&amp;gt; tot.y1.obs&amp;lt;-ddply(data, .(h), summarise, totscorehomeobs=sum(y1))
+&amp;gt; tot.y2.obs&amp;lt;-ddply(data, .(a), summarise, totscorehomeobs=sum(y2))
+&amp;gt; tot.y1.obs.neg&amp;lt;-ddply(data, .(h), summarise, totscorehomeobs=sum(y2))
+&amp;gt; tot.y2.obs.neg&amp;lt;-ddply(data, .(a), summarise, totscorehomeobs=sum(y1))
+&amp;gt; 
+&amp;gt; #compute prediction points
+&amp;gt; results&amp;lt;-list()
+&amp;gt; for(i in 1:1000){
++   results[[i]]&amp;lt;-data.frame(y1.pred[i,],y2.pred[i,],ds.pred[i,],dg.pred[i,],data$h,data$a) 
++   results[[i]]$points.home&amp;lt;-ifelse(results[[i]]$ds.pred.i...==0 &amp;amp; results[[i]]$dg.pred.i...==1,3,0)
++   results[[i]]$points.home&amp;lt;-ifelse(results[[i]]$ds.pred.i...==1 &amp;amp; results[[i]]$dg.pred.i...==1,2,results[[i]]$points.home)
++   results[[i]]$points.home&amp;lt;-ifelse(results[[i]]$ds.pred.i...==1 &amp;amp; results[[i]]$dg.pred.i...==0,1,results[[i]]$points.home)
++   
++   results[[i]]$points.away&amp;lt;-ifelse(results[[i]]$ds.pred.i...==0 &amp;amp; results[[i]]$dg.pred.i...==0,3,0)
++   results[[i]]$points.away&amp;lt;-ifelse(results[[i]]$ds.pred.i...==1 &amp;amp; results[[i]]$dg.pred.i...==0,2,results[[i]]$points.away)
++   results[[i]]$points.away&amp;lt;-ifelse(results[[i]]$ds.pred.i...==1 &amp;amp; results[[i]]$dg.pred.i...==1,1,results[[i]]$points.away)
++ }
+&amp;gt; 
+&amp;gt; #compare results for scores by team
+&amp;gt; tot.y1.list&amp;lt;-tot.y2.list&amp;lt;-list()
+&amp;gt; for(i in 1:1000){
++   tot.y1.list[[i]]&amp;lt;-ddply(results[[i]], .(data.h), summarise, totscorehome=sum(y1.pred.i...))
++   tot.y2.list[[i]]&amp;lt;-ddply(results[[i]], .(data.a), summarise, totscoreaway=sum(y2.pred.i...))
++ }
+&amp;gt; tot.y1.list.neg&amp;lt;-tot.y2.list.neg&amp;lt;-list()
+&amp;gt; for(i in 1:1000){
++   tot.y1.list.neg[[i]]&amp;lt;-ddply(results[[i]], .(data.h), summarise, totscorehomeneg=sum(y2.pred.i...))
++   tot.y2.list.neg[[i]]&amp;lt;-ddply(results[[i]], .(data.a), summarise, totscoreawayneg=sum(y1.pred.i...))
++ }
+&amp;gt; 
+&amp;gt; 
+&amp;gt; tot.y1.list.mat&amp;lt;-tot.y2.list.mat&amp;lt;-matrix(NA,1000,12)
+&amp;gt; tot.y1.list.neg.mat&amp;lt;-tot.y2.list.neg.mat&amp;lt;-matrix(NA,1000,12)
+&amp;gt; for(i in 1:1000){
++   tot.y1.list.mat[i,]&amp;lt;-tot.y1.list[[i]][,2]
++   tot.y2.list.mat[i,]&amp;lt;-tot.y2.list[[i]][,2]
++   tot.y1.list.neg.mat[i,]&amp;lt;-tot.y1.list.neg[[i]][,2]
++   tot.y2.list.neg.mat[i,]&amp;lt;-tot.y2.list.neg[[i]][,2]
++ }
+&amp;gt; tot.y1.obs&amp;lt;-ddply(data, .(h), summarise, totscorehomeobs=sum(y1))
+&amp;gt; tot.y2.obs&amp;lt;-ddply(data, .(a), summarise, totscorehomeobs=sum(y2))
+&amp;gt; tot.y1.obs.neg&amp;lt;-ddply(data, .(h), summarise, totscorehomeobs=sum(y2))
+&amp;gt; tot.y2.obs.neg&amp;lt;-ddply(data, .(a), summarise, totscorehomeobs=sum(y1))
+&amp;gt; 
+&amp;gt; #scored
+&amp;gt; tot.y.obs&amp;lt;-tot.y1.obs[,2]+tot.y2.obs[,2]
+&amp;gt; tot.y.pred&amp;lt;-apply(tot.y1.list.mat,2,median)+apply(tot.y2.list.mat,2,median)
+&amp;gt; res.y&amp;lt;-cbind(tot.y.obs,tot.y.pred)
+&amp;gt; rownames(res.y)&amp;lt;-names
+&amp;gt; res.y&amp;lt;-round(res.y,digits = 0)
+&amp;gt; 
+&amp;gt; #conceded
+&amp;gt; tot.y.obs.neg&amp;lt;-tot.y1.obs.neg[,2]+tot.y2.obs.neg[,2]
+&amp;gt; tot.y.pred.neg&amp;lt;-apply(tot.y1.list.neg.mat,2,median)+apply(tot.y2.list.neg.mat,2,median)
+&amp;gt; res.y.neg&amp;lt;-cbind(tot.y.obs.neg,tot.y.pred.neg)
+&amp;gt; rownames(res.y.neg)&amp;lt;-names
+&amp;gt; res.y.neg&amp;lt;-round(res.y.neg,digits = 0)
+&amp;gt; 
+&amp;gt; #compare results for points
+&amp;gt; data.points.list&amp;lt;-list()
+&amp;gt; for(i in 1:1000){
++   data.points.list[[i]]&amp;lt;-data.frame(data$Game)
++   data.points.list[[i]]$Game&amp;lt;-data$Game
++   data.points.list[[i]]$h&amp;lt;-data$h
++   data.points.list[[i]]$a&amp;lt;-data$a
++   data.points.list[[i]]$points.home&amp;lt;-results[[i]]$points.home
++   data.points.list[[i]]$points.away&amp;lt;-results[[i]]$points.away
++ }
+&amp;gt; tot.home.list&amp;lt;-tot.away.list&amp;lt;-tot.team.list&amp;lt;-list()
+&amp;gt; for(i in 1:1000){
++   tot.home.list[[i]]&amp;lt;-ddply(data.points.list[[i]], .(h), summarise, totpointhome=sum(points.home))
++   tot.away.list[[i]]&amp;lt;-ddply(data.points.list[[i]], .(a), summarise, totpointaway=sum(points.away))
++ }
+&amp;gt; 
+&amp;gt; for(i in 1:1000){
++   tot.team.list[[i]]&amp;lt;-data.frame(levels(data$home.team), tot.home.list[[i]]$h)
++   tot.team.list[[i]]$tot.team&amp;lt;-tot.home.list[[i]]$totpointhome + tot.away.list[[i]]$totpointaway
++   tot.team.list[[i]]$true.team&amp;lt;-c(19, 39, 23, 50, 19, 11, 37, 51, 32, 33, 27, 50)
++   tot.team.list[[i]]&amp;lt;-tot.team.list[[i]][order(tot.team.list[[i]]$tot.team, decreasing = TRUE),]
++   tot.team.list[[i]]$rank&amp;lt;-rep(1:12)
++ }
+&amp;gt; 
+&amp;gt; #plot total scores by team
+&amp;gt; tot.scores&amp;lt;-matrix(NA,1000,12)
+&amp;gt; colnames(tot.scores)&amp;lt;-names
+&amp;gt; for(i in 1:1000){
++   for(j in 1:12){
++     tot.scores[i,j]&amp;lt;-tot.team.list[[i]]$tot.team[tot.team.list[[i]]$tot.home.list..i...h==j] 
++   }
++ }
+&amp;gt; tot.scores.obs&amp;lt;-c(19, 39, 23, 50, 19, 11, 37, 51, 32, 33, 27, 50)
+&amp;gt; tot.scores.med&amp;lt;-apply(tot.scores, 2, median)
+&amp;gt; tot.scores.final&amp;lt;-cbind(tot.scores.obs,tot.scores.med)
+&amp;gt; 
+&amp;gt; #plot total wins 
+&amp;gt; tot.wins&amp;lt;-matrix(NA,1000,12)
+&amp;gt; colnames(tot.wins)&amp;lt;-names
+&amp;gt; for(i in 1:1000){
++   for(j in 1:12){
++     tot.wins[i,j]&amp;lt;-length(data.points.list[[i]]$points.home[data.points.list[[i]]$points.home&amp;gt;1 &amp;amp; 
++                                                               data.points.list[[i]]$h==j]) + length(data.points.list[[i]]$points.away[data.points.list[[i]]$points.away&amp;gt;1 &amp;amp; 
++                                                                                                                                         data.points.list[[i]]$a==j])
++   }
++ }
+&amp;gt; tot.wins.obs&amp;lt;-c(7,12,6,17,7,5,13,17,10,12,8,18)
+&amp;gt; tot.wins.prop&amp;lt;-tot.wins/22
+&amp;gt; tot.wins.obs.prop&amp;lt;-tot.wins.obs/22
+&amp;gt; tot.wins.med&amp;lt;-apply(tot.wins, 2, median)
+&amp;gt; tot.wins.final&amp;lt;-cbind(tot.wins.obs,tot.wins.med)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Here, for each team, we compare the predicted and observed total number of points scored in the matches, the number of won/lost matches, and the league points scored based on a replicated and the original season results.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; #summarise pred results
+&amp;gt; res.final.obs&amp;lt;-cbind(res.y[,1],res.y.neg[,1],tot.wins.final[,1],tot.scores.final[,1])
+&amp;gt; res.final.pred&amp;lt;-cbind(res.y[,2],res.y.neg[,2],tot.wins.final[,2],tot.scores.final[,2])
+&amp;gt; res.final&amp;lt;-cbind(res.final.obs,res.final.pred)
+&amp;gt; knitr::kable(res.final, &amp;quot;pandoc&amp;quot;, align = &amp;quot;c&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Predicted results are not so bad, especially when looking at the number of league points scored by the teams between the replicated and observed season which are quite similar. These results suggest that the model seems to predict in a reasonable way the league results. To further assess this aspect, we consider two plots. The first compares the ranking of the teams across a large number of replications of the season based on the number of wins, losses and league points gained for each team.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; #summarise pred results
+&amp;gt; res.matrix&amp;lt;-matrix(NA,length(tot.team.list),12)
+&amp;gt; colnames(res.matrix)&amp;lt;-names
+&amp;gt; for(i in 1:1000){
++   res.matrix[i,1]&amp;lt;-tot.team.list[[i]]$rank[tot.team.list[[i]]$tot.home.list..i...h==1]
++   res.matrix[i,2]&amp;lt;-tot.team.list[[i]]$rank[tot.team.list[[i]]$tot.home.list..i...h==2]
++   res.matrix[i,3]&amp;lt;-tot.team.list[[i]]$rank[tot.team.list[[i]]$tot.home.list..i...h==3]
++   res.matrix[i,4]&amp;lt;-tot.team.list[[i]]$rank[tot.team.list[[i]]$tot.home.list..i...h==4]
++   res.matrix[i,5]&amp;lt;-tot.team.list[[i]]$rank[tot.team.list[[i]]$tot.home.list..i...h==5]
++   res.matrix[i,6]&amp;lt;-tot.team.list[[i]]$rank[tot.team.list[[i]]$tot.home.list..i...h==6]
++   res.matrix[i,7]&amp;lt;-tot.team.list[[i]]$rank[tot.team.list[[i]]$tot.home.list..i...h==7]
++   res.matrix[i,8]&amp;lt;-tot.team.list[[i]]$rank[tot.team.list[[i]]$tot.home.list..i...h==8]
++   res.matrix[i,9]&amp;lt;-tot.team.list[[i]]$rank[tot.team.list[[i]]$tot.home.list..i...h==9]
++   res.matrix[i,10]&amp;lt;-tot.team.list[[i]]$rank[tot.team.list[[i]]$tot.home.list..i...h==10]
++   res.matrix[i,11]&amp;lt;-tot.team.list[[i]]$rank[tot.team.list[[i]]$tot.home.list..i...h==11]
++   res.matrix[i,12]&amp;lt;-tot.team.list[[i]]$rank[tot.team.list[[i]]$tot.home.list..i...h==12]
++ }
+&amp;gt; 
+&amp;gt; #create stacked barplot of results
+&amp;gt; data.barplot&amp;lt;-data.frame(rep(1:c(1000*12)))
+&amp;gt; names(data.barplot)&amp;lt;-c(&amp;quot;Game&amp;quot;)
+&amp;gt; data.barplot$position&amp;lt;-as.factor(c(res.matrix[,1],res.matrix[,2],res.matrix[,3],res.matrix[,4],
++                                    res.matrix[,5],res.matrix[,6],res.matrix[,7],res.matrix[,8],
++                                    res.matrix[,9],res.matrix[,10],res.matrix[,11],res.matrix[,12]))
+&amp;gt; data.barplot$team&amp;lt;-rep(NA,1000*12)
+&amp;gt; data.barplot$team[1:1000]&amp;lt;-rep(paste(names[1]),1000)
+&amp;gt; data.barplot$team[1001:2000]&amp;lt;-rep(paste(names[2]),1000)
+&amp;gt; data.barplot$team[2001:3000]&amp;lt;-rep(paste(names[3]),1000)
+&amp;gt; data.barplot$team[3001:4000]&amp;lt;-rep(paste(names[4]),1000)
+&amp;gt; data.barplot$team[4001:5000]&amp;lt;-rep(paste(names[5]),1000)
+&amp;gt; data.barplot$team[5001:6000]&amp;lt;-rep(paste(names[6]),1000)
+&amp;gt; data.barplot$team[6001:7000]&amp;lt;-rep(paste(names[7]),1000)
+&amp;gt; data.barplot$team[7001:8000]&amp;lt;-rep(paste(names[8]),1000)
+&amp;gt; data.barplot$team[8001:9000]&amp;lt;-rep(paste(names[9]),1000)
+&amp;gt; data.barplot$team[9001:10000]&amp;lt;-rep(paste(names[10]),1000)
+&amp;gt; data.barplot$team[10001:11000]&amp;lt;-rep(paste(names[11]),1000)
+&amp;gt; data.barplot$team[11001:12000]&amp;lt;-rep(paste(names[12]),1000)
+&amp;gt; #data.barplot$team&amp;lt;-as.factor(data.barplot$team)
+&amp;gt; data.barplot$team &amp;lt;-factor(data.barplot$team, levels = c(&amp;quot;Novara&amp;quot;, &amp;quot;Scandicci&amp;quot;,&amp;quot;Conegliano&amp;quot;, &amp;quot;Monza&amp;quot;,&amp;quot;Busto Arsizio&amp;quot;,
++                                                          &amp;quot;Pesaro&amp;quot;,&amp;quot;Piacenza&amp;quot;, &amp;quot;San Casciano&amp;quot;,&amp;quot;Casalmaggiore&amp;quot;, &amp;quot;Bergamo&amp;quot;,
++                                                          &amp;quot;Filottrano&amp;quot;, &amp;quot;Legnano&amp;quot;))
+&amp;gt; 
+&amp;gt; 
+&amp;gt; 
+&amp;gt; data.barplot$match&amp;lt;-c(rep(1,1000),rep(2,1000),rep(3,1000),rep(4,1000),rep(5,1000),rep(6,1000),
++                       rep(7,1000),rep(8,1000),rep(9,1000),rep(10,1000),rep(11,1000),rep(12,1000))
+&amp;gt; data.barplot$match&amp;lt;-as.factor(data.barplot$match)
+&amp;gt; data.barplot$Game&amp;lt;-rep(1,nrow(data.barplot))
+&amp;gt; data.barplot$area&amp;lt;-ifelse(data.barplot$position==1|data.barplot$position==2|data.barplot$position==3,&amp;quot;high&amp;quot;,&amp;quot;middle&amp;quot;)
+&amp;gt; data.barplot$area&amp;lt;-ifelse(data.barplot$position==12|data.barplot$position==11|data.barplot$position==10,&amp;quot;low&amp;quot;,data.barplot$area)
+&amp;gt; data.barplot$area&amp;lt;-as.factor(data.barplot$area)
+&amp;gt; data.barplot$area&amp;lt;-ordered(data.barplot$area,levels=c(&amp;quot;low&amp;quot;,&amp;quot;middle&amp;quot;,&amp;quot;high&amp;quot;))
+&amp;gt; data.barplot$team&amp;lt;-factor(data.barplot$team,levels = rev(levels(data.barplot$team)))
+&amp;gt; 
+&amp;gt; df.summary1&amp;lt;-ddply(data.barplot,.(team,position),summarise,count=sum(Game), percent=sum(Game)/1000)
+&amp;gt; df.summary2&amp;lt;-ddply(data.barplot,.(team,area),summarise,count=sum(Game), percent=sum(Game)/1000)
+&amp;gt; 
+&amp;gt; ggplot(df.summary1, aes(x=team, y=percent, fill=position)) +
++   geom_bar(stat=&amp;quot;identity&amp;quot;, width = 0.7, colour=&amp;quot;black&amp;quot;, lwd=0.1) +
++   geom_text(aes(label=ifelse(percent &amp;gt;= 0.1, paste0(sprintf(&amp;quot;%.0f&amp;quot;, percent*100),&amp;quot;%&amp;quot;),&amp;quot;&amp;quot;)),
++             position=position_stack(vjust=0.5), colour=&amp;quot;white&amp;quot;) +
++   coord_flip() + scale_y_continuous(labels = percent_format()) +
++   labs(y=&amp;quot;&amp;quot;, x=&amp;quot;&amp;quot;) + scale_fill_viridis(discrete = T) + 
++   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_rect(fill = &amp;quot;white&amp;quot;),
++         axis.line = element_line(colour = &amp;quot;black&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The mean rankings of the teams are in line with those observed in the actual season, while also providing uncertainty about the chance of each team to end in a particular position in the league (only percentages above &lt;span class=&#34;math inline&#34;&gt;\(10\%\)&lt;/span&gt; are shown for clarity).&lt;/p&gt;
+&lt;p&gt;The second plot compares the points trend throughout the season for each team with respect to the trend predicted by the model based on the replicated results for each match in the season.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;&amp;gt; #########plot for cumlative points over simulated season
+&amp;gt; points.list&amp;lt;-cum.points.list&amp;lt;-list()
+&amp;gt; for(i in 1:nrow(res.matrix)){
++   points.list[[i]]&amp;lt;-matrix(NA,22,12)
++   cum.points.list[[i]]&amp;lt;-matrix(NA,22,12)
++   for(j in 1:12){
++     points.list[[i]][,j]&amp;lt;-c(data.points.list[[i]]$points.home[data.points.list[[i]]$h==j],data.points.list[[i]]$points.away[data.points.list[[i]]$a==j])
++   }
++   colnames(points.list[[i]])&amp;lt;-unique(levels(data$home.team))
++   rownames(points.list[[i]])&amp;lt;-rep(1:22)
++   cum.points.list[[i]]&amp;lt;-apply(points.list[[i]], 2, cumsum)
++ }
+&amp;gt; 
+&amp;gt; #########plot for cumlative points over simulated season
+&amp;gt; points.list&amp;lt;-cum.points.list&amp;lt;-list()
+&amp;gt; for(i in 1:nrow(res.matrix)){
++   points.list[[i]]&amp;lt;-matrix(NA,22,12)
++   cum.points.list[[i]]&amp;lt;-matrix(NA,22,12)
++   for(j in 1:12){
++     points.list[[i]][,j]&amp;lt;-c(data.points.list[[i]]$points.home[data.points.list[[i]]$h==j],data.points.list[[i]]$points.away[data.points.list[[i]]$a==j])
++   }
++   colnames(points.list[[i]])&amp;lt;-unique(levels(data$home.team))
++   rownames(points.list[[i]])&amp;lt;-rep(1:22)
++   cum.points.list[[i]]&amp;lt;-apply(points.list[[i]], 2, cumsum)
++ }
+&amp;gt; 
+&amp;gt; #plot cumulative points obs vs pred
+&amp;gt; obs.cum.points&amp;lt;-matrix(NA,22,12)
+&amp;gt; colnames(obs.cum.points)&amp;lt;-unique(levels(data$home.team))
+&amp;gt; rownames(obs.cum.points)&amp;lt;-rep(1:22)
+&amp;gt; obs.cum.points[1,]&amp;lt;-c(0,1,0,3,3,3,0,2,0,0,3,3)
+&amp;gt; obs.cum.points[2,]&amp;lt;-c(0,3,0,3,0,0,3,3,0,3,0,3)
+&amp;gt; obs.cum.points[3,]&amp;lt;-c(0,2,3,3,0,0,0,3,3,1,0,3)
+&amp;gt; obs.cum.points[4,]&amp;lt;-c(0,3,0,3,0,0,3,3,1,2,0,3)
+&amp;gt; obs.cum.points[5,]&amp;lt;-c(0,3,0,3,0,3,0,3,3,0,0,3)
+&amp;gt; obs.cum.points[6,]&amp;lt;-c(0,3,1,3,0,0,0,3,1,3,2,2)
+&amp;gt; obs.cum.points[7,]&amp;lt;-c(2,1,3,2,0,1,1,3,2,2,1,0)
+&amp;gt; obs.cum.points[8,]&amp;lt;-c(0,2,1,1,0,0,3,2,3,2,1,3)
+&amp;gt; obs.cum.points[9,]&amp;lt;-c(3,3,1,3,0,2,2,1,0,0,3,0)
+&amp;gt; obs.cum.points[10,]&amp;lt;-c(1,2,1,2,1,2,1,1,2,2,1,2)
+&amp;gt; obs.cum.points[11,]&amp;lt;-c(0,1,0,3,0,0,3,3,0,3,3,2)
+&amp;gt; obs.cum.points[12,]&amp;lt;-c(3,0,0,3,0,0,3,3,3,0,0,3)
+&amp;gt; obs.cum.points[13,]&amp;lt;-c(0,1,3,3,2,0,3,2,1,3,0,0)
+&amp;gt; obs.cum.points[14,]&amp;lt;-c(2,3,1,3,0,0,0,3,3,0,0,3)
+&amp;gt; obs.cum.points[15,]&amp;lt;-c(2,1,0,3,2,0,3,1,0,3,0,3)
+&amp;gt; obs.cum.points[16,]&amp;lt;-c(0,3,0,3,0,0,0,3,3,0,3,3)
+&amp;gt; obs.cum.points[17,]&amp;lt;-c(2,0,3,0,0,3,3,1,0,3,0,3)
+&amp;gt; obs.cum.points[18,]&amp;lt;-c(0,0,0,3,3,1,2,3,1,2,3,0)
+&amp;gt; obs.cum.points[19,]&amp;lt;-c(3,3,3,2,0,0,3,0,0,1,0,3)
+&amp;gt; obs.cum.points[20,]&amp;lt;-c(0,0,2,0,3,1,0,3,3,0,3,3)
+&amp;gt; obs.cum.points[21,]&amp;lt;-c(0,3,0,1,3,0,2,2,0,1,3,3)
+&amp;gt; obs.cum.points[22,]&amp;lt;-c(1,1,1,0,2,0,2,3,3,2,1,2)
+&amp;gt; 
+&amp;gt; obs.cum.points&amp;lt;-apply(obs.cum.points, 2, cumsum)
+&amp;gt; 
+&amp;gt; par(mar=c(2.1, 3.1, 3.1, 3.1))
+&amp;gt; par(mfrow=c(4,3), mai = c(0.4, 0.4, 0.1, 0.2))
+&amp;gt; for(i in 1:12){
++   plot(rep(1:22),obs.cum.points[,i], axes = F, type = &amp;quot;n&amp;quot;, xlab = &amp;quot;games&amp;quot;, ylab = &amp;quot;points&amp;quot;,xlim = c(0,23),ylim = c(0,54))
++   axis(1,at=c(0,5,10,15,20,25),labels = c(0,5,10,15,20,25))
++   axis(2,at=c(0,10,20,30,40,50),labels = c(0,10,20,30,40,50))
++   lines(rep(1:22),obs.cum.points[,i], lty=1,lwd=1,col=&amp;quot;black&amp;quot;)
++   lines(rep(1:22), cum.points.list[[7]][,i], lty=1,lwd=1,col=&amp;quot;red&amp;quot;)
++   text(5,50,unique(levels(names))[i],pos = 1, cex = 1)
++ }&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The observed trends (black lines) are pretty much matched by the trends predicted by the model (red lines) for most of the teams with few exceptions. This suggests that, although the model seems to have a good predictive ability, in some cases there are still margins of improvement. In my original paper I have improved the model using a different parameterisation where I tried to account for the dependence between the latent skill parameters using a scaled inverse Wishart distribution for the covariance matrix of the random effects. Here I do not consider this model here, which lead to some improvements compared with the basic Poisson model.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;conclusions&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Conclusions&lt;/h1&gt;
+&lt;p&gt;One potential limitation of the framework is that only match-specific statistics are
+used for estimation and prediction purposes. Ideally, the use of set-specific statistics
+could improve the predictive power of the model. However, this would introduce additional problems related to the choice of the distributions for modelling the number of points scored by the opposing teams in a set, which is subject to specific constraints. Finally, the flexibility of the proposed framework allows the extension of the model in many ways. For example, additional types of in-game statistics (e.g. number of passes), if available, could be incorporated to further improve the predictions of the model; alternative distributions could also be specified to model the total number of scores &lt;span class=&#34;math inline&#34;&gt;\(y\)&lt;/span&gt; during the season (e.g. Negative Binomial) which may result in a better fit to the data.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;references&#34; class=&#34;section level1 unnumbered&#34;&gt;
+&lt;h1&gt;References&lt;/h1&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references&#34;&gt;
+&lt;div id=&#34;ref-gabrio2020bayesian&#34;&gt;
+&lt;p&gt;Gabrio, Andrea. 2020. “Bayesian Hierarchical Models for the Prediction of Volleyball Results.” &lt;em&gt;Journal of Applied Statistics&lt;/em&gt;, 1–21.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-gelman2015stan&#34;&gt;
+&lt;p&gt;Gelman, Andrew, Daniel Lee, and Jiqiang Guo. 2015. “Stan: A Probabilistic Programming Language for Bayesian Inference and Optimization.” &lt;em&gt;Journal of Educational and Behavioral Statistics&lt;/em&gt; 40 (5): 530–43.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-rstanpackage&#34;&gt;
+&lt;p&gt;Stan Development Team. 2018. “RStan: The R Interface to Stan.” &lt;a href=&#34;http://mc-stan.org/&#34;&gt;http://mc-stan.org/&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
     
     <item>
       <title>Partly Nested Anova - STAN</title>

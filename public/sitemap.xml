@@ -94,22 +94,52 @@
   
   <url>
     <loc>/tags/academic/</loc>
-    <lastmod>2020-03-01T12:34:03+01:00</lastmod>
+    <lastmod>2020-03-20T12:34:03+01:00</lastmod>
   </url>
   
   <url>
     <loc>/authors/andrea-gabrio/</loc>
-    <lastmod>2020-03-01T12:34:03+01:00</lastmod>
+    <lastmod>2020-03-20T12:34:03+01:00</lastmod>
   </url>
   
   <url>
     <loc>/authors/</loc>
-    <lastmod>2020-03-01T12:34:03+01:00</lastmod>
+    <lastmod>2020-03-20T12:34:03+01:00</lastmod>
   </url>
   
   <url>
     <loc>/categories/</loc>
-    <lastmod>2020-03-01T12:34:03+01:00</lastmod>
+    <lastmod>2020-03-20T12:34:03+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/post/update2-march/</loc>
+    <lastmod>2020-03-20T12:34:03+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/post/</loc>
+    <lastmod>2020-03-20T12:34:03+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/news/</loc>
+    <lastmod>2020-03-20T12:34:03+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/news/</loc>
+    <lastmod>2020-03-20T12:34:03+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/</loc>
+    <lastmod>2020-03-20T12:34:03+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/website/</loc>
+    <lastmod>2020-03-20T12:34:03+01:00</lastmod>
   </url>
   
   <url>
@@ -123,27 +153,12 @@
   </url>
   
   <url>
-    <loc>/post/</loc>
-    <lastmod>2020-03-01T12:34:03+01:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/news/</loc>
-    <lastmod>2020-03-01T12:34:03+01:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/news/</loc>
-    <lastmod>2020-03-01T12:34:03+01:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/</loc>
-    <lastmod>2020-03-01T12:34:03+01:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/jags/</loc>
+    <lastmod>2020-02-15T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/stan/</loc>
     <lastmod>2020-02-15T21:13:14-05:00</lastmod>
   </url>
   
@@ -163,6 +178,11 @@
   </url>
   
   <url>
+    <loc>/stan/glmm-stan/glmm-stan/</loc>
+    <lastmod>2020-02-15T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/tags/jags/</loc>
     <lastmod>2020-02-15T21:13:14-05:00</lastmod>
   </url>
@@ -174,6 +194,16 @@
   
   <url>
     <loc>/categories/r/</loc>
+    <lastmod>2020-02-15T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/stan/</loc>
+    <lastmod>2020-02-15T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/stan/</loc>
     <lastmod>2020-02-15T21:13:14-05:00</lastmod>
   </url>
   
@@ -238,11 +268,6 @@
   </url>
   
   <url>
-    <loc>/stan/</loc>
-    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/jags/partly-nested-anova-jags/block-anova-jags/</loc>
     <lastmod>2020-02-11T21:13:14-05:00</lastmod>
   </url>
@@ -269,16 +294,6 @@
   
   <url>
     <loc>/categories/split-plot/</loc>
-    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/stan/</loc>
-    <lastmod>2020-02-11T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/stan/</loc>
     <lastmod>2020-02-11T21:13:14-05:00</lastmod>
   </url>
   

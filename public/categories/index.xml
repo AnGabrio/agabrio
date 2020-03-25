@@ -7,10 +7,28 @@
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
     <copyright>`{year}`</copyright>
-    <lastBuildDate>Sun, 01 Mar 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 20 Mar 2020 00:00:00 +0000</lastBuildDate>
     
 	    <atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>news</title>
+      <link>/categories/news/</link>
+      <pubDate>Fri, 20 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/news/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>website</title>
+      <link>/categories/website/</link>
+      <pubDate>Fri, 20 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/website/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>conference</title>
@@ -18,15 +36,6 @@
       <pubDate>Sun, 01 Mar 2020 00:00:00 +0000</pubDate>
       
       <guid>/categories/conference/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>news</title>
-      <link>/categories/news/</link>
-      <pubDate>Sun, 01 Mar 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/categories/news/</guid>
       <description></description>
     </item>
     
@@ -54,6 +63,15 @@
       <pubDate>Sat, 15 Feb 2020 21:13:14 -0500</pubDate>
       
       <guid>/categories/r/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>STAN</title>
+      <link>/categories/stan/</link>
+      <pubDate>Sat, 15 Feb 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/categories/stan/</guid>
       <description></description>
     </item>
     
@@ -108,15 +126,6 @@
       <pubDate>Tue, 11 Feb 2020 21:13:14 -0500</pubDate>
       
       <guid>/categories/split-plot/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>STAN</title>
-      <link>/categories/stan/</link>
-      <pubDate>Tue, 11 Feb 2020 21:13:14 -0500</pubDate>
-      
-      <guid>/categories/stan/</guid>
       <description></description>
     </item>
     
