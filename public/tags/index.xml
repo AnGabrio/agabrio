@@ -31,6 +31,15 @@
     </item>
     
     <item>
+      <title>STAN</title>
+      <link>/tags/stan/</link>
+      <pubDate>Sat, 21 Mar 2020 21:13:14 -0500</pubDate>
+      
+      <guid>/tags/stan/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>tutorials</title>
       <link>/tags/tutorials/</link>
       <pubDate>Sat, 21 Mar 2020 21:13:14 -0500</pubDate>
@@ -63,15 +72,6 @@
       <pubDate>Sat, 15 Feb 2020 21:13:14 -0500</pubDate>
       
       <guid>/tags/generalised-linear-mixed-models/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>STAN</title>
-      <link>/tags/stan/</link>
-      <pubDate>Sat, 15 Feb 2020 21:13:14 -0500</pubDate>
-      
-      <guid>/tags/stan/</guid>
       <description></description>
     </item>
     

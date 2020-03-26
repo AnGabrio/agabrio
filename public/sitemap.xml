@@ -108,6 +108,11 @@
   </url>
   
   <url>
+    <loc>/stan/</loc>
+    <lastmod>2020-03-21T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/categories/</loc>
     <lastmod>2020-03-21T21:13:14-05:00</lastmod>
   </url>
@@ -128,6 +133,11 @@
   </url>
   
   <url>
+    <loc>/stan/irt-stan/irt-stan/</loc>
+    <lastmod>2020-03-21T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/tags/jags/</loc>
     <lastmod>2020-03-21T21:13:14-05:00</lastmod>
   </url>
@@ -139,6 +149,16 @@
   
   <url>
     <loc>/categories/r/</loc>
+    <lastmod>2020-03-21T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/stan/</loc>
+    <lastmod>2020-03-21T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/stan/</loc>
     <lastmod>2020-03-21T21:13:14-05:00</lastmod>
   </url>
   
@@ -193,11 +213,6 @@
   </url>
   
   <url>
-    <loc>/stan/</loc>
-    <lastmod>2020-02-15T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/tags/generalised-linear-mixed-models/</loc>
     <lastmod>2020-02-15T21:13:14-05:00</lastmod>
   </url>
@@ -214,16 +229,6 @@
   
   <url>
     <loc>/stan/glmm-stan/glmm-stan/</loc>
-    <lastmod>2020-02-15T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/stan/</loc>
-    <lastmod>2020-02-15T21:13:14-05:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/stan/</loc>
     <lastmod>2020-02-15T21:13:14-05:00</lastmod>
   </url>
   
