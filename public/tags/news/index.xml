@@ -7,10 +7,36 @@
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
     <copyright>`{year}`</copyright>
-    <lastBuildDate>Wed, 01 Apr 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 20 Apr 2020 00:00:00 +0000</lastBuildDate>
     
 	    <atom:link href="/tags/news/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>New updates for missingHE</title>
+      <link>/post/update2-april/</link>
+      <pubDate>Mon, 20 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/update2-april/</guid>
+      <description>&lt;p&gt;In spite of how incredibly busy I am at the moment, which is also weird considering the whole lockdown situation still going on, I managed to upload a new version (1.4.0) of my R package &lt;a href=&#34;https://cran.r-project.org/web/packages/missingHE/index.html&#34;&gt;missingHE&lt;/a&gt; with exciting updates!&lt;/p&gt;
+&lt;p&gt;For those who do not know, &lt;code&gt;missingHE&lt;/code&gt; is specifically designed to implement Bayesian models for the analysis of trial-based economic evaluations and provides different methods to handle missingness in either or both the effectiveness and cost outcomes. The cool new things in this version are the following:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;First, random effects can now be specified for each model implemented in missingHE (I know, Bayesians should not talk about &amp;ldquo;random&amp;rdquo; or &amp;ldquo;fixed&amp;rdquo; effects as we know that there are no real &amp;ldquo;fixed&amp;rdquo; effects but the terms have become quite popular and many people would prefer this way). These include selection, hurdle and pattern mixture models. The package allows a flexible implementation of either random intercept only, random slope only and both random intecept and slope models based on the input given by the user. The random effects term is specified via the formula y ~ x + (x | z) where x is a covariate included also as a fixed effects in the model and z is the clustering variable over which the random effects for x are specified. It is possible to remove the random intercept if desired by adding 0 + inside the brackets (by default this is included).&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Second, new types of posterior predictive checks can now be chosen using the function &lt;code&gt;ppc&lt;/code&gt; for each type of model fitted using the function of the package. These include plotting the Bayesian posterior p-values (which should not be confused with the usual p-values as they are completely different) based on the posterior replications of the models and a given statistics computed from the observed data. The statistic can be provided by the user under the form of a univariate function (e.g. mean or sd) or a specific type of bivariate function (e.g. cor).&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Third, a new generic function called coef has been added which allows to extract the regression coefficients from each type of model, either in terms of fixed effects or random effects (if specified).&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;I am quite proud of this new update as it is something I considered for a long time which is now available. If even one person find this useful, I think it will be worth all my effort. Very nice.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/ghccKVv6mSpXy/giphy.gif&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Oh, and yes you can also find the new version of &lt;code&gt;missingHE&lt;/code&gt; on my &lt;a href=&#34;https://github.com/AnGabrio/missingHE&#34;&gt;GitHub page&lt;/a&gt;. I plan to upload a more serious tutorial on how to use all the functions of the package at some point (hopefully not too far from now).&lt;/p&gt;
+&lt;p&gt;So, now that all the fun part is done, I need to go back to doing meetings, reviews, writing papers, etc&amp;hellip;. It will be a quite busy period again but now I feel motivated. Let&amp;rsquo;s see for how long this will last.&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>So much time but also not really</title>
