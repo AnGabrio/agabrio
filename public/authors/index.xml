@@ -7,7 +7,7 @@
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
     <copyright>`{year}`</copyright>
-    <lastBuildDate>Mon, 20 Apr 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 18 May 2020 00:00:00 +0000</lastBuildDate>
     
 	    <atom:link href="/authors/index.xml" rel="self" type="application/rss+xml" />
     
@@ -15,7 +15,7 @@
     <item>
       <title>Andrea Gabrio</title>
       <link>/authors/andrea-gabrio/</link>
-      <pubDate>Mon, 20 Apr 2020 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 18 May 2020 00:00:00 +0000</pubDate>
       
       <guid>/authors/andrea-gabrio/</guid>
       <description></description>
@@ -24,9 +24,36 @@
     <item>
       <title>A Gabrio</title>
       <link>/authors/a-gabrio/</link>
-      <pubDate>Sat, 01 Feb 2020 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 11 May 2020 00:00:00 +0000</pubDate>
       
       <guid>/authors/a-gabrio/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>AJ Mason</title>
+      <link>/authors/aj-mason/</link>
+      <pubDate>Mon, 11 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/authors/aj-mason/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>G Baio</title>
+      <link>/authors/g-baio/</link>
+      <pubDate>Mon, 11 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/authors/g-baio/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>R Hunter</title>
+      <link>/authors/r-hunter/</link>
+      <pubDate>Mon, 11 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/authors/r-hunter/</guid>
       <description></description>
     </item>
     
@@ -40,38 +67,11 @@
     </item>
     
     <item>
-      <title>AJ Mason</title>
-      <link>/authors/aj-mason/</link>
-      <pubDate>Sat, 01 Jun 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/authors/aj-mason/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>G Baio</title>
-      <link>/authors/g-baio/</link>
-      <pubDate>Sat, 01 Jun 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/authors/g-baio/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>MJ Daniels</title>
       <link>/authors/mj-daniels/</link>
       <pubDate>Sat, 01 Jun 2019 00:00:00 +0000</pubDate>
       
       <guid>/authors/mj-daniels/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>R Hunter</title>
-      <link>/authors/r-hunter/</link>
-      <pubDate>Sat, 01 Jun 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/authors/r-hunter/</guid>
       <description></description>
     </item>
     

@@ -28,7 +28,7 @@
   
     
   
-  <meta name="description" content="Failure to account for baseline utilities/costs imbalance between treatment groups in cost-effectiveness analyses can result in biased estimates and mislead the decision making process. The currently recommended adjustment approach is linear regression, with estimates that are typically evaluated at the mean of the baseline utilities/costs. However, a problem arises whenever there are some missing follow-up values and the evaluation is restricted to the complete cases. Should the mean of the complete cases or the available cases baseline utilities/costs be used in generating the adjusted estimates? To our knowledge there is no current guideline about this choice in the literature, with standard software implementations often implicitly selecting one of the methods. We use two trials as motivating examples to show that the two approaches can lead to substantially different conclusions for healthcare decision making and that standard approaches which automatically resort to complete case analysis are potentially dangerous and biased. Analysts should therefore consider methods that can explicitly incorporate missing data assumptions and assess the robustness of the results to a range of plausible alternatives.">
+  <meta name="description" content="Health economic evaluations based on patient-level data collected alongside clinical trials (e.g. health related quality of life and resource use measures) are an important component of the process which informs resource allocation decisions. Almost inevitably, the analysis is complicated by the fact that some individuals drop out from the study, which causes their data to be unobserved at some time point. Current practice performs the evaluation by handling the missing data at the level of aggregated variables (e.g. QALYs), which are obtained by combining the economic data over the duration of the study, and are often conducted under a missing at random (MAR) assumption. However, this approach may lead to incorrect inferences since it ignores the longitudinal nature of the data and may end up discarding a considerable amount of observations from the analysis. We propose the use of joint longitudinal models to extend standard cost-effectiveness analysis methods by taking into account the longitudinal structure and incorporate all available data to improve the estimation of the targeted quantities under MAR. Our approach is compared to popular missingness approaches in trial-based analyses, motivated by an exploratory simulation study, and applied to data from two real case studies.">
 
   
   <link rel="alternate" hreflang="en-us" href="/publication/gabrio2019d/">
@@ -121,25 +121,25 @@
   
   <meta property="og:site_name" content="Andrea Gabrio">
   <meta property="og:url" content="/publication/gabrio2019d/">
-  <meta property="og:title" content="Pitfalls of adjusting for mean baseline utilities/costs in trial-based cost-effectiveness analysis with missing data | Andrea Gabrio">
-  <meta property="og:description" content="Failure to account for baseline utilities/costs imbalance between treatment groups in cost-effectiveness analyses can result in biased estimates and mislead the decision making process. The currently recommended adjustment approach is linear regression, with estimates that are typically evaluated at the mean of the baseline utilities/costs. However, a problem arises whenever there are some missing follow-up values and the evaluation is restricted to the complete cases. Should the mean of the complete cases or the available cases baseline utilities/costs be used in generating the adjusted estimates? To our knowledge there is no current guideline about this choice in the literature, with standard software implementations often implicitly selecting one of the methods. We use two trials as motivating examples to show that the two approaches can lead to substantially different conclusions for healthcare decision making and that standard approaches which automatically resort to complete case analysis are potentially dangerous and biased. Analysts should therefore consider methods that can explicitly incorporate missing data assumptions and assess the robustness of the results to a range of plausible alternatives."><meta property="og:image" content="/img/icon-192.png">
+  <meta property="og:title" content="Joint longitudinal models for dealing with missing at random data in trial-based economic evaluations | Andrea Gabrio">
+  <meta property="og:description" content="Health economic evaluations based on patient-level data collected alongside clinical trials (e.g. health related quality of life and resource use measures) are an important component of the process which informs resource allocation decisions. Almost inevitably, the analysis is complicated by the fact that some individuals drop out from the study, which causes their data to be unobserved at some time point. Current practice performs the evaluation by handling the missing data at the level of aggregated variables (e.g. QALYs), which are obtained by combining the economic data over the duration of the study, and are often conducted under a missing at random (MAR) assumption. However, this approach may lead to incorrect inferences since it ignores the longitudinal nature of the data and may end up discarding a considerable amount of observations from the analysis. We propose the use of joint longitudinal models to extend standard cost-effectiveness analysis methods by taking into account the longitudinal structure and incorporate all available data to improve the estimation of the targeted quantities under MAR. Our approach is compared to popular missingness approaches in trial-based analyses, motivated by an exploratory simulation study, and applied to data from two real case studies."><meta property="og:image" content="/img/icon-192.png">
   <meta property="og:locale" content="en-us">
   
-  <meta property="article:published_time" content="2019-06-01T00:00:00&#43;00:00">
+  <meta property="article:published_time" content="2020-05-11T00:00:00&#43;00:00">
   
-  <meta property="article:modified_time" content="2019-06-01T00:00:00&#43;00:00">
+  <meta property="article:modified_time" content="2020-05-11T00:00:00&#43;00:00">
   
-
-  
-
 
   
 
 
+  
 
 
 
-  <title>Pitfalls of adjusting for mean baseline utilities/costs in trial-based cost-effectiveness analysis with missing data | Andrea Gabrio</title>
+
+
+  <title>Joint longitudinal models for dealing with missing at random data in trial-based economic evaluations | Andrea Gabrio</title>
 
 </head>
 
@@ -420,7 +420,7 @@
   
   
 <div class="article-container pt-3">
-  <h1 itemprop="name">Pitfalls of adjusting for mean baseline utilities/costs in trial-based cost-effectiveness analysis with missing data</h1>
+  <h1 itemprop="name">Joint longitudinal models for dealing with missing at random data in trial-based economic evaluations</h1>
 
   
 
@@ -429,8 +429,8 @@
 
 
 
-<meta content="2019-06-01 00:00:00 &#43;0000 UTC" itemprop="datePublished">
-<meta content="2019-06-01 00:00:00 &#43;0000 UTC" itemprop="dateModified">
+<meta content="2020-05-11 00:00:00 &#43;0000 UTC" itemprop="datePublished">
+<meta content="2020-05-11 00:00:00 &#43;0000 UTC" itemprop="dateModified">
 
 <div class="article-metadata">
 
@@ -454,7 +454,7 @@
     
       
     
-    <time>June 2019</time>
+    <time>May 2020</time>
   </span>
   
 
@@ -506,7 +506,7 @@
 
 
 
-<a class="btn btn-outline-primary my-1 mr-1" href="https://arxiv.org/abs/1805.07149" target="_blank" rel="noopener">
+<a class="btn btn-outline-primary my-1 mr-1" href="https://arxiv.org/a/gabrio_a_1.html" target="_blank" rel="noopener">
   PDF
 </a>
 
@@ -544,7 +544,7 @@
 
     
     <h3>Abstract</h3>
-    <p class="pub-abstract" itemprop="text">Failure to account for baseline utilities/costs imbalance between treatment groups in cost-effectiveness analyses can result in biased estimates and mislead the decision making process. The currently recommended adjustment approach is linear regression, with estimates that are typically evaluated at the mean of the baseline utilities/costs. However, a problem arises whenever there are some missing follow-up values and the evaluation is restricted to the complete cases. Should the mean of the complete cases or the available cases baseline utilities/costs be used in generating the adjusted estimates? To our knowledge there is no current guideline about this choice in the literature, with standard software implementations often implicitly selecting one of the methods. We use two trials as motivating examples to show that the two approaches can lead to substantially different conclusions for healthcare decision making and that standard approaches which automatically resort to complete case analysis are potentially dangerous and biased. Analysts should therefore consider methods that can explicitly incorporate missing data assumptions and assess the robustness of the results to a range of plausible alternatives.</p>
+    <p class="pub-abstract" itemprop="text">Health economic evaluations based on patient-level data collected alongside clinical trials (e.g. health related quality of life and resource use measures) are an important component of the process which informs resource allocation decisions. Almost inevitably, the analysis is complicated by the fact that some individuals drop out from the study, which causes their data to be unobserved at some time point. Current practice performs the evaluation by handling the missing data at the level of aggregated variables (e.g. QALYs), which are obtained by combining the economic data over the duration of the study, and are often conducted under a missing at random (MAR) assumption. However, this approach may lead to incorrect inferences since it ignores the longitudinal nature of the data and may end up discarding a considerable amount of observations from the analysis. We propose the use of joint longitudinal models to extend standard cost-effectiveness analysis methods by taking into account the longitudinal structure and incorporate all available data to improve the estimation of the targeted quantities under MAR. Our approach is compared to popular missingness approaches in trial-based analyses, motivated by an exploratory simulation study, and applied to data from two real case studies.</p>
     
 
     

@@ -7,10 +7,19 @@
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
     <copyright>`{year}`</copyright>
-    <lastBuildDate>Sat, 01 Jun 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 11 May 2020 00:00:00 +0000</lastBuildDate>
     
 	    <atom:link href="/authors/g-baio/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Joint longitudinal models for dealing with missing at random data in trial-based economic evaluations</title>
+      <link>/publication/gabrio2019d/</link>
+      <pubDate>Mon, 11 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/publication/gabrio2019d/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>A Bayesian Parametric Approach to Handle Missing Longitudinal Outcome Data in Trial-Based Health Economic Evaluations</title>
@@ -27,15 +36,6 @@
       <pubDate>Sat, 01 Jun 2019 00:00:00 +0000</pubDate>
       
       <guid>/publication/gabrio2019b/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Pitfalls of adjusting for mean baseline utilities/costs in trial-based cost-effectiveness analysis with missing data</title>
-      <link>/publication/gabrio2019d/</link>
-      <pubDate>Sat, 01 Jun 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/publication/gabrio2019d/</guid>
       <description></description>
     </item>
     

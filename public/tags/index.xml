@@ -7,7 +7,7 @@
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
     <copyright>`{year}`</copyright>
-    <lastBuildDate>Mon, 20 Apr 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 18 May 2020 00:00:00 +0000</lastBuildDate>
     
 	    <atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     
@@ -15,18 +15,45 @@
     <item>
       <title>Academic</title>
       <link>/tags/academic/</link>
-      <pubDate>Mon, 20 Apr 2020 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 18 May 2020 00:00:00 +0000</pubDate>
       
       <guid>/tags/academic/</guid>
       <description></description>
     </item>
     
     <item>
+      <title>missingHE</title>
+      <link>/tags/missinghe/</link>
+      <pubDate>Mon, 18 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/missinghe/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>News</title>
       <link>/tags/news/</link>
-      <pubDate>Mon, 20 Apr 2020 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 18 May 2020 00:00:00 +0000</pubDate>
       
       <guid>/tags/news/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Economic Evaluations</title>
+      <link>/tags/economic-evaluations/</link>
+      <pubDate>Mon, 11 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/economic-evaluations/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Missing Data</title>
+      <link>/tags/missing-data/</link>
+      <pubDate>Mon, 11 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/missing-data/</guid>
       <description></description>
     </item>
     
@@ -144,15 +171,6 @@
       <pubDate>Tue, 11 Feb 2020 09:00:00 +0000</pubDate>
       
       <guid>/tags/clinical-trials/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Economic Evaluations</title>
-      <link>/tags/economic-evaluations/</link>
-      <pubDate>Tue, 11 Feb 2020 09:00:00 +0000</pubDate>
-      
-      <guid>/tags/economic-evaluations/</guid>
       <description></description>
     </item>
     
@@ -288,15 +306,6 @@
       <pubDate>Sat, 01 Feb 2020 00:00:00 +0000</pubDate>
       
       <guid>/tags/volleyball/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Missing Data</title>
-      <link>/tags/missing-data/</link>
-      <pubDate>Tue, 28 Jan 2020 11:15:00 +0000</pubDate>
-      
-      <guid>/tags/missing-data/</guid>
       <description></description>
     </item>
     
