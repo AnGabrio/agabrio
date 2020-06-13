@@ -27,7 +27,7 @@ tags:
 title: "Joint longitudinal models for dealing with missing at random data in trial-based economic evaluations"
 url_code: ""
 url_dataset: ""
-url_pdf: https://arxiv.org/a/gabrio_a_1.html
+url_pdf: https://arxiv.org/pdf/1805.07149.pdf
 url_project: ""
 url_slides: ""
 url_source: ""

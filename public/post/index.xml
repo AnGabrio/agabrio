@@ -7,10 +7,40 @@
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
     <copyright>`{year}`</copyright>
-    <lastBuildDate>Mon, 18 May 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 05 Jun 2020 00:00:00 +0000</lastBuildDate>
     
 	    <atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>New tutorials for missingHE</title>
+      <link>/post/update-june/</link>
+      <pubDate>Fri, 05 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/update-june/</guid>
+      <description>&lt;p&gt;Nothing major to report for the past month, mostly spent at home still in lockdown. A few offices and shops have already opened in London but all the public stuff, including my office at UCL will remain close until who knows when. So, in the meantime I put some work into prpearing some tutorials about how to use the different functions from my &lt;code&gt;R&lt;/code&gt; package &lt;code&gt;missingHE&lt;/code&gt;. These are built directly into the package in the form of &lt;code&gt;vignettes&lt;/code&gt; which can be easily accessed from the &lt;code&gt;R&lt;/code&gt; terminal once the package is installed locally.&lt;/p&gt;
+&lt;p&gt;I have worked on three main tutorials dedicated to explain the basic functions of the package and to show how to customise the different models using different combinations of input choices. The three &lt;code&gt;vignettes&lt;/code&gt; have each a specific target of users, starting from the beginners in using &lt;code&gt;R&lt;/code&gt; to those who would like to have a more flexibile specification of the models based on different modelling assumptions. I use the built-in dataset in the package, the &lt;code&gt;MenSS&lt;/code&gt; study, to give practical examples of how the different changes to the models may affect the results in a standard analysis.&lt;/p&gt;
+&lt;p&gt;The three tutorials are:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;em&gt;&lt;strong&gt;Introduction to missingHE&lt;/strong&gt;&lt;/em&gt;, which is intended for those who have little familiarity with &lt;code&gt;R&lt;/code&gt; and just want an overview of the different functions of the package, what they do and how to extract the relevant information from the fitted models.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;em&gt;&lt;strong&gt;Fitting MNAR models in missingHE&lt;/strong&gt;&lt;/em&gt;, which is intended for those who already know about the main functions of the package and would like to explore more deeply how to perform sensitivity analysis to missing not at random assumtpions using the arguments of each function.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;em&gt;&lt;strong&gt;Model Customisation in missingHE&lt;/strong&gt;&lt;/em&gt;, which is intended for those who have already grasped the basic idea behind the different functions and would like to customise their models and not just stick with the default settings. Examples include how to specify random effects, different prior distributions and so on.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;I believe these tutorials provide a reasonable summary about the key elements for anyone who would like to use the package but is a bit uncertain about what he or she can actually do with the functions and to which extent customisation is possible. Fot the moment the &lt;code&gt;vignettes&lt;/code&gt; are only available from my &lt;a href=&#34;https://github.com/AnGabrio/missingHE&#34;&gt;GitHub&lt;/a&gt; version of the package (1.4.1) and can be accessed by installing the package using the command&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;devtools&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;install_github&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;AnGabrio/missingHE&amp;#34;&lt;/span&gt;, build_vignettes &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;TRUE&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and then typing&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;utils&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;browseVignettes&lt;/span&gt;(package &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;missingHE&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Note that you need to locally install the packages &lt;code&gt;devtools&lt;/code&gt; and &lt;code&gt;utils&lt;/code&gt; to access their functions. As soon as I have a bit of time I will update the version on &lt;a href=&#34;https://cran.r-project.org/web/packages/missingHE&#34;&gt;CRAN&lt;/a&gt; to make them available from there as well. I spent a bit of time creating these tutorials and I hope people will find them useful to undestand the package. In case anything is still unclear, feel free to contact me to ask questions.&lt;/p&gt;
+&lt;p&gt;That is pretty much it for the moment from me. I should add new tutorials for using &lt;code&gt;JAGS&lt;/code&gt; and &lt;code&gt;STAN&lt;/code&gt; on the website but time is always never enough. Naaah, I am just very lazy these days.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/vjCkGbbSm7bhe/giphy.gif&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Sorry, an error occurred</title>
@@ -22,7 +52,7 @@
 &lt;p&gt;In the past few days, I had an extremely interesting email correspondence with one guy (don&amp;rsquo;t want to say the name for privacy) interested in using my R package &lt;a href=&#34;https://cran.r-project.org/web/packages/missingHE/&#34;&gt;missingHE&lt;/a&gt; to do some trial-based CEA. Awesome, I thought. He was looking for some advice for how to customise some models in the package and how to get the results he wanted. Unfortunately for my pride, but fortunately for my package, we discovered a small bug in the code when trying to specify a hurdle model (two-part model) to handle the zero costs when not including any covariate inside the logit model to estimate the probability of having a zero cost. Essentially, under these specific circumstances, the function did not correctly backtransformed the estimate of the mean costs on the appropriate scale and the results provided were incorrect. Sorry about that!&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://media.giphy.com/media/80TEu4wOBdPLG/giphy.gif&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
 &lt;p&gt;To be honest, you can get away by simply including some baseline covariate into the logit model for the structural zero costs, in which case the estimates produced by the function are correct. I have immediately updated the package version to correct this bug on my &lt;a href=&#34;https://github.com/AnGabrio/missingHE&#34;&gt;GitHub page&lt;/a&gt;, where you can find the most up to date version (1.4.1). The version on CRAN will be updated at the next iteration as I have recently uploaded the 1.4.0 version in May. In the meantime, if you want to avoid having that issue above, you can download and install the updated version from my GitHub page.&lt;/p&gt;
-&lt;p&gt;I think this is also a good chance to tell that I have updated an old paper on my on my &lt;a href=&#34;https://arxiv.org/a/gabrio_a_1.html&#34;&gt;Arxiv account&lt;/a&gt;. Both the content and title of the paper have changed considerably, but overall I feel that the overall message and quality of the article has improved. It is still an on-going version, but I am quite satisfied with its current status given all the effort I put into it. Have a lool in case you are interested. New title : &amp;ldquo;Joint longitudinal models for dealing with missing at random data in trial-based economic evaluations&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;I think this is also a good chance to tell that I have updated an old paper on my on my &lt;a href=&#34;https://arxiv.org/pdf/1805.07149.pdf&#34;&gt;Arxiv account&lt;/a&gt;. Both the content and title of the paper have changed considerably, but overall I feel that the overall message and quality of the article has improved. It is still an on-going version, but I am quite satisfied with its current status given all the effort I put into it. Have a lool in case you are interested. New title : &amp;ldquo;Joint longitudinal models for dealing with missing at random data in trial-based economic evaluations&amp;rdquo;.&lt;/p&gt;
 &lt;p&gt;More information on the paper can be found at this &lt;a href=&#34;/publication/gabrio2019d/&#34;&gt;dedicated page&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;I believe that is all for this update. Not much going on due to the whole lockdown situation here in the UK but hopefully things are improving a little in a two-months time we will be able to at least go to the office. Let&amp;rsquo;s see.&lt;/p&gt;
 </description>
