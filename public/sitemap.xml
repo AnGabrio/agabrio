@@ -103,6 +103,11 @@
   </url>
   
   <url>
+    <loc>/</loc>
+    <lastmod>2020-06-05T12:34:03+01:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/authors/</loc>
     <lastmod>2020-06-05T12:34:03+01:00</lastmod>
   </url>
@@ -920,11 +925,6 @@
   <url>
     <loc>/publication/gabrio2019a/</loc>
     <lastmod>2019-04-01T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/</loc>
-    <lastmod>2018-06-28T00:00:00+01:00</lastmod>
   </url>
   
   <url>

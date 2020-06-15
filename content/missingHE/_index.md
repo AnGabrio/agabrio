@@ -134,6 +134,16 @@ e           -264.332 421.044 -1094.129  571.148
 
 If we set `random = TRUE`, then summary statistics for the random effects terms are printed.
 
+* From 10/06/2020 a new version (1.4.1) of `missingHE` is available to download from my [GitHub](https://github.com/AnGabrio/missingHE) page, which includes three vignettes providing some tutorials on how to use the functions of the package. Each vignette is specifically designed to help different types of users:
+
+	* The first vignette is named *Introduction_to_missingHE* and is designed to provide some introductory summary about the use of the functions of the package based on the default settings, what the user needs to specify and how to interpret and extract the results. See the {{< staticref "files/Introduction_to_missingHE.pdf" "newtab" >}} pdf{{< /staticref >}}
+
+	* The second vignette is named *Fitting_MNAR_models_in_missingHE* and is deisgned to help those who would like to explore MNAR assumptions and how this can be done within each main function of the package. See the {{< staticref "files/Fitting_MNAR_models_in_missingHE.pdf" "newtab" >}} pdf{{< /staticref >}}
+
+	* The third vinette is named *Model_customisation_in_missingHE* and is designed for those who are already familiar with the package but who would like to customise the functions in a more flexile way, for example by including random effects, using different priors or modelling assumptions. See  the {{< staticref "files/Model_customisation_in_missingHE.pdf" "newtab" >}} pdf{{< /staticref >}}
+
+Soon, this version will also be uploaded on CRAN as well. In the meantime, the pdf files of these vignettes can be accessed from my website.
+
 
 # Installation
 
@@ -148,7 +158,9 @@ The second way involves using the *development* version of `missingHE`, which is
 
 
 ```r
-pkgs <- c("R2jags","Rtools","devtools")
+pkgs <- c("R2jags","ggplot2","gridExtra","BCEA","ggmcmc","loo","Rtools","devtools", "utils")
+repos <- c("https://cran.rstudio.com") 
+install.packages(pkgs,repos=repos,dependencies = "Depends")
 ```
 
 
@@ -156,6 +168,15 @@ before installing the package using `devtools`:
 
 
 ```r
-devtools::install_github("AnGabrio/missingHE")
+devtools::install_github("AnGabrio/missingHE", build_vignettes = TRUE)
 ```
+
+The optional argument `build_vignettes = TRUE` allows to install the vignettes of the package locally on your computer. These consist in brief tutorials to guid the user on how to use and customise the models in missingHE using different functions of the package. Once the package is installed, they can be accessed by using the command
+
+```r
+utils::browseVignettes(package = "missingHE")
+```
+
+All models implemented in missingHE are written in the `BUGS` language using the software `JAGS`, which needs to be installed from its own repository and instructions for installations under different OS can be found online. Once installed, the software is called in missingHE via the `R` package `R2jags`. Note that the missingHE package is currently under active development and therefore it is advisable to reinstall the package directly from [GitHub](https://github.com/AnGabrio/missingHE) before each use to ensure that you are using the most updated version.
+
 

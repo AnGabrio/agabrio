@@ -7,7 +7,7 @@
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
     <copyright>`{year}`</copyright>
-    <lastBuildDate>Thu, 28 Jun 2018 00:00:00 +0100</lastBuildDate>
+    <lastBuildDate>Fri, 05 Jun 2020 00:00:00 +0000</lastBuildDate>
     
 	    <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
@@ -215,14 +215,36 @@ age          &lt;span style=&#34;color:#ae81ff&#34;&gt;0.032&lt;/span&gt; &lt;sp
 age           &lt;span style=&#34;color:#ae81ff&#34;&gt;-9.138&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;36.223&lt;/span&gt;   &lt;span style=&#34;color:#ae81ff&#34;&gt;-78.510&lt;/span&gt;   &lt;span style=&#34;color:#ae81ff&#34;&gt;56.514&lt;/span&gt;
 e           &lt;span style=&#34;color:#ae81ff&#34;&gt;-264.332&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;421.044&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;-1094.129&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;571.148&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;If we set &lt;code&gt;random = TRUE&lt;/code&gt;, then summary statistics for the random effects terms are printed.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;From 10/06/2020 a new version (1.4.1) of &lt;code&gt;missingHE&lt;/code&gt; is available to download from my &lt;a href=&#34;https://github.com/AnGabrio/missingHE&#34;&gt;GitHub&lt;/a&gt; page, which includes three vignettes providing some tutorials on how to use the functions of the package. Each vignette is specifically designed to help different types of users:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;The first vignette is named &lt;em&gt;Introduction_to_missingHE&lt;/em&gt; and is designed to provide some introductory summary about the use of the functions of the package based on the default settings, what the user needs to specify and how to interpret and extract the results. See the &lt;a href=&#34;/files/Introduction_to_missingHE.pdf&#34; target=&#34;_blank&#34;&gt; pdf&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;The second vignette is named &lt;em&gt;Fitting_MNAR_models_in_missingHE&lt;/em&gt; and is deisgned to help those who would like to explore MNAR assumptions and how this can be done within each main function of the package. See the &lt;a href=&#34;/files/Fitting_MNAR_models_in_missingHE.pdf&#34; target=&#34;_blank&#34;&gt; pdf&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;The third vinette is named &lt;em&gt;Model_customisation_in_missingHE&lt;/em&gt; and is designed for those who are already familiar with the package but who would like to customise the functions in a more flexile way, for example by including random effects, using different priors or modelling assumptions. See  the &lt;a href=&#34;/files/Model_customisation_in_missingHE.pdf&#34; target=&#34;_blank&#34;&gt; pdf&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Soon, this version will also be uploaded on CRAN as well. In the meantime, the pdf files of these vignettes can be accessed from my website.&lt;/p&gt;
 &lt;h1 id=&#34;installation&#34;&gt;Installation&lt;/h1&gt;
 &lt;p&gt;There are two ways of installing &lt;code&gt;missingHE&lt;/code&gt;. A &lt;em&gt;stable&lt;/em&gt; version (currently 1.4.0) is packaged and available from &lt;a href=&#34;https://cran.r-project.org/web/packages/missingHE/&#34;&gt;CRAN&lt;/a&gt;. You can simply type on your &lt;code&gt;R&lt;/code&gt; terminal&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;install.packages&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;missingHE&amp;#34;&lt;/span&gt;)
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The second way involves using the &lt;em&gt;development&lt;/em&gt; version of &lt;code&gt;missingHE&lt;/code&gt;, which is available from &lt;a href=&#34;https://github.com/AnGabrio/missingHE&#34;&gt;GitHub&lt;/a&gt; - this will usually be updated more frequently and may be continuously tested. On Windows machines, you need to install a few dependencies, including Rtools first, e.g. by running&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;pkgs &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;R2jags&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Rtools&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;devtools&amp;#34;&lt;/span&gt;)
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;pkgs &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;R2jags&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ggplot2&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;gridExtra&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;BCEA&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ggmcmc&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;loo&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Rtools&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;devtools&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;utils&amp;#34;&lt;/span&gt;)
+repos &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://cran.rstudio.com&amp;#34;&lt;/span&gt;) 
+&lt;span style=&#34;color:#a6e22e&#34;&gt;install.packages&lt;/span&gt;(pkgs,repos&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;repos,dependencies &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Depends&amp;#34;&lt;/span&gt;)
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;before installing the package using &lt;code&gt;devtools&lt;/code&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;devtools&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;install_github&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;AnGabrio/missingHE&amp;#34;&lt;/span&gt;)
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;devtools&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;install_github&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;AnGabrio/missingHE&amp;#34;&lt;/span&gt;, build_vignettes &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;TRUE&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The optional argument &lt;code&gt;build_vignettes = TRUE&lt;/code&gt; allows to install the vignettes of the package locally on your computer. These consist in brief tutorials to guid the user on how to use and customise the models in missingHE using different functions of the package. Once the package is installed, they can be accessed by using the command&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;utils&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;browseVignettes&lt;/span&gt;(package &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;missingHE&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;All models implemented in missingHE are written in the &lt;code&gt;BUGS&lt;/code&gt; language using the software &lt;code&gt;JAGS&lt;/code&gt;, which needs to be installed from its own repository and instructions for installations under different OS can be found online. Once installed, the software is called in missingHE via the &lt;code&gt;R&lt;/code&gt; package &lt;code&gt;R2jags&lt;/code&gt;. Note that the missingHE package is currently under active development and therefore it is advisable to reinstall the package directly from &lt;a href=&#34;https://github.com/AnGabrio/missingHE&#34;&gt;GitHub&lt;/a&gt; before each use to ensure that you are using the most updated version.&lt;/p&gt;
+</description>
     </item>
     
     <item>
