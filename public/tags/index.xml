@@ -7,10 +7,28 @@
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
     <copyright>`{year}`</copyright>
-    <lastBuildDate>Fri, 05 Jun 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 07 Jul 2020 00:00:00 +0000</lastBuildDate>
     
 	    <atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Bayesian statistics</title>
+      <link>/tags/bayesian-statistics/</link>
+      <pubDate>Tue, 07 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/bayesian-statistics/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Frequentist statistics</title>
+      <link>/tags/frequentist-statistics/</link>
+      <pubDate>Tue, 07 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/frequentist-statistics/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Academic</title>
@@ -355,15 +373,6 @@
     </item>
     
     <item>
-      <title>Frequentist statistics</title>
-      <link>/tags/frequentist-statistics/</link>
-      <pubDate>Sat, 03 Aug 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/frequentist-statistics/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>introduction</title>
       <link>/tags/introduction/</link>
       <pubDate>Wed, 03 Jul 2019 21:13:14 -0500</pubDate>
@@ -387,15 +396,6 @@
       <pubDate>Wed, 03 Jul 2019 00:00:00 +0000</pubDate>
       
       <guid>/tags/industry/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Bayesian statistics</title>
-      <link>/tags/bayesian-statistics/</link>
-      <pubDate>Tue, 11 Jun 2019 10:00:00 +0000</pubDate>
-      
-      <guid>/tags/bayesian-statistics/</guid>
       <description></description>
     </item>
     

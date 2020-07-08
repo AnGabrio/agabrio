@@ -93,27 +93,57 @@
   </url>
   
   <url>
-    <loc>/tags/academic/</loc>
-    <lastmod>2020-06-05T12:34:03+01:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/authors/andrea-gabrio/</loc>
-    <lastmod>2020-06-05T12:34:03+01:00</lastmod>
+    <lastmod>2020-07-07T11:54:30+01:00</lastmod>
   </url>
   
   <url>
     <loc>/</loc>
-    <lastmod>2020-06-05T12:34:03+01:00</lastmod>
+    <lastmod>2020-07-07T11:54:30+01:00</lastmod>
   </url>
   
   <url>
     <loc>/authors/</loc>
-    <lastmod>2020-06-05T12:34:03+01:00</lastmod>
+    <lastmod>2020-07-07T11:54:30+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/bayesian-statistics/</loc>
+    <lastmod>2020-07-07T11:54:30+01:00</lastmod>
   </url>
   
   <url>
     <loc>/categories/</loc>
+    <lastmod>2020-07-07T11:54:30+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/discussion/</loc>
+    <lastmod>2020-07-07T11:54:30+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/frequentist-statistics/</loc>
+    <lastmod>2020-07-07T11:54:30+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/post/</loc>
+    <lastmod>2020-07-07T11:54:30+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/</loc>
+    <lastmod>2020-07-07T11:54:30+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/post/update-july/</loc>
+    <lastmod>2020-07-07T11:54:30+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/academic/</loc>
     <lastmod>2020-06-05T12:34:03+01:00</lastmod>
   </url>
   
@@ -124,11 +154,6 @@
   
   <url>
     <loc>/categories/missinghe/</loc>
-    <lastmod>2020-06-05T12:34:03+01:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/post/</loc>
     <lastmod>2020-06-05T12:34:03+01:00</lastmod>
   </url>
   
@@ -144,11 +169,6 @@
   
   <url>
     <loc>/categories/news/</loc>
-    <lastmod>2020-06-05T12:34:03+01:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/</loc>
     <lastmod>2020-06-05T12:34:03+01:00</lastmod>
   </url>
   
@@ -813,16 +833,6 @@
   </url>
   
   <url>
-    <loc>/categories/discussion/</loc>
-    <lastmod>2019-08-05T12:34:03+01:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/frequentist-statistics/</loc>
-    <lastmod>2019-08-05T12:34:03+01:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/post/p-value-fallacy/</loc>
     <lastmod>2019-08-05T12:34:03+01:00</lastmod>
   </url>
@@ -889,11 +899,6 @@
   
   <url>
     <loc>/talk/albacete2019/</loc>
-    <lastmod>2019-06-11T10:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/bayesian-statistics/</loc>
     <lastmod>2019-06-11T10:00:00+00:00</lastmod>
   </url>
   
