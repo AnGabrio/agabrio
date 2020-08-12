@@ -7,7 +7,7 @@
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
     <copyright>`{year}`</copyright>
-    <lastBuildDate>Tue, 07 Jul 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 07 Aug 2020 00:00:00 +0000</lastBuildDate>
     
 	    <atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     
@@ -15,7 +15,7 @@
     <item>
       <title>Bayesian statistics</title>
       <link>/tags/bayesian-statistics/</link>
-      <pubDate>Tue, 07 Jul 2020 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 07 Aug 2020 00:00:00 +0000</pubDate>
       
       <guid>/tags/bayesian-statistics/</guid>
       <description></description>
@@ -24,7 +24,7 @@
     <item>
       <title>Frequentist statistics</title>
       <link>/tags/frequentist-statistics/</link>
-      <pubDate>Tue, 07 Jul 2020 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 07 Aug 2020 00:00:00 +0000</pubDate>
       
       <guid>/tags/frequentist-statistics/</guid>
       <description></description>
