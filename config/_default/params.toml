@@ -50,9 +50,9 @@ time_format = "3:04 PM"
 ############################
 
 # Enter contact details (optional). To hide a field, clear it to "".
-# email = "andrea.gabrio.15@ucl.ac.uk"
+# email = "a.gabrio@maastrichtuniversity.nl"
 phone = "+44(0)20 3108 3227"
-address = "1-19 Torrington Place, University College London, London, UK"
+address = "Peter Debeyeplein 1 (first floor), 6229 HA Maastricht, The Netherlands"
 
 # Office hours: use `<br>` to insert a line break, or set to "" to remove office hours
 office_hours = ""
@@ -63,7 +63,7 @@ appointment_url = ""
 # Contact links
 #   Set to `[]` to disable, or comment out unwanted lines with a hash `#`.
 contact_links = [
-  {icon = "envelope", icon_pack = "fas", name = "ucakgab@ucl.ac.uk", link = "ucakgab@ucl.ac.uk"},
+  {icon = "envelope", icon_pack = "fas", name = "a.gabrio@maastrichtuniversity.nl", link = "a.gabrio@maastrichtuniversity.nl"},
   {icon = "twitter", icon_pack = "fab", name = "AndreaGabrio", link = "https://twitter.com/andreagabrio"},
   {icon = "github", icon_pack = "fab", name = "AnGabrio", link = "https://github.com/AnGabrio"},
   {icon = "linkedin", icon_pack = "fab", name = "Andrea Gabrio", link = "https://uk.linkedin.com/in/andrea-gabrio-730514bb/"},
@@ -86,14 +86,14 @@ contact_links = [
 #   2: OpenStreetMap (Mapnik)
 #   3: OpenStreetMap (Mapbox)
 #map = 1
-#map_api_key = "AIzaSyCISTpKo0wvo9tY6u_Tlxk1GRlAIvBlrJw"
-#latitude = "51.522132"
-#longitude = "-0.133380"
+#map_api_key = ""
+#latitude = ""
+#longitude = ""
 #zoom = 15
 
 map = 2
-latitude = "51.522132"
-longitude = "-0.133380"
+latitude = "50.83505"
+longitude = "5.71185"
 zoom = 15
 
 
