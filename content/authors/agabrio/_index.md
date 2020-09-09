@@ -24,13 +24,13 @@ interests:
 - Statistical Methods for Health and Medical Data
 name: Andrea Gabrio
 organizations:
-- name: Department of Statistical Science 
-  url: "https://www.ucl.ac.uk/statistics/"
-- name: Department of Primary Care and Population Health 
-  url: "https://www.ucl.ac.uk/iehc/research/pcph"
-- name: University College London
-  url: "https://www.ucl.ac.uk/"
-role: Research Fellow in Statistics and Health Economics
+- name: Department of Methodology and Statistics 
+  url: "https://www.maastrichtuniversity.nl/about-um/faculties/psychology-and-neuroscience/departments/department-methodology-and-statistics/"
+- name: Faculty of Health Medicine and Life Sciences 
+  url: "https://www.maastrichtuniversity.nl/about-um/faculties/faculty-health-medicine-and-life-sciences/"
+- name: Maastricht University
+  url: "https://www.maastrichtuniversity.nl/"
+role: Assistant Professor in Statistics
 social:
 - icon: twitter
   icon_pack: fab
@@ -62,15 +62,15 @@ user_groups:
 - Visitors
 ---
 
-I am a Research Fellow in Statistics and Health Economics in the [Department of Statistical Science](https://www.ucl.ac.uk/statistics/) & in the [Department of Primary Care and Population Health](https://www.ucl.ac.uk/iehc/research/pcph) at [University College London](https://www.ucl.ac.uk/) (UK). I graduated in Applied Economics from the [University of Pavia](https://web.unipv.it/) (Italy) and in Statistics and Econometrics from the [University of Essex](https://www.essex.ac.uk/) (UK). I then completed a PhD programme in Statistics at University College London, after a short visiting period in the [Department of Statistics](https://stat.ufl.edu/) at [University of Florida](http://www.ufl.edu/) (USA).
+I am an assistant professor in Statistics in the [Department of methodology and statistics](https://www.maastrichtuniversity.nl/about-um/faculties/psychology-and-neuroscience/departments/department-methodology-and-statistics) of the [Faculty of Health Medicine and Life Sciences](https://www.maastrichtuniversity.nl/about-um/faculties/faculty-health-medicine-and-life-sciences) at [Maastricht University](https://www.maastrichtuniversity.nl/) in the Netherlands.
 
 My main interests are in Bayesian statistical modelling for cost-effectiveness analysis and decision-making problems in the health systems. During my PhD I have specifically focused on the study and adoption of Bayesian methods to handle missing data in health economic evaluations and to assess the impact of their uncertainty on the output of the decision-making process. My research area involves different topics: from systematic literature reviews, case study applications, survival analysis, meta-analytic methods, multilevel models and trial-based clinical and economic analyses. Here you can find {{< staticref "files/cv.pdf" "newtab" >}} my CV{{< /staticref >}} with more details on what I have done so far and my interests. 
 
 I am very interested in the analysis of longitudinal data, with a focus on different types of statistical methods to deal with missingness. My preferred statistical programming software and the one I am most familiar with is [R/RStudio](https://rstudio.com/) by far, but I do also possess a good knowledge of other software such as [STATA](https://www.stata-uk.com/) and [MATLAB](https://uk.mathworks.com/). I am quite expert in the use of free open-source Bayesian software programs, such as [OpenBUGS](http://www.openbugs.net/w/FrontPage), [JAGS](http://mcmc-jags.sourceforge.net/) and [STAN](https://mc-stan.org/).
 
-I am a member of the [Statistics for Health Economic Evaluation research group](https://www.ucl.ac.uk/statistics/research/statistics-health-economics/) in the Department of Statistical Science at UCL, which is mainly focused on the development and application of Bayesian methods for health economic evaluations. The group works in collaboration with academics from different institutions and its activities are aimed at providing advice to statisticians, health economists and clinicians working in economic evaluations. 
+I have collaborated with the [Statistics for Health Economic Evaluation research group](https://www.ucl.ac.uk/statistics/research/statistics-health-economics/) in the Department of Statistical Science at UCL, which is mainly focused on the development and application of Bayesian methods for health economic evaluations. The group works in collaboration with academics from different institutions and its activities are aimed at providing advice to statisticians, health economists and clinicians working in economic evaluations. 
 
-I am also a member of the [Health Economics Analysis and Research methodology Team](https://hearteam.blogspot.com/) in the [Institute for Clinical Trials and Methodology](https://www.ucl.ac.uk/clinical-trials-and-methodology/) at UCL, working primarily with the members of the [Priment Clinical Trials Unit](https://www.ucl.ac.uk/clinical-trials-and-methodology/about/priment). The group focuses on the development of methodological tools for the analysis of the economic components in randomised control trials across a wide range of clinical areas and is formed by a group of interdisciplinary and varied experience. 
+I have also collaborated with the [Health Economics Analysis and Research methodology Team](https://hearteam.blogspot.com/) in the [Institute for Clinical Trials and Methodology](https://www.ucl.ac.uk/clinical-trials-and-methodology/) at UCL, working primarily with the members of the [Priment Clinical Trials Unit](https://www.ucl.ac.uk/clinical-trials-and-methodology/about/priment). The group focuses on the development of methodological tools for the analysis of the economic components in randomised control trials across a wide range of clinical areas and is formed by a group of interdisciplinary and varied experience. 
 
 {{< alert note >}}
 I am a huge fan of **RStudio** and its tools, such as [Rmarkdown](https://rmarkdown.rstudio.com/) and [blogdown](https://bookdown.org/) packages, which are aimed at the construction of documents that combine text, **R** code and the output from the execution of that code: from html and pdf files to multi-page web sites and e-books (yes this website is written in **Markdown**!). Oh, and I ❤ $\rm \LaTeX$.
