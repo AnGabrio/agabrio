@@ -7,10 +7,37 @@
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
     <language>en-us</language>
     <copyright>`{year}`</copyright>
-    <lastBuildDate>Fri, 07 Aug 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 10 Sep 2020 00:00:00 +0000</lastBuildDate>
     
 	    <atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>job</title>
+      <link>/tags/job/</link>
+      <pubDate>Thu, 10 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/job/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Maastricht university</title>
+      <link>/tags/maastricht-university/</link>
+      <pubDate>Thu, 10 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/maastricht-university/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>moving</title>
+      <link>/tags/moving/</link>
+      <pubDate>Thu, 10 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/moving/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Bayesian statistics</title>
