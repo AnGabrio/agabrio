@@ -1,14 +1,14 @@
 ---
-title: "Why health economists do not care about statistical significance ?"
+title: "Why health economists do not care about statistical significance?"
 author: Andrea Gabrio
-date: '2020-10-23'
+date: '2020-10-10'
 slug: update-october2020
 categories: ["health economics", "statistics"]
 tags: ["decision-making", "cost-effectiveness analysis", "health economics"]
 subtitle: ''
 summary: ''
 authors: ["Andrea Gabrio"]
-lastmod: '2020-10-23T11:54:30+01:00'
+lastmod: '2020-10-10T11:54:30+01:00'
 featured: yes
 draft: no
 image:
@@ -16,8 +16,8 @@ image:
   focal_point: 'Center'
   # Options: Smart, Center, TopLeft, Top, TopRight, Left, Right, BottomLeft, Bottom, BottomRight
   preview_only: no
-projects: []
-bibliography: [bib_oct2020.bib]
+projects: ["Bayesian statistics"]
+bibliography: bib_oct2020.bib
 ---
 
 <link href="index_files/anchor-sections/anchor-sections.css" rel="stylesheet" />
@@ -37,13 +37,19 @@ bibliography: [bib_oct2020.bib]
 <div id="so-how-do-you-make-the-decision-if-there-no-hypothesis-test" class="section level2">
 <h2>So how do you make the decision if there no hypothesis test ?</h2>
 <p>Although the ordinary rules of statistical analyses do not apply, we still need to summarise the uncertainty associated with our results based on the mean INB given that decision-making problems must take into account and quantify the impact that sampling uncertainty has on our conclusions. This is typically achieved through the use of re-sampling methods, such as bootstrapping, (frequentist approach) or Bayesian methods. The two approaches are very different from a theoretical perspective but I will not address this point to save me of few weeks of time. Here, I am most interested in what type of results we will obtain once applied these methods. Well, typically we will look at something like this:</p>
-<p><img src="index_files/figure-html/cepboot-1.png" width="768" /></p>
+<div class="figure">
+<img src="/post/update-october2020/cepboot-1.png" alt="" />
+<p class="caption">Cost-Effectiveness Plane</p>
+</div>
 <p>This is known as <strong>Cost-effectiveness Plane</strong> and is a graphical representation of the re-sampled (frequentist) or posterior (Bayesian) distribution of the mean effectiveness and cost differentials. The red dot at the centre of the distribution is associated with the population estimates of <span class="math inline">\(\Delta_e\)</span> and <span class="math inline">\(\Delta_c\)</span> while all the other black dots are used to quantify the uncertainty around our average estimate. I will no go into details of how these can be derived, but I will limit myself to provide the interpretation to this plot. Given the value of the acceptance threshold <span class="math inline">\(K\)</span> (assumed to depend on the preferences of the decision-makers), we can compare its value with those associated to each of the dots in the plot. Next, we follow the intuitive rule which defines the probability that treatment 2 is cost-effective compared to treatment 1 as:</p>
 <p><span class="math display">\[\frac{\sum_{j=1}^JI[\hat{INB}_j&gt;0]}{J},\]</span></p>
 <p>where <span class="math inline">\(\hat{INB}_j\)</span> is the estimate of the INB based on the <span class="math inline">\(j-\)</span>th re-sampled (frequentist) or posterior (Bayesian) sample, and <span class="math inline">\(I[\hat{INB}_j]\)</span> is an indicator function which takes value 1 if the <span class="math inline">\(j-\)</span>th estimate is positive and 0 otherwise. Essentially, we compute the probability of cost-effectiveness as the proportion of estimates of INB which are &gt; 0 with respect to the total number of estimates avaiable (<span class="math inline">\(J\)</span>). This can be also expressed as</p>
 <p><span class="math display">\[ P(T_{n-1} &lt; \frac{\sqrt{n}Kd_e-d_c}{\sqrt{K^2 s^2_e -2Ks_{ce}+s^2_c}}),\]</span></p>
 <p>where <span class="math inline">\(T_{n-1}\)</span> is the standard t-student distribution with <span class="math inline">\(n-1\)</span> degrees of freedom. Finally, given that uncertainty with respect to the value of <span class="math inline">\(K\)</span> should also be taken into account, we will need to compute this probability for a range of values of <span class="math inline">\(K\)</span>, often based on some guidelines of the decision-makers. A very nice summary of these results is given by the following plot, known as the <strong>Cost-Effectiveness Acceptability Curve</strong>.</p>
-<p><img src="index_files/figure-html/ceacplot-1.png" width="768" /></p>
+<div class="figure">
+<img src="/post/update-october2020/ceacplot-1.png" alt="" />
+<p class="caption">Cost-Effectiveness Acceptability Curve</p>
+</div>
 <p>The graph shows the estimated probability of cost-effectiveness for a range of values of the acceptance threshold. Indeed, by varying <span class="math inline">\(K\)</span> the proportion of estimated <span class="math inline">\(INB\)</span> which are positive will change and will provide a summary of how our cost-effectiveness probability changes as we increase/decrease the “willingness to pay” of the decision-makers.</p>
 <p>If we wanted to test the null hypothesis based on the INB test-statistic (which, as I tried to show before, we should not!), we would find that the equation for the probability shown before corresponds to <span class="math inline">\(1\)</span> - the classical frequentist pvalue for this test. However, this interpretation is only possible when:</p>
 <ol style="list-style-type: decimal">

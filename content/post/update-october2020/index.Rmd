@@ -1,14 +1,14 @@
 ---
-title: "Why health economists do not care about statistical significance ?"
+title: "Why health economists do not care about statistical significance?"
 author: Andrea Gabrio
-date: '2020-10-23'
+date: '2020-10-10'
 slug: update-october2020
 categories: ["health economics", "statistics"]
 tags: ["decision-making", "cost-effectiveness analysis", "health economics"]
 subtitle: ''
 summary: ''
 authors: ["Andrea Gabrio"]
-lastmod: '2020-10-23T11:54:30+01:00'
+lastmod: '2020-10-10T11:54:30+01:00'
 featured: yes
 draft: no
 image:
@@ -16,13 +16,9 @@ image:
   focal_point: 'Center'
   # Options: Smart, Center, TopLeft, Top, TopRight, Left, Right, BottomLeft, Bottom, BottomRight
   preview_only: no
-projects: []
-bibliography: [bib_oct2020.bib]
+projects: ["Bayesian statistics"]
+bibliography: bib_oct2020.bib
 ---
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(collapse = TRUE, prompt = TRUE, background = '#FFFFFF')
-```
 
 Hello dear readers! 
 
@@ -48,28 +44,7 @@ where $d_e$ and $d_c$ are the in-sample estimates of the corresponding populatio
 
 Although the ordinary rules of statistical analyses do not apply, we still need to summarise the uncertainty associated with our results based on the mean INB given that decision-making problems must take into account and quantify the impact that sampling uncertainty has on our conclusions. This is typically achieved through the use of re-sampling methods, such as bootstrapping, (frequentist approach) or Bayesian methods. The two approaches are very different from a theoretical perspective but I will not address this point to save me of few weeks of time. Here, I am most interested in what type of results we will obtain once applied these methods. Well, typically we will look at something like this:
 
-```{r, cepboot, eval=TRUE, echo=FALSE, fig.height=8, fig.width=8}
-#example
-set.seed(3456)
-delta<-mvtnorm::rmvnorm(2000,mean =c(0.01,1000),sigma =matrix(c(0.001925^2,-0.71015*0.001925*324.90,
-      -0.71015*0.001925*324.90,324.90^2),ncol = 2))
-delta_e<-delta[,1]
-delta_c<-delta[,2]
-
-op <- par(mar = c(5,7,4,2) + 0.6)
-par(ps=15)
-plot(delta_e,delta_c, axes = F, xaxs = "i",yaxs="i",
-     main = "", ylab = "", xlab = "", pch="", xlim = c(-0.008,0.024), ylim = c(-500,2500))
-axis(1,at=c(-0.005,0,0.005,0.01,0.015,0.02), labels = c(-0.005,"",0.005,0.01,0.015,0.02),
-     pos = 0,mgp=c(3, .9, 2), line = 0, cex.axis=0.8)
-axis(2,at=c(-500,0,500,1000,1500,2000,2500), labels = c(-500,"",500,1000,1500,2000,2500), 
-     las=2, pos=0, cex.axis=0.8)
-points(delta_e,delta_c,pch=16,cex=0.8)
-text(0.0008,-150,labels = c("0"), cex = 1)
-points(0.01,1000,col="red",pch=16,cex=1.3)
-mtext(text = "Difference in effectiveness",side = 1,line = 1)
-mtext(text = "Difference in costs",side = 2,line = 1)
-```
+![Cost-Effectiveness Plane](/post/update-october2020/cepboot-1.png)
 
 This is known as **Cost-effectiveness Plane** and is a graphical representation of the re-sampled (frequentist) or posterior (Bayesian) distribution of the mean effectiveness and cost differentials. The red dot at the centre of the distribution is associated with the population estimates of $\Delta_e$ and $\Delta_c$ while all the other black dots are used to quantify the uncertainty around our average estimate. I will no go into details of how these can be derived, but I will limit myself to provide the interpretation to this plot. Given the value of the acceptance threshold $K$ (assumed to depend on the preferences of the decision-makers), we can compare its value with those associated to each of the dots in the plot. Next, we follow the intuitive rule which defines the probability that treatment 2 is cost-effective compared to treatment 1 as:
 
@@ -81,27 +56,7 @@ where $\hat{INB}_j$ is the estimate of the INB based on the $j-$th re-sampled (f
 
 where $T_{n-1}$ is the standard t-student distribution with $n-1$ degrees of freedom. Finally, given that uncertainty with respect to the value of $K$ should also be taken into account, we will need to compute this probability for a range of values of $K$, often based on some guidelines of the decision-makers. A very nice summary of these results is given by the following plot, known as the **Cost-Effectiveness Acceptability Curve**.
 
-```{r, ceacplot, eval=TRUE, echo=FALSE, fig.height=8, fig.width=8}
-k<-seq(0,400000,500)
-nb<-k*0.01-1000
-res<-matrix(NA,nrow = length(k), ncol = length(delta_e))
-for(i in 1:length(k)){
-  res[i,]<-delta_e*k[i]-delta_c
-}
-res_ind<-ifelse(res>0,1,0)
-prob<-c()
-for(i in 1:length(k)){
-  prob[i]<-sum(res_ind[i,]==1)/length(delta_e)
-}
-
-op <- par(mar = c(5,7,4,2) + 0.6)
-par(ps=15)
-plot(k,prob, axes = F, xaxs = "i",yaxs="i",
-     main = "", ylab = "probability of cost-effectiveness", xlab = "K (in thousands)", pch="", xlim = c(0,400000), ylim = c(0,1))
-axis(1,at=c(0,100000,200000,300000,400000), labels = c("0","100","200","300","400"), cex.axis=0.8)
-axis(2,at=c(0,0.25,0.5,0.75,1), labels = c(0,0.25,0.5,0.75,1), cex.axis=0.8, las=2)
-lines(k,prob,lwd=1.5)
-```
+![Cost-Effectiveness Acceptability Curve](/post/update-october2020/ceacplot-1.png)
 
 The graph shows the estimated probability of cost-effectiveness for a range of values of the acceptance threshold. Indeed, by varying $K$ the proportion of estimated $INB$ which are positive will change and will provide a summary of how our cost-effectiveness probability changes as we increase/decrease the "willingness to pay" of the decision-makers. 
 
@@ -116,23 +71,3 @@ In all other cases, frequentist hypothesis testing will not have a Bayesian just
 ## Conclusions
 
 Outputs such as the CE plane and the CEAC are what really matter to health economists, whose job is merely to provide decision-makers with this evidence for each treatment comparison under consideration for a given funding decision. Based on the estimated probability of cost-effectiveness and their preferences in terms of budget allocation, decision-makers will prioritise the allocation of resources towards certain treatments, therefore negleting those funds to other treatments. An alternative and always available option could be to retain the funds and do not allocate resources to any treatment under consideration. In this scenario, the implicit element is that decision-makers are willing to postpone the decision to the future, waiting for more evidence to be collected to reduce the risk of making an inefficient/incorrect decision based on the current evidence.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
