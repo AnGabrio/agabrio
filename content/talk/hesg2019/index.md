@@ -1,5 +1,5 @@
 ---
-abstract: Contibuted presentation
+abstract: Contributed presentation
 all_day: false
 authors: []
 date: "2019-07-04T16:00:00Z"
