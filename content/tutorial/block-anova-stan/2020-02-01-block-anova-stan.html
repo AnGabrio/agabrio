@@ -1,0 +1,1045 @@
+---
+title: "Randomised Complete Block Anova (STAN)"
+author: "Andrea Gabrio"
+date: '2020-02-10'
+slug: block-anova-stan
+categories:
+- randomised complete block
+- anova
+- STAN
+- R
+tags:
+- tutorials
+- STAN
+- randomised complete block
+- anova
+subtitle: ''
+summary: ''
+lastmod: '2020-02-10T11:54:30+01:00'
+featured: no
+draft: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+bibliography: citations_stan11.bib
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>This tutorial will focus on the use of Bayesian estimation to fit simple linear regression models. <code>BUGS</code> (Bayesian inference Using <em>Gibbs Sampling</em>) is an algorithm and supporting language (resembling <code>R</code>) dedicated to performing the Gibbs sampling implementation of <em>Markov Chain Monte Carlo</em> (MCMC) method. Dialects of the <code>BUGS</code> language are implemented within three main projects:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>OpenBUGS</strong> - written in component pascal.</p></li>
+<li><p><strong>JAGS</strong> - (Just Another Gibbs Sampler) - written in <code>C++</code>.</p></li>
+<li><p><strong>STAN</strong> - a dedicated Bayesian modelling framework written in <code>C++</code> and implementing <em>Hamiltonian</em> MCMC samplers.</p></li>
+</ol>
+<p>Whilst the above programs can be used stand-alone, they do offer the rich data pre-processing and graphical capabilities of <code>R</code>, and thus, they are best accessed from within <code>R</code> itself. As such there are multiple packages devoted to interfacing with the various software implementations:</p>
+<ul>
+<li><p><em>R2OpenBUGS</em> - interfaces with <code>OpenBUGS</code></p></li>
+<li><p><em>R2jags</em> - interfaces with <code>JAGS</code></p></li>
+<li><p><em>rstan</em> - interfaces with <code>STAN</code></p></li>
+</ul>
+<p>This tutorial will demonstrate how to fit models in <code>STAN</code> (<span class="citation">Gelman, Lee, and Guo (2015)</span>) using the package <code>rstan</code> (<span class="citation">Stan Development Team (2018)</span>) as interface, which also requires to load some other packages.</p>
+<div id="overview" class="section level1">
+<h1>Overview</h1>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>In the previous tutorial (nested ANOVA), we introduced the concept of employing sub-replicates that are nested within the main treatment levels as a means of absorbing some of the unexplained variability that would otherwise arise from designs in which sampling units are selected from amongst highly heterogeneous conditions. Such (nested) designs are useful in circumstances where the levels of the main treatment (such as burnt and un-burnt sites) occur at a much larger temporal or spatial scale than the experimental/sampling units (e.g. vegetation monitoring quadrats). For circumstances in which the main treatments can be applied (or naturally occur) at the same scale as the sampling units (such as whether a stream rock is enclosed by a fish proof fence or not), an alternative design is available. In this design (<strong>randomised complete block design</strong>), each of the levels of the main treatment factor are grouped (blocked) together (in space and/or time) and therefore, whilst the conditions between the groups (referred to as “blocks”) might vary substantially, the conditions under which each of the levels of the treatment are tested within any given block are far more homogeneous.</p>
+<p>If any differences between blocks (due to the heterogeneity) can account for some of the total variability between the sampling units (thereby reducing the amount of variability that the main treatment(s) failed to explain), then the main test of treatment effects will be more powerful/sensitive. As an simple example of a randomised complete block (RCB) design, consider an investigation into the roles of different organism scales (microbial, macro invertebrate and vertebrate) on the breakdown of leaf debris packs within streams. An experiment could consist of four treatment levels - leaf packs protected by fish-proof mesh, leaf packs protected by fine macro invertebrate exclusion mesh, leaf packs protected by dissolving antibacterial tablets, and leaf packs relatively unprotected as controls. As an acknowledgement that there are many other unmeasured factors that could influence leaf pack breakdown (such as flow velocity, light levels, etc) and that these are likely to vary substantially throughout a stream, the treatments are to be arranged into groups or “blocks” (each containing a single control, microbial, macro invertebrate and fish protected leaf pack). Blocks of treatment sets are then secured in locations haphazardly selected throughout a particular reach of stream. Importantly, the arrangement of treatments in each block must be randomized to prevent the introduction of some systematic bias - such as light angle, current direction etc.</p>
+<p>Blocking does however come at a cost. The blocks absorb both unexplained variability as well as degrees of freedom from the residuals. Consequently, if the amount of the total unexplained variation that is absorbed by the blocks is not sufficiently large enough to offset the reduction in degrees of freedom (which may result from either less than expected heterogeneity, or due to the scale at which the blocks are established being inappropriate to explain much of the variation), for a given number of sampling units (leaf packs), the tests of main treatment effects will suffer power reductions. Treatments can also be applied sequentially or repeatedly at the scale of the entire block, such that at any single time, only a single treatment level is being applied (see the lower two sub-figures above). Such designs are called repeated measures. A repeated measures ANOVA is to an single factor ANOVA as a paired t-test is to a independent samples t-test. One example of a repeated measures analysis might be an investigation into the effects of a five different diet drugs (four doses and a placebo) on the food intake of lab rats. Each of the rats (“subjects”) is subject to each of the four drugs (within subject effects) which are administered in a random order. In another example, temporal recovery responses of sharks to bi-catch entanglement stresses might be simulated by analyzing blood samples collected from captive sharks (subjects) every half hour for three hours following a stress inducing restraint. This repeated measures design allows the anticipated variability in stress tolerances between individual sharks to be accounted for in the analysis (so as to permit more powerful test of the main treatments). Furthermore, by performing repeated measures on the same subjects, repeated measures designs reduce the number of subjects required for the investigation. Essentially, this is a randomised complete block design except that the within subject (block) effect (e.g. time since stress exposure) cannot be randomised.</p>
+<p>To suppress contamination effects resulting from the proximity of treatment sampling units within a block, units should be adequately spaced in time and space. For example, the leaf packs should not be so close to one another that the control packs are effected by the antibacterial tablets and there should be sufficient recovery time between subsequent drug administrations. In addition, the order or arrangement of treatments within the blocks must be randomized so as to prevent both confounding as well as computational complications. Whilst this is relatively straight forward for the classic randomized complete block design (such as the leaf packs in streams), it is logically not possible for repeated measures designs. Blocking factors are typically random factors that represent all the possible blocks that could be selected. As such, no individual block can truly be replicated. Randomised complete block and repeated measures designs can therefore also be thought of as un-replicated factorial designs in which there are two or more factors but that the interactions between the blocks and all the within block factors are not replicated.</p>
+</div>
+<div id="linear-models" class="section level2">
+<h2>Linear models</h2>
+<p>The linear models for two and three factor nested design are:</p>
+<p><span class="math display">\[ y_{ij} = \mu + \beta_i + \alpha_j + \epsilon_{ij},\]</span></p>
+<p><span class="math display">\[ y_{ijk} = \mu + \beta_i + \alpha_j + \gamma_k + (\beta\alpha)_{ij} + (\beta\gamma)_{ik} + (\alpha\gamma)_{jk} + (\alpha\beta\gamma)_{ijk} + \epsilon_{ijk}, \;\;\; \text{(Model 1)}\]</span></p>
+<p><span class="math display">\[ y_{ijk} = \mu + \beta_i + \alpha_j + \gamma_k + (\alpha\gamma)_{jk} + \epsilon_{ijk}, \;\;\; \text{(Model 2)},\]</span></p>
+<p>where <span class="math inline">\(\mu\)</span> is the overall mean, <span class="math inline">\(\beta\)</span> is the effect of the Blocking Factor B (<span class="math inline">\(\sum \beta=0\)</span>), <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\gamma\)</span> are the effects of withing block Factor A and Factor C, respectively, and <span class="math inline">\(\epsilon \sim N(0,\sigma^2)\)</span> is the random unexplained or residual component.</p>
+<p>Tests for the effects of blocks as well as effects within blocks assume that there are no interactions between blocks and the within block effects. That is, it is assumed that any effects are of similar nature within each of the blocks. Whilst this assumption may well hold for experiments that are able to consciously set the scale over which the blocking units are arranged, when designs utilize arbitrary or naturally occurring blocking units, the magnitude and even polarity of the main effects are likely to vary substantially between the blocks. The preferred (non-additive or “Model 1”) approach to un-replicated factorial analysis of some bio-statisticians is to include the block by within subject effect interactions (e.g. <span class="math inline">\(\beta\alpha\)</span>). Whilst these interaction effects cannot be formally tested, they can be used as the denominators in F-ratio calculations of their respective main effects tests. Proponents argue that since these blocking interactions cannot be formally tested, there is no sound inferential basis for using these error terms separately. Alternatively, models can be fitted additively (“Model 2”) whereby all the block by within subject effect interactions are pooled into a single residual term (<span class="math inline">\(\epsilon\)</span>). Although the latter approach is simpler, each of the within subject effects tests do assume that there are no interactions involving the blocks and that perhaps even more restrictively, that sphericity holds across the entire design.</p>
+</div>
+<div id="assumptions" class="section level2">
+<h2>Assumptions</h2>
+<p>As with other ANOVA designs, the reliability of hypothesis tests is dependent on the residuals being:</p>
+<ul>
+<li><p>normally distributed. Boxplots using the appropriate scale of replication (reflecting the appropriate residuals/F-ratio denominator should be used to explore normality. Scale transformations are often useful.</p></li>
+<li><p>equally varied. Boxplots and plots of means against variance (using the appropriate scale of replication) should be used to explore the spread of values. Residual plots should reveal no patterns. Scale transformations are often useful.</p></li>
+<li><p>independent of one another. Although the observations within a block may not strictly be independent, provided the treatments are applied or ordered randomly within each block or subject, within block proximity effects on the residuals should be random across all blocks and thus the residuals should still be independent of one another. Nevertheless, it is important that experimental units within blocks are adequately spaced in space and time so as to suppress contamination or carryover effects.</p></li>
+</ul>
+</div>
+</div>
+<div id="simple-rcb" class="section level1">
+<h1>Simple RCB</h1>
+<div id="data-generation" class="section level2">
+<h2>Data generation</h2>
+<p>Imagine we has designed an experiment in which we intend to measure a response (y) to one of treatments (three levels; “a1,” “a2” and “a3”). Unfortunately, the system that we intend to sample is spatially heterogeneous and thus will add a great deal of noise to the data that will make it difficult to detect a signal (impact of treatment). Thus in an attempt to constrain this variability you decide to apply a design (RCB) in which each of the treatments within each of 35 blocks dispersed randomly throughout the landscape. As this section is mainly about the generation of artificial data (and not specifically about what to do with the data), understanding the actual details are optional and can be safely skipped.</p>
+<pre class="r"><code>&gt; library(plyr)
+&gt; set.seed(123)
+&gt; nTreat &lt;- 3
+&gt; nBlock &lt;- 35
+&gt; sigma &lt;- 5
+&gt; sigma.block &lt;- 12
+&gt; n &lt;- nBlock*nTreat
+&gt; Block &lt;- gl(nBlock, k=1)
+&gt; A &lt;- gl(nTreat,k=1)
+&gt; dt &lt;- expand.grid(A=A,Block=Block)
+&gt; #Xmat &lt;- model.matrix(~Block + A + Block:A, data=dt)
+&gt; Xmat &lt;- model.matrix(~-1+Block + A, data=dt)
+&gt; block.effects &lt;- rnorm(n = nBlock, mean = 40, sd = sigma.block)
+&gt; A.effects &lt;- c(30,40)
+&gt; all.effects &lt;- c(block.effects,A.effects)
+&gt; lin.pred &lt;- Xmat %*% all.effects
+&gt; 
+&gt; # OR
+&gt; Xmat &lt;- cbind(model.matrix(~-1+Block,data=dt),model.matrix(~-1+A,data=dt))
+&gt; ## Sum to zero block effects
+&gt; block.effects &lt;- rnorm(n = nBlock, mean = 0, sd = sigma.block)
+&gt; A.effects &lt;- c(40,70,80)
+&gt; all.effects &lt;- c(block.effects,A.effects)
+&gt; lin.pred &lt;- Xmat %*% all.effects
+&gt; 
+&gt; 
+&gt; 
+&gt; ## the quadrat observations (within sites) are drawn from
+&gt; ## normal distributions with means according to the site means
+&gt; ## and standard deviations of 5
+&gt; y &lt;- rnorm(n,lin.pred,sigma)
+&gt; data.rcb &lt;- data.frame(y=y, expand.grid(A=A, Block=Block))
+&gt; head(data.rcb)  #print out the first six rows of the data set
+         y A Block
+1 45.80853 1     1
+2 66.71784 2     1
+3 93.29238 3     1
+4 43.10101 1     2
+5 73.20697 2     2
+6 91.77487 3     2</code></pre>
+</div>
+<div id="exploratory-data-analysis" class="section level2">
+<h2>Exploratory data analysis</h2>
+<p><strong>Normality and Homogeneity of variance</strong></p>
+<pre class="r"><code>&gt; boxplot(y~A, data.rcb)</code></pre>
+<p><img src="/tutorial/block-anova-stan/2020-02-01-block-anova-stan_files/figure-html/exp1_data-1.png" width="672" /></p>
+<p><strong>Conclusions</strong>:</p>
+<ul>
+<li><p>there is no evidence that the response variable is consistently non-normal across all populations - each boxplot is approximately symmetrical.</p></li>
+<li><p>there is no evidence that variance (as estimated by the height of the boxplots) differs between the five populations. . More importantly, there is no evidence of a relationship between mean and variance - the height of boxplots does not increase with increasing position along the <span class="math inline">\(y\)</span>-axis. Hence it there is no evidence of non-homogeneity</p></li>
+</ul>
+<p>Obvious violations could be addressed either by:</p>
+<ul>
+<li>transform the scale of the response variables (to address normality, etc). Note transformations should be applied to the entire response variable (not just those populations that are skewed).</li>
+</ul>
+<p><strong>Block by within-Block interaction</strong></p>
+<pre class="r"><code>&gt; library(car)
+&gt; with(data.rcb, interaction.plot(A,Block,y))
+&gt; 
+&gt; #OR with ggplot
+&gt; library(ggplot2)</code></pre>
+<p><img src="/tutorial/block-anova-stan/2020-02-01-block-anova-stan_files/figure-html/exp2_data-1.png" width="672" /></p>
+<pre class="r"><code>&gt; ggplot(data.rcb, aes(y=y, x=A, group=Block,color=Block)) + geom_line() +
++   guides(color=guide_legend(ncol=3))</code></pre>
+<p><img src="/tutorial/block-anova-stan/2020-02-01-block-anova-stan_files/figure-html/exp2_data-2.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; residualPlots(lm(y~Block+A, data.rcb))</code></pre>
+<p><img src="/tutorial/block-anova-stan/2020-02-01-block-anova-stan_files/figure-html/exp2_data-3.png" width="672" /></p>
+<pre><code>           Test stat Pr(&gt;|Test stat|)
+Block                                
+A                                    
+Tukey test   -1.4163           0.1567
+&gt; 
+&gt; # the Tukey&#39;s non-additivity test by itself can be obtained via an internal function
+&gt; # within the car package
+&gt; car:::tukeyNonaddTest(lm(y~Block+A, data.rcb))
+      Test     Pvalue 
+-1.4163343  0.1566776 
+&gt; 
+&gt; # alternatively, there is also a Tukey&#39;s non-additivity test within the
+&gt; # asbio package
+&gt; library(asbio)
+&gt; with(data.rcb,tukey.add.test(y,A,Block))
+
+Tukey&#39;s one df test for additivity 
+F = 2.0060029   Denom df = 67    p-value = 0.1613102</code></pre>
+<p><strong>Conclusions</strong>:</p>
+<ul>
+<li>there is no visual or inferential evidence of any major interactions between Block and the within-Block effect (A). Any trends appear to be reasonably consistent between Blocks.</li>
+</ul>
+</div>
+<div id="model-fitting" class="section level2">
+<h2>Model fitting</h2>
+<p><strong>Full parameterisation</strong></p>
+<p><span class="math display">\[ y_{ijk} \sim N(\mu_{ij}, \sigma^2), \;\;\; \mu_{ij}=\beta_0 + \beta_i + \gamma_{j(i)}, \]</span></p>
+<p>where <span class="math inline">\(\gamma_{ij)} \sim N(0, \sigma^2_B)\)</span>, <span class="math inline">\(\beta_0, \beta_i \sim N(0, 1000000)\)</span>, and <span class="math inline">\(\sigma^2, \sigma^2_B \sim \text{Cauchy(0, 25)}\)</span>. The <em>full parameterisation</em>, shows the effects parameterisation in which there is an intercept (<span class="math inline">\(\beta_0\)</span>) and two treatment effects (<span class="math inline">\(\beta_i\)</span>, where <span class="math inline">\(i\)</span> is <span class="math inline">\(1,2\)</span>).</p>
+<p><strong>Matrix parameterisation</strong></p>
+<p><span class="math display">\[ y_{ijk} \sim N(\mu_{ij}, \sigma^2), \;\;\; \mu_{ij}=\boldsymbol \beta \boldsymbol X + \gamma_{j(i)}, \]</span></p>
+<p>where <span class="math inline">\(\gamma_{ij} \sim N(0, \sigma^2_B)\)</span>, <span class="math inline">\(\boldsymbol \beta \sim MVN(0, 1000000)\)</span>, and <span class="math inline">\(\sigma^2, \sigma^2_B \sim \text{Cauchy(0, 25)}\)</span>. The full parameterisation, shows the effects parameterisation in which there is an intercept (<span class="math inline">\(\alpha_0\)</span>) and two treatment effects (<span class="math inline">\(\beta_i\)</span>, where <span class="math inline">\(i\)</span> is <span class="math inline">\(1,2\)</span>). The <em>matrix parameterisation</em> is a compressed notation, In this parameterisation, there are three alpha parameters (one representing the mean of treatment a1, and the other two representing the treatment effects (differences between a2 and a1 and a3 and a1). In generating priors for each of these three alpha parameters, we could loop through each and define a non-informative normal prior to each (as in the Full parameterisation version). However, it turns out that it is more efficient (in terms of mixing and thus the number of necessary iterations) to define the priors from a multivariate normal distribution. This has as many means as there are parameters to estimate (<span class="math inline">\(3\)</span>) and a <span class="math inline">\(3\times3\)</span> matrix of zeros and <span class="math inline">\(100\)</span> in the diagonals.</p>
+<p><span class="math display">\[ \boldsymbol \mu =
+  \begin{bmatrix} 0  \\ 0  \\ 0 \end{bmatrix}, \;\;\; \sigma^2 \sim   
+  \begin{bmatrix}
+   1000000 &amp; 0 &amp; 0 \\
+   0 &amp; 1000000 &amp; 0 \\
+   0 &amp; 0 &amp; 1000000
+   \end{bmatrix}. \]</span></p>
+<p><strong>Hierarchical parameterisation</strong></p>
+<p><span class="math display">\[ y_{ijk} \sim N(\mu_{ij}, \sigma^2), \;\;\; \mu_{ij}= \beta_0 + \beta_i + \gamma_{j(i)}, \]</span></p>
+<p>where <span class="math inline">\(\gamma_{ij} \sim N(0, \sigma^2_B)\)</span>, <span class="math inline">\(\beta_0, \beta_i \sim N(0, 1000000)\)</span>, and <span class="math inline">\(\sigma^2, \sigma^2_B \sim \text{Cauchy(0, 25)}\)</span>.</p>
+<p>Rather than assume a specific variance-covariance structure, just like <code>lme</code> we can incorporate an appropriate structure to account for different dependency/correlation structures in our data. In RCB designs, it is prudent to capture the residuals to allow checks that there are no outstanding dependency issues following model fitting.</p>
+</div>
+<div id="full-means-parameterisation" class="section level2">
+<h2>Full means parameterisation</h2>
+<pre class="r"><code>&gt; rstanString=&quot;
++ data{
++    int n;
++    int nA;
++    int nB;
++    vector [n] y;
++    int A[n];
++    int B[n];
++ }
++ 
++ parameters{
++   real alpha[nA];
++   real&lt;lower=0&gt; sigma;
++   vector [nB] beta;
++   real&lt;lower=0&gt; sigma_B;
++ }
++  
++ model{
++     real mu[n];
++ 
++     // Priors
++     alpha ~ normal( 0 , 100 );
++     beta ~ normal( 0 , sigma_B );
++     sigma_B ~ cauchy( 0 , 25 );
++     sigma ~ cauchy( 0 , 25 );
++     
++     for ( i in 1:n ) {
++         mu[i] = alpha[A[i]] + beta[B[i]];
++     }
++     y ~ normal( mu , sigma );
++ }
++ 
++ &quot;
+&gt; 
+&gt; ## write the model to a text file
+&gt; writeLines(rstanString, con = &quot;fullModel.stan&quot;)</code></pre>
+<p>Arrange the data as a list (as required by <code>STAN</code>). As input, <code>STAN</code> will need to be supplied with: the response variable, the predictor matrix, the number of predictors, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.</p>
+<pre class="r"><code>&gt; data.rcb.list &lt;- with(data.rcb, list(y=y, A=as.numeric(A), B=as.numeric(Block),
++   n=nrow(data.rcb), nB=length(levels(Block)),nA=length(levels(A))))</code></pre>
+<p>Define the nodes (parameters and derivatives) to monitor and the chain parameters.</p>
+<pre class="r"><code>&gt; params &lt;- c(&quot;alpha&quot;,&quot;sigma&quot;,&quot;sigma_B&quot;)
+&gt; burnInSteps = 3000
+&gt; nChains = 2
+&gt; numSavedSteps = 3000
+&gt; thinSteps = 1
+&gt; nIter = burnInSteps+ceiling((numSavedSteps * thinSteps)/nChains)</code></pre>
+<p>Start the <code>STAN</code> model (check the model, load data into the model, specify the number of chains and compile the model). Load the <code>rstan</code> package.</p>
+<pre class="r"><code>&gt; library(rstan)</code></pre>
+<p>Now run the <code>STAN</code> code via the <code>rstan</code> interface.</p>
+<pre class="r"><code>&gt; data.rcb.rstan.c &lt;- stan(data = data.rcb.list, file = &quot;fullModel.stan&quot;, 
++                          chains = nChains, pars = params, iter = nIter, 
++                          warmup = burnInSteps, thin = thinSteps)
+
+SAMPLING FOR MODEL &#39;fullModel&#39; NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 0 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 4500 [  0%]  (Warmup)
+Chain 1: Iteration:  450 / 4500 [ 10%]  (Warmup)
+Chain 1: Iteration:  900 / 4500 [ 20%]  (Warmup)
+Chain 1: Iteration: 1350 / 4500 [ 30%]  (Warmup)
+Chain 1: Iteration: 1800 / 4500 [ 40%]  (Warmup)
+Chain 1: Iteration: 2250 / 4500 [ 50%]  (Warmup)
+Chain 1: Iteration: 2700 / 4500 [ 60%]  (Warmup)
+Chain 1: Iteration: 3001 / 4500 [ 66%]  (Sampling)
+Chain 1: Iteration: 3450 / 4500 [ 76%]  (Sampling)
+Chain 1: Iteration: 3900 / 4500 [ 86%]  (Sampling)
+Chain 1: Iteration: 4350 / 4500 [ 96%]  (Sampling)
+Chain 1: Iteration: 4500 / 4500 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.456 seconds (Warm-up)
+Chain 1:                0.219 seconds (Sampling)
+Chain 1:                0.675 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL &#39;fullModel&#39; NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 0 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 4500 [  0%]  (Warmup)
+Chain 2: Iteration:  450 / 4500 [ 10%]  (Warmup)
+Chain 2: Iteration:  900 / 4500 [ 20%]  (Warmup)
+Chain 2: Iteration: 1350 / 4500 [ 30%]  (Warmup)
+Chain 2: Iteration: 1800 / 4500 [ 40%]  (Warmup)
+Chain 2: Iteration: 2250 / 4500 [ 50%]  (Warmup)
+Chain 2: Iteration: 2700 / 4500 [ 60%]  (Warmup)
+Chain 2: Iteration: 3001 / 4500 [ 66%]  (Sampling)
+Chain 2: Iteration: 3450 / 4500 [ 76%]  (Sampling)
+Chain 2: Iteration: 3900 / 4500 [ 86%]  (Sampling)
+Chain 2: Iteration: 4350 / 4500 [ 96%]  (Sampling)
+Chain 2: Iteration: 4500 / 4500 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.488 seconds (Warm-up)
+Chain 2:                0.217 seconds (Sampling)
+Chain 2:                0.705 seconds (Total)
+Chain 2: 
+&gt; 
+&gt; print(data.rcb.rstan.c, par = c(&quot;alpha&quot;, &quot;sigma&quot;, &quot;sigma_B&quot;))
+Inference for Stan model: fullModel.
+2 chains, each with iter=4500; warmup=3000; thin=1; 
+post-warmup draws per chain=1500, total post-warmup draws=3000.
+
+          mean se_mean   sd  2.5%   25%   50%   75% 97.5% n_eff Rhat
+alpha[1] 41.79    0.10 2.18 37.42 40.43 41.82 43.12 46.10   482    1
+alpha[2] 69.70    0.10 2.18 65.25 68.32 69.76 71.12 73.84   467    1
+alpha[3] 82.07    0.10 2.17 77.63 80.68 82.08 83.49 86.27   453    1
+sigma     5.06    0.01 0.44  4.30  4.76  5.03  5.33  5.99  2454    1
+sigma_B  11.75    0.02 1.55  9.11 10.69 11.64 12.68 15.11  4039    1
+
+Samples were drawn using NUTS(diag_e) at Fri Dec 11 09:21:40 2020.
+For each parameter, n_eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor on split chains (at 
+convergence, Rhat=1).
+&gt; 
+&gt; data.rcb.rstan.c.df &lt;-as.data.frame(extract(data.rcb.rstan.c))
+&gt; head(data.rcb.rstan.c.df)
+   alpha.1  alpha.2  alpha.3    sigma  sigma_B      lp__
+1 42.57143 72.31562 82.21306 4.443121 14.22092 -318.3567
+2 44.04634 72.80428 82.79750 5.358441 12.36527 -332.7155
+3 37.28553 65.33775 76.80241 5.776490 12.95970 -327.7117
+4 40.86545 67.75901 81.25944 5.250018 11.54635 -320.7851
+5 42.24118 69.79130 81.13336 5.684114 11.53545 -323.1236
+6 46.50718 72.92837 86.52039 5.017633 11.35059 -324.5646
+&gt; 
+&gt; data.rcb.mcmc.c&lt;-rstan:::as.mcmc.list.stanfit(data.rcb.rstan.c)
+&gt; 
+&gt; library(coda)
+&gt; MCMCsum &lt;- function(x) {
++    data.frame(Median=median(x, na.rm=TRUE), t(quantile(x,na.rm=TRUE)),
++               HPDinterval(as.mcmc(x)),HPDinterval(as.mcmc(x),p=0.5))
++ }
+&gt; 
+&gt; plyr:::adply(as.matrix(data.rcb.rstan.c.df),2,MCMCsum)
+       X1      Median         X0.        X25.        X50.        X75.
+1 alpha.1   41.820028   33.575693   40.428322   41.820028   43.116642
+2 alpha.2   69.755101   61.468709   68.319038   69.755101   71.122032
+3 alpha.3   82.079951   71.625677   80.680363   82.079951   83.486135
+4   sigma    5.026758    3.750734    4.758087    5.026758    5.333697
+5 sigma_B   11.638484    7.483196   10.685479   11.638484   12.682813
+6    lp__ -321.508304 -345.176879 -325.030733 -321.508304 -318.271715
+        X100.       lower       upper     lower.1     upper.1
+1   48.718666   37.373165   46.031150   40.451754   43.127117
+2   76.610258   65.314489   73.863166   68.275779   71.073703
+3   89.330603   77.963087   86.521250   80.526700   83.288573
+4    7.005605    4.282499    5.965741    4.665417    5.228678
+5   19.655896    8.767018   14.666714   10.665432   12.653049
+6 -307.513824 -333.407865 -312.343598 -324.913583 -318.188585</code></pre>
+</div>
+<div id="full-effect-parameterisation" class="section level2">
+<h2>Full effect parameterisation</h2>
+<pre class="r"><code>&gt; rstan2String=&quot;
++ data{
++    int n;
++    int nB;
++    vector [n] y;
++    int A2[n];
++    int A3[n];
++    int B[n];
++ }
++ 
++ parameters{
++   real alpha0;
++   real alpha2;
++   real alpha3;
++   real&lt;lower=0&gt; sigma;
++   vector [nB] beta;
++   real&lt;lower=0&gt; sigma_B;
++ }
++  
++ model{
++     real mu[n];
++ 
++     // Priors
++     alpha0 ~ normal( 0 , 1000 );
++     alpha2 ~ normal( 0 , 1000 );
++     alpha3 ~ normal( 0 , 1000 );
++     beta ~ normal( 0 , sigma_B );
++     sigma_B ~ cauchy( 0 , 25 );
++     sigma ~ cauchy( 0 , 25 );
++     
++     for ( i in 1:n ) {
++         mu[i] = alpha0 + alpha2*A2[i] + 
++                alpha3*A3[i] + beta[B[i]];
++     }
++     y ~ normal( mu , sigma );
++ }
++ 
++ &quot;
+&gt; 
+&gt; ## write the model to a text file
+&gt; writeLines(rstan2String, con = &quot;full2Model.stan&quot;)</code></pre>
+<p>Arrange the data as a list (as required by <code>STAN</code>). As input, <code>STAN</code> will need to be supplied with: the response variable, the predictor matrix, the number of predictors, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.</p>
+<pre class="r"><code>&gt; A2 &lt;- ifelse(data.rcb$A==&#39;2&#39;,1,0)
+&gt; A3 &lt;- ifelse(data.rcb$A==&#39;3&#39;,1,0)
+&gt; data.rcb.list &lt;- with(data.rcb, list(y=y, A2=A2, A3=A3, B=as.numeric(Block),
++    n=nrow(data.rcb), nB=length(levels(Block))))</code></pre>
+<p>Define the nodes (parameters and derivatives) to monitor and the chain parameters.</p>
+<pre class="r"><code>&gt; params &lt;- c(&quot;alpha0&quot;,&quot;alpha2&quot;,&quot;alpha3&quot;,&quot;sigma&quot;,&quot;sigma_B&quot;)
+&gt; burnInSteps = 3000
+&gt; nChains = 2
+&gt; numSavedSteps = 3000
+&gt; thinSteps = 1
+&gt; nIter = burnInSteps+ceiling((numSavedSteps * thinSteps)/nChains)</code></pre>
+<p>Now run the <code>STAN</code> code via the <code>rstan</code> interface.</p>
+<pre class="r"><code>&gt; data.rcb.rstan.f &lt;- stan(data = data.rcb.list, file = &quot;full2Model.stan&quot;, 
++                          chains = nChains, pars = params, iter = nIter, 
++                          warmup = burnInSteps, thin = thinSteps)
+
+SAMPLING FOR MODEL &#39;full2Model&#39; NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 0 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 4500 [  0%]  (Warmup)
+Chain 1: Iteration:  450 / 4500 [ 10%]  (Warmup)
+Chain 1: Iteration:  900 / 4500 [ 20%]  (Warmup)
+Chain 1: Iteration: 1350 / 4500 [ 30%]  (Warmup)
+Chain 1: Iteration: 1800 / 4500 [ 40%]  (Warmup)
+Chain 1: Iteration: 2250 / 4500 [ 50%]  (Warmup)
+Chain 1: Iteration: 2700 / 4500 [ 60%]  (Warmup)
+Chain 1: Iteration: 3001 / 4500 [ 66%]  (Sampling)
+Chain 1: Iteration: 3450 / 4500 [ 76%]  (Sampling)
+Chain 1: Iteration: 3900 / 4500 [ 86%]  (Sampling)
+Chain 1: Iteration: 4350 / 4500 [ 96%]  (Sampling)
+Chain 1: Iteration: 4500 / 4500 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 1.442 seconds (Warm-up)
+Chain 1:                0.538 seconds (Sampling)
+Chain 1:                1.98 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL &#39;full2Model&#39; NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 0 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 4500 [  0%]  (Warmup)
+Chain 2: Iteration:  450 / 4500 [ 10%]  (Warmup)
+Chain 2: Iteration:  900 / 4500 [ 20%]  (Warmup)
+Chain 2: Iteration: 1350 / 4500 [ 30%]  (Warmup)
+Chain 2: Iteration: 1800 / 4500 [ 40%]  (Warmup)
+Chain 2: Iteration: 2250 / 4500 [ 50%]  (Warmup)
+Chain 2: Iteration: 2700 / 4500 [ 60%]  (Warmup)
+Chain 2: Iteration: 3001 / 4500 [ 66%]  (Sampling)
+Chain 2: Iteration: 3450 / 4500 [ 76%]  (Sampling)
+Chain 2: Iteration: 3900 / 4500 [ 86%]  (Sampling)
+Chain 2: Iteration: 4350 / 4500 [ 96%]  (Sampling)
+Chain 2: Iteration: 4500 / 4500 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 1.477 seconds (Warm-up)
+Chain 2:                0.534 seconds (Sampling)
+Chain 2:                2.011 seconds (Total)
+Chain 2: 
+&gt; 
+&gt; print(data.rcb.rstan.f, par = c(&quot;alpha0&quot;, &quot;alpha2&quot;, &quot;alpha3&quot;, &quot;sigma&quot;, &quot;sigma_B&quot;))
+Inference for Stan model: full2Model.
+2 chains, each with iter=4500; warmup=3000; thin=1; 
+post-warmup draws per chain=1500, total post-warmup draws=3000.
+
+         mean se_mean   sd  2.5%   25%   50%   75% 97.5% n_eff Rhat
+alpha0  41.73    0.12 2.06 37.70 40.31 41.73 43.14 45.77   279 1.01
+alpha2  27.98    0.03 1.26 25.52 27.10 28.00 28.83 30.39  2337 1.00
+alpha3  40.31    0.03 1.28 37.87 39.43 40.27 41.20 42.86  2342 1.00
+sigma    5.08    0.01 0.45  4.30  4.77  5.05  5.36  6.09  1996 1.00
+sigma_B 11.71    0.03 1.54  9.16 10.63 11.54 12.59 15.28  2753 1.00
+
+Samples were drawn using NUTS(diag_e) at Fri Dec 11 09:22:12 2020.
+For each parameter, n_eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor on split chains (at 
+convergence, Rhat=1).
+&gt; 
+&gt; data.rcb.rstan.f.df &lt;-as.data.frame(extract(data.rcb.rstan.f))
+&gt; head(data.rcb.rstan.f.df)
+    alpha0   alpha2   alpha3    sigma  sigma_B      lp__
+1 39.22545 28.90767 41.24224 5.307120 10.07145 -319.8347
+2 43.93555 28.00887 41.30383 5.131755 13.61273 -320.8549
+3 42.54761 28.77128 38.96852 4.831529 10.79286 -321.2491
+4 40.29869 27.77761 41.45388 5.268648 12.51140 -321.3806
+5 39.80535 27.62258 40.84395 5.610155 11.92872 -322.8471
+6 44.79405 27.48598 40.33440 4.957009 10.57214 -315.7301
+&gt; 
+&gt; data.rcb.mcmc.f&lt;-rstan:::as.mcmc.list.stanfit(data.rcb.rstan.f)
+&gt; 
+&gt; plyr:::adply(as.matrix(data.rcb.rstan.f.df),2,MCMCsum)
+       X1      Median         X0.        X25.        X50.        X75.
+1  alpha0   41.725509   34.892539   40.308333   41.725509   43.140187
+2  alpha2   27.996917   23.328561   27.104569   27.996917   28.825079
+3  alpha3   40.270625   35.879999   39.434168   40.270625   41.199753
+4   sigma    5.047603    3.962453    4.770682    5.047603    5.358117
+5 sigma_B   11.541455    7.826250   10.627376   11.541455   12.590550
+6    lp__ -321.225937 -341.591496 -324.985012 -321.225937 -317.730035
+       X100.      lower       upper     lower.1    upper.1
+1   48.60702   37.86766   45.820530   40.519110   43.34783
+2   32.25281   25.67172   30.496226   27.195515   28.88708
+3   44.93039   38.04721   42.996236   39.526151   41.27658
+4    7.09570    4.20633    5.958481    4.713769    5.29742
+5   19.35289    9.00899   14.880664   10.415028   12.30244
+6 -306.67832 -331.55239 -310.780917 -323.954151 -316.83537</code></pre>
+</div>
+<div id="matrix-parameterisation" class="section level2">
+<h2>Matrix parameterisation</h2>
+<pre class="r"><code>&gt; rstanString2=&quot;
++ data{
++    int n;
++    int nX;
++    int nB;
++    vector [n] y;
++    matrix [n,nX] X;
++    int B[n];
++ }
++ 
++ parameters{
++   vector [nX] beta;
++   real&lt;lower=0&gt; sigma;
++   vector [nB] gamma;
++   real&lt;lower=0&gt; sigma_B;
++ }
++ transformed parameters {
++   vector[n] mu;    
++   
++   mu = X*beta;
++   for (i in 1:n) {
++     mu[i] = mu[i] + gamma[B[i]];
++   }
++ } 
++ model{
++     // Priors
++     beta ~ normal( 0 , 100 );
++     gamma ~ normal( 0 , sigma_B );
++     sigma_B ~ cauchy( 0 , 25 );
++     sigma ~ cauchy( 0 , 25 );
++     
++     y ~ normal( mu , sigma );
++ }
++ 
++ &quot;
+&gt; 
+&gt; ## write the model to a text file
+&gt; writeLines(rstanString2, con = &quot;matrixModel.stan&quot;)</code></pre>
+<p>Arrange the data as a list (as required by <code>STAN</code>). As input, <code>STAN</code> will need to be supplied with: the response variable, the predictor matrix, the number of predictors, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.</p>
+<pre class="r"><code>&gt; Xmat &lt;- model.matrix(~A, data=data.rcb)
+&gt; data.rcb.list &lt;- with(data.rcb, list(y=y, X=Xmat, nX=ncol(Xmat),
++   B=as.numeric(Block),
++   n=nrow(data.rcb), nB=length(levels(Block))))</code></pre>
+<p>Define the nodes (parameters and derivatives) to monitor and the chain parameters.</p>
+<pre class="r"><code>&gt; params &lt;- c(&quot;beta&quot;,&quot;sigma&quot;,&quot;sigma_B&quot;)
+&gt; burnInSteps = 3000
+&gt; nChains = 2
+&gt; numSavedSteps = 3000
+&gt; thinSteps = 1
+&gt; nIter = burnInSteps+ceiling((numSavedSteps * thinSteps)/nChains)</code></pre>
+<p>Now run the <code>STAN</code> code via the <code>rstan</code> interface.</p>
+<pre class="r"><code>&gt; data.rcb.rstan.d &lt;- stan(data = data.rcb.list, file = &quot;matrixModel.stan&quot;, 
++                          chains = nChains, pars = params, iter = nIter, 
++                          warmup = burnInSteps, thin = thinSteps)
+
+SAMPLING FOR MODEL &#39;matrixModel&#39; NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 0 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 4500 [  0%]  (Warmup)
+Chain 1: Iteration:  450 / 4500 [ 10%]  (Warmup)
+Chain 1: Iteration:  900 / 4500 [ 20%]  (Warmup)
+Chain 1: Iteration: 1350 / 4500 [ 30%]  (Warmup)
+Chain 1: Iteration: 1800 / 4500 [ 40%]  (Warmup)
+Chain 1: Iteration: 2250 / 4500 [ 50%]  (Warmup)
+Chain 1: Iteration: 2700 / 4500 [ 60%]  (Warmup)
+Chain 1: Iteration: 3001 / 4500 [ 66%]  (Sampling)
+Chain 1: Iteration: 3450 / 4500 [ 76%]  (Sampling)
+Chain 1: Iteration: 3900 / 4500 [ 86%]  (Sampling)
+Chain 1: Iteration: 4350 / 4500 [ 96%]  (Sampling)
+Chain 1: Iteration: 4500 / 4500 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.939 seconds (Warm-up)
+Chain 1:                0.368 seconds (Sampling)
+Chain 1:                1.307 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL &#39;matrixModel&#39; NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 0 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 4500 [  0%]  (Warmup)
+Chain 2: Iteration:  450 / 4500 [ 10%]  (Warmup)
+Chain 2: Iteration:  900 / 4500 [ 20%]  (Warmup)
+Chain 2: Iteration: 1350 / 4500 [ 30%]  (Warmup)
+Chain 2: Iteration: 1800 / 4500 [ 40%]  (Warmup)
+Chain 2: Iteration: 2250 / 4500 [ 50%]  (Warmup)
+Chain 2: Iteration: 2700 / 4500 [ 60%]  (Warmup)
+Chain 2: Iteration: 3001 / 4500 [ 66%]  (Sampling)
+Chain 2: Iteration: 3450 / 4500 [ 76%]  (Sampling)
+Chain 2: Iteration: 3900 / 4500 [ 86%]  (Sampling)
+Chain 2: Iteration: 4350 / 4500 [ 96%]  (Sampling)
+Chain 2: Iteration: 4500 / 4500 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.986 seconds (Warm-up)
+Chain 2:                0.353 seconds (Sampling)
+Chain 2:                1.339 seconds (Total)
+Chain 2: 
+&gt; 
+&gt; print(data.rcb.rstan.d, par = c(&quot;beta&quot;, &quot;sigma&quot;, &quot;sigma_B&quot;))
+Inference for Stan model: matrixModel.
+2 chains, each with iter=4500; warmup=3000; thin=1; 
+post-warmup draws per chain=1500, total post-warmup draws=3000.
+
+         mean se_mean   sd  2.5%   25%   50%   75% 97.5% n_eff Rhat
+beta[1] 41.74    0.13 2.14 37.61 40.30 41.74 43.13 45.96   283    1
+beta[2] 27.96    0.02 1.19 25.60 27.18 27.96 28.76 30.33  2981    1
+beta[3] 40.29    0.02 1.19 37.99 39.47 40.29 41.08 42.66  2664    1
+sigma    5.06    0.01 0.45  4.28  4.74  5.03  5.34  6.01  1923    1
+sigma_B 11.71    0.03 1.56  9.17 10.58 11.55 12.65 15.06  2405    1
+
+Samples were drawn using NUTS(diag_e) at Fri Dec 11 09:22:45 2020.
+For each parameter, n_eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor on split chains (at 
+convergence, Rhat=1).
+&gt; 
+&gt; data.rcb.rstan.d.df &lt;-as.data.frame(extract(data.rcb.rstan.d))
+&gt; head(data.rcb.rstan.d.df)
+    beta.1   beta.2   beta.3    sigma  sigma_B      lp__
+1 41.89677 27.16321 40.47042 5.245901 16.83721 -321.1680
+2 40.45193 28.26549 39.52228 4.848226 11.45847 -319.1260
+3 41.31717 27.69851 40.54105 5.191861 10.36840 -310.0800
+4 42.38571 28.61291 39.06232 5.708599 14.45468 -332.7570
+5 43.77131 27.65950 41.95679 5.061046 13.05687 -315.3818
+6 40.34171 27.42241 41.72770 5.093326 10.22403 -320.9606
+&gt; 
+&gt; data.rcb.mcmc.d&lt;-rstan:::as.mcmc.list.stanfit(data.rcb.rstan.d)
+&gt; 
+&gt; plyr:::adply(as.matrix(data.rcb.rstan.d.df),2,MCMCsum)
+       X1      Median         X0.        X25.        X50.       X75.
+1  beta.1   41.736756   33.482760   40.302747   41.736756   43.13230
+2  beta.2   27.964371   23.330623   27.178174   27.964371   28.75517
+3  beta.3   40.287410   35.920567   39.468235   40.287410   41.08209
+4   sigma    5.029576    3.801037    4.740091    5.029576    5.33871
+5 sigma_B   11.550917    7.321285   10.584764   11.550917   12.64664
+6    lp__ -321.010597 -344.389988 -324.976499 -321.010597 -317.79906
+        X100.       lower       upper     lower.1     upper.1
+1   48.291349   37.436094   45.719579   40.182154   42.995630
+2   32.305073   25.565749   30.256798   27.138701   28.682175
+3   44.616108   37.952774   42.596752   39.454405   41.049342
+4    7.270289    4.224055    5.913362    4.711782    5.301598
+5   19.699834    9.076929   14.849617   10.284478   12.264297
+6 -306.943361 -332.094979 -311.576717 -323.851762 -316.850881</code></pre>
+</div>
+</div>
+<div id="rcb-repeated-measures---continuous-within" class="section level1">
+<h1>RCB (repeated measures) - continuous within</h1>
+<div id="data-generation-1" class="section level2">
+<h2>Data generation</h2>
+<p>Imagine now that we has designed an experiment to investigate the effects of a continuous predictor (<span class="math inline">\(x\)</span>, for example time) on a response (<span class="math inline">\(y\)</span>). Again, the system that we intend to sample is spatially heterogeneous and thus will add a great deal of noise to the data that will make it difficult to detect a signal (impact of treatment). Thus in an attempt to constrain this variability, we again decide to apply a design (RCB) in which each of the levels of <span class="math inline">\(X\)</span> (such as time) treatments within each of <span class="math inline">\(35\)</span> blocks dispersed randomly throughout the landscape. As this section is mainly about the generation of artificial data (and not specifically about what to do with the data), understanding the actual details are optional and can be safely skipped.</p>
+<pre class="r"><code>&gt; set.seed(123)
+&gt; slope &lt;- 30
+&gt; intercept &lt;- 200
+&gt; nBlock &lt;- 35
+&gt; nTime &lt;- 10
+&gt; sigma &lt;- 50
+&gt; sigma.block &lt;- 30
+&gt; n &lt;- nBlock*nTime
+&gt; Block &lt;- gl(nBlock, k=1)
+&gt; Time &lt;- 1:10
+&gt; rho &lt;- 0.8
+&gt; dt &lt;- expand.grid(Time=Time,Block=Block)
+&gt; Xmat &lt;- model.matrix(~-1+Block + Time, data=dt)
+&gt; block.effects &lt;- rnorm(n = nBlock, mean = intercept, sd = sigma.block)
+&gt; #A.effects &lt;- c(30,40)
+&gt; all.effects &lt;- c(block.effects,slope)
+&gt; lin.pred &lt;- Xmat %*% all.effects
+&gt; 
+&gt; # OR
+&gt; Xmat &lt;- cbind(model.matrix(~-1+Block,data=dt),model.matrix(~Time,data=dt))
+&gt; ## Sum to zero block effects
+&gt; ##block.effects &lt;- rnorm(n = nBlock, mean = 0, sd = sigma.block)
+&gt; ###A.effects &lt;- c(40,70,80)
+&gt; ##all.effects &lt;- c(block.effects,intercept,slope)
+&gt; ##lin.pred &lt;- Xmat %*% all.effects
+&gt; 
+&gt; ## the quadrat observations (within sites) are drawn from
+&gt; ## normal distributions with means according to the site means
+&gt; ## and standard deviations of 5
+&gt; eps &lt;- NULL
+&gt; eps[1] &lt;- 0
+&gt; for (j in 2:n) {
++   eps[j] &lt;- rho*eps[j-1] #residuals
++ }
+&gt; y &lt;- rnorm(n,lin.pred,sigma)+eps
+&gt; 
+&gt; #OR
+&gt; eps &lt;- NULL
+&gt; # first value cant be autocorrelated
+&gt; eps[1] &lt;- rnorm(1,0,sigma)
+&gt; for (j in 2:n) {
++   eps[j] &lt;- rho*eps[j-1] + rnorm(1, mean = 0, sd = sigma)  #residuals
++ }
+&gt; y &lt;- lin.pred + eps
+&gt; data.rm &lt;- data.frame(y=y, dt)
+&gt; head(data.rm)  #print out the first six rows of the data set
+         y Time Block
+1 282.1142    1     1
+2 321.1404    2     1
+3 278.7700    3     1
+4 285.8709    4     1
+5 336.6390    5     1
+6 333.5961    6     1
+&gt; 
+&gt; ggplot(data.rm, aes(y=y, x=Time)) + geom_smooth(method=&#39;lm&#39;) + geom_point() + facet_wrap(~Block)</code></pre>
+<p><img src="/tutorial/block-anova-stan/2020-02-01-block-anova-stan_files/figure-html/generate_data_ex2-1.png" width="672" /></p>
+</div>
+<div id="exploratory-data-analysis-1" class="section level2">
+<h2>Exploratory data analysis</h2>
+<p><strong>Normality and Homogeneity of variance</strong></p>
+<pre class="r"><code>&gt; boxplot(y~Time, data.rm)</code></pre>
+<p><img src="/tutorial/block-anova-stan/2020-02-01-block-anova-stan_files/figure-html/exp1_data_ex2-1.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; ggplot(data.rm, aes(y=y, x=factor(Time))) + geom_boxplot()</code></pre>
+<p><img src="/tutorial/block-anova-stan/2020-02-01-block-anova-stan_files/figure-html/exp1_data_ex2-2.png" width="672" /></p>
+<p><strong>Conclusions</strong>:</p>
+<ul>
+<li><p>there is no evidence that the response variable is consistently non-normal across all populations - each boxplot is approximately symmetrical.</p></li>
+<li><p>there is no evidence that variance (as estimated by the height of the boxplots) differs between the five populations. More importantly, there is no evidence of a relationship between mean and variance - the height of boxplots does not increase with increasing position along the <span class="math inline">\(y\)</span>-axis. Hence it there is no evidence of non-homogeneity</p></li>
+</ul>
+<p>Obvious violations could be addressed either by:</p>
+<ul>
+<li>transform the scale of the response variables (to address normality, etc). Note transformations should be applied to the entire response variable (not just those populations that are skewed).</li>
+</ul>
+<p><strong>Block by within-Block interaction</strong></p>
+<pre class="r"><code>&gt; with(data.rm, interaction.plot(Time,Block,y))</code></pre>
+<p><img src="/tutorial/block-anova-stan/2020-02-01-block-anova-stan_files/figure-html/exp2_data_ex2-1.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; ggplot(data.rm, aes(y=y, x=Time, color=Block, group=Block)) + geom_line() +
++   guides(color=guide_legend(ncol=3))</code></pre>
+<p><img src="/tutorial/block-anova-stan/2020-02-01-block-anova-stan_files/figure-html/exp2_data_ex2-2.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; residualPlots(lm(y~Block+Time, data.rm))</code></pre>
+<p><img src="/tutorial/block-anova-stan/2020-02-01-block-anova-stan_files/figure-html/exp2_data_ex2-3.png" width="672" /></p>
+<pre><code>           Test stat Pr(&gt;|Test stat|)
+Block                                
+Time         -0.7274           0.4675
+Tukey test   -0.9809           0.3267
+&gt; 
+&gt; # the Tukey&#39;s non-additivity test by itself can be obtained via an internal function
+&gt; # within the car package
+&gt; car:::tukeyNonaddTest(lm(y~Block+Time, data.rm))
+      Test     Pvalue 
+-0.9808606  0.3266615 
+&gt; 
+&gt; # alternatively, there is also a Tukey&#39;s non-additivity test within the
+&gt; # asbio package
+&gt; with(data.rm,tukey.add.test(y,Time,Block))
+
+Tukey&#39;s one df test for additivity 
+F = 0.3997341   Denom df = 305    p-value = 0.5277003</code></pre>
+<p><strong>Conclusions</strong>:</p>
+<ul>
+<li>there is no visual or inferential evidence of any major interactions between Block and the within-Block effect (Time). Any trends appear to be reasonably consistent between Blocks.</li>
+</ul>
+<p><strong>Sphericity</strong></p>
+<p>Since the levels of Time cannot be randomly assigned, it is likely that sphericity is not met. We can explore whether there is an auto-correlation patterns in the residuals. Note, as there was only ten time periods, it does not make logical sense to explore lags above <span class="math inline">\(10\)</span>.</p>
+<pre class="r"><code>&gt; library(nlme)
+&gt; data.rm.lme &lt;- lme(y~Time, random=~1|Block, data=data.rm)
+&gt; acf(resid(data.rm.lme), lag=10)</code></pre>
+<p><img src="/tutorial/block-anova-stan/2020-02-01-block-anova-stan_files/figure-html/exp3_data_ex2-1.png" width="672" /></p>
+<p><strong>Conclusions</strong>:</p>
+<p>The autocorrelation factor (ACF) at a range of lags up to <span class="math inline">\(10\)</span>, indicate that there is a cyclical pattern of residual auto-correlation. We really should explore incorporating some form of correlation structure into our model.</p>
+</div>
+<div id="model-fitting-1" class="section level2">
+<h2>Model fitting</h2>
+</div>
+<div id="matrix-parameterisation-1" class="section level2">
+<h2>Matrix parameterisation</h2>
+<pre class="r"><code>&gt; rstanString2=&quot;
++ data{
++    int n;
++    int nX;
++    int nB;
++    vector [n] y;
++    matrix [n,nX] X;
++    int B[n];
++ }
++ 
++ parameters{
++   vector [nX] beta;
++   real&lt;lower=0&gt; sigma;
++   vector [nB] gamma;
++   real&lt;lower=0&gt; sigma_B;
++ }
++ transformed parameters {
++   vector[n] mu;    
++   
++   mu = X*beta;
++   for (i in 1:n) {
++     mu[i] = mu[i] + gamma[B[i]];
++   }
++ } 
++ model{
++     // Priors
++     beta ~ normal( 0 , 100 );
++     gamma ~ normal( 0 , sigma_B );
++     sigma_B ~ cauchy( 0 , 25 );
++     sigma ~ cauchy( 0 , 25 );
++     
++     y ~ normal( mu , sigma );
++ }
++ 
++ &quot;
+&gt; 
+&gt; ## write the model to a text file
+&gt; writeLines(rstanString2, con = &quot;matrixModel2.stan&quot;)
+&gt; 
+&gt; Xmat &lt;- model.matrix(~Time, data=data.rm)
+&gt; data.rm.list &lt;- with(data.rm, list(y=y, X=Xmat, nX=ncol(Xmat),
++   B=as.numeric(Block),
++   n=nrow(data.rm), nB=length(levels(Block))))
+&gt; 
+&gt; params &lt;- c(&#39;beta&#39;,&#39;sigma&#39;,&#39;sigma_B&#39;)
+&gt; burnInSteps = 3000
+&gt; nChains = 2
+&gt; numSavedSteps = 3000
+&gt; thinSteps = 1
+&gt; nIter = burnInSteps+ceiling((numSavedSteps * thinSteps)/nChains)
+&gt; 
+&gt; data.rm.rstan.d  &lt;- stan(data = data.rm.list, file = &quot;matrixModel2.stan&quot;, 
++                             chains = nChains, pars = params, iter = nIter, 
++                             warmup = burnInSteps, thin = thinSteps)
+
+SAMPLING FOR MODEL &#39;matrixModel&#39; NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 0 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 4500 [  0%]  (Warmup)
+Chain 1: Iteration:  450 / 4500 [ 10%]  (Warmup)
+Chain 1: Iteration:  900 / 4500 [ 20%]  (Warmup)
+Chain 1: Iteration: 1350 / 4500 [ 30%]  (Warmup)
+Chain 1: Iteration: 1800 / 4500 [ 40%]  (Warmup)
+Chain 1: Iteration: 2250 / 4500 [ 50%]  (Warmup)
+Chain 1: Iteration: 2700 / 4500 [ 60%]  (Warmup)
+Chain 1: Iteration: 3001 / 4500 [ 66%]  (Sampling)
+Chain 1: Iteration: 3450 / 4500 [ 76%]  (Sampling)
+Chain 1: Iteration: 3900 / 4500 [ 86%]  (Sampling)
+Chain 1: Iteration: 4350 / 4500 [ 96%]  (Sampling)
+Chain 1: Iteration: 4500 / 4500 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 1.988 seconds (Warm-up)
+Chain 1:                0.611 seconds (Sampling)
+Chain 1:                2.599 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL &#39;matrixModel&#39; NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 0 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 4500 [  0%]  (Warmup)
+Chain 2: Iteration:  450 / 4500 [ 10%]  (Warmup)
+Chain 2: Iteration:  900 / 4500 [ 20%]  (Warmup)
+Chain 2: Iteration: 1350 / 4500 [ 30%]  (Warmup)
+Chain 2: Iteration: 1800 / 4500 [ 40%]  (Warmup)
+Chain 2: Iteration: 2250 / 4500 [ 50%]  (Warmup)
+Chain 2: Iteration: 2700 / 4500 [ 60%]  (Warmup)
+Chain 2: Iteration: 3001 / 4500 [ 66%]  (Sampling)
+Chain 2: Iteration: 3450 / 4500 [ 76%]  (Sampling)
+Chain 2: Iteration: 3900 / 4500 [ 86%]  (Sampling)
+Chain 2: Iteration: 4350 / 4500 [ 96%]  (Sampling)
+Chain 2: Iteration: 4500 / 4500 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 2.611 seconds (Warm-up)
+Chain 2:                0.593 seconds (Sampling)
+Chain 2:                3.204 seconds (Total)
+Chain 2: 
+&gt; 
+&gt; print(data.rm.rstan.d , par = c(&#39;beta&#39;,&#39;sigma&#39;,&#39;sigma_B&#39;))
+Inference for Stan model: matrixModel.
+2 chains, each with iter=4500; warmup=3000; thin=1; 
+post-warmup draws per chain=1500, total post-warmup draws=3000.
+
+          mean se_mean    sd   2.5%    25%    50%    75%  97.5% n_eff Rhat
+beta[1] 187.47    0.69 12.66 162.92 178.74 187.42 196.05 212.47   333 1.01
+beta[2]  30.79    0.02  1.04  28.69  30.11  30.79  31.49  32.83  2219 1.00
+sigma    55.83    0.05  2.29  51.50  54.27  55.76  57.34  60.56  2549 1.00
+sigma_B  64.64    0.18  8.63  50.05  58.48  63.76  69.76  84.33  2346 1.00
+
+Samples were drawn using NUTS(diag_e) at Fri Dec 11 09:22:56 2020.
+For each parameter, n_eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor on split chains (at 
+convergence, Rhat=1).</code></pre>
+<p>Given that Time cannot be randomized, there is likely to be a temporal dependency structure to the data. The above analyses assume no temporal dependency - actually, they assume that the variance-covariance matrix demonstrates a structure known as sphericity. Lets specifically model in a first order autoregressive correlation structure in an attempt to accommodate the expected temporal autocorrelation.</p>
+<pre class="r"><code>&gt; rstanString3=&quot;
++ data{
++    int n;
++    int nX;
++    int nB;
++    vector [n] y;
++    matrix [n,nX] X;
++    int B[n];
++    vector [n] tgroup;
++ }
++ 
++ parameters{
++   vector [nX] beta;
++   real&lt;lower=0&gt; sigma;
++   vector [nB] gamma;
++   real&lt;lower=0&gt; sigma_B;
++   real ar;
++ }
++ transformed parameters {
++   vector[n] mu;    
++   vector[n] E;
++   vector[n] res;
++ 
++   mu = X*beta;
++   for (i in 1:n) {
++      E[i] = 0;
++   }
++   for (i in 1:n) {
++     mu[i] = mu[i] + gamma[B[i]];
++     res[i] = y[i] - mu[i];
++   if(i&gt;0 &amp;&amp; i &lt; n &amp;&amp; tgroup[i+1] == tgroup[i]) {
++     E[i+1] = res[i];
++     }
++     mu[i] = mu[i] + (E[i] * ar);
++   }
++ } 
++ model{
++     // Priors
++     beta ~ normal( 0 , 100 );
++     gamma ~ normal( 0 , sigma_B );
++     sigma_B ~ cauchy( 0 , 25 );
++     sigma ~ cauchy( 0 , 25 );
++     
++     y ~ normal( mu , sigma );
++ }
++ 
++ &quot;
+&gt; 
+&gt; ## write the model to a text file
+&gt; writeLines(rstanString3, con = &quot;matrixModel3.stan&quot;)
+&gt; 
+&gt; Xmat &lt;- model.matrix(~Time, data=data.rm)
+&gt; data.rm.list &lt;- with(data.rm, list(y=y, X=Xmat, nX=ncol(Xmat),
++   B=as.numeric(Block),
++   n=nrow(data.rm), nB=length(levels(Block)),
++   tgroup=as.numeric(Block)))
+&gt; 
+&gt; params &lt;- c(&#39;beta&#39;,&#39;sigma&#39;,&#39;sigma_B&#39;,&#39;ar&#39;)
+&gt; burnInSteps = 3000
+&gt; nChains = 2
+&gt; numSavedSteps = 3000
+&gt; thinSteps = 1
+&gt; nIter = burnInSteps+ceiling((numSavedSteps * thinSteps)/nChains)
+&gt; 
+&gt; data.rm.rstan.d  &lt;- stan(data = data.rm.list, file = &quot;matrixModel3.stan&quot;, 
++                             chains = nChains, pars = params, iter = nIter, 
++                             warmup = burnInSteps, thin = thinSteps)
+
+SAMPLING FOR MODEL &#39;matrixModel3&#39; NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 0 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 4500 [  0%]  (Warmup)
+Chain 1: Iteration:  450 / 4500 [ 10%]  (Warmup)
+Chain 1: Iteration:  900 / 4500 [ 20%]  (Warmup)
+Chain 1: Iteration: 1350 / 4500 [ 30%]  (Warmup)
+Chain 1: Iteration: 1800 / 4500 [ 40%]  (Warmup)
+Chain 1: Iteration: 2250 / 4500 [ 50%]  (Warmup)
+Chain 1: Iteration: 2700 / 4500 [ 60%]  (Warmup)
+Chain 1: Iteration: 3001 / 4500 [ 66%]  (Sampling)
+Chain 1: Iteration: 3450 / 4500 [ 76%]  (Sampling)
+Chain 1: Iteration: 3900 / 4500 [ 86%]  (Sampling)
+Chain 1: Iteration: 4350 / 4500 [ 96%]  (Sampling)
+Chain 1: Iteration: 4500 / 4500 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 7.313 seconds (Warm-up)
+Chain 1:                2.905 seconds (Sampling)
+Chain 1:                10.218 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL &#39;matrixModel3&#39; NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 0 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 4500 [  0%]  (Warmup)
+Chain 2: Iteration:  450 / 4500 [ 10%]  (Warmup)
+Chain 2: Iteration:  900 / 4500 [ 20%]  (Warmup)
+Chain 2: Iteration: 1350 / 4500 [ 30%]  (Warmup)
+Chain 2: Iteration: 1800 / 4500 [ 40%]  (Warmup)
+Chain 2: Iteration: 2250 / 4500 [ 50%]  (Warmup)
+Chain 2: Iteration: 2700 / 4500 [ 60%]  (Warmup)
+Chain 2: Iteration: 3001 / 4500 [ 66%]  (Sampling)
+Chain 2: Iteration: 3450 / 4500 [ 76%]  (Sampling)
+Chain 2: Iteration: 3900 / 4500 [ 86%]  (Sampling)
+Chain 2: Iteration: 4350 / 4500 [ 96%]  (Sampling)
+Chain 2: Iteration: 4500 / 4500 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 20.981 seconds (Warm-up)
+Chain 2:                3.26 seconds (Sampling)
+Chain 2:                24.241 seconds (Total)
+Chain 2: 
+&gt; 
+&gt; print(data.rm.rstan.d , par = c(&#39;beta&#39;,&#39;sigma&#39;,&#39;sigma_B&#39;,&#39;ar&#39;))
+Inference for Stan model: matrixModel3.
+2 chains, each with iter=4500; warmup=3000; thin=1; 
+post-warmup draws per chain=1500, total post-warmup draws=3000.
+
+          mean se_mean    sd   2.5%    25%    50%    75%  97.5% n_eff Rhat
+beta[1] 179.47    0.25 12.40 155.58 171.19 179.51 187.90 203.08  2542    1
+beta[2]  31.32    0.02  1.66  28.06  30.16  31.31  32.44  34.51  5078    1
+sigma    48.75    0.04  2.05  45.00  47.31  48.67  50.10  53.01  2856    1
+sigma_B  49.71    0.36 10.78  30.30  42.47  49.27  56.72  72.54   879    1
+ar        0.78    0.00  0.05   0.68   0.75   0.78   0.82   0.88  2296    1
+
+Samples were drawn using NUTS(diag_e) at Fri Dec 11 09:24:01 2020.
+For each parameter, n_eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor on split chains (at 
+convergence, Rhat=1).</code></pre>
+</div>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-gelman2015stan" class="csl-entry">
+Gelman, Andrew, Daniel Lee, and Jiqiang Guo. 2015. <span>“Stan: A Probabilistic Programming Language for Bayesian Inference and Optimization.”</span> <em>Journal of Educational and Behavioral Statistics</em> 40 (5): 530–43.
+</div>
+<div id="ref-rstanpackage" class="csl-entry">
+Stan Development Team. 2018. <span>“<span>RStan</span>: The <span>R</span> Interface to <span>Stan</span>.”</span> <a href="http://mc-stan.org/">http://mc-stan.org/</a>.
+</div>
+</div>
+</div>

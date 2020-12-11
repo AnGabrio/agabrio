@@ -45,9 +45,9 @@ and a general summary of the economic evaluations, including the results from pr
 
 For example, the function `plot`, when applied to the output of a model fitted using `missingHE`, produces graphs which compare the observed and imputed values for both cost and benefit measures in each treatment group to detect possible concerns about the plausibility of the imputations. 
 
-{{< figure library="1" src="imputed.jpg" title="Example of a graphical output from missingHE" >}}
+![Example of a graphical output from missingHE](/media/imputed.jpg)
 
-More information, including new updates, about `missingHE` can be found at this [dedicated page]({{< ref "/missingHE/_index.md" >}})
+More information, including new updates, about `missingHE` can be found at my [GitHub repository](https://github.com/AnGabrio/missingHE). 
 
 
 

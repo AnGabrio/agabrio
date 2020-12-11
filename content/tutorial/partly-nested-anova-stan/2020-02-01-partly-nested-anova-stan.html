@@ -1,0 +1,505 @@
+---
+title: "Partly Nested Anova (STAN)"
+author: "Andrea Gabrio"
+date: '2020-02-11'
+slug: block-anova-stan
+categories:
+- repeated measures
+- anova
+- split-plot
+- STAN
+- R
+tags:
+- tutorials
+- STAN
+- split-plot
+- repeated measures
+- anova
+subtitle: ''
+summary: ''
+lastmod: '2020-02-11T11:54:30+01:00'
+featured: no
+draft: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+bibliography: citations_stan12.bib
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>This tutorial will focus on the use of Bayesian estimation to fit simple linear regression models. <code>BUGS</code> (Bayesian inference Using <em>Gibbs Sampling</em>) is an algorithm and supporting language (resembling <code>R</code>) dedicated to performing the Gibbs sampling implementation of <em>Markov Chain Monte Carlo</em> (MCMC) method. Dialects of the <code>BUGS</code> language are implemented within three main projects:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>OpenBUGS</strong> - written in component pascal.</p></li>
+<li><p><strong>JAGS</strong> - (Just Another Gibbs Sampler) - written in <code>C++</code>.</p></li>
+<li><p><strong>STAN</strong> - a dedicated Bayesian modelling framework written in <code>C++</code> and implementing <em>Hamiltonian</em> MCMC samplers.</p></li>
+</ol>
+<p>Whilst the above programs can be used stand-alone, they do offer the rich data pre-processing and graphical capabilities of <code>R</code>, and thus, they are best accessed from within <code>R</code> itself. As such there are multiple packages devoted to interfacing with the various software implementations:</p>
+<ul>
+<li><p><em>R2OpenBUGS</em> - interfaces with <code>OpenBUGS</code></p></li>
+<li><p><em>R2jags</em> - interfaces with <code>JAGS</code></p></li>
+<li><p><em>rstan</em> - interfaces with <code>STAN</code></p></li>
+</ul>
+<p>This tutorial will demonstrate how to fit models in <code>STAN</code> (<span class="citation">Gelman, Lee, and Guo (2015)</span>) using the package <code>rstan</code> (<span class="citation">Stan Development Team (2018)</span>) as interface, which also requires to load some other packages.</p>
+<div id="overview" class="section level1">
+<h1>Overview</h1>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p><em>Split-plot designs</em> (plots refer to agricultural field plots for which these designs were originally devised) extend unreplicated factorial (<em>randomised complete block</em> and <em>simple repeated measures</em>) designs by incorporating an additional factor whose levels are applied to entire blocks. Similarly, complex repeated measures designs are repeated measures designs in which there are different types of subjects. Consider the example of a randomised complete block. Blocks of four treatments (representing leaf packs subject to different aquatic taxa) were secured in numerous locations throughout a potentially heterogeneous stream. If some of those blocks had been placed in riffles, some in runs and some in pool habitats of the stream, the design becomes a split-plot design incorporating a between block factor (stream region: runs, riffles or pools) and a within block factor (leaf pack exposure type: microbial, macro invertebrate or vertebrate). Furthermore, the design would enable us to investigate whether the roles that different organism scales play on the breakdown of leaf material in stream are consistent across each of the major regions of a stream (interaction between region and exposure type). Alternatively (or in addition), shading could be artificially applied to half of the blocks, thereby introducing a between block effect (whether the block is shaded or not). Extending the repeated measures examples from Tutorial 9.3a, there might have been different populations (such as different species or histories) of rats or sharks. Any single subject (such as an individual shark or rat) can only be of one of the populations types and thus this additional factor represents a between subject effect.</p>
+</div>
+<div id="linear-models" class="section level2">
+<h2>Linear models</h2>
+<p>The linear models for three and four factor partly nested designs are:</p>
+<p><span class="math display">\[ y_{ijkl} = \mu + \alpha_i + \beta_j + \gamma_k + (\alpha\gamma)_{ij} + (\beta\gamma)_{jk} + \epsilon_{ijkl},\]</span></p>
+<p><span class="math display">\[ y_{ijklm} = \mu + \alpha_i + \gamma_j + (\alpha\gamma)_{ij} + \beta_k + \delta_l + (\alpha\delta)_{il} + (\gamma\delta)_{jl} + (\alpha\gamma\delta)_{ijl} + \epsilon_{ijklm}, \;\;\; \text{(Model 2 additive - 2 between)}\]</span></p>
+<p><span class="math display">\[ y_{ijklm} = \mu + \alpha_i + \beta_j + \gamma_k + \delta_l +  (\gamma\delta)_{kl} + (\alpha\gamma)_{ik} + (\alpha\delta)_{il} + (\alpha\gamma\delta)_{ikl} + \epsilon_{ijk}, \;\;\; \text{(Model 2 additive - 1 between)}\]</span></p>
+<p>where <span class="math inline">\(\mu\)</span> is the overall mean, <span class="math inline">\(\beta\)</span> is the effect of the Blocking Factor B and <span class="math inline">\(\epsilon\)</span> is the random unexplained or residual component.</p>
+</div>
+<div id="assumptions" class="section level2">
+<h2>Assumptions</h2>
+<p>As partly nested designs share elements in common with each of nested, factorial and unreplicated factorial designs, they also share similar assumptions and implications to these other designs. Specifically, hypothesis tests assume that:</p>
+<ul>
+<li><p>the appropriate residuals are normally distributed. Boxplots using the appropriate scale of replication (reflecting the appropriate residuals/F-ratio denominator (see Tables above) be used to explore normality. Scale transformations are often useful.</p></li>
+<li><p>the appropriate residuals are equally varied. Boxplots and plots of means against variance (using the appropriate scale of replication) should be used to explore the spread of values. Residual plots should reveal no patterns. Scale transformations are often useful.</p></li>
+<li><p>the appropriate residuals are independent of one another. Critically, experimental units within blocks/subjects should be adequately spaced temporally and spatially to restrict contamination or carryover effects. Non-independence resulting from the hierarchical design should be accounted for.</p></li>
+<li><p>that the variance/covariance matrix displays <strong>sphericity</strong> (strickly, the variance-covariance matrix must display a very specific pattern of sphericity in which both variances and covariances are equal (compound symmetry), however, an F-ratio will still reliably follow an F distribution provided basic sphericity holds). This assumption is likely to be met only if the treatment levels within each block can be randomly ordered. This assumption can be managed by either adjusting the sensitivity of the affected F-ratios or employing linear mixed effects modelling to the design.</p></li>
+<li><p>there are no block by within block interactions. Such interactions render non-significant within block effects difficult to interpret unless we assume that there are no block by within block interactions, non-significant within block effects could be due to either an absence of a treatment effect, or as a result of opposing effects within different blocks. As these block by within block interactions are unreplicated, they can neither be formally tested nor is it possible to perform main effects tests to diagnose non-significant within block effects.</p></li>
+</ul>
+</div>
+</div>
+<div id="split-plot-design" class="section level1">
+<h1>Split-plot design</h1>
+<div id="data-generation" class="section level2">
+<h2>Data generation</h2>
+<p>Imagine we has designed an experiment in which we intend to measure a response (<span class="math inline">\(y\)</span>) to one of treatments (three levels; “a1,” “a2” and “a3”). Unfortunately, the system that we intend to sample is spatially heterogeneous and thus will add a great deal of noise to the data that will make it difficult to detect a signal (impact of treatment). Thus in an attempt to constrain this variability you decide to apply a design (RCB) in which each of the treatments within each of <span class="math inline">\(35\)</span> blocks dispersed randomly throughout the landscape. As this section is mainly about the generation of artificial data (and not specifically about what to do with the data), understanding the actual details are optional and can be safely skipped.</p>
+<pre class="r"><code>&gt; library(plyr)
+&gt; set.seed(123)
+&gt; nA &lt;- 3
+&gt; nC &lt;- 3
+&gt; nBlock &lt;- 36
+&gt; sigma &lt;- 5
+&gt; sigma.block &lt;- 12
+&gt; n &lt;- nBlock*nC
+&gt; Block &lt;- gl(nBlock, k=1)
+&gt; C &lt;- gl(nC,k=1)
+&gt; 
+&gt; ## Specify the cell means
+&gt; AC.means&lt;-(rbind(c(40,70,80),c(35,50,70),c(35,40,45)))
+&gt; ## Convert these to effects
+&gt; X &lt;- model.matrix(~A*C,data=expand.grid(A=gl(3,k=1),C=gl(3,k=1)))
+&gt; AC &lt;- as.vector(AC.means)
+&gt; AC.effects &lt;- solve(X,AC)
+&gt; 
+&gt; A &lt;- gl(nA,nBlock,n)
+&gt; dt &lt;- expand.grid(C=C,Block=Block)
+&gt; dt &lt;- data.frame(dt,A)
+&gt; 
+&gt; Xmat &lt;- cbind(model.matrix(~-1+Block, data=dt),model.matrix(~A*C, data=dt))
+&gt; block.effects &lt;-  rnorm(n = nBlock, mean =0 , sd = sigma.block)
+&gt; all.effects &lt;- c(block.effects, AC.effects)
+&gt; lin.pred &lt;- Xmat %*% all.effects
+&gt; 
+&gt; ## the quadrat observations (within sites) are drawn from
+&gt; ## normal distributions with means according to the site means
+&gt; ## and standard deviations of 5
+&gt; y &lt;- rnorm(n,lin.pred,sigma)
+&gt; data.splt &lt;- data.frame(y=y, A=A,dt)
+&gt; head(data.splt)  #print out the first six rows of the data set
+         y A C Block A.1
+1 36.04388 1 1     1   1
+2 62.96473 1 2     1   1
+3 71.74448 1 3     1   1
+4 35.33552 1 1     2   1
+5 63.76434 1 2     2   1
+6 76.19828 1 3     2   1
+&gt; 
+&gt; tapply(data.splt$y,data.splt$A,mean)
+       1        2        3 
+65.71431 49.43047 41.36212 
+&gt; 
+&gt; tapply(data.splt$y,data.splt$C,mean)
+       1        2        3 
+38.41079 53.56792 64.52819 
+&gt; 
+&gt; replications(y~A*C+Error(Block), data.splt)
+  A   C A:C 
+ 36  36  12 
+&gt; 
+&gt; library(ggplot2)
+&gt; ggplot(data.splt, aes(y=y, x=C, linetype=A, group=A)) + geom_line(stat=&#39;summary&#39;, fun.y=mean)</code></pre>
+<p><img src="/tutorial/partly-nested-anova-stan/2020-02-01-partly-nested-anova-stan_files/figure-html/generate_data-1.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; ggplot(data.splt, aes(y=y, x=C,color=A)) + geom_point() + facet_wrap(~Block)</code></pre>
+<p><img src="/tutorial/partly-nested-anova-stan/2020-02-01-partly-nested-anova-stan_files/figure-html/generate_data-2.png" width="672" /></p>
+</div>
+<div id="exploratory-data-analysis" class="section level2">
+<h2>Exploratory data analysis</h2>
+<p><strong>Normality and Homogeneity of variance</strong></p>
+<pre class="r"><code>&gt; # check between plot effects
+&gt; boxplot(y~A, ddply(data.splt,~A+Block, summarise,y=mean(y)))</code></pre>
+<p><img src="/tutorial/partly-nested-anova-stan/2020-02-01-partly-nested-anova-stan_files/figure-html/exp1_data-1.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; #OR
+&gt; ggplot(ddply(data.splt,~A+Block, summarise,y=mean(y)), aes(y=y, x=A)) + geom_boxplot()</code></pre>
+<p><img src="/tutorial/partly-nested-anova-stan/2020-02-01-partly-nested-anova-stan_files/figure-html/exp1_data-2.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; # check within plot effects
+&gt; boxplot(y~A*C, data.splt)</code></pre>
+<p><img src="/tutorial/partly-nested-anova-stan/2020-02-01-partly-nested-anova-stan_files/figure-html/exp1_data-3.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; #OR 
+&gt; ggplot(data.splt, aes(y=y, x=C, fill=A)) + geom_boxplot()</code></pre>
+<p><img src="/tutorial/partly-nested-anova-stan/2020-02-01-partly-nested-anova-stan_files/figure-html/exp1_data-4.png" width="672" /></p>
+<p><strong>Conclusions</strong>:</p>
+<ul>
+<li><p>there is no evidence that the response variable is consistently non-normal across all populations - each boxplot is approximately symmetrical.</p></li>
+<li><p>there is no evidence that variance (as estimated by the height of the boxplots) differs between the five populations. More importantly, there is no evidence of a relationship between mean and variance - the height of boxplots does not increase with increasing position along the y-axis. Hence it there is no evidence of non-homogeneity.</p></li>
+</ul>
+<p>Obvious violations could be addressed either by:</p>
+<ul>
+<li>transform the scale of the response variables (to address normality, etc). Note transformations should be applied to the entire response variable (not just those populations that are skewed).</li>
+</ul>
+<p><strong>Block by within-Block interaction</strong></p>
+<pre class="r"><code>&gt; library(car)
+&gt; with(data.splt, interaction.plot(C,Block,y))</code></pre>
+<p><img src="/tutorial/partly-nested-anova-stan/2020-02-01-partly-nested-anova-stan_files/figure-html/exp2_data-1.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; #OR with ggplot
+&gt; library(ggplot2)
+&gt; ggplot(data.splt, aes(y=y, x=C, group=Block,color=Block)) + geom_line() +
++   guides(color=guide_legend(ncol=3))</code></pre>
+<p><img src="/tutorial/partly-nested-anova-stan/2020-02-01-partly-nested-anova-stan_files/figure-html/exp2_data-2.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; residualPlots(lm(y~Block+A*C, data.splt))</code></pre>
+<p><img src="/tutorial/partly-nested-anova-stan/2020-02-01-partly-nested-anova-stan_files/figure-html/exp2_data-3.png" width="672" /></p>
+<pre><code>           Test stat Pr(&gt;|Test stat|)
+Block                                
+A                                    
+C                                    
+Tukey test    1.4518           0.1466
+&gt; 
+&gt; # the Tukey&#39;s non-additivity test by itself can be obtained via an internal function
+&gt; # within the car package
+&gt; car:::tukeyNonaddTest(lm(y~Block+A*C, data.splt))
+     Test    Pvalue 
+1.4517644 0.1465671 </code></pre>
+<p><strong>Conclusions</strong>:</p>
+<ul>
+<li>there is no visual or inferential evidence of any major interactions between Block and the within-Block effect (C). Any trends appear to be reasonably consistent between Blocks.</li>
+</ul>
+</div>
+</div>
+<div id="example---split-plot" class="section level1">
+<h1>Example - split-plot</h1>
+<p>In an attempt to understand the effects on marine animals of short-term exposure to toxic substances, such as might occur following a spill, or a major increase in storm water flows, a it was decided to examine the toxicant in question, Copper, as part of a field experiment in Honk Kong. The experiment consisted of small sources of Cu (small, hemispherical plaster blocks, impregnated with copper), which released the metal into sea water over <span class="math inline">\(4\)</span> or <span class="math inline">\(5\)</span> days. The organism whose response to Cu was being measured was a small, polychaete worm, Hydroides, that attaches to hard surfaces in the sea, and is one of the first species to colonize any surface that is submerged. The biological questions focused on whether the timing of exposure to Cu affects the overall abundance of these worms. The time period of interest was the first or second week after a surface being available.</p>
+<p>The experimental setup consisted of sheets of black perspex (settlement plates), which provided good surfaces for these worms. Each plate had a plaster block bolted to its centre, and the dissolving block would create a gradient of [Cu] across the plate. Over the two weeks of the experiment, a given plate would have pl ain plaster blocks (Control) or a block containing copper in the first week, followed by a plain block, or a plain block in the first week, followed by a dose of copper in the second week. After two weeks in the water, plates were removed and counted back in the laboratory. Without a clear idea of how sensitive these worms are to copper, an effect of the treatments might show up as an overall difference in the density of worms across a plate, or it could show up as a gradient in abundance across the plate, with a different gradient in different treatments. Therefore, on each plate, the density of worms was recorded at each of four distances from the center of the plate. Let’s have a look at the dataset</p>
+<pre class="r"><code>&gt; copper &lt;- read.table(&#39;copper.csv&#39;, header=T, sep=&#39;,&#39;, strip.white=T)
+&gt; head(copper)
+   COPPER PLATE DIST WORMS
+1 control   200    4 11.50
+2 control   200    3 13.00
+3 control   200    2 13.50
+4 control   200    1 12.00
+5 control    39    4 17.75
+6 control    39    3 13.75</code></pre>
+<p>Variables’ description:</p>
+<p><strong>Copper</strong>. Categorical listing of the copper treatment (control = no copper applied, week 2 = copper treatment applied in second week and week 1= copper treatment applied in first week) applied to whole plates. Factor A (between plot factor).</p>
+<p><strong>Plate</strong>. Substrate provided for polychaete worm colonization on which copper treatment applied. These are the plots (Factor B). Numbers in this column represent numerical labels given to each plate.</p>
+<p><strong>Dist</strong>. Categorical listing for the four concentric distances from the center of the plate (source of copper treatment) with 1 being the closest and 4 the furthest. Factor C (within plot factor)</p>
+<p><strong>Worms</strong>. Density of worms measured. Response variable.</p>
+<p>The Plates are the “random” groups. Within each Plate, all levels of the Distance factor occur (this is a within group factor). Each Plate can only be of one of the three levels of the Copper treatment. This is therefore a within group (nested) factor. Traditionally, this mixture of nested and randomised block design would be called a partly nested or split-plot design. In Bayesian (multilevel modeling) terms, this is a multi-level model with one hierarchical level the Plates means and another representing the Copper treatment means (based on the Plate means). Exploratory data analysis has indicated that the response variable could be normalised via a forth-root transformation.</p>
+<div id="model-fitting" class="section level2">
+<h2>Model fitting</h2>
+<p>We will only explore the matrix parameterisation (random intercepts) of the model, where</p>
+<p><span class="math display">\[\text{number of lesions}_i = \beta \text{Site}_{j(i)} + \epsilon_{i},\]</span></p>
+<p>where <span class="math inline">\(\epsilon_i∼ N(0,\sigma^2)\)</span> and we treat Distance as a factor.</p>
+<pre class="r"><code>&gt; rstanString=&quot;
++ data{
++    int n;
++    int nZ;
++    int nX;
++    vector [n] y;
++    matrix [n,nX] X;
++    matrix [n,nZ] Z;
++    vector [nX] a0;
++    matrix [nX,nX] A0;
++ }
++ 
++ parameters{
++   vector [nX] beta;
++   real&lt;lower=0&gt; sigma;
++   vector [nZ] gamma;
++   real&lt;lower=0&gt; sigma_Z;
++ }
++ transformed parameters {
++    vector [n] mu;
++ 
++    mu = X*beta + Z*gamma; 
++ } 
++ model{
++     // Priors
++     beta ~ multi_normal(a0,A0);
++     gamma ~ normal( 0 , sigma_Z );
++     sigma_Z ~ cauchy(0,25);
++     sigma ~ cauchy(0,25);
++ 
++     y ~ normal( mu , sigma );
++ }
++ generated quantities {
++     vector [n] y_err;
++     real&lt;lower=0&gt; sd_Resid;
++ 
++     y_err = y - mu;
++     sd_Resid = sd(y_err);
++ }
++ 
++ &quot;
+&gt; 
+&gt; ## write the model to a text file
+&gt; writeLines(rstanString, con = &quot;matrixModel.stan&quot;)
+&gt; 
+&gt; 
+&gt; #sort the data set so that the copper treatments are in a more logical order
+&gt; library(dplyr)
+&gt; copper$DIST &lt;- factor(copper$DIST)
+&gt; copper$PLATE &lt;- factor(copper$PLATE)
+&gt; copper.sort &lt;- arrange(copper,COPPER,PLATE,DIST)
+&gt; 
+&gt; Xmat &lt;- model.matrix(~COPPER*DIST, data=copper.sort)
+&gt; Zmat &lt;- model.matrix(~-1+PLATE, data=copper.sort)
+&gt; copper.list &lt;- list(y=copper.sort$WORMS,
++                X=Xmat, nX=ncol(Xmat),
++                            Z=Zmat, nZ=ncol(Zmat),
++                            n=nrow(copper.sort),
++                            a0=rep(0,ncol(Xmat)), A0=diag(100000,ncol(Xmat))
++                            )
+&gt; params &lt;- c(&quot;beta&quot;,&quot;gamma&quot;,&quot;sigma&quot;,&quot;sigma_Z&quot;)
+&gt; burnInSteps = 500
+&gt; nChains = 2
+&gt; numSavedSteps = 5000
+&gt; thinSteps = 1
+&gt; nIter = ceiling((numSavedSteps * thinSteps)/nChains)
+&gt; 
+&gt; library(rstan)
+&gt; library(coda)
+&gt; 
+&gt; copper.rstan.a &lt;- stan(data = copper.list, file = &quot;matrixModel.stan&quot;, 
++                        chains = nChains, pars = params, iter = nIter, 
++                        warmup = burnInSteps, thin = thinSteps)
+
+SAMPLING FOR MODEL &#39;matrixModel&#39; NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 0 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 2500 [  0%]  (Warmup)
+Chain 1: Iteration:  250 / 2500 [ 10%]  (Warmup)
+Chain 1: Iteration:  500 / 2500 [ 20%]  (Warmup)
+Chain 1: Iteration:  501 / 2500 [ 20%]  (Sampling)
+Chain 1: Iteration:  750 / 2500 [ 30%]  (Sampling)
+Chain 1: Iteration: 1000 / 2500 [ 40%]  (Sampling)
+Chain 1: Iteration: 1250 / 2500 [ 50%]  (Sampling)
+Chain 1: Iteration: 1500 / 2500 [ 60%]  (Sampling)
+Chain 1: Iteration: 1750 / 2500 [ 70%]  (Sampling)
+Chain 1: Iteration: 2000 / 2500 [ 80%]  (Sampling)
+Chain 1: Iteration: 2250 / 2500 [ 90%]  (Sampling)
+Chain 1: Iteration: 2500 / 2500 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.329 seconds (Warm-up)
+Chain 1:                1.22 seconds (Sampling)
+Chain 1:                1.549 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL &#39;matrixModel&#39; NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 0 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 2500 [  0%]  (Warmup)
+Chain 2: Iteration:  250 / 2500 [ 10%]  (Warmup)
+Chain 2: Iteration:  500 / 2500 [ 20%]  (Warmup)
+Chain 2: Iteration:  501 / 2500 [ 20%]  (Sampling)
+Chain 2: Iteration:  750 / 2500 [ 30%]  (Sampling)
+Chain 2: Iteration: 1000 / 2500 [ 40%]  (Sampling)
+Chain 2: Iteration: 1250 / 2500 [ 50%]  (Sampling)
+Chain 2: Iteration: 1500 / 2500 [ 60%]  (Sampling)
+Chain 2: Iteration: 1750 / 2500 [ 70%]  (Sampling)
+Chain 2: Iteration: 2000 / 2500 [ 80%]  (Sampling)
+Chain 2: Iteration: 2250 / 2500 [ 90%]  (Sampling)
+Chain 2: Iteration: 2500 / 2500 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.33 seconds (Warm-up)
+Chain 2:                0.934 seconds (Sampling)
+Chain 2:                1.264 seconds (Total)
+Chain 2: 
+&gt; 
+&gt; print(copper.rstan.a, par = c(&quot;beta&quot;,&quot;gamma&quot;,&quot;sigma&quot;,&quot;sigma_Z&quot;))
+Inference for Stan model: matrixModel.
+2 chains, each with iter=2500; warmup=500; thin=1; 
+post-warmup draws per chain=2000, total post-warmup draws=4000.
+
+            mean se_mean   sd   2.5%    25%    50%   75% 97.5% n_eff Rhat
+beta[1]    10.85    0.02 0.71   9.45  10.37  10.85 11.31 12.22  1091 1.00
+beta[2]    -3.60    0.03 1.00  -5.57  -4.27  -3.59 -2.94 -1.61  1206 1.00
+beta[3]   -10.60    0.03 1.01 -12.57 -11.26 -10.60 -9.94 -8.60  1218 1.00
+beta[4]     1.13    0.02 0.90  -0.64   0.54   1.13  1.73  2.87  1351 1.00
+beta[5]     1.53    0.03 0.88  -0.21   0.93   1.52  2.12  3.27  1231 1.00
+beta[6]     2.68    0.03 0.91   0.90   2.07   2.68  3.29  4.46  1278 1.00
+beta[7]    -0.02    0.03 1.27  -2.61  -0.83  -0.01  0.81  2.48  1517 1.00
+beta[8]     0.09    0.03 1.29  -2.50  -0.77   0.09  0.97  2.64  1553 1.00
+beta[9]    -0.30    0.04 1.27  -2.78  -1.17  -0.29  0.57  2.13  1268 1.00
+beta[10]    2.23    0.03 1.29  -0.32   1.38   2.23  3.09  4.80  1393 1.00
+beta[11]    0.08    0.03 1.28  -2.43  -0.74   0.06  0.94  2.59  1519 1.00
+beta[12]    4.91    0.03 1.31   2.42   4.03   4.90  5.75  7.58  1479 1.00
+gamma[1]    0.15    0.01 0.49  -0.78  -0.12   0.10  0.41  1.30  2803 1.00
+gamma[2]   -0.12    0.01 0.49  -1.21  -0.37  -0.08  0.14  0.84  3479 1.00
+gamma[3]    0.27    0.01 0.51  -0.62  -0.05   0.20  0.55  1.46  1977 1.00
+gamma[4]   -0.39    0.01 0.52  -1.53  -0.70  -0.29 -0.03  0.47  1215 1.00
+gamma[5]   -0.32    0.01 0.52  -1.48  -0.62  -0.24  0.02  0.59  1707 1.00
+gamma[6]    0.75    0.03 0.68  -0.20   0.20   0.65  1.19  2.29   678 1.01
+gamma[7]   -0.16    0.01 0.49  -1.22  -0.42  -0.09  0.12  0.76  2349 1.00
+gamma[8]   -0.45    0.02 0.56  -1.80  -0.78  -0.34 -0.06  0.41  1109 1.00
+gamma[9]    0.13    0.01 0.47  -0.78  -0.13   0.09  0.38  1.17  3397 1.00
+gamma[10]  -0.10    0.01 0.47  -1.17  -0.35  -0.06  0.16  0.79  3266 1.00
+gamma[11]  -0.11    0.01 0.48  -1.13  -0.36  -0.07  0.16  0.86  3660 1.00
+gamma[12]   0.20    0.01 0.49  -0.71  -0.09   0.13  0.45  1.30  2993 1.00
+gamma[13]   0.13    0.01 0.48  -0.81  -0.13   0.09  0.39  1.17  3615 1.00
+gamma[14]   0.12    0.01 0.49  -0.84  -0.15   0.08  0.38  1.17  3353 1.00
+gamma[15]  -0.08    0.01 0.48  -1.14  -0.34  -0.04  0.19  0.88  2864 1.00
+sigma       1.41    0.00 0.16   1.12   1.29   1.39  1.50  1.77  1557 1.00
+sigma_Z     0.57    0.02 0.33   0.09   0.33   0.54  0.76  1.30   296 1.01
+
+Samples were drawn using NUTS(diag_e) at Fri Dec 11 09:18:34 2020.
+For each parameter, n_eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor on split chains (at 
+convergence, Rhat=1).</code></pre>
+</div>
+<div id="mcmc-diagnostics" class="section level2">
+<h2>MCMC diagnostics</h2>
+<p>Before fully exploring the parameters, it is prudent to examine the convergence and mixing diagnostics. Chose either any of the parameterizations (they should yield much the same).</p>
+<pre class="r"><code>&gt; library(mcmcplots)
+&gt; mcmc&lt;-As.mcmc.list(copper.rstan.a)
+&gt; denplot(mcmc, parms = c(&quot;gamma&quot;,&quot;beta&quot;))</code></pre>
+<p><img src="/tutorial/partly-nested-anova-stan/2020-02-01-partly-nested-anova-stan_files/figure-html/mcmc_diag-1.png" width="672" /></p>
+<pre class="r"><code>&gt; traplot(mcmc, parms = c(&quot;gamma&quot;,&quot;beta&quot;))</code></pre>
+<p><img src="/tutorial/partly-nested-anova-stan/2020-02-01-partly-nested-anova-stan_files/figure-html/mcmc_diag-2.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; raftery.diag(mcmc)
+[[1]]
+
+Quantile (q) = 0.025
+Accuracy (r) = +/- 0.005
+Probability (s) = 0.95 
+
+You need a sample size of at least 3746 with these values of q, r and s
+
+[[2]]
+
+Quantile (q) = 0.025
+Accuracy (r) = +/- 0.005
+Probability (s) = 0.95 
+
+You need a sample size of at least 3746 with these values of q, r and s
+&gt; 
+&gt; autocorr.diag(mcmc)
+            beta[1]     beta[2]      beta[3]      beta[4]     beta[5]
+Lag 0   1.000000000  1.00000000  1.000000000  1.000000000  1.00000000
+Lag 1   0.447358356  0.37502836  0.377103593  0.344790623  0.31813111
+Lag 5   0.084403755  0.04675439  0.057671299  0.034852739  0.05994854
+Lag 10 -0.002515428  0.03545971 -0.002899175 -0.002236532  0.03358436
+Lag 50 -0.021526180 -0.03385232 -0.009287924 -0.009175036 -0.02309769
+           beta[6]     beta[7]      beta[8]     beta[9]      beta[10]
+Lag 0   1.00000000  1.00000000  1.000000000  1.00000000  1.0000000000
+Lag 1   0.35828410  0.28203326  0.258099594  0.28714556  0.2603330547
+Lag 5   0.08965860  0.01081530  0.023615230  0.02678056  0.0456943554
+Lag 10 -0.01325368  0.02400661  0.003134439  0.05742664  0.0189309375
+Lag 50 -0.00652675 -0.01485421 -0.006680461 -0.03779803 -0.0002013549
+            beta[11]     beta[12]     gamma[1]    gamma[2]     gamma[3]
+Lag 0   1.0000000000  1.000000000  1.000000000  1.00000000  1.000000000
+Lag 1   0.2679529410  0.296858003 -0.063026503 -0.09086988  0.008302034
+Lag 5   0.0589358651  0.065605809  0.033086923 -0.01286178  0.058319948
+Lag 10 -0.0001090704  0.002115920 -0.006150420 -0.01070693  0.050619886
+Lag 50 -0.0152178937 -0.006264504  0.004190641  0.03463012 -0.007425304
+          gamma[4]     gamma[5]   gamma[6]     gamma[7]    gamma[8]
+Lag 0  1.000000000  1.000000000 1.00000000  1.000000000  1.00000000
+Lag 1  0.136887725  0.042506506 0.28714298 -0.072853598  0.05817252
+Lag 5  0.096476342  0.082391944 0.19320046  0.048943988  0.08500039
+Lag 10 0.036551698  0.030368976 0.08161452 -0.004978985  0.04524889
+Lag 50 0.007502884 -0.002925676 0.01264057  0.024934185 -0.02297140
+           gamma[9]   gamma[10]     gamma[11]   gamma[12]   gamma[13]
+Lag 0   1.000000000  1.00000000  1.000000e+00  1.00000000  1.00000000
+Lag 1  -0.068475798 -0.06845111 -1.176319e-01 -0.08229077 -0.11611132
+Lag 5   0.010301826  0.03891490  3.198005e-02  0.03936894  0.02122079
+Lag 10  0.001845292 -0.02345776 -1.657290e-02  0.02248921  0.01059182
+Lag 50  0.014582892  0.01042282 -5.206698e-05  0.00322228  0.01342298
+          gamma[14]     gamma[15]       sigma    sigma_Z       lp__
+Lag 0   1.000000000  1.0000000000 1.000000000 1.00000000 1.00000000
+Lag 1  -0.081396577 -0.0658594318 0.140755289 0.65250016 0.82010257
+Lag 5  -0.002124931  0.0071849179 0.069150566 0.35016757 0.46387898
+Lag 10 -0.009081814  0.0194046934 0.005079955 0.16179112 0.24094177
+Lag 50 -0.018797692 -0.0006471816 0.026270757 0.06629397 0.05507631</code></pre>
+</div>
+<div id="parameter-estimates" class="section level2">
+<h2>Parameter estimates</h2>
+<pre class="r"><code>&gt; print(copper.rstan.a)
+Inference for Stan model: matrixModel.
+2 chains, each with iter=2500; warmup=500; thin=1; 
+post-warmup draws per chain=2000, total post-warmup draws=4000.
+
+            mean se_mean   sd   2.5%    25%    50%    75%  97.5% n_eff Rhat
+beta[1]    10.85    0.02 0.71   9.45  10.37  10.85  11.31  12.22  1091 1.00
+beta[2]    -3.60    0.03 1.00  -5.57  -4.27  -3.59  -2.94  -1.61  1206 1.00
+beta[3]   -10.60    0.03 1.01 -12.57 -11.26 -10.60  -9.94  -8.60  1218 1.00
+beta[4]     1.13    0.02 0.90  -0.64   0.54   1.13   1.73   2.87  1351 1.00
+beta[5]     1.53    0.03 0.88  -0.21   0.93   1.52   2.12   3.27  1231 1.00
+beta[6]     2.68    0.03 0.91   0.90   2.07   2.68   3.29   4.46  1278 1.00
+beta[7]    -0.02    0.03 1.27  -2.61  -0.83  -0.01   0.81   2.48  1517 1.00
+beta[8]     0.09    0.03 1.29  -2.50  -0.77   0.09   0.97   2.64  1553 1.00
+beta[9]    -0.30    0.04 1.27  -2.78  -1.17  -0.29   0.57   2.13  1268 1.00
+beta[10]    2.23    0.03 1.29  -0.32   1.38   2.23   3.09   4.80  1393 1.00
+beta[11]    0.08    0.03 1.28  -2.43  -0.74   0.06   0.94   2.59  1519 1.00
+beta[12]    4.91    0.03 1.31   2.42   4.03   4.90   5.75   7.58  1479 1.00
+gamma[1]    0.15    0.01 0.49  -0.78  -0.12   0.10   0.41   1.30  2803 1.00
+gamma[2]   -0.12    0.01 0.49  -1.21  -0.37  -0.08   0.14   0.84  3479 1.00
+gamma[3]    0.27    0.01 0.51  -0.62  -0.05   0.20   0.55   1.46  1977 1.00
+gamma[4]   -0.39    0.01 0.52  -1.53  -0.70  -0.29  -0.03   0.47  1215 1.00
+gamma[5]   -0.32    0.01 0.52  -1.48  -0.62  -0.24   0.02   0.59  1707 1.00
+gamma[6]    0.75    0.03 0.68  -0.20   0.20   0.65   1.19   2.29   678 1.01
+gamma[7]   -0.16    0.01 0.49  -1.22  -0.42  -0.09   0.12   0.76  2349 1.00
+gamma[8]   -0.45    0.02 0.56  -1.80  -0.78  -0.34  -0.06   0.41  1109 1.00
+gamma[9]    0.13    0.01 0.47  -0.78  -0.13   0.09   0.38   1.17  3397 1.00
+gamma[10]  -0.10    0.01 0.47  -1.17  -0.35  -0.06   0.16   0.79  3266 1.00
+gamma[11]  -0.11    0.01 0.48  -1.13  -0.36  -0.07   0.16   0.86  3660 1.00
+gamma[12]   0.20    0.01 0.49  -0.71  -0.09   0.13   0.45   1.30  2993 1.00
+gamma[13]   0.13    0.01 0.48  -0.81  -0.13   0.09   0.39   1.17  3615 1.00
+gamma[14]   0.12    0.01 0.49  -0.84  -0.15   0.08   0.38   1.17  3353 1.00
+gamma[15]  -0.08    0.01 0.48  -1.14  -0.34  -0.04   0.19   0.88  2864 1.00
+sigma       1.41    0.00 0.16   1.12   1.29   1.39   1.50   1.77  1557 1.00
+sigma_Z     0.57    0.02 0.33   0.09   0.33   0.54   0.76   1.30   296 1.01
+lp__      -45.50    0.65 8.25 -59.33 -51.01 -46.40 -41.35 -25.82   160 1.01
+
+Samples were drawn using NUTS(diag_e) at Fri Dec 11 09:18:34 2020.
+For each parameter, n_eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor on split chains (at 
+convergence, Rhat=1).</code></pre>
+</div>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-gelman2015stan" class="csl-entry">
+Gelman, Andrew, Daniel Lee, and Jiqiang Guo. 2015. <span>“Stan: A Probabilistic Programming Language for Bayesian Inference and Optimization.”</span> <em>Journal of Educational and Behavioral Statistics</em> 40 (5): 530–43.
+</div>
+<div id="ref-rstanpackage" class="csl-entry">
+Stan Development Team. 2018. <span>“<span>RStan</span>: The <span>R</span> Interface to <span>Stan</span>.”</span> <a href="http://mc-stan.org/">http://mc-stan.org/</a>.
+</div>
+</div>
+</div>

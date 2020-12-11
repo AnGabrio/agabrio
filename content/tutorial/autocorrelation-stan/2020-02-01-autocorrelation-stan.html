@@ -1,0 +1,600 @@
+---
+title: "Temporal Autocorrelation (STAN)"
+author: "Andrea Gabrio"
+date: '2020-02-08'
+slug: autocorrelation-stan
+categories:
+- autocorrelation
+- STAN
+- R
+tags:
+- tutorials
+- STAN
+- autocorrelation
+subtitle: ''
+summary: ''
+lastmod: '2020-02-08T11:54:30+01:00'
+featured: no
+draft: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+bibliography: citations_stan9.bib
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>This tutorial will focus on the use of Bayesian estimation to fit simple linear regression models. <code>BUGS</code> (Bayesian inference Using <em>Gibbs Sampling</em>) is an algorithm and supporting language (resembling <code>R</code>) dedicated to performing the Gibbs sampling implementation of <em>Markov Chain Monte Carlo</em> (MCMC) method. Dialects of the <code>BUGS</code> language are implemented within three main projects:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>OpenBUGS</strong> - written in component pascal.</p></li>
+<li><p><strong>JAGS</strong> - (Just Another Gibbs Sampler) - written in <code>C++</code>.</p></li>
+<li><p><strong>STAN</strong> - a dedicated Bayesian modelling framework written in <code>C++</code> and implementing <em>Hamiltonian</em> MCMC samplers.</p></li>
+</ol>
+<p>Whilst the above programs can be used stand-alone, they do offer the rich data pre-processing and graphical capabilities of <code>R</code>, and thus, they are best accessed from within <code>R</code> itself. As such there are multiple packages devoted to interfacing with the various software implementations:</p>
+<ul>
+<li><p><em>R2OpenBUGS</em> - interfaces with <code>OpenBUGS</code></p></li>
+<li><p><em>R2jags</em> - interfaces with <code>JAGS</code></p></li>
+<li><p><em>rstan</em> - interfaces with <code>STAN</code></p></li>
+</ul>
+<p>This tutorial will demonstrate how to fit models in <code>STAN</code> (<span class="citation">Gelman, Lee, and Guo (2015)</span>) using the package <code>rstan</code> (<span class="citation">Stan Development Team (2018)</span>) as interface, which also requires to load some other packages.</p>
+<div id="overview" class="section level1">
+<h1>Overview</h1>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>Up until now (in the proceeding tutorials), the focus has been on models that adhere to specific assumptions about the underlying populations (and data). Indeed, both before and immediately after fitting these models, I have stressed the importance of evaluating and validating the proposed and fitted models to ensure reliability of the models. It is now worth us revisiting those fundamental assumptions as well as exploring the options that are available when the populations (data) do not conform. Let’s explore a simple linear regression model to see how each of the assumptions relate to the model.</p>
+<p><span class="math display">\[ y_i = \beta_0 + \beta_1x_i + \epsilon_i \;\;\; \text{with} \;\;\; \epsilon_i \sim \text{Normal}(0, \sigma^2).\]</span></p>
+<p>The above simple statistical model models the <strong>linear relationship</strong> of <span class="math inline">\(y_i\)</span> against <span class="math inline">\(x_i\)</span>. The residuals (<span class="math inline">\(\epsilon\)</span>) are assumed to be <strong>normally distributed</strong> with a mean of zero and a constant (yet unknown) variance (<span class="math inline">\(\sigma\)</span>, <strong>homogeneity of variance</strong>). The residuals (and thus observations) are also assumed to all be <strong>independent</strong>.</p>
+<p>Homogeneity of variance and independence are encapsulated within the single symbol for variance (<span class="math inline">\(\sigma^2\)</span>). In assuming equal variances and independence, we are actually making an assumption about the variance-covariance structure of the populations (and thus residuals). Specifically, we assume that all populations are equally varied and thus can be represented well by a single variance term (all diagonal values in a <span class="math inline">\(N\times N\)</span> covariance matrix are the same, <span class="math inline">\(\sigma^2\)</span>) and the covariances between each population are zero (off diagonals). In simple regression, each observation (data point) represents a single observation drawn (sampled) from an entire population of possible observations. The above covariance structure thus assumes that the covariance between each population (observation) is zero - that is, each observation is completely independent of each other observation. Whilst it is mathematically convenient when data conform to these conditions (normality, homogeneity of variance, independence and linearity), data often violate one or more of these assumptions. In the following, I want to discuss and explore the causes and options for dealing with non-compliance to each of these conditions. By gaining a better understanding of how the various model fitting engines perform their task, we are better equipped to accommodate aspects of the data that don’t otherwise conform to the simple regression assumptions. In this tutorial we specifically focus on the topic of heterogeneity of the variance.</p>
+<p>In order that the estimated parameters represent the underlying populations in an unbiased manner, the residuals (and thus each each observation) must be independent. However, what if we were sampling a population over time and we were interested in investigating how changes in a response relate to changes in a predictor (such as rainfall). For any response that does not “reset” itself on a regular basis, the state of the population (the value of its response) at a given time is likely to be at least partly dependent on the state of the population at the sampling time before. We can further generalise the above into:</p>
+<p><span class="math display">\[ y_i \sim Dist(\mu_i),\]</span></p>
+<p>where <span class="math inline">\(\mu_i=\boldsymbol X \boldsymbol \beta + \boldsymbol Z \boldsymbol \gamma\)</span>, with <span class="math inline">\(\boldsymbol X\)</span> and <span class="math inline">\(\boldsymbol \beta\)</span> representing the <em>fixed data structure</em> and <em>fixed effects</em>, respectively, while with <span class="math inline">\(\boldsymbol Z\)</span> and <span class="math inline">\(\boldsymbol \gamma\)</span> represent the <em>varying data structure</em> and <em>varying effects</em>, respectively. In simple regression, there are no “varying” effects, and thus:</p>
+<p><span class="math display">\[ \boldsymbol \gamma \sim MVN(\boldsymbol 0, \boldsymbol \Sigma),\]</span></p>
+<p>where <span class="math inline">\(\boldsymbol \Sigma\)</span> is a variance-covariance matrix of the form</p>
+<p><span class="math display">\[ \boldsymbol \Sigma =  \frac{\sigma^2}{1-\rho^2}
+  \begin{bmatrix}
+   1 &amp; \rho^{\phi_{1,2}} &amp; \ldots &amp; \rho^{\phi_{1,n}} \\
+   \rho^{\phi_{2,1}} &amp; 1 &amp; \ldots &amp; \vdots\\
+   \vdots &amp; \ldots &amp; 1 &amp; \vdots\\
+   \rho^{\phi_{n,1}} &amp; \ldots &amp; \ldots &amp; 1
+   \end{bmatrix}. \]</span></p>
+<p>Notice that this introduces a very large number of additional parameters that require estimating: <span class="math inline">\(\sigma^2\)</span> (error variance), <span class="math inline">\(\rho\)</span> (base autocorrelation) and each of the individual covariances (<span class="math inline">\(\rho^{\phi_{n,n}}\)</span>). Hence, there are always going to be more parameters to estimate than there are date avaiable to use to estimate these paramters. We typically make one of a number of alternative assumptions so as to make this task more manageable.</p>
+<ul>
+<li>When we assume that all residuals are independent (regular regression), i.e. <span class="math inline">\(\rho=0\)</span>, <span class="math inline">\(\boldsymbol \Sigma\)</span> is essentially equal to <span class="math inline">\(\sigma^2 \boldsymbol I\)</span> and we simply use:</li>
+</ul>
+<p><span class="math display">\[ \boldsymbol \gamma \sim N( 0,\sigma^2).\]</span></p>
+<ul>
+<li>We could assume there is a reasonably simple pattern of correlation that declines over time. The simplest of these is a <em>first order autoregressive</em> (AR1) structure in which exponent on the correlation declines linearly according to the time lag (<span class="math inline">\(\mid t - s\mid\)</span>).</li>
+</ul>
+<p><span class="math display">\[ \boldsymbol \Sigma =  \frac{\sigma^2}{1-\rho^2}
+  \begin{bmatrix}
+   1 &amp; \rho &amp; \ldots &amp; \rho^{\mid t-s \mid} \\
+   \rho &amp; 1 &amp; \ldots &amp; \vdots\\
+   \vdots &amp; \ldots &amp; 1 &amp; \vdots\\
+   \rho^{\mid t-s \mid } &amp; \ldots &amp; \ldots &amp; 1
+   \end{bmatrix}. \]</span></p>
+<p>Note, in making this assumption, we are also assuming that the degree of correlation is dependent only on the lag and not on when the lag occurs (stationarity). That is all lag 1 residual pairs will have the same degree of correlation, all the lag <span class="math inline">\(2\)</span> pairs will have the same correlation and so on.</p>
+</div>
+</div>
+<div id="first-order-autocorrelation" class="section level1">
+<h1>First order autocorrelation</h1>
+<p>Consider an example, in which the number of individuals at time <span class="math inline">\(2\)</span> will be partly dependent on the number of individuals present at time <span class="math inline">\(1\)</span>. Clearly then, the observations (and thus residuals) are not fully independent - there is an auto-regressive correlation dependency structure. We could accommodate this lack of independence by fitting a model that incorporates a AR1 variance-covariance structure. Alternatively, we fit the following model:</p>
+<p><span class="math display">\[ y_{it} \sim Dist(\mu_{it}),\]</span></p>
+<p>where</p>
+<p><span class="math display">\[\mu_{it}=\boldsymbol X \boldsymbol \beta + \rho \epsilon_{i,t-1} + \gamma_{it},\]</span></p>
+<p>and where <span class="math inline">\(\gamma \sim N(0, \sigma^2)\)</span>. In this version of the model, we are stating that the expected value of an observation is equal to the regular linear predictor plus the autocorrelation parameter (<span class="math inline">\(\rho\)</span>) multipled by the residual associated with the previous observation plus the regular independently distributed noise (<span class="math inline">\(\sigma^2\)</span>). Such a model is substantially faster to fit, although along with stationarity assumes in estimating the autocorrelation parameter, only the smallest lags are used. To see this in action, we will first generate some temporally auto-correlated data.</p>
+<pre class="r"><code>&gt; set.seed(126)
+&gt; n = 50
+&gt; a &lt;- 20  #intercept
+&gt; b &lt;- 0.2  #slope
+&gt; x &lt;- round(runif(n, 1, n), 1)  #values of the year covariate
+&gt; year &lt;- 1:n
+&gt; sigma &lt;- 20
+&gt; rho &lt;- 0.8
+&gt; 
+&gt; library(nlme)
+&gt; ## define a constructor for a first-order
+&gt; ## correlation structure
+&gt; ar1 &lt;- corAR1(form = ~year, value = rho)
+&gt; ## initialize this constructor against our data
+&gt; AR1 &lt;- Initialize(ar1, data = data.frame(year))
+&gt; ## generate a correlation matrix
+&gt; V &lt;- corMatrix(AR1)
+&gt; ## Cholesky factorization of V
+&gt; Cv &lt;- chol(V)
+&gt; ## simulate AR1 errors
+&gt; e &lt;- t(Cv) %*% rnorm(n, 0, sigma)  # cov(e) = V * sig^2
+&gt; ## generate response
+&gt; y &lt;- a + b * x + e
+&gt; data.temporalCor = data.frame(y = y, x = x, year = year)
+&gt; write.table(data.temporalCor, file = &quot;data.temporalCor.csv&quot;,
++     sep = &quot;,&quot;, quote = F, row.names = FALSE)
+&gt; 
+&gt; pairs(data.temporalCor)</code></pre>
+<p><img src="/tutorial/autocorrelation-stan/2020-02-01-autocorrelation-stan_files/figure-html/generate_data-1.png" width="672" /></p>
+<p>We will now proceed to analyse these data via both of the above techniques for <code>JAGS</code>:</p>
+<ul>
+<li><p>incorporating AR1 residual autocorrelation structure</p></li>
+<li><p>incorporating lagged residuals into the model</p></li>
+</ul>
+</div>
+<div id="incorporating-lagged-residuals" class="section level1">
+<h1>Incorporating lagged residuals</h1>
+<div id="model-fitting" class="section level2">
+<h2>Model fitting</h2>
+<p>We proceed to code the model into <code>JAGS</code> (remember that in this software normal distribution are parameterised in terms of precisions <span class="math inline">\(\tau\)</span> rather than variances, where <span class="math inline">\(\tau=\frac{1}{\sigma^2}\)</span>). Define the model.</p>
+<pre class="r"><code>&gt; stanString = &quot;
++   data {
++   int&lt;lower=1&gt; n;
++   vector [n] y;
++   int&lt;lower=1&gt; nX;
++   matrix[n,nX] X;
++   }
++   transformed data {
++   }
++   parameters {
++   vector[nX] beta;
++   real&lt;lower=0&gt; sigma;
++   real&lt;lower=-1,upper=1&gt; phi;
++   }
++   transformed parameters {
++   vector[n] mu;
++   vector[n] epsilon;
++   mu = X*beta;
++   epsilon[1] = y[1] - mu[1];
++   for (i in 2:n) {
++   epsilon[i] = (y[i] - mu[i]);
++   mu[i] = mu[i] + phi*epsilon[i-1];
++   }
++   }
++   model {
++   phi ~ uniform(-1,1);
++   beta ~ normal(0,100);
++   sigma ~ cauchy(0,5);
++   y ~ normal(mu, sigma);
++   }
++   generated quantities {
++   }
++   
++   &quot;
+&gt; 
+&gt; ## write the model to a text file
+&gt; writeLines(stanString, con = &quot;tempModel.stan&quot;)</code></pre>
+<p>Arrange the data as a list (as required by <code>STAN</code>). As input, <code>STAN</code> will need to be supplied with: the response variable, the predictor variable, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.</p>
+<pre class="r"><code>&gt; Xmat = model.matrix(~x, data.temporalCor)
+&gt; data.temporalCor.list &lt;- with(data.temporalCor, list(y = y, X = Xmat,
++     n = nrow(data.temporalCor), nX = ncol(Xmat)))</code></pre>
+<p>Define the nodes (parameters and derivatives) to monitor and chain parameters.</p>
+<pre class="r"><code>&gt; params &lt;- c(&quot;beta&quot;, &quot;sigma&quot;, &quot;phi&quot;)
+&gt; nChains = 2
+&gt; burnInSteps = 500
+&gt; thinSteps = 1
+&gt; numSavedSteps = 2000  #across all chains
+&gt; nIter = ceiling(burnInSteps + (numSavedSteps * thinSteps)/nChains)
+&gt; nIter
+[1] 1500</code></pre>
+<p>Now compile and run the Stan code via the <code>rstan</code> interface.</p>
+<pre class="r"><code>&gt; library(rstan)</code></pre>
+<p>During the warmup stage, the No-U-Turn sampler (NUTS) attempts to determine the optimum stepsize - the stepsize that achieves the target acceptance rate (<span class="math inline">\(0.8\)</span> or <span class="math inline">\(80\)</span>% by default) without divergence (occurs when the stepsize is too large relative to the curvature of the log posterior and results in approximations that are likely to diverge and be biased) - and without hitting the maximum treedepth (<span class="math inline">\(10\)</span>). At each iteration of the NUTS algorithm, the number of leapfrog steps doubles (as it increases the treedepth) and only terminates when either the NUTS criterion are satisfied or the tree depth reaches the maximum (<span class="math inline">\(10\)</span> by default).</p>
+<pre class="r"><code>&gt; data.temporalCor.rstan &lt;- stan(data = data.temporalCor.list, file = &quot;tempModel.stan&quot;, chains = nChains, pars = params, iter = nIter, warmup = burnInSteps, thin = thinSteps)
+
+SAMPLING FOR MODEL &#39;tempModel&#39; NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 0 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 1500 [  0%]  (Warmup)
+Chain 1: Iteration:  150 / 1500 [ 10%]  (Warmup)
+Chain 1: Iteration:  300 / 1500 [ 20%]  (Warmup)
+Chain 1: Iteration:  450 / 1500 [ 30%]  (Warmup)
+Chain 1: Iteration:  501 / 1500 [ 33%]  (Sampling)
+Chain 1: Iteration:  650 / 1500 [ 43%]  (Sampling)
+Chain 1: Iteration:  800 / 1500 [ 53%]  (Sampling)
+Chain 1: Iteration:  950 / 1500 [ 63%]  (Sampling)
+Chain 1: Iteration: 1100 / 1500 [ 73%]  (Sampling)
+Chain 1: Iteration: 1250 / 1500 [ 83%]  (Sampling)
+Chain 1: Iteration: 1400 / 1500 [ 93%]  (Sampling)
+Chain 1: Iteration: 1500 / 1500 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.086 seconds (Warm-up)
+Chain 1:                0.093 seconds (Sampling)
+Chain 1:                0.179 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL &#39;tempModel&#39; NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 0 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 1500 [  0%]  (Warmup)
+Chain 2: Iteration:  150 / 1500 [ 10%]  (Warmup)
+Chain 2: Iteration:  300 / 1500 [ 20%]  (Warmup)
+Chain 2: Iteration:  450 / 1500 [ 30%]  (Warmup)
+Chain 2: Iteration:  501 / 1500 [ 33%]  (Sampling)
+Chain 2: Iteration:  650 / 1500 [ 43%]  (Sampling)
+Chain 2: Iteration:  800 / 1500 [ 53%]  (Sampling)
+Chain 2: Iteration:  950 / 1500 [ 63%]  (Sampling)
+Chain 2: Iteration: 1100 / 1500 [ 73%]  (Sampling)
+Chain 2: Iteration: 1250 / 1500 [ 83%]  (Sampling)
+Chain 2: Iteration: 1400 / 1500 [ 93%]  (Sampling)
+Chain 2: Iteration: 1500 / 1500 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.107 seconds (Warm-up)
+Chain 2:                0.111 seconds (Sampling)
+Chain 2:                0.218 seconds (Total)
+Chain 2: 
+&gt; 
+&gt; print(data.temporalCor.rstan, par = c(&quot;beta&quot;, &quot;sigma&quot;, &quot;phi&quot;))
+Inference for Stan model: tempModel.
+2 chains, each with iter=1500; warmup=500; thin=1; 
+post-warmup draws per chain=1000, total post-warmup draws=2000.
+
+         mean se_mean    sd  2.5%   25%   50%   75% 97.5% n_eff Rhat
+beta[1] 29.72    0.32 11.50  8.41 21.73 29.47 37.24 53.73  1298    1
+beta[2]  0.23    0.00  0.10  0.04  0.16  0.23  0.29  0.42  1104    1
+sigma   12.03    0.03  1.20 10.03 11.13 11.95 12.79 14.57  1281    1
+phi      0.91    0.00  0.05  0.79  0.88  0.91  0.95  0.99  1150    1
+
+Samples were drawn using NUTS(diag_e) at Fri Dec 11 09:40:14 2020.
+For each parameter, n_eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor on split chains (at 
+convergence, Rhat=1).</code></pre>
+</div>
+<div id="mcmc-diagnostics" class="section level2">
+<h2>MCMC diagnostics</h2>
+<pre class="r"><code>&gt; library(mcmcplots)
+&gt; mcmc = As.mcmc.list(data.temporalCor.rstan)
+&gt; denplot(mcmc, parms = c(&quot;beta&quot;, &quot;sigma&quot;, &quot;phi&quot;))</code></pre>
+<p><img src="/tutorial/autocorrelation-stan/2020-02-01-autocorrelation-stan_files/figure-html/mcmc_diag-1.png" width="672" /></p>
+<pre class="r"><code>&gt; traplot(mcmc, parms = c(&quot;beta&quot;, &quot;sigma&quot;, &quot;phi&quot;))</code></pre>
+<p><img src="/tutorial/autocorrelation-stan/2020-02-01-autocorrelation-stan_files/figure-html/mcmc_diag-2.png" width="672" /></p>
+<pre class="r"><code>&gt; #Raftery diagnostic
+&gt; raftery.diag(mcmc)
+[[1]]
+
+Quantile (q) = 0.025
+Accuracy (r) = +/- 0.005
+Probability (s) = 0.95 
+
+You need a sample size of at least 3746 with these values of q, r and s
+
+[[2]]
+
+Quantile (q) = 0.025
+Accuracy (r) = +/- 0.005
+Probability (s) = 0.95 
+
+You need a sample size of at least 3746 with these values of q, r and s</code></pre>
+<pre class="r"><code>&gt; #Autocorrelation diagnostic
+&gt; autocorr.diag(mcmc)
+           beta[1]       beta[2]       sigma         phi         lp__
+Lag 0   1.00000000  1.0000000000  1.00000000  1.00000000  1.000000000
+Lag 1   0.21294298  0.2877759622  0.21935566  0.08690846  0.428661908
+Lag 5  -0.04138775 -0.0210755053 -0.01868804  0.07309205  0.024806402
+Lag 10  0.01829666  0.0195631851  0.01665466 -0.01348082  0.002269007
+Lag 50 -0.00781781 -0.0006062359  0.01350526 -0.02697167 -0.038734864</code></pre>
+<pre class="r"><code>&gt; stan_ac(data.temporalCor.rstan)</code></pre>
+<p><img src="/tutorial/autocorrelation-stan/2020-02-01-autocorrelation-stan_files/figure-html/mcmc_diag4-1.png" width="672" /></p>
+<pre class="r"><code>&gt; stan_rhat(data.temporalCor.rstan)</code></pre>
+<p><img src="/tutorial/autocorrelation-stan/2020-02-01-autocorrelation-stan_files/figure-html/mcmc_diag4-2.png" width="672" /></p>
+<pre class="r"><code>&gt; stan_ess(data.temporalCor.rstan)</code></pre>
+<p><img src="/tutorial/autocorrelation-stan/2020-02-01-autocorrelation-stan_files/figure-html/mcmc_diag4-3.png" width="672" /></p>
+<p>All diagnostics seem fine.</p>
+</div>
+<div id="model-validation" class="section level2">
+<h2>Model validation</h2>
+<p>Whenever we fit a model that incorporates changes to the variance-covariance structures, we need to explore modified standardized residuals. In this case, the raw residuals should be updated to reflect the autocorrelation (subtract residual from previous time weighted by the autocorrelation parameter) before standardising by <code>sigma</code>.</p>
+<p><span class="math display">\[ Res_i = Y_i - \mu_i\]</span></p>
+<p><span class="math display">\[ Res_{i+1} = Res_{i+1} - \rho Res_i\]</span></p>
+<p><span class="math display">\[ Res_i = \frac{Res_i}{\sigma} \]</span></p>
+<pre class="r"><code>&gt; mcmc = as.matrix(data.temporalCor.rstan)
+&gt; wch = grep(&quot;beta&quot;, colnames(mcmc))
+&gt; # generate a model matrix
+&gt; newdata = data.frame(x = data.temporalCor$x)
+&gt; Xmat = model.matrix(~x, newdata)
+&gt; ## get median parameter estimates
+&gt; coefs = mcmc[, wch]
+&gt; fit = coefs %*% t(Xmat)
+&gt; resid = -1 * sweep(fit, 2, data.temporalCor$y, &quot;-&quot;)
+&gt; n = ncol(resid)
+&gt; resid[, -1] = resid[, -1] - (resid[, -n] * mcmc[, &quot;phi&quot;])
+&gt; resid = apply(resid, 2, median)/median(mcmc[, &quot;sigma&quot;])
+&gt; fit = apply(fit, 2, median)
+&gt; 
+&gt; library(ggplot2)
+&gt; ggplot() + geom_point(data = NULL, aes(y = resid, x = fit)) + theme_classic()</code></pre>
+<p><img src="/tutorial/autocorrelation-stan/2020-02-01-autocorrelation-stan_files/figure-html/mcmc_residuals-1.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; ggplot() + geom_point(data = NULL, aes(y = resid, x = data.temporalCor$x)) + theme_classic()</code></pre>
+<p><img src="/tutorial/autocorrelation-stan/2020-02-01-autocorrelation-stan_files/figure-html/mcmc_residuals-2.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; ggplot(data = NULL, aes(y = resid, x = data.temporalCor$year)) +
++     geom_point() + geom_line() + geom_hline(yintercept = 0, linetype = &quot;dashed&quot;) + theme_classic()</code></pre>
+<p><img src="/tutorial/autocorrelation-stan/2020-02-01-autocorrelation-stan_files/figure-html/mcmc_residuals-3.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; plot(acf(resid, lag = 40))</code></pre>
+<p><img src="/tutorial/autocorrelation-stan/2020-02-01-autocorrelation-stan_files/figure-html/mcmc_residuals-4.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; fit = coefs %*% t(Xmat)
+&gt; ## draw samples from this model
+&gt; yRep = sapply(1:nrow(mcmc), function(i) rnorm(nrow(data.temporalCor),
++     fit[i, ], mcmc[i, &quot;sigma&quot;]))
+&gt; ggplot() + geom_density(data = NULL, aes(x = as.vector(yRep),
++     fill = &quot;Model&quot;), alpha = 0.5) + geom_density(data = data.temporalCor,
++     aes(x = y, fill = &quot;Obs&quot;), alpha = 0.5) + theme_classic()</code></pre>
+<p><img src="/tutorial/autocorrelation-stan/2020-02-01-autocorrelation-stan_files/figure-html/mcmc_residuals-5.png" width="672" /></p>
+<p>No obvious autocorrelation or other issues with residuals remaining.</p>
+</div>
+<div id="parameter-estimates" class="section level2">
+<h2>Parameter estimates</h2>
+<p>Explore parameter estimates.</p>
+<pre class="r"><code>&gt; library(broom)
+&gt; library(broom.mixed)
+&gt; tidyMCMC(data.temporalCor.rstan, par = c(&quot;beta&quot;, &quot;phi&quot;, &quot;sigma&quot;),
++     conf.int = TRUE, conf.method = &quot;HPDinterval&quot;, rhat = TRUE,
++     ess = TRUE)
+# A tibble: 4 x 7
+  term    estimate std.error conf.low conf.high  rhat   ess
+  &lt;chr&gt;      &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt;
+1 beta[1]   29.5     11.5      8.62      53.9    1.00  1298
+2 beta[2]    0.225    0.0980   0.0435     0.422  1.00  1104
+3 phi        0.915    0.0533   0.809      0.998  1.00  1150
+4 sigma     12.0      1.20     9.88      14.3    1.00  1281</code></pre>
+</div>
+</div>
+<div id="incorporating-ar1-residual-autocorrelation-structure" class="section level1">
+<h1>Incorporating AR1 residual autocorrelation structure</h1>
+<div id="model-fitting-1" class="section level2">
+<h2>Model fitting</h2>
+<p>We proceed to code the model into <code>JAGS</code> (remember that in this software normal distribution are parameterised in terms of precisions <span class="math inline">\(\tau\)</span> rather than variances, where <span class="math inline">\(\tau=\frac{1}{\sigma^2}\)</span>). Define the model.</p>
+<pre class="r"><code>&gt; stanString = &quot;
++ functions { 
++   matrix cov_matrix_ar1(real ar, real sigma, int nrows) { 
++   matrix[nrows, nrows] mat; 
++   vector[nrows - 1] gamma; 
++   mat = diag_matrix(rep_vector(1, nrows)); 
++       for (i in 2:nrows) { 
++           gamma[i - 1] = pow(ar, i - 1); 
++               for (j in 1:(i - 1)) { 
++                       mat[i, j] = gamma[i - j]; 
++                       mat[j, i] = gamma[i - j]; 
++                   } 
++               } 
++               return sigma^2 / (1 - ar^2) * mat; 
++       }
++ } 
++     
++       data { 
++            int&lt;lower=1&gt; n;  // total number of observations 
++                vector[n] y;  // response variable
++                int&lt;lower=1&gt; nX;
++                    matrix[n,nX] X;
++          } 
++            transformed data {
++               vector[n] se2 = rep_vector(0, n); 
++            } 
++            parameters { 
++               vector[nX] beta;
++                   real&lt;lower=0&gt; sigma;  // residual SD 
++                   real &lt;lower=-1,upper=1&gt; phi;  // autoregressive effects 
++               } 
++               transformed parameters { 
++               } 
++               model {
++                   matrix[n, n] res_cov_matrix;
++                   matrix[n, n] Sigma; 
++                   vector[n] mu = X*beta;
++                   res_cov_matrix = cov_matrix_ar1(phi, sigma, n);
++                   Sigma = res_cov_matrix + diag_matrix(se2);
++                   Sigma = cholesky_decompose(Sigma); 
++ 
++                   // priors including all constants
++                   beta ~ student_t(3,30,30);
++                   sigma ~ cauchy(0,5);
++                   y ~ multi_normal_cholesky(mu,Sigma);
++               } 
++               generated quantities { 
++               }
++   
++   &quot;
+&gt; 
+&gt; ## write the model to a text file
+&gt; writeLines(stanString, con = &quot;tempModel2.stan&quot;)</code></pre>
+<p>Arrange the data as a list (as required by <code>STAN</code>). As input, <code>STAN</code> will need to be supplied with: the response variable, the predictor variable, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.</p>
+<pre class="r"><code>&gt; Xmat = model.matrix(~x, data.temporalCor)
+&gt; data.temporalCor.list &lt;- with(data.temporalCor, list(y = y, X = Xmat,
++     n = nrow(data.temporalCor), nX = ncol(Xmat)))</code></pre>
+<p>Define the nodes (parameters and derivatives) to monitor and chain parameters.</p>
+<pre class="r"><code>&gt; params &lt;- c(&quot;beta&quot;, &quot;sigma&quot;, &quot;phi&quot;)
+&gt; nChains = 2
+&gt; burnInSteps = 500
+&gt; thinSteps = 1
+&gt; numSavedSteps = 2000  #across all chains
+&gt; nIter = ceiling(burnInSteps + (numSavedSteps * thinSteps)/nChains)
+&gt; nIter
+[1] 1500</code></pre>
+<p>Now compile and run the Stan code via the <code>rstan</code> interface.</p>
+<pre class="r"><code>&gt; data.temporalCor2.rstan &lt;- stan(data = data.temporalCor.list, file = &quot;tempModel2.stan&quot;, chains = nChains, pars = params, iter = nIter, warmup = burnInSteps, thin = thinSteps)
+
+SAMPLING FOR MODEL &#39;tempModel2&#39; NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 0.001 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 10 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 1500 [  0%]  (Warmup)
+Chain 1: Iteration:  150 / 1500 [ 10%]  (Warmup)
+Chain 1: Iteration:  300 / 1500 [ 20%]  (Warmup)
+Chain 1: Iteration:  450 / 1500 [ 30%]  (Warmup)
+Chain 1: Iteration:  501 / 1500 [ 33%]  (Sampling)
+Chain 1: Iteration:  650 / 1500 [ 43%]  (Sampling)
+Chain 1: Iteration:  800 / 1500 [ 53%]  (Sampling)
+Chain 1: Iteration:  950 / 1500 [ 63%]  (Sampling)
+Chain 1: Iteration: 1100 / 1500 [ 73%]  (Sampling)
+Chain 1: Iteration: 1250 / 1500 [ 83%]  (Sampling)
+Chain 1: Iteration: 1400 / 1500 [ 93%]  (Sampling)
+Chain 1: Iteration: 1500 / 1500 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 5.675 seconds (Warm-up)
+Chain 1:                2.641 seconds (Sampling)
+Chain 1:                8.316 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL &#39;tempModel2&#39; NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 0.001 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 10 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 1500 [  0%]  (Warmup)
+Chain 2: Iteration:  150 / 1500 [ 10%]  (Warmup)
+Chain 2: Iteration:  300 / 1500 [ 20%]  (Warmup)
+Chain 2: Iteration:  450 / 1500 [ 30%]  (Warmup)
+Chain 2: Iteration:  501 / 1500 [ 33%]  (Sampling)
+Chain 2: Iteration:  650 / 1500 [ 43%]  (Sampling)
+Chain 2: Iteration:  800 / 1500 [ 53%]  (Sampling)
+Chain 2: Iteration:  950 / 1500 [ 63%]  (Sampling)
+Chain 2: Iteration: 1100 / 1500 [ 73%]  (Sampling)
+Chain 2: Iteration: 1250 / 1500 [ 83%]  (Sampling)
+Chain 2: Iteration: 1400 / 1500 [ 93%]  (Sampling)
+Chain 2: Iteration: 1500 / 1500 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 3.646 seconds (Warm-up)
+Chain 2:                2.337 seconds (Sampling)
+Chain 2:                5.983 seconds (Total)
+Chain 2: 
+&gt; 
+&gt; print(data.temporalCor2.rstan, par = c(&quot;beta&quot;, &quot;sigma&quot;, &quot;phi&quot;))
+Inference for Stan model: tempModel2.
+2 chains, each with iter=1500; warmup=500; thin=1; 
+post-warmup draws per chain=1000, total post-warmup draws=2000.
+
+         mean se_mean    sd  2.5%   25%   50%   75% 97.5% n_eff Rhat
+beta[1] 22.23    0.42 15.12 -6.91 13.08 21.88 30.86 54.26  1321    1
+beta[2]  0.22    0.00  0.10  0.04  0.16  0.22  0.29  0.42  1220    1
+sigma   11.98    0.03  1.23  9.85 11.11 11.88 12.79 14.66  1659    1
+phi      0.90    0.00  0.06  0.78  0.86  0.90  0.94  0.98  1355    1
+
+Samples were drawn using NUTS(diag_e) at Fri Dec 11 09:41:11 2020.
+For each parameter, n_eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor on split chains (at 
+convergence, Rhat=1).</code></pre>
+</div>
+<div id="mcmc-diagnostics-1" class="section level2">
+<h2>MCMC diagnostics</h2>
+<pre class="r"><code>&gt; mcmc = As.mcmc.list(data.temporalCor2.rstan)
+&gt; denplot(mcmc, parms = c(&quot;beta&quot;, &quot;sigma&quot;, &quot;phi&quot;))</code></pre>
+<p><img src="/tutorial/autocorrelation-stan/2020-02-01-autocorrelation-stan_files/figure-html/mcmc_diag_ex2-1.png" width="672" /></p>
+<pre class="r"><code>&gt; traplot(mcmc, parms = c(&quot;beta&quot;, &quot;sigma&quot;, &quot;phi&quot;))</code></pre>
+<p><img src="/tutorial/autocorrelation-stan/2020-02-01-autocorrelation-stan_files/figure-html/mcmc_diag_ex2-2.png" width="672" /></p>
+<pre class="r"><code>&gt; #Raftery diagnostic
+&gt; raftery.diag(mcmc)
+[[1]]
+
+Quantile (q) = 0.025
+Accuracy (r) = +/- 0.005
+Probability (s) = 0.95 
+
+You need a sample size of at least 3746 with these values of q, r and s
+
+[[2]]
+
+Quantile (q) = 0.025
+Accuracy (r) = +/- 0.005
+Probability (s) = 0.95 
+
+You need a sample size of at least 3746 with these values of q, r and s</code></pre>
+<pre class="r"><code>&gt; #Autocorrelation diagnostic
+&gt; autocorr.diag(mcmc)
+            beta[1]      beta[2]        sigma           phi        lp__
+Lag 0   1.000000000  1.000000000  1.000000000  1.000000e+00  1.00000000
+Lag 1   0.152178661  0.181655778  0.062722850  9.682982e-02  0.45706648
+Lag 5  -0.001128217  0.001348094  0.007963621  1.390360e-02  0.04092522
+Lag 10  0.026325475 -0.010276373 -0.048228887 -1.750250e-02 -0.00619533
+Lag 50  0.004569914 -0.033128415 -0.023918937  3.767909e-05 -0.01373323</code></pre>
+<pre class="r"><code>&gt; stan_ac(data.temporalCor2.rstan)</code></pre>
+<p><img src="/tutorial/autocorrelation-stan/2020-02-01-autocorrelation-stan_files/figure-html/mcmc_diag4_ex2-1.png" width="672" /></p>
+<pre class="r"><code>&gt; stan_rhat(data.temporalCor2.rstan)</code></pre>
+<p><img src="/tutorial/autocorrelation-stan/2020-02-01-autocorrelation-stan_files/figure-html/mcmc_diag4_ex2-2.png" width="672" /></p>
+<pre class="r"><code>&gt; stan_ess(data.temporalCor2.rstan)</code></pre>
+<p><img src="/tutorial/autocorrelation-stan/2020-02-01-autocorrelation-stan_files/figure-html/mcmc_diag4_ex2-3.png" width="672" /></p>
+<p>All diagnostics seem fine.</p>
+</div>
+<div id="model-validation-1" class="section level2">
+<h2>Model validation</h2>
+<p>Whenever we fit a model that incorporates changes to the variance-covariance structures, we need to explore modified standardized residuals. In this case, the raw residuals should be updated to reflect the autocorrelation (subtract residual from previous time weighted by the autocorrelation parameter) before standardising by <code>sigma</code>.</p>
+<p><span class="math display">\[ Res_i = Y_i - \mu_i\]</span></p>
+<p><span class="math display">\[ Res_{i+1} = Res_{i+1} - \rho Res_i\]</span></p>
+<p><span class="math display">\[ Res_i = \frac{Res_i}{\sigma} \]</span></p>
+<pre class="r"><code>&gt; mcmc = as.matrix(data.temporalCor2.rstan)
+&gt; wch = grep(&quot;beta&quot;, colnames(mcmc))
+&gt; # generate a model matrix
+&gt; newdata = data.frame(x = data.temporalCor$x)
+&gt; Xmat = model.matrix(~x, newdata)
+&gt; ## get median parameter estimates
+&gt; coefs = mcmc[, wch]
+&gt; fit = coefs %*% t(Xmat)
+&gt; resid = -1 * sweep(fit, 2, data.temporalCor$y, &quot;-&quot;)
+&gt; n = ncol(resid)
+&gt; resid[, -1] = resid[, -1] - (resid[, -n] * mcmc[, &quot;phi&quot;])
+&gt; resid = apply(resid, 2, median)/median(mcmc[, &quot;sigma&quot;])
+&gt; fit = apply(fit, 2, median)
+&gt; 
+&gt; ggplot() + geom_point(data = NULL, aes(y = resid, x = fit)) + theme_classic()</code></pre>
+<p><img src="/tutorial/autocorrelation-stan/2020-02-01-autocorrelation-stan_files/figure-html/mcmc_residuals_ex2-1.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; ggplot() + geom_point(data = NULL, aes(y = resid, x = data.temporalCor$x)) + theme_classic()</code></pre>
+<p><img src="/tutorial/autocorrelation-stan/2020-02-01-autocorrelation-stan_files/figure-html/mcmc_residuals_ex2-2.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; ggplot(data = NULL, aes(y = resid, x = data.temporalCor$year)) +
++     geom_point() + geom_line() + geom_hline(yintercept = 0, linetype = &quot;dashed&quot;) + theme_classic()</code></pre>
+<p><img src="/tutorial/autocorrelation-stan/2020-02-01-autocorrelation-stan_files/figure-html/mcmc_residuals_ex2-3.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; plot(acf(resid, lag = 40))</code></pre>
+<p><img src="/tutorial/autocorrelation-stan/2020-02-01-autocorrelation-stan_files/figure-html/mcmc_residuals_ex2-4.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; fit = coefs %*% t(Xmat)
+&gt; ## draw samples from this model
+&gt; yRep = sapply(1:nrow(mcmc), function(i) rnorm(nrow(data.temporalCor),
++     fit[i, ], mcmc[i, &quot;sigma&quot;]))
+&gt; ggplot() + geom_density(data = NULL, aes(x = as.vector(yRep),
++     fill = &quot;Model&quot;), alpha = 0.5) + geom_density(data = data.temporalCor,
++     aes(x = y, fill = &quot;Obs&quot;), alpha = 0.5) + theme_classic()</code></pre>
+<p><img src="/tutorial/autocorrelation-stan/2020-02-01-autocorrelation-stan_files/figure-html/mcmc_residuals_ex2-5.png" width="672" /></p>
+<p>No obvious autocorrelation or other issues with residuals remaining.</p>
+</div>
+<div id="parameter-estimates-1" class="section level2">
+<h2>Parameter estimates</h2>
+<p>Explore parameter estimates.</p>
+<pre class="r"><code>&gt; tidyMCMC(data.temporalCor2.rstan, par = c(&quot;beta&quot;, &quot;phi&quot;, &quot;sigma&quot;),
++     conf.int = TRUE, conf.method = &quot;HPDinterval&quot;, rhat = TRUE,
++     ess = TRUE)
+# A tibble: 4 x 7
+  term    estimate std.error conf.low conf.high  rhat   ess
+  &lt;chr&gt;      &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt;
+1 beta[1]   21.9     15.1     -7.40      53.6   1.00   1321
+2 beta[2]    0.224    0.0974   0.0501     0.426 1.00   1220
+3 phi        0.900    0.0560   0.789      0.989 1.00   1355
+4 sigma     11.9      1.23     9.75      14.5   0.999  1659</code></pre>
+</div>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-gelman2015stan" class="csl-entry">
+Gelman, Andrew, Daniel Lee, and Jiqiang Guo. 2015. <span>“Stan: A Probabilistic Programming Language for Bayesian Inference and Optimization.”</span> <em>Journal of Educational and Behavioral Statistics</em> 40 (5): 530–43.
+</div>
+<div id="ref-rstanpackage" class="csl-entry">
+Stan Development Team. 2018. <span>“<span>RStan</span>: The <span>R</span> Interface to <span>Stan</span>.”</span> <a href="http://mc-stan.org/">http://mc-stan.org/</a>.
+</div>
+</div>
+</div>

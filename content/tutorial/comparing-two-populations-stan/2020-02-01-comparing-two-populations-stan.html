@@ -1,0 +1,661 @@
+---
+title: "Comparing Two Populations (STAN)"
+author: "Andrea Gabrio"
+date: '2020-02-01'
+slug: comparing-two-populations-stan
+categories:
+- population differences
+- STAN
+- R
+tags:
+- tutorials
+- STAN
+- population differences
+subtitle: ''
+summary: ''
+lastmod: '2020-02-01T11:54:30+01:00'
+featured: no
+draft: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+bibliography: citations_stan2.bib
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>This tutorial will focus on the use of Bayesian estimation to explore differences between two populations. <code>BUGS</code> (Bayesian inference Using <em>Gibbs Sampling</em>) is an algorithm and supporting language (resembling <code>R</code>) dedicated to performing the Gibbs sampling implementation of <em>Markov Chain Monte Carlo</em> (MCMC) method. Dialects of the <code>BUGS</code> language are implemented within three main projects:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>OpenBUGS</strong> - written in component pascal.</p></li>
+<li><p><strong>JAGS</strong> - (Just Another Gibbs Sampler) - written in <code>C++</code>.</p></li>
+<li><p><strong>STAN</strong> - a dedicated Bayesian modelling framework written in <code>C++</code> and implementing <em>Hamiltonian</em> MCMC samplers.</p></li>
+</ol>
+<p>Whilst the above programs can be used stand-alone, they do offer the rich data pre-processing and graphical capabilities of R, and thus, they are best accessed from within <code>R</code> itself. As such there are multiple packages devoted to interfacing with the various software implementations:</p>
+<ul>
+<li><p><em>R2OpenBUGS</em> - interfaces with <code>OpenBUGS</code></p></li>
+<li><p><em>R2jags</em> - interfaces with <code>JAGS</code></p></li>
+<li><p><em>rstan</em> - interfaces with <code>STAN</code></p></li>
+</ul>
+<p>The <code>BUGS/JAGS/STAN</code> languages and algorithms are very powerful and flexible. However, the cost of this power and flexibility is complexity and the need for a firm understanding of the model you wish to fit as well as the priors to be used. The algorithms requires the following inputs.</p>
+<ul>
+<li><p>Within the model:</p>
+<ol style="list-style-type: decimal">
+<li><p>The likelihood function relating the response to the predictors.</p></li>
+<li><p>The definition of the priors.</p></li>
+</ol></li>
+<li><p>Chain properties:</p>
+<ol style="list-style-type: decimal">
+<li><p>The number of chains.</p></li>
+<li><p>The length of chains (number of iterations).</p></li>
+<li><p>The burn-in length (number of initial iterations to ignore).</p></li>
+<li><p>The thinning rate (number of iterations to count on before storing a sample).</p></li>
+</ol></li>
+<li><p>The initial estimates to start an MCMC chain. If there are multiple chains, these starting values can differ between chains.</p></li>
+<li><p>The list of model parameters and derivatives to monitor (and return the posterior distributions of)</p></li>
+</ul>
+<p>This tutorial will demonstrate how to fit models in <code>STAN</code> (<span class="citation">Gelman, Lee, and Guo (2015)</span>) using the package <code>rstan</code> (<span class="citation">Stan Development Team (2018)</span>) as interface, which also requires to load some other packages.</p>
+<div id="data-generation" class="section level1">
+<h1>Data generation</h1>
+<p>We will start by generating a random data set. Note, I am creating two versions of the predictor variable (a numeric version and a factorial version).</p>
+<pre class="r"><code>&gt; set.seed(123)
+&gt; nA &lt;- 60  #sample size from Population A
+&gt; nB &lt;- 40  #sample size from Population B
+&gt; muA &lt;- 105  #population mean of Population A
+&gt; muB &lt;- 77.5  #population mean of Population B
+&gt; sigma &lt;- 3  #standard deviation of both populations (equally varied)
+&gt; yA &lt;- rnorm(nA, muA, sigma)  #Population A sample
+&gt; yB &lt;- rnorm(nB, muB, sigma)  #Population B sample
+&gt; y &lt;- c(yA, yB)
+&gt; x &lt;- factor(rep(c(&quot;A&quot;, &quot;B&quot;), c(nA, nB)))  #categorical listing of the populations
+&gt; xn &lt;- as.numeric(x)  #numerical version of the population category for means parameterization. # Should not start at 0.
+&gt; data &lt;- data.frame(y, x, xn)  # dataset</code></pre>
+<p>Let inspect the first few rows of the dataset using the command <code>head</code></p>
+<pre class="r"><code>&gt; head(data)
+         y x xn
+1 103.3186 A  1
+2 104.3095 A  1
+3 109.6761 A  1
+4 105.2115 A  1
+5 105.3879 A  1
+6 110.1452 A  1</code></pre>
+<p>We can also perform some exploratory data analysis - in this case, a boxplot of the response for each level of the predictor.</p>
+<pre class="r"><code>&gt; boxplot(y ~ x, data)</code></pre>
+<p><img src="/tutorial/comparing-two-populations-stan/2020-02-01-comparing-two-populations-stan_files/figure-html/boxplot-1.png" width="672" /></p>
+</div>
+<div id="the-one-sample-t-test" class="section level1">
+<h1>The One Sample t-test</h1>
+<p>A <em>t-test</em> is essentially just a simple regression model in which the categorical predictor is represented by a binary variable in which one level is coded as <span class="math inline">\(0\)</span> and the other <span class="math inline">\(1\)</span>. For the model itself, the observed response <span class="math inline">\(y_i\)</span> are assumed to be drawn from a normal distribution with a given mean <span class="math inline">\(\mu\)</span> and standard deviation <span class="math inline">\(\sigma\)</span>. The expected values are themselves determined by the linear predictor <span class="math inline">\(\mu_i=\beta_0+\beta_1x_i\)</span>, where <span class="math inline">\(\beta_0\)</span> represents the mean of the first treatment group and <span class="math inline">\(\beta_1\)</span> represents the difference between the mean of the first group and the mean of the second group (the effect of interest).</p>
+<p>MCMC sampling requires priors on all parameters. We will employ weakly informative priors. Specifying “uninformative” priors is always a bit of a balancing act. If the priors are too vague (wide) the MCMC sampler can wander off into nonscence areas of likelihood rather than concentrate around areas of highest likelihood (desired when wanting the outcomes to be largely driven by the data). On the other hand, if the priors are too strong, they may have an influence on the parameters. In such a simple model, this balance is very forgiving - it is for more complex models that prior choice becomes more important. For this simple model, we will go with zero-centered Gaussian (normal) priors with relatively large standard deviations (<span class="math inline">\(1000\)</span>) for both the intercept and the treatment effect and a wide half-cauchy (scale=<span class="math inline">\(25\)</span>) for the standard deviation (<span class="citation">Gelman and others (2006)</span>).</p>
+<p><span class="math display">\[y_i \sim \text{Normal}(\mu_i, \sigma),  \]</span></p>
+<p>where <span class="math inline">\(\mu_i=\beta_0+\beta_1x_i\)</span>.</p>
+<p>Priors are defined as:</p>
+<p><span class="math display">\[ \beta_j \sim \text{Normal}(0,1000),  \;\;\; \text{and} \;\;\; \sigma \sim \text{Cauchy}(0,25),  \]</span></p>
+<p>for <span class="math inline">\(j=0,1\)</span>.</p>
+<div id="fitting-the-model-in-stan" class="section level2">
+<h2>Fitting the model in STAN</h2>
+<p>Broadly, there are two ways of parameterising (expressing the unknown (to be estimated) components of a model) a model. Either we can estimate the means of each group (<em>Means parameterisation</em>) or we can estimate the mean of one group and the difference between this group and the other group(s) (<em>Effects parameterisation</em>). The latter is commonly used for frequentist null hypothesis testing as its parameters are more consistent with the null hypothesis of interest (that the difference between the two groups equals zero).</p>
+<ol style="list-style-type: decimal">
+<li><strong>Effects parameterisation</strong></li>
+</ol>
+<p><span class="math display">\[ y_i = \beta_0 + \beta_{j}x_i + \epsilon_i, \;\;\; \text{with} \;\;\; \epsilon_i \sim \text{Normal}(0,\sigma).  \]</span></p>
+<p>Each <span class="math inline">\(y_i\)</span> is modelled by an intercept <span class="math inline">\(\beta_0\)</span> (mean of group A) plus a difference parameter <span class="math inline">\(\beta_j\)</span> (difference between mean of group A and group B) multiplied by an indicator of which group the observation came from (<span class="math inline">\(x_i\)</span>), plus a residual drawn from a normal distribution with mean <span class="math inline">\(0\)</span> and standard deviation <span class="math inline">\(\sigma\)</span>. Actually, there are as many <span class="math inline">\(\beta_j\)</span> parameters as there are groups but one of them (typically the first) is set to be equal to zero (to avoid over-parameterization). Expected values of <span class="math inline">\(y\)</span> are modelled assuming they are drawn from a normal distribution whose mean is determined by a linear combination of effect parameters and whose variance is defined by the degree of variability in this mean. The parameters are: <span class="math inline">\(\beta_0\)</span>, <span class="math inline">\(\beta_1\)</span> and <span class="math inline">\(\sigma\)</span>.</p>
+<ol start="2" style="list-style-type: decimal">
+<li><strong>Means parameterisation</strong></li>
+</ol>
+<p><span class="math display">\[ y_i = \beta_{j} + \epsilon_i, \;\;\; \text{with} \;\;\; \epsilon_i \sim \text{Normal}(0,\sigma).  \]</span></p>
+<p>Each <span class="math inline">\(y_i\)</span> is modelled as the mean <span class="math inline">\(\beta_j\)</span> of each group (<span class="math inline">\(j=1,2\)</span>) plus a residual drawn from a normal distribution with a mean of zero and a standard deviation of <span class="math inline">\(\sigma\)</span>. Actually, <span class="math inline">\(\boldsymbol \beta\)</span> is a set of <span class="math inline">\(j\)</span> coefficients corresponding to the <span class="math inline">\(j\)</span> dummy coded factor levels. Expected values of <span class="math inline">\(y\)</span> are modelled assuming they are drawn from a normal distribution whose mean is determined by a linear combination of means parameters and whose variance is defined by the degree of variability in this mean. The parameters are: <span class="math inline">\(\beta_1\)</span>, <span class="math inline">\(\beta_2\)</span> and <span class="math inline">\(\sigma\)</span>.</p>
+<p>Whilst the <code>STAN</code> language broadly resembles <code>BUGS/JAGS</code>, there are numerous important differences. Some of these differences are to support translation to <code>c++</code> for compilation (such as declaring variables). Others reflect leveraging of vectorization to speed up run time. Here are some important notes about <code>STAN</code>:</p>
+<ul>
+<li><p>All variables must be declared</p></li>
+<li><p>Variables declared in the parameters block will be collected</p></li>
+<li><p>Anything in the transformed block will be collected as samples. Also, checks will be made every loop</p></li>
+</ul>
+<p>Now I will demonstrate fitting the models with <code>STAN</code>. Note, I am using the <code>refresh=0</code> option so as to suppress the larger regular output in the interest of keeping output to what is necessary for this tutorial. When running outside of a tutorial context, the regular verbose output is useful as it provides a way to gauge progress.</p>
+<p><strong>Effects Parameterisation</strong></p>
+<pre class="r"><code>&gt; stanString = &quot; 
++ data {
++  int n;
++  vector [n] y;
++  vector [n] x;
++  }
++  parameters {
++  real &lt;lower=0, upper=100&gt; sigma;
++  real beta0;
++  real beta;
++  }
++  transformed parameters {
++  }
++  model {
++  vector [n] mu;
++  
++  //Priors
++  beta0 ~ normal(0,1000);
++  beta ~ normal(0,1000);
++  sigma ~ cauchy(0,25);
++  
++  mu = beta0 + beta*x;
++  //Likelihood
++  y ~ normal(mu, sigma);
++  }
++  generated quantities {
++  vector [2] Group_means;
++  real CohensD;
++  //Other Derived parameters 
++  //# Group means (note, beta is a vector)
++  Group_means[1] = beta0;
++  Group_means[2] = beta0+beta;
++  
++  CohensD = beta /sigma;  
++  }
++  
++  &quot;
+&gt; ## write the model to a text file
+&gt; writeLines(stanString, con = &quot;ttestModel.stan&quot;)</code></pre>
+<p><strong>Means Parameterisation</strong></p>
+<pre class="r"><code>&gt; stanString.means = &quot;  
++  data {
++  int n;
++  int nX;
++  vector [n] y;
++  matrix [n,nX] x;
++  }
++  parameters {
++  real &lt;lower=0, upper=100&gt; sigma;
++  vector [nX] beta;
++  }
++  transformed parameters {
++  }
++  model {
++  vector [n] mu;
++  
++  //Priors
++  beta ~ normal(0,1000);
++  sigma ~ cauchy(0,25);
++  
++  mu = x*beta;
++  //Likelihood
++  y ~ normal(mu, sigma);
++  }
++  generated quantities {
++  vector [2] Group_means;
++  real CohensD;
++  
++  //Other Derived parameters 
++  Group_means[1] = beta[1];
++  Group_means[2] = beta[1]+beta[2];
++  
++  CohensD = beta[2] /sigma;  
++  }
++  
++  &quot;
+&gt; ## write the model to a text file
+&gt; writeLines(stanString.means, con = &quot;ttestModelMeans.stan&quot;)</code></pre>
+<p>Arrange the data as a list (as required by <code>STAN</code>).</p>
+<pre class="r"><code>&gt; data.list &lt;- with(data, list(y = y, x = (xn - 1), n = nrow(data)))
+&gt; X &lt;- model.matrix(~x, data)
+&gt; data.list.means = with(data, list(y = y, x = X, n = nrow(data), nX = ncol(X)))</code></pre>
+<p>Define the initial values for the chain. Reasonable starting points can be gleaned from the data themselves.</p>
+<pre class="r"><code>&gt; inits &lt;- list(beta0 = mean(data$y), beta = c(NA, diff(tapply(data$y,
++     data$x, mean))), sigma = sd(data$y/2))
+&gt; inits.means &lt;- list(beta = tapply(data$y, data$x, mean), sigma = sd(data$y/2))</code></pre>
+<p>Define the nodes (parameters and derivatives) to monitor.</p>
+<pre class="r"><code>&gt; params &lt;- c(&quot;beta0&quot;, &quot;beta&quot;, &quot;sigma&quot;, &quot;Group_means&quot;, &quot;CohensD&quot;)
+&gt; params.means &lt;- c(&quot;beta&quot;, &quot;sigma&quot;, &quot;Group_means&quot;,&quot;CohensD&quot;)</code></pre>
+<p>Define the chain parameters.</p>
+<pre class="r"><code>&gt; burnInSteps = 500  # the number of initial samples to discard
+&gt; nChains = 2  # the number of independed sampling chains to perform 
+&gt; thinSteps = 1  # the thinning rate
+&gt; nIter = 2000</code></pre>
+<p>Start the <code>STAN</code> model (check the model, load data into the model, specify the number of chains and compile the model). Load the <code>rstan</code> package.</p>
+<pre class="r"><code>&gt; library(rstan)</code></pre>
+<p>When using the <code>stan</code> function (<code>rtsan</code> package), it is not necessary to provide initial values. However, if they are to be supplied, the inital values must be provided as a list of the same length as the number of chains.</p>
+<p><strong>Effects Parameterisation</strong></p>
+<pre class="r"><code>&gt; data.stan = stan(file = &quot;ttestModel.stan&quot;, 
++   data = data.list, 
++   pars = params,
++   iter = nIter,
++   warmup = burnInSteps, 
++   chains = nChains, 
++   thin = thinSteps, 
++   init = &quot;random&quot;, #or inits=list(inits,inits)
++   refresh = 0)
+&gt; 
+&gt; #print results
+&gt; print(data.stan)
+Inference for Stan model: ttestModel.
+2 chains, each with iter=2000; warmup=500; thin=1; 
+post-warmup draws per chain=1500, total post-warmup draws=3000.
+
+                  mean se_mean   sd    2.5%     25%     50%     75%   97.5%
+beta0           105.19    0.01 0.35  104.49  104.96  105.20  105.43  105.87
+beta            -27.31    0.01 0.56  -28.41  -27.70  -27.30  -26.93  -26.16
+sigma             2.78    0.00 0.20    2.42    2.64    2.77    2.92    3.21
+Group_means[1]  105.19    0.01 0.35  104.49  104.96  105.20  105.43  105.87
+Group_means[2]   77.89    0.01 0.43   77.03   77.61   77.88   78.16   78.78
+CohensD          -9.86    0.02 0.75  -11.33  -10.37   -9.85   -9.34   -8.43
+lp__           -150.71    0.03 1.23 -154.02 -151.23 -150.37 -149.81 -149.33
+               n_eff Rhat
+beta0           1826    1
+beta            1669    1
+sigma           1902    1
+Group_means[1]  1826    1
+Group_means[2]  2874    1
+CohensD         1926    1
+lp__            1322    1
+
+Samples were drawn using NUTS(diag_e) at Fri Dec 11 09:27:43 2020.
+For each parameter, n_eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor on split chains (at 
+convergence, Rhat=1).</code></pre>
+<p><strong>Means Parameterisation</strong></p>
+<pre class="r"><code>&gt; data.stan.means = stan(file = &quot;ttestModelMeans.stan&quot;, 
++   data = data.list.means, 
++   pars = params.means,
++   iter = nIter,
++   warmup = burnInSteps, 
++   chains = nChains, 
++   thin = thinSteps, 
++   init = &quot;random&quot;, #or inits=list(inits.means,inits.means)
++   refresh = 0)
+&gt; 
+&gt; #print results
+&gt; print(data.stan.means)
+Inference for Stan model: ttestModelMeans.
+2 chains, each with iter=2000; warmup=500; thin=1; 
+post-warmup draws per chain=1500, total post-warmup draws=3000.
+
+                  mean se_mean   sd    2.5%     25%     50%     75%   97.5%
+beta[1]         105.19    0.01 0.37  104.47  104.94  105.19  105.44  105.90
+beta[2]         -27.31    0.01 0.57  -28.42  -27.71  -27.32  -26.94  -26.15
+sigma             2.79    0.00 0.20    2.43    2.65    2.77    2.91    3.22
+Group_means[1]  105.19    0.01 0.37  104.47  104.94  105.19  105.44  105.90
+Group_means[2]   77.88    0.01 0.43   77.06   77.59   77.87   78.18   78.71
+CohensD          -9.86    0.02 0.73  -11.29  -10.34   -9.85   -9.36   -8.46
+lp__           -150.72    0.03 1.20 -153.78 -151.32 -150.42 -149.83 -149.33
+               n_eff Rhat
+beta[1]         1449    1
+beta[2]         1552    1
+sigma           2049    1
+Group_means[1]  1449    1
+Group_means[2]  2710    1
+CohensD         2034    1
+lp__            1263    1
+
+Samples were drawn using NUTS(diag_e) at Fri Dec 11 09:28:09 2020.
+For each parameter, n_eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor on split chains (at 
+convergence, Rhat=1).</code></pre>
+<p><strong>Notes</strong></p>
+<ul>
+<li><p>If <code>inits="random"</code> the <code>stan</code> function will randomly generate initial values between <span class="math inline">\(-2\)</span> and <span class="math inline">\(2\)</span> on the <em>unconstrained support</em>. The optional additional parameter <code>init_r</code> can be set to some value other than <span class="math inline">\(2\)</span> to change the range of the randomly generated inits. Other available options include: set <code>inits="0"</code> to initialize all parameters to zero on the unconstrained support; set inital values by providing a list equal in length to the number of chains; set initial values by providing a function that returns a list for specifying the initial values of parameters for a chain.</p></li>
+<li><p>In addition to the mean and quantiles of each of the sample nodes, the <code>stan</code> function will calculate.</p>
+<ol style="list-style-type: decimal">
+<li><p>The <em>effective sample size</em> for each sample - if <code>n.eff</code> for a node is substantially less than the number of iterations, then it suggests poor mixing.</p></li>
+<li><p>The <em>Potential scale reduction factor</em> or <code>Rhat</code> values for each sample - these are a convergence diagnostic (values of <span class="math inline">\(1\)</span> indicate full convergence, values greater than <span class="math inline">\(1.01\)</span> are indicative of non-convergence.</p></li>
+</ol></li>
+</ul>
+<p>The total number samples collected is <span class="math inline">\(3000\)</span>. That is, there are <span class="math inline">\(3000\)</span> samples collected from the multidimensional posterior distribution and thus, <span class="math inline">\(3000\)</span> samples collected from the posterior distributions of each parameter. The effective number of samples column indicates the number of independent samples represented in the total. It is clear that for all parameters the chains were well mixed.</p>
+</div>
+</div>
+<div id="mcmc-diagnostics" class="section level1">
+<h1>MCMC diagnostics</h1>
+<p>Again, prior to examining the summaries, we should have explored the convergence diagnostics. There are numerous ways of working with <code>STAN</code> model fits (for exploring diagnostics and summarisation).</p>
+<ol style="list-style-type: decimal">
+<li><p>extract the mcmc samples and convert them into a mcmc.list to leverage the various <code>mcmcplots</code> routines</p></li>
+<li><p>use the numerous routines that come with the <code>rstan</code> package</p></li>
+<li><p>use the routines that come with the <code>bayesplot</code> package</p></li>
+</ol>
+<p>We will explore all of these.</p>
+<ul>
+<li><strong>mcmcplots</strong></li>
+</ul>
+<p>First, we need to convert the <code>rtsan</code> object into an <code>mcmc.list</code> object to apply the functions in the <code>mcmcplots</code> package.</p>
+<pre class="r"><code>&gt; library(mcmcplots)
+&gt; s = as.array(data.stan.means)
+&gt; mcmc &lt;- do.call(mcmc.list, plyr:::alply(s[, , -(length(s[1, 1, ]))], 2, as.mcmc))</code></pre>
+<p>Next we look at density and trace plots.</p>
+<pre class="r"><code>&gt; denplot(mcmc, parms = c(&quot;Group_means&quot;, &quot;CohensD&quot;))</code></pre>
+<p><img src="/tutorial/comparing-two-populations-stan/2020-02-01-comparing-two-populations-stan_files/figure-html/mcmc_diagv2-1.png" width="672" /></p>
+<pre class="r"><code>&gt; traplot(mcmc, parms = c(&quot;Group_means&quot;, &quot;CohensD&quot;))</code></pre>
+<p><img src="/tutorial/comparing-two-populations-stan/2020-02-01-comparing-two-populations-stan_files/figure-html/mcmc_diagv2-2.png" width="672" /></p>
+<p>These plots show no evidence that the chains have not reasonably traversed the entire multidimensional parameter space.</p>
+<ul>
+<li><strong>rstan</strong></li>
+</ul>
+<p>MCMC diagnostic measures that can be directly applied to <code>rstan</code> objects via the <code>rstan</code> package include: traceplots, autocorrelation, effective sample size and Rhat diagnostics.</p>
+<pre class="r"><code>&gt; #traceplots
+&gt; stan_trace(data.stan.means, pars = c(&quot;Group_means&quot;, &quot;CohensD&quot;))</code></pre>
+<p><img src="/tutorial/comparing-two-populations-stan/2020-02-01-comparing-two-populations-stan_files/figure-html/mcmc_diagv3-1.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; #autocorrelation
+&gt; stan_ac(data.stan.means, pars = c(&quot;Group_means&quot;, &quot;CohensD&quot;))</code></pre>
+<p><img src="/tutorial/comparing-two-populations-stan/2020-02-01-comparing-two-populations-stan_files/figure-html/mcmc_diagv3-2.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; #rhat
+&gt; stan_rhat(data.stan.means, pars = c(&quot;Group_means&quot;, &quot;CohensD&quot;))</code></pre>
+<p><img src="/tutorial/comparing-two-populations-stan/2020-02-01-comparing-two-populations-stan_files/figure-html/mcmc_diagv3-3.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; #ess
+&gt; stan_ess(data.stan.means, pars = c(&quot;Group_means&quot;, &quot;CohensD&quot;))</code></pre>
+<p><img src="/tutorial/comparing-two-populations-stan/2020-02-01-comparing-two-populations-stan_files/figure-html/mcmc_diagv3-4.png" width="672" /></p>
+<p>Note:</p>
+<ul>
+<li><p>Rhat values are a measure of sampling efficiency/effectiveness. Ideally, all values should be less than <span class="math inline">\(1.05\)</span>. If there are values of 1.05 or greater it suggests that the sampler was not very efficient or effective. Not only does this mean that the sampler was potentiall slower than it could have been, more importantly, it could indicate that the sampler spent time sampling in a region of the likelihood that is less informative. Such a situation can arise from either a misspecified model or overly vague priors that permit sampling in otherwise nonscence parameter space.</p></li>
+<li><p>ESS indicates the number samples (or proportion of samples that the sampling algorithm) deamed effective. The sampler rejects samples on the basis of certain criterion and when it does so, the previous sample value is used. Hence while the MCMC sampling chain may contain <span class="math inline">\(1000\)</span> samples, if there are only <span class="math inline">\(10\)</span> effective samples (<span class="math inline">\(1\)</span>%), the estimated properties are not likely to be reliable.</p></li>
+<li><p><strong>bayesplot</strong></p></li>
+</ul>
+<p>Another alternative is to use the package <code>bayesplot</code>, which provides a range of standardised diagnostic measures for assessing MCMC convergence and issues, which can be directly applied to the <code>rstan</code> object.</p>
+<pre class="r"><code>&gt; library(bayesplot)
+&gt; 
+&gt; #density and trace plots
+&gt; mcmc_combo(as.array(data.stan.means), regex_pars = &quot;Group_means|CohensD&quot;)</code></pre>
+<p><img src="/tutorial/comparing-two-populations-stan/2020-02-01-comparing-two-populations-stan_files/figure-html/mcmc_diagv4-1.png" width="672" /></p>
+</div>
+<div id="model-validation" class="section level1">
+<h1>Model validation</h1>
+<p>Residuals are not computed directly within <code>rstan</code>. However, we can calculate them manually form the posteriors.</p>
+<pre class="r"><code>&gt; library(ggplot2)
+&gt; mcmc = as.matrix(data.stan.means)[, c(&quot;beta[1]&quot;, &quot;beta[2]&quot;)]
+&gt; # generate a model matrix
+&gt; newdata = data.frame(x = data$x)
+&gt; Xmat = model.matrix(~x, newdata)
+&gt; ## get median parameter estimates
+&gt; coefs = apply(mcmc, 2, median)
+&gt; fit = as.vector(coefs %*% t(Xmat))
+&gt; resid = data$y - fit
+&gt; ggplot() + geom_point(data = NULL, aes(y = resid, x = fit))</code></pre>
+<p><img src="/tutorial/comparing-two-populations-stan/2020-02-01-comparing-two-populations-stan_files/figure-html/mcmc_residuals-1.png" width="672" /></p>
+<p>There is no evidence that the mcmc chain did not converge on a stable posterior distribution. We are now in a position to examine the summaries of the parameters.</p>
+</div>
+<div id="parameter-estimates" class="section level1">
+<h1>Parameter estimates</h1>
+<p>A quick look at posterior summaries can be obtained through the command <code>summary</code> which can be directly applied to our <code>rstan</code> object.</p>
+<pre class="r"><code>&gt; summary(data.stan.means)
+$summary
+                      mean     se_mean        sd        2.5%         25%
+beta[1]         105.190527 0.009686974 0.3687226  104.465589  104.942369
+beta[2]         -27.312301 0.014498626 0.5710922  -28.423433  -27.709532
+sigma             2.785390 0.004410129 0.1996524    2.433792    2.647138
+Group_means[1]  105.190527 0.009686974 0.3687226  104.465589  104.942369
+Group_means[2]   77.878226 0.008248340 0.4294270   77.055265   77.586176
+CohensD          -9.855377 0.016165621 0.7290318  -11.286553  -10.342736
+lp__           -150.722447 0.033792061 1.2008963 -153.781392 -151.315992
+                       50%         75%       97.5%    n_eff     Rhat
+beta[1]         105.193906  105.440015  105.904308 1448.849 1.000080
+beta[2]         -27.321822  -26.940614  -26.150809 1551.525 1.000631
+sigma             2.772618    2.908351    3.218567 2049.493 1.000420
+Group_means[1]  105.193906  105.440015  105.904308 1448.849 1.000080
+Group_means[2]   77.871217   78.175564   78.709050 2710.476 1.000227
+CohensD          -9.848006   -9.357782   -8.455383 2033.799 1.000505
+lp__           -150.417561 -149.828109 -149.327413 1262.937 1.001068
+
+$c_summary
+, , chains = chain:1
+
+                stats
+parameter               mean        sd        2.5%        25%         50%
+  beta[1]         105.185880 0.3732597  104.453537  104.94010  105.193367
+  beta[2]         -27.295673 0.5774176  -28.425983  -27.68455  -27.297440
+  sigma             2.780865 0.1994980    2.429188    2.63995    2.774143
+  Group_means[1]  105.185880 0.3732597  104.453537  104.94010  105.193367
+  Group_means[2]   77.890207 0.4291130   77.055713   77.60354   77.888086
+  CohensD          -9.865883 0.7360420  -11.323762  -10.37506   -9.834704
+  lp__           -150.749764 1.1653976 -153.656694 -151.35456 -150.488086
+                stats
+parameter                75%       97.5%
+  beta[1]         105.447294  105.884418
+  beta[2]         -26.915832  -26.123260
+  sigma             2.907552    3.211618
+  Group_means[1]  105.447294  105.884418
+  Group_means[2]   78.185794   78.718013
+  CohensD          -9.353536   -8.482654
+  lp__           -149.871020 -149.339620
+
+, , chains = chain:2
+
+                stats
+parameter               mean        sd        2.5%         25%         50%
+  beta[1]         105.195175 0.3641941  104.477105  104.944095  105.194290
+  beta[2]         -27.328929 0.5643985  -28.411987  -27.725745  -27.348016
+  sigma             2.789915 0.1997707    2.445255    2.658753    2.770856
+  Group_means[1]  105.195175 0.3641941  104.477105  104.944095  105.194290
+  Group_means[2]   77.866246 0.4295497   77.049326   77.571823   77.862599
+  CohensD          -9.844870 0.7220460  -11.268572  -10.302693   -9.858574
+  lp__           -150.695130 1.2351603 -153.861568 -151.281007 -150.338705
+                stats
+parameter                75%       97.5%
+  beta[1]         105.437367  105.908966
+  beta[2]         -26.955015  -26.194956
+  sigma             2.908674    3.230337
+  Group_means[1]  105.437367  105.908966
+  Group_means[2]   78.161101   78.695948
+  CohensD          -9.361801   -8.449444
+  lp__           -149.805274 -149.310693</code></pre>
+<p>The Group A is typically <span class="math inline">\(27.3\)</span> units greater than Group B. The <span class="math inline">\(95\)</span>% confidence interval for the difference between Group A and B does not overlap with <span class="math inline">\(0\)</span> implying a significant difference between the two groups.</p>
+</div>
+<div id="graphical-summaries" class="section level1">
+<h1>Graphical summaries</h1>
+<p>A nice graphic is often a great accompaniment to a statistical analysis. Although there are no fixed assumptions associated with graphing (in contrast to statistical analyses), we often want the graphical summaries to reflect the associated statistical analyses. After all, the sample is just one perspective on the population(s). What we are more interested in is being able to estimate and depict likely population parameters/trends. Thus, whilst we could easily provide a plot displaying the raw data along with simple measures of location and spread, arguably, we should use estimates that reflect the fitted model. In this case, it would be appropriate to plot the credibility interval associated with each group. We do this by loading functions in the package <code>broom</code> and <code>dplyr</code>.</p>
+<pre class="r"><code>&gt; library(broom)
+&gt; library(broom.mixed)
+&gt; library(dplyr)
+&gt; mcmc = as.matrix(data.stan.means)
+&gt; ## Calculate the fitted values
+&gt; newdata = data.frame(x = levels(data$x))
+&gt; Xmat = model.matrix(~x, newdata)
+&gt; coefs = mcmc[, c(&quot;beta[1]&quot;, &quot;beta[2]&quot;)]
+&gt; fit = coefs %*% t(Xmat)
+&gt; newdata = newdata %&gt;% cbind(tidyMCMC(fit, conf.int = TRUE, conf.method = &quot;HPDinterval&quot;))
+&gt; newdata
+  x term  estimate std.error  conf.low conf.high
+1 A    1 105.19391 0.3687226 104.45120 105.88130
+2 B    2  77.87122 0.4294270  77.05609  78.70939
+&gt; 
+&gt; ggplot(newdata, aes(y = estimate, x = x)) + geom_pointrange(aes(ymin = conf.low,
++     ymax = conf.high)) + scale_y_continuous(&quot;Y&quot;) + scale_x_discrete(&quot;X&quot;) +
++     theme_classic()</code></pre>
+<p><img src="/tutorial/comparing-two-populations-stan/2020-02-01-comparing-two-populations-stan_files/figure-html/mcmc_post1-1.png" width="672" /></p>
+<p>If you wanted to represent sample data on the figure in such a simple example (single predictor) we could simply over- (or under-) lay the raw data.</p>
+<pre class="r"><code>&gt; ggplot(newdata, aes(y = estimate, x = x)) + geom_point(data = data, aes(y = y,
++     x = x), color = &quot;gray&quot;) + geom_pointrange(aes(ymin = conf.low, ymax = conf.high)) +
++     scale_y_continuous(&quot;Y&quot;) + scale_x_discrete(&quot;X&quot;) + theme_classic()</code></pre>
+<p><img src="/tutorial/comparing-two-populations-stan/2020-02-01-comparing-two-populations-stan_files/figure-html/mcmc_post2-1.png" width="672" /></p>
+<p>A more general solution would be to add the partial residuals to the figure. Partial residuals are the fitted values plus the residuals. In this simple case, that equates to exactly the same as the raw observations since <span class="math inline">\(\text{resid}=\text{obs}−\text{fitted}\)</span> and the fitted values depend only on the single predictor we are interested in.</p>
+<pre class="r"><code>&gt; ## Calculate partial residuals fitted values
+&gt; fdata = rdata = data
+&gt; fMat = rMat = model.matrix(~x, fdata)
+&gt; fit = as.vector(apply(coefs, 2, median) %*% t(fMat))
+&gt; resid = as.vector(data$y - apply(coefs, 2, median) %*% t(rMat))
+&gt; rdata = rdata %&gt;% mutate(partial.resid = resid + fit)
+&gt; ggplot(newdata, aes(y = estimate, x = x)) + geom_point(data = rdata, aes(y = partial.resid),
++     color = &quot;gray&quot;) + geom_pointrange(aes(ymin = conf.low, ymax = conf.high)) +
++     scale_y_continuous(&quot;Y&quot;) + scale_x_discrete(&quot;X&quot;) + theme_classic()</code></pre>
+<p><img src="/tutorial/comparing-two-populations-stan/2020-02-01-comparing-two-populations-stan_files/figure-html/mcmc_post3-1.png" width="672" /></p>
+</div>
+<div id="effect-sizes" class="section level1">
+<h1>Effect sizes</h1>
+<p>We can compute summaries for our effect size of interest (e.g. Cohen’s or the percentage ES) by post-processing our posterior distributions.</p>
+<pre class="r"><code>&gt; mcmc = as.matrix(data.stan.means)
+&gt; ## Cohen&#39;s D
+&gt; cohenD = mcmc[, &quot;beta[2]&quot;]/mcmc[, &quot;sigma&quot;]
+&gt; tidyMCMC(as.mcmc(cohenD), conf.int = TRUE, conf.method = &quot;HPDinterval&quot;)
+# A tibble: 1 x 5
+  term  estimate std.error conf.low conf.high
+  &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+1 var1     -9.85     0.729    -11.2     -8.44
+&gt; 
+&gt; # Percentage change (relative to Group A)
+&gt; ES = 100 * mcmc[, &quot;beta[2]&quot;]/mcmc[, &quot;beta[1]&quot;]
+&gt; 
+&gt; # Probability that the effect is greater than 10% (a decline of &gt;10%)
+&gt; sum(-1 * ES &gt; 10)/length(ES)
+[1] 1</code></pre>
+</div>
+<div id="probability-statements" class="section level1">
+<h1>Probability statements</h1>
+<p>Any sort of probability statements of interest about our effect size can be computed in a relatively easy way by playing around with the posteriors.</p>
+<pre class="r"><code>&gt; mcmc = as.matrix(data.stan.means)
+&gt; 
+&gt; # Percentage change (relative to Group A)
+&gt; ES = 100 * mcmc[, &quot;beta[2]&quot;]/mcmc[, &quot;beta[1]&quot;]
+&gt; hist(ES)</code></pre>
+<p><img src="/tutorial/comparing-two-populations-stan/2020-02-01-comparing-two-populations-stan_files/figure-html/prob_stat-1.png" width="672" /></p>
+<pre class="r"><code>&gt; 
+&gt; # Probability that the effect is greater than 10% (a decline of &gt;10%)
+&gt; sum(-1 * ES &gt; 10)/length(ES)
+[1] 1
+&gt; 
+&gt; # Probability that the effect is greater than 25% (a decline of &gt;25%)
+&gt; sum(-1 * ES &gt; 25)/length(ES)
+[1] 0.9706667</code></pre>
+</div>
+<div id="finite-population-standard-deviations" class="section level1">
+<h1>Finite population standard deviations</h1>
+<p>Estimates for the variability associated with between and within group differences can also be easily obtained.</p>
+<pre><code># A tibble: 2 x 5
+  term     estimate std.error conf.low conf.high
+  &lt;chr&gt;       &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+1 sd.x        19.3     0.404     18.6      20.2 
+2 sd.resid     2.74    0.0205     2.74      2.79
+# A tibble: 2 x 5
+  term     estimate std.error conf.low conf.high
+  &lt;chr&gt;       &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+1 sd.x         87.6     0.252     87.0      87.8
+2 sd.resid     12.4     0.252     12.2      13.0</code></pre>
+</div>
+<div id="unequally-varied-populations" class="section level1">
+<h1>Unequally varied populations</h1>
+<p>We can also generate data assuming two populations with different variances, e.g. between male and female subgroups.</p>
+<pre class="r"><code>&gt; set.seed(123)
+&gt; n1 &lt;- 60  #sample size from population 1
+&gt; n2 &lt;- 40  #sample size from population 2
+&gt; mu1 &lt;- 105  #population mean of population 1
+&gt; mu2 &lt;- 77.5  #population mean of population 2
+&gt; sigma1 &lt;- 3  #standard deviation of population 1
+&gt; sigma2 &lt;- 2  #standard deviation of population 2
+&gt; n &lt;- n1 + n2  #total sample size
+&gt; y1 &lt;- rnorm(n1, mu1, sigma1)  #population 1 sample
+&gt; y2 &lt;- rnorm(n2, mu2, sigma2)  #population 2 sample
+&gt; y &lt;- c(y1, y2)
+&gt; x &lt;- factor(rep(c(&quot;A&quot;, &quot;B&quot;), c(n1, n2)))  #categorical listing of the populations
+&gt; xn &lt;- rep(c(0, 1), c(n1, n2))  #numerical version of the population category
+&gt; data2 &lt;- data.frame(y, x, xn)  # dataset
+&gt; head(data2)  #print out the first six rows of the data set
+         y x xn
+1 103.3186 A  0
+2 104.3095 A  0
+3 109.6761 A  0
+4 105.2115 A  0
+5 105.3879 A  0
+6 110.1452 A  0</code></pre>
+<p>Start by defining the model</p>
+<p><span class="math display">\[ y_i = \beta_0 + \beta_1x_i + \epsilon, \]</span></p>
+<p>where <span class="math inline">\(\epsilon_1 \sim \text{Normal}(0,\sigma_1)\)</span> for <span class="math inline">\(x_1=0\)</span> (females), and <span class="math inline">\(\epsilon_2 \sim \text{Normal}(0,\sigma_2)\)</span> for <span class="math inline">\(x_2=1\)</span> (males). In <code>STAN</code> code, the model becomes:</p>
+<pre class="r"><code>&gt; stanStringv3 = &quot; 
++  data {
++  int n;
++  vector [n] y;
++  vector [n] x;
++  int&lt;lower=1,upper=2&gt; xn[n];
++  }
++  parameters {
++  vector &lt;lower=0, upper=100&gt;[2] sigma;
++  real beta0;
++  real beta;
++  }
++  transformed parameters {
++  }
++  model {
++  vector [n] mu;
++  //Priors
++  beta0 ~ normal(0,1000);
++  beta ~ normal(0,1000);
++  sigma ~ cauchy(0,25);
++ 
++  mu = beta0 + beta*x;
++  //Likelihood
++  for (i in 1:n) y[i] ~ normal(mu[i], sigma[xn[i]]);
++  }
++  generated quantities {
++  vector [2] Group_means;
++  real CohensD;
++  real CLES;
++ 
++  Group_means[1] = beta0;
++  Group_means[2] = beta0+beta;
++  CohensD = beta /(sum(sigma)/2);
++  CLES = normal_cdf(beta /sum(sigma),0,1);  
++  }
++  
++  &quot;
+&gt; 
+&gt; ## write the model to a text file 
+&gt; writeLines(stanStringv3,con=&quot;ttestModelv3.stan&quot;)</code></pre>
+<p>We specify priors directly on <span class="math inline">\(\sigma_1\)</span> and <span class="math inline">\(\sigma_2\)</span> using Cauchy distributions with a scale of <span class="math inline">\(25\)</span>. Next, arrange the data as a list (as required by <code>STAN</code>) and define the MCMC parameters.</p>
+<pre class="r"><code>&gt; data2.list &lt;- with(data, list(y = y, x = (xn - 1), xn = xn, n = nrow(data)))
+&gt; paramsv3 &lt;- c(&quot;beta0&quot;,&quot;beta&quot;,&quot;sigma&quot;,&quot;Group_means&quot;,&quot;CohensD&quot;, &quot;CLES&quot;)
+&gt; burnInSteps = 500
+&gt; nChains = 2
+&gt; thinSteps = 1
+&gt; nIter = 2000</code></pre>
+<p>Finally, fit the model in <code>STAN</code> and print the results.</p>
+<pre class="r"><code>&gt; data.stanv3 = stan(file = &quot;ttestModelv3.stan&quot;, 
++   data = data2.list, 
++   pars = paramsv3,
++   iter = nIter,
++   warmup = burnInSteps, 
++   chains = nChains, 
++   thin = thinSteps, 
++   init = &quot;random&quot;, #or inits=list(inits,inits)
++   refresh = 0)
+&gt; 
+&gt; #print results
+&gt; print(data.stanv3)
+Inference for Stan model: ttestModelv3.
+2 chains, each with iter=2000; warmup=500; thin=1; 
+post-warmup draws per chain=1500, total post-warmup draws=3000.
+
+                  mean se_mean   sd    2.5%     25%     50%     75%   97.5%
+beta0           105.19    0.01 0.37  104.45  104.94  105.19  105.45  105.91
+beta            -27.33    0.01 0.59  -28.46  -27.74  -27.34  -26.93  -26.13
+sigma[1]          2.79    0.01 0.26    2.34    2.61    2.78    2.96    3.36
+sigma[2]          2.87    0.01 0.33    2.32    2.63    2.85    3.07    3.61
+Group_means[1]  105.19    0.01 0.37  104.45  104.94  105.19  105.45  105.91
+Group_means[2]   77.86    0.01 0.45   77.00   77.56   77.87   78.16   78.76
+CohensD          -9.70    0.01 0.74  -11.16  -10.19   -9.68   -9.20   -8.32
+CLES              0.00    0.00 0.00    0.00    0.00    0.00    0.00    0.00
+lp__           -150.25    0.04 1.42 -153.84 -150.91 -149.91 -149.21 -148.51
+               n_eff Rhat
+beta0           2137    1
+beta            2158    1
+sigma[1]        2362    1
+sigma[2]        2566    1
+Group_means[1]  2137    1
+Group_means[2]  3096    1
+CohensD         2760    1
+CLES            2566    1
+lp__            1468    1
+
+Samples were drawn using NUTS(diag_e) at Fri Dec 11 09:28:40 2020.
+For each parameter, n_eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor on split chains (at 
+convergence, Rhat=1).</code></pre>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-gelman2015stan" class="csl-entry">
+Gelman, Andrew, Daniel Lee, and Jiqiang Guo. 2015. <span>“Stan: A Probabilistic Programming Language for Bayesian Inference and Optimization.”</span> <em>Journal of Educational and Behavioral Statistics</em> 40 (5): 530–43.
+</div>
+<div id="ref-gelman2006prior" class="csl-entry">
+Gelman, Andrew, and others. 2006. <span>“Prior Distributions for Variance Parameters in Hierarchical Models (Comment on Article by Browne and Draper).”</span> <em>Bayesian Analysis</em> 1 (3): 515–34.
+</div>
+<div id="ref-rstanpackage" class="csl-entry">
+Stan Development Team. 2018. <span>“<span>RStan</span>: The <span>R</span> Interface to <span>Stan</span>.”</span> <a href="http://mc-stan.org/">http://mc-stan.org/</a>.
+</div>
+</div>
+</div>

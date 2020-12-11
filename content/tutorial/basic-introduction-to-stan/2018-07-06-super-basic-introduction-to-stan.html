@@ -1,0 +1,197 @@
+---
+title: "Super basic introduction to STAN"
+author: "Andrea Gabrio"
+date: '2019-07-01'
+slug: super-basic-introduction-to-stan
+categories: R
+tags:
+- linear regression
+- STAN
+- introduction
+subtitle: ''
+summary: ''
+lastmod: '2019-07-01T11:54:30+01:00'
+featured: no
+draft: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+bibliography: citations_stan.bib
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>The focus of this simple tutorial is to provide a brief introduction and overview about how to fit Bayesian models using <code>STAN</code> via <code>R</code>.</p>
+<p>Prerequisites:</p>
+<ul>
+<li>The latest version of <code>R</code>, which can be downloaded and installed for Windows, Mac or Linux OS from the <a href="https://www.r-project.org/%7D">CRAN</a> website</li>
+<li>I also <strong>strongly</strong> recommend to download and install <a href="https://www.rstudio.com/">Rstudio</a>, an integrated development environment which provides an “user-friendly” interaction with <code>R</code> (e.g. many drop-down menus, tabs, customisation options)</li>
+</ul>
+<div id="preliminaries" class="section level1">
+<h1>Preliminaries</h1>
+<div id="what-is-stan" class="section level2">
+<h2>What is STAN?</h2>
+<p>Stan provides full Bayesian inference for continuous-variable models through Markov Chain Monte Carlo methods such as the No-U-Turn sampler, an adaptive form of Hamiltonian Monte Carlo sampling</p>
+<p><code>STAN</code> is a program for analysis of Bayesian models using Markov Chain Monte Carlo (MCMC) methods (<span class="citation">Gelman, Lee, and Guo (2015)</span>). <code>STAN</code> is a free software and a probabilistic programming language for specifying statistical models using a specific class of MCMC algorithms known as <strong>H</strong>amiltonian <strong>M</strong>onte <strong>C</strong>arlo methods (HMC). The latest version of <code>STAN</code> can be dowloaded from the web <a href="https://mc-stan.org/users/interfaces/">repository</a> and is available for different OS. There are different <code>R</code> packages which function as frontends for <code>STAN</code>. These packages make it easy to process the output of Bayesian models and present it in publication-ready form. In this brief introduction, I will specifically focus on the <code>rstan</code> package (<span class="citation">Stan Development Team (2018)</span>) and show how to fit <code>STAN</code> models using this package.</p>
+</div>
+<div id="installing-stan-and-rstan" class="section level2">
+<h2>Installing STAN and rstan</h2>
+<p>Unlike other Bayesian software, such as <code>JAGS</code> or <code>OpenBUGS</code>, it is not required to separately install the program and the corresponding frontend <code>R</code> package. Indeed, installing the <code>R</code> package <code>rstan</code> will automatically install <code>STAN</code> on your machine. However, you will also need to make sure to having installed on your pc a <code>C++</code> compiler which is used by <code>rstan</code> to fit the models. Under a Windows OS, for example, this can be done by installing <code>Rtools</code>, a collection of resources for building packages for <code>R</code>, which is freely available from the web <a href="https://cran.r-project.org/bin/windows/Rtools/">repository</a>.</p>
+<p>Next, install the package <code>rstan</code> from within <code>R</code> or <code>Rstudio</code>, via the package installer or by typing in the command line</p>
+<pre class="r"><code>&gt; install.packages(&quot;rstan&quot;, dependencies = TRUE)</code></pre>
+<p>The <code>dependencies = TRUE</code> option will automatically install all the packages on which the functions in the <code>rstan</code> package rely.</p>
+</div>
+</div>
+<div id="basic-model" class="section level1">
+<h1>Basic model</h1>
+<div id="simulate-data" class="section level2">
+<h2>Simulate data</h2>
+<p>For an example dataset, I simulate my own data in <code>R</code>. I create a continuous outcome variable <span class="math inline">\(y\)</span> as a function of one predictor <span class="math inline">\(x\)</span> and a disturbance term <span class="math inline">\(\epsilon\)</span>. I simulate a dataset with 100 observations. Create the error term, the predictor and the outcome using a linear form with an intercept <span class="math inline">\(\beta_0\)</span> and slope <span class="math inline">\(\beta_1\)</span> coefficients, i.e.</p>
+<p><span class="math display">\[y = \beta_0 + \beta_1 x + \epsilon  \]</span></p>
+<p>The <code>R</code> commands which I use to simulate the data are the following:</p>
+<pre class="r"><code>&gt; n_sim=100; set.seed(123)
+&gt; x=rnorm(n_sim, mean = 5, sd = 2)
+&gt; epsilon=rnorm(n_sim, mean = 0, sd = 1)
+&gt; beta0=1.5
+&gt; beta1=1.2
+&gt; y=beta0 + beta1 * x + epsilon
+&gt; n_sim=as.integer(n_sim)</code></pre>
+<p>Then, I define all the data for <code>STAN</code> in a list object</p>
+<pre class="r"><code>&gt; datalist=list(&quot;y&quot;=y,&quot;x&quot;=x,&quot;n_sim&quot;=n_sim)</code></pre>
+</div>
+<div id="model-file" class="section level2">
+<h2>Model file</h2>
+<p>Now, I write the model for <code>STAN</code> and save it as a stan file named <code>"basic.mod.stan"</code> in the current working directory</p>
+<pre class="r"><code>&gt; basic.mod= &quot;
++ data {
++ int&lt;lower=0&gt; n_sim;
++ vector[n_sim] y;
++ vector[n_sim] x;
++ }
++ parameters {
++ real beta0;
++ real beta1;
++ real&lt;lower=0&gt; sigma;
++ }
++ transformed parameters {
++ vector[n_sim] mu;
++ mu=beta0 + beta1*x;
++ } 
++ model {
++ sigma~uniform(0,100);
++ beta0~normal(0,1000);
++ beta1~normal(0,1000);
++ y~normal(mu,sigma);
++ }
++ 
++ &quot;</code></pre>
+<p><code>STAN</code> models are written using an imperative programming language, which means that the order in which you write the elements in your model file matters, i.e. you first need to define your variables (e.g. integers, vectors, matrices, etc.), the constraints which define the range of values your variable can take (e.g. only positive values for standard deviations), and finally define the relationship among the variables (e.g. one is a liner function of another).</p>
+<p>A Stan model is defined by six program blocks:</p>
+<ul>
+<li>Data (required). The <em>data block</em> reads external information – e.g. data vectors, matrices, integers, etc.</li>
+<li>Transformed data (optional). The <em>transformed data block</em> allows for preprocessing of the data – e.g. transformation or rescaling of the data.</li>
+<li>Parameters (required). The <em>parameters block</em> defines the sampling space – e.g. parameters to which prior distributions must be assigned.</li>
+<li>Transformed parameters (optional). The <em>transformed parameters block</em> allows for parameter processing before the posterior is computed – e.g. tranformation or rescaling of the parameters.</li>
+<li>Model (required). In the <em>model block</em> we define our posterior distributions – e.g. choice of distributions for all variables.</li>
+<li>Generated quantities (optional). The <em>generated quantities block</em> allows for postprocessing – e.g. backtranformation of the parameters using the posterior samples.</li>
+</ul>
+<p>For this introduction I consider a very simple model which only requires the specification of four blocks in the <code>STAN</code> model. In the data block, I first define the size of the sample <code>n_sim</code> as a positive integer number using the expression <code>int&lt;lower=0&gt; n_sim</code>; then I declare the two variables <code>y</code> and <code>x</code> as reals (or vectors) with length equal to N. In the parameters block, I define the coefficients for the linear regression <code>beta0</code> and <code>beta1</code> (as two real numbers) and the standard deviation parameter <code>sigma</code> (as a positive real number). In the transformed parameters block, I define the conditional mean <code>mu</code> (a real vector of length <code>N</code>) as a linear function of the intercept <code>beta0</code>, the slope <code>beta1</code>, and the covariate <code>x</code>. Finally, in the model block, I assign weakly informative priors to the regression coefficients and the standard deviation parameters, and I model the outcome data <code>y</code> using a normal distribution indexed by the conditional mean <code>mu</code> and the standard deviation <code>sigma</code> parameters. In many cases, <code>STAN</code> uses sampling statements which can be vectorised, i.e. you do not need to use for loop statements.</p>
+<p>To write and save the model as the text file “basic.mod.stan” in the current working directory, I use the <code>writeLines</code> function</p>
+<pre class="r"><code>&gt; writeLines(basic.mod, &quot;basic.mod.stan&quot;)</code></pre>
+</div>
+<div id="pre-processing" class="section level2">
+<h2>Pre-processing</h2>
+<p>Define the parameters whose posterior distribtuions we are interested in summarising later and set up the initial values for the MCMC sampler in <code>STAN</code></p>
+<pre class="r"><code>&gt; params=c(&quot;beta0&quot;,&quot;beta1&quot;)
+&gt; inits=function(){list(&quot;beta0&quot;=rnorm(1), &quot;beta1&quot;=rnorm(1))}</code></pre>
+<p>The function creates a list that contains one element for each parameter, which gets assigned a random draw from a normal distribution as a strating value for each chain in the model. For simple models like this, it is generally easy to define the intial values for all parameters in the object <code>inits</code> which is then passed to the <code>stan</code> function in <code>rstan</code>. However, for more complex models, this may not be immediate and a lot of trial and error may be required. However, <code>STAN</code> can automatically select the initial values for all parameters randomly. This can be achieved by setting <code>inits="random"</code>, which is then passed to the <code>stan</code> function in <code>rstan</code>.</p>
+<p>Before using <code>rstan</code> for the first time, you need to load the package, and you may want to set a random seed number for making your estimates replicable</p>
+<pre class="r"><code>&gt; library(rstan)
+&gt; set.seed(123)</code></pre>
+</div>
+<div id="fit-the-model" class="section level2">
+<h2>Fit the model</h2>
+<p>Now, we can fit the model in <code>STAN</code> using the <code>stan</code> function in the <code>rstan</code> package and save it in the object <code>basic.mod</code></p>
+<pre class="r"><code>&gt; basic.mod&lt;-stan(data = datalist, pars = params, iter = 9000, 
++   warmup = 1000, init = inits, chains = 2, file = &quot;basic.mod.stan&quot;)
+
+SAMPLING FOR MODEL &#39;basic&#39; NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 0 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 9000 [  0%]  (Warmup)
+Chain 1: Iteration:  900 / 9000 [ 10%]  (Warmup)
+Chain 1: Iteration: 1001 / 9000 [ 11%]  (Sampling)
+Chain 1: Iteration: 1900 / 9000 [ 21%]  (Sampling)
+Chain 1: Iteration: 2800 / 9000 [ 31%]  (Sampling)
+Chain 1: Iteration: 3700 / 9000 [ 41%]  (Sampling)
+Chain 1: Iteration: 4600 / 9000 [ 51%]  (Sampling)
+Chain 1: Iteration: 5500 / 9000 [ 61%]  (Sampling)
+Chain 1: Iteration: 6400 / 9000 [ 71%]  (Sampling)
+Chain 1: Iteration: 7300 / 9000 [ 81%]  (Sampling)
+Chain 1: Iteration: 8200 / 9000 [ 91%]  (Sampling)
+Chain 1: Iteration: 9000 / 9000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.083 seconds (Warm-up)
+Chain 1:                0.719 seconds (Sampling)
+Chain 1:                0.802 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL &#39;basic&#39; NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 0 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 9000 [  0%]  (Warmup)
+Chain 2: Iteration:  900 / 9000 [ 10%]  (Warmup)
+Chain 2: Iteration: 1001 / 9000 [ 11%]  (Sampling)
+Chain 2: Iteration: 1900 / 9000 [ 21%]  (Sampling)
+Chain 2: Iteration: 2800 / 9000 [ 31%]  (Sampling)
+Chain 2: Iteration: 3700 / 9000 [ 41%]  (Sampling)
+Chain 2: Iteration: 4600 / 9000 [ 51%]  (Sampling)
+Chain 2: Iteration: 5500 / 9000 [ 61%]  (Sampling)
+Chain 2: Iteration: 6400 / 9000 [ 71%]  (Sampling)
+Chain 2: Iteration: 7300 / 9000 [ 81%]  (Sampling)
+Chain 2: Iteration: 8200 / 9000 [ 91%]  (Sampling)
+Chain 2: Iteration: 9000 / 9000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.083 seconds (Warm-up)
+Chain 2:                0.654 seconds (Sampling)
+Chain 2:                0.737 seconds (Total)
+Chain 2: </code></pre>
+<p>Different packages are available to perform diagnostic checks for Bayesian models. Here, I install and load the <code>bayesplot</code> package (<span class="citation">Gabry and Mahr (2017)</span>) to obtain graphical diagnostics and results.</p>
+<pre class="r"><code>&gt; install.packages(&quot;bayesplot&quot;)
+&gt; library(bayesplot)</code></pre>
+<p>For example, density and trace plots can be obtained by typing</p>
+<pre class="r"><code>&gt; mcmc_combo(as.array(basic.mod),regex_pars=&quot;beta0|beta1&quot;)</code></pre>
+<p><img src="/tutorial/basic-introduction-to-stan/2018-07-06-super-basic-introduction-to-stan_files/figure-html/diagnostic3-1.png" width="672" /></p>
+<p>Both types of graphs suggest that there are not issues in the convergence of the algorithm (smooth normal densities and hairy caterpillar graphs for both MCMC chains).</p>
+</div>
+</div>
+<div id="conclusions" class="section level1">
+<h1>Conclusions</h1>
+<p>This tutorial was simply a brief introduction on how simple linear regression models can be fitted using the Bayesian software <code>STAN</code> via the <code>rstan</code> package. Although this may seem a complex procedure compared with simply fitting a linear model under the frequentist framework, however, the real advantages of Bayesian methods become evident when the complexity of the analysis is increased (which is often the case in real applications). Indeed, the flexibility in Bayesian modelling allows to account for increasingly complex models in a relatively easy way. In addition, Bayesian methods are ideal when the interest is in taking into account the potential impact that different sources of uncertainty may have on the final results, as they allow the natural propagation of uncertainty throughout each quantity in the model.</p>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-gabry2017bayesplot" class="csl-entry">
+Gabry, J, and T Mahr. 2017. <span>“Bayesplot: Plotting for Bayesian Models.”</span> <em>R Package Version</em> 1.
+</div>
+<div id="ref-gelman2015stan" class="csl-entry">
+Gelman, Andrew, Daniel Lee, and Jiqiang Guo. 2015. <span>“Stan: A Probabilistic Programming Language for Bayesian Inference and Optimization.”</span> <em>Journal of Educational and Behavioral Statistics</em> 40 (5): 530–43.
+</div>
+<div id="ref-rstanpackage" class="csl-entry">
+Stan Development Team. 2018. <span>“<span>RStan</span>: The <span>R</span> Interface to <span>Stan</span>.”</span> <a href="http://mc-stan.org/">http://mc-stan.org/</a>.
+</div>
+</div>
+</div>

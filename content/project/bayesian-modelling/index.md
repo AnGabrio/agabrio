@@ -63,7 +63,7 @@ g\_c(\phi\_{ic}) = \beta\_{0} + \beta\_{1}(e\_{i}-\mu\_{e})\,\,[+\ldots]
 
 Here, $(e\_i-\mu\_e)$ is the centered version of the QALYs, while $\beta\_{1}$ quantifies the correlation between costs and QALYs. Assuming other covariates are either also centered or absent, $\mu\_c = g\_c^{-1}(\beta\_{0})$ is the estimated population average cost. The Figure below shows a graphical representation of the general modelling framework. 
 
-{{< figure library="1" src="framework.jpg" title="Modelling framework." >}}
+![Modelling framework](/media/framework.jpg)
 
 The QALYs and cost distributions are represented in terms of combined *modules*, the blue and the red boxes, in which the random quantities are linked through logical relationships. This ensures the full characterisation of the uncertainty for each variable in the model. Notably, this is general enough to be extended to any suitable distributional assumption, as well as to handle covariates in either or both the modules.
 
@@ -73,7 +73,7 @@ The proposed framework allows jointly tackling of the different complexities tha
 
 Three model specifications are considered and applied to QALY data from a RCT case study: 1) Normal marginal for the QALYs and Normal conditional for the costs (which is identical to a Bivariate Normal distribution for the two outcomes); 2) Beta marginal for the QALYs and Gamma conditional for the costs; and 3) Hurdle Model. The following Figure shows the observed QALYs in both treatment groups (indicated with black crosses) as well as summaries of the posterior distributions for the imputed values, obtained from each model. Imputations are distinguished based on whether the corresponding baseline utility value is observed or missing (blue or red lines and dots, respectively) and are summarised in terms of posterior mean and $90\%$ HPD intervals.
 
-{{< figure library="1" src="imputations.jpg" title="Imputed QALYs under alternative model specifications." >}}
+![Imputed QALYs under alternative model specifications](/media/imputations.jpg)
 
 There are clear differences in the imputed values and corresponding credible intervals between the three models in both treatment groups. Neither the Bivariate Normal nor the Beta-Gamma models  produce imputed values that capture the structural one component in the data. In addition, as to be expected, the Bivariate Normal fails to respect the natural support for the observed QALYs, with many of the imputations exceeding the unit threshold bound. These unrealistic imputed values highlight the inadequacy of the Normal distribution for the data and may lead to distorted inferences. Conversely, imputations under the Hurdle Model are more realistic, as they can replicate values in the whole range of the observed data, including the structural ones. Imputed unit QALYs with no discernible interval are only observed in the intervention group due to the original data composition, i.e. individuals associated with a unit baseline utility and missing QALYs are almost exclusively present in the intervention group. 
 

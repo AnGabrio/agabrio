@@ -19,10 +19,10 @@ links:
 #  url: 
 url_code: ""
 url_pdf: "https://www.tandfonline.com/doi/full/10.1080/02664763.2020.1723506"
-url_slides: ""
-url_video: ""
-url_source: ""
-url_poster: ""
+#url_slides: ""
+#url_video: ""
+#url_source: ""
+#url_poster: ""
 
 # Slides (optional).
 #   Associate this project with Markdown slides.
@@ -136,7 +136,7 @@ logit(\pi^m\_{i})= \eta\_0 + \eta\_1y\_{hi} + \eta\_2y\_{ai} + \eta\_3 d^s\_i.
 
 The next figure shows a graphical representation of the modelling framework proposed. 
 
-{{< figure library="1" src="framework_volley.jpg" title="Graphical representation of the modelling framework." >}}
+![Graphical representation of the modelling framework](/media/framework_volley.jpg)
 
 The framework corresponds to a joint distribution for all the observed quantities which are explicitly modelled. 
 This is factored into the product of the marginal distribution of the total number of points scored by the two teams in each match, Module 1 -- $p(\boldsymbol y)$, 
@@ -165,7 +165,7 @@ ore accurate predictions compared with the basic model.
 
 The following figure compares the cumulative points derived from the observed results throughout the season (the black line) and the predictions from both the basic model (in red), and the scaled Inverse-Wishart model (in blue).
 
-{{< figure library="1" src="plot_cumul_points_volley.jpg" title="Posterior predictive validation of the basic (red) and IW (blue) model with respect to the observed data (black)." >}}
+![Posterior predictive validation of the basic (red) and IW (blue) model with respect to the observed data (black)](/media/plot_cumul_points_volley.jpg)
 
 For almost all teams the predicted results are relatively close to the observed data and suggest a good performance of both models.
 

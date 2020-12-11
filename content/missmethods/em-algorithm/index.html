@@ -43,7 +43,9 @@ url_poster: ""
 # slides: example
 ---
 
-<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+<script src="index_files/header-attrs/header-attrs.js"></script>
+<link href="index_files/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="index_files/anchor-sections/anchor-sections.js"></script>
 
 
 <p>Patterns of incomplete data in practice often do not have the forms that allow explicit <em>Maximum Likelihood</em>(ML) estimates to be calculated. Suppose we have a model for the complete data <span class="math inline">\(Y\)</span>, with density <span class="math inline">\(f(Y\mid \theta)\)</span>, indexed by the set of unknown parameters <span class="math inline">\(\theta\)</span>. Writing <span class="math inline">\(Y=(Y_0,Y_1)\)</span> in terms of the observed <span class="math inline">\(Y_0\)</span> and missing <span class="math inline">\(Y_1\)</span> components, and assuming that the missingness mechanism is <em>Missing At Random</em>(MAR), we want to maximise the likelihood</p>
@@ -102,18 +104,18 @@ E\left(\sum_{i=1}^{n}y^2_i \mid \theta_t, Y_0 \right) = \sum_{i=1}^{n_{cc}}y^2_i
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1>References</h1>
-<div id="refs" class="references hanging-indent">
-<div id="ref-dempster1977maximum">
-<p>Dempster, Arthur P, Nan M Laird, and Donald B Rubin. 1977. “Maximum Likelihood from Incomplete Data via the Em Algorithm.” <em>Journal of the Royal Statistical Society: Series B (Methodological)</em> 39 (1): 1–22.</p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-dempster1977maximum" class="csl-entry">
+Dempster, Arthur P, Nan M Laird, and Donald B Rubin. 1977. <span>“Maximum Likelihood from Incomplete Data via the EM Algorithm.”</span> <em>Journal of the Royal Statistical Society: Series B (Methodological)</em> 39 (1): 1–22.
 </div>
-<div id="ref-liu1994ecme">
-<p>Liu, Chuanhai, and Donald B Rubin. 1994. “The Ecme Algorithm: A Simple Extension of Em and Ecm with Faster Monotone Convergence.” <em>Biometrika</em> 81 (4): 633–48.</p>
+<div id="ref-liu1994ecme" class="csl-entry">
+Liu, Chuanhai, and Donald B Rubin. 1994. <span>“The ECME Algorithm: A Simple Extension of EM and ECM with Faster Monotone Convergence.”</span> <em>Biometrika</em> 81 (4): 633–48.
 </div>
-<div id="ref-meng1993maximum">
-<p>Meng, Xiao-Li, and Donald B Rubin. 1993. “Maximum Likelihood Estimation via the Ecm Algorithm: A General Framework.” <em>Biometrika</em> 80 (2): 267–78.</p>
+<div id="ref-meng1993maximum" class="csl-entry">
+Meng, Xiao-Li, and Donald B Rubin. 1993. <span>“Maximum Likelihood Estimation via the ECM Algorithm: A General Framework.”</span> <em>Biometrika</em> 80 (2): 267–78.
 </div>
-<div id="ref-meng1997algorithm">
-<p>Meng, Xiao-Li, and David Van Dyk. 1997. “The Em Algorithm—an Old Folk-Song Sung to a Fast New Tune.” <em>Journal of the Royal Statistical Society: Series B (Statistical Methodology)</em> 59 (3): 511–67.</p>
+<div id="ref-meng1997algorithm" class="csl-entry">
+Meng, Xiao-Li, and David Van Dyk. 1997. <span>“The EM Algorithm—an Old Folk-Song Sung to a Fast New Tune.”</span> <em>Journal of the Royal Statistical Society: Series B (Statistical Methodology)</em> 59 (3): 511–67.
 </div>
 </div>
 </div>

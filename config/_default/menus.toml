@@ -12,11 +12,11 @@
   name = "Blog"
   url = "post/"
   weight = 20
-  
+
 [[main]]
-  name = "Research"  # Title of the link.
-  url = "research/"  # Widget Page folder name.
-  weight = 30  # Position of the link in the navigation bar.
+  name = "Research"
+  url = "research/"
+  weight = 30
 
 [[main]]
   name = "Publications"
@@ -28,45 +28,21 @@
   url = "talk/"
   weight = 50
 
+
 [[main]]
   name = "Software"
   url = "software/"
-  identifier = "software"
   weight = 60
 
 [[main]]
   name = "Tutorials"
-  url = "tutorials/"
-  identifier = "tutorials"
+  url = "tutorial/"
   weight = 70
-  
+
 [[main]]
   name = "Missing Data"
   url = "rubric/"
-  identifier = "rubric"
   weight = 80
-
-[[main]]
-  name = "missingHE"
-  url = "missingHE/"
-  parent = "software"
-  
-[[main]]
-  name = "OpenBUGS"
-  url = "OpenBUGS/"
-  parent = "tutorials"
-
-[[main]]
-  name = "JAGS"
-  url = "JAGS/"
-  parent = "tutorials"
-
-[[main]]
-  name = "STAN"
-  url = "STAN/"
-  parent = "tutorials"
-
-
 
 # Link to a PDF of your resume/CV from the menu.
 # To enable, copy your resume/CV to `static/files/cv.pdf` and uncomment the lines below.

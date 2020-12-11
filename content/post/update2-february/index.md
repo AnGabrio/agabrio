@@ -39,7 +39,7 @@ which advertises a new position as health economist in our HEART group for perfo
 
 ![](https://media.giphy.com/media/kHZu4LDtvpY63RT1He/giphy.gif)
 
-* To conclude, I would also like to say that I have done some updates to this website. From the inclusion of new tutorials on the use of [JAGS]({{< ref "JAGS/_index.md" >}}) and [STAN]({{< ref "STAN/_index.md" >}}) on different statistical topics, to a restyle of the website. In particular I had fun by playing around with some `Markdown` code to add new features, e.g. customised alert notes and emoji, for example. Somthing like this:
+* To conclude, I would also like to say that I have done some updates to this website. From the inclusion of new tutorials on the use of [JAGS](http://mcmc-jags.sourceforge.net/) and [STAN](https://mc-stan.org/) on different statistical topics, to a restyle of the website. In particular I had fun by playing around with some `Markdown` code to add new features, e.g. customised alert notes and emoji, for example. Somthing like this:
 
 {{< alertqueen note >}}
 I 👍 $\rm \LaTeX$ very much.

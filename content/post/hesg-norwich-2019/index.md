@@ -33,7 +33,7 @@ who are only allowed to provide some clarification if needed. At first I thought
 sessions and experiencing this for my own paper, I feel that it is a very good way to encourage discussion about works from different people rather than 
 just focussing on your own presentation. Plus, the weather and always sunny, it felt like Italy for a few days.
 
-{{< figure library="1" src="Norwich.jpg" title="The beautiful Norwich's cathedral" >}}
+![The beautiful Norwich's cathedral](/media/Norwich.jpg)
 
 Other nice people and colleagues from HEART and other UCL department came to HESG with me, including [Caroline](https://iris.ucl.ac.uk/iris/browse/profile?upi=CSCLA53) and [Ekaterina](https://www.ucl.ac.uk/comprehensive-clinical-trials-unit/meet-team/health-economics/junior-health-economist-ekaterina-kuznetsova) (aka Katia), 
 you can see them in thumbnail of this post. I was also pleased to meet [Baptiste](https://www.lshtm.ac.uk/aboutus/people/leurent.baptiste) from [LSHTM](https://www.lshtm.ac.uk/), who shares with me the interest in missing data 
@@ -46,7 +46,6 @@ An important contribution to the success of the meeting was also given by the wo
 to the main building of the meeting, plenty of food provided during each day, a nice bus tour of the city and a wonderful conference dinner. I must thank all the people, 
 who organised the event who were very extremely nice to us and who were always ready to help us for whatever need we had, with a special mention for [Emma Mcmanus](https://people.uea.ac.uk/emma_mcmanus) who 
 was amazing.
-
 
 ![](https://media.giphy.com/media/cWnICjtVkJJsgGKhyX/giphy.gif)
 

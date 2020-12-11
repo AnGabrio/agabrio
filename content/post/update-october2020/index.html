@@ -20,6 +20,7 @@ projects: ["Bayesian statistics"]
 bibliography: bib_oct2020.bib
 ---
 
+<script src="index_files/header-attrs/header-attrs.js"></script>
 <link href="index_files/anchor-sections/anchor-sections.css" rel="stylesheet" />
 <script src="index_files/anchor-sections/anchor-sections.js"></script>
 
@@ -38,7 +39,7 @@ bibliography: bib_oct2020.bib
 <h2>So how do you make the decision if there no hypothesis test ?</h2>
 <p>Although the ordinary rules of statistical analyses do not apply, we still need to summarise the uncertainty associated with our results based on the mean INB given that decision-making problems must take into account and quantify the impact that sampling uncertainty has on our conclusions. This is typically achieved through the use of re-sampling methods, such as bootstrapping, (frequentist approach) or Bayesian methods. The two approaches are very different from a theoretical perspective but I will not address this point to save me of few weeks of time. Here, I am most interested in what type of results we will obtain once applied these methods. Well, typically we will look at something like this:</p>
 <div class="figure">
-<img src="/post/update-october2020/cepboot-1.png" alt="" />
+<img src="/media/cepboot-1.png" alt="" />
 <p class="caption">Cost-Effectiveness Plane</p>
 </div>
 <p>This is known as <strong>Cost-effectiveness Plane</strong> and is a graphical representation of the re-sampled (frequentist) or posterior (Bayesian) distribution of the mean effectiveness and cost differentials. The red dot at the centre of the distribution is associated with the population estimates of <span class="math inline">\(\Delta_e\)</span> and <span class="math inline">\(\Delta_c\)</span> while all the other black dots are used to quantify the uncertainty around our average estimate. I will no go into details of how these can be derived, but I will limit myself to provide the interpretation to this plot. Given the value of the acceptance threshold <span class="math inline">\(K\)</span> (assumed to depend on the preferences of the decision-makers), we can compare its value with those associated to each of the dots in the plot. Next, we follow the intuitive rule which defines the probability that treatment 2 is cost-effective compared to treatment 1 as:</p>
@@ -47,7 +48,7 @@ bibliography: bib_oct2020.bib
 <p><span class="math display">\[ P(T_{n-1} &lt; \frac{\sqrt{n}Kd_e-d_c}{\sqrt{K^2 s^2_e -2Ks_{ce}+s^2_c}}),\]</span></p>
 <p>where <span class="math inline">\(T_{n-1}\)</span> is the standard t-student distribution with <span class="math inline">\(n-1\)</span> degrees of freedom. Finally, given that uncertainty with respect to the value of <span class="math inline">\(K\)</span> should also be taken into account, we will need to compute this probability for a range of values of <span class="math inline">\(K\)</span>, often based on some guidelines of the decision-makers. A very nice summary of these results is given by the following plot, known as the <strong>Cost-Effectiveness Acceptability Curve</strong>.</p>
 <div class="figure">
-<img src="/post/update-october2020/ceacplot-1.png" alt="" />
+<img src="/media/ceacplot-1.png" alt="" />
 <p class="caption">Cost-Effectiveness Acceptability Curve</p>
 </div>
 <p>The graph shows the estimated probability of cost-effectiveness for a range of values of the acceptance threshold. Indeed, by varying <span class="math inline">\(K\)</span> the proportion of estimated <span class="math inline">\(INB\)</span> which are positive will change and will provide a summary of how our cost-effectiveness probability changes as we increase/decrease the “willingness to pay” of the decision-makers.</p>
@@ -61,9 +62,9 @@ bibliography: bib_oct2020.bib
 <div id="conclusions" class="section level2">
 <h2>Conclusions</h2>
 <p>Outputs such as the CE plane and the CEAC are what really matter to health economists, whose job is merely to provide decision-makers with this evidence for each treatment comparison under consideration for a given funding decision. Based on the estimated probability of cost-effectiveness and their preferences in terms of budget allocation, decision-makers will prioritise the allocation of resources towards certain treatments, therefore negleting those funds to other treatments. An alternative and always available option could be to retain the funds and do not allocate resources to any treatment under consideration. In this scenario, the implicit element is that decision-makers are willing to postpone the decision to the future, waiting for more evidence to be collected to reduce the risk of making an inefficient/incorrect decision based on the current evidence.</p>
-<div id="refs" class="references">
-<div id="ref-claxton1999irrelevance">
-<p>Claxton, Karl. 1999. “The Irrelevance of Inference: A Decision-Making Approach to the Stochastic Evaluation of Health Care Technologies.” <em>Journal of Health Economics</em> 18 (3): 341–64.</p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-claxton1999irrelevance" class="csl-entry">
+Claxton, Karl. 1999. <span>“The Irrelevance of Inference: A Decision-Making Approach to the Stochastic Evaluation of Health Care Technologies.”</span> <em>Journal of Health Economics</em> 18 (3): 341–64.
 </div>
 </div>
 </div>

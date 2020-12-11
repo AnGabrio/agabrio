@@ -46,7 +46,9 @@ url_poster: ""
 # slides: example
 ---
 
-<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+<script src="index_files/header-attrs/header-attrs.js"></script>
+<link href="index_files/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="index_files/anchor-sections/anchor-sections.js"></script>
 
 
 <p>In certain cases, it is possible to reduce biases from case deletion by the application of weights. After incomplete cases are removed, the remaining complete cases can be weighted so that their distribution more closely resembles that of the full sample with respect to auxiliary variables. <em>Weighting methods</em> can eliminate bias due to differential response related to the variables used to model the response probabilities, but it cannot correct for biases related to variables that are unused or unmeasured (<span class="citation">Little and Rubin (2019)</span>). <span class="citation">Robins, Rotnitzky, and Zhao (1994)</span> introduced <em>Inverse Probability Weighting</em> (IPW) as a weighted regression approach that require an explicit model for the missingness but relaxes some of the parametric assumptions in the data model. Their method is an extension of <em>Generalized Estimating Equations</em> (GEE), a popular technique for modeling marginal or populationaveraged relationships between a response variable and predictors (<span class="citation">Zeger, Liang, and Albert (1988)</span>).</p>
@@ -96,33 +98,33 @@ p(c=1 \mid y,z)=p(c=1 \mid z)=\pi(z),
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1>References</h1>
-<div id="refs" class="references hanging-indent">
-<div id="ref-liang1986longitudinal">
-<p>Liang, Kung-Yee, and Scott L Zeger. 1986. “Longitudinal Data Analysis Using Generalized Linear Models.” <em>Biometrika</em> 73 (1): 13–22.</p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-liang1986longitudinal" class="csl-entry">
+Liang, Kung-Yee, and Scott L Zeger. 1986. <span>“Longitudinal Data Analysis Using Generalized Linear Models.”</span> <em>Biometrika</em> 73 (1): 13–22.
 </div>
-<div id="ref-little2019statistical">
-<p>Little, Roderick JA, and Donald B Rubin. 2019. <em>Statistical Analysis with Missing Data</em>. Vol. 793. John Wiley &amp; Sons.</p>
+<div id="ref-little2019statistical" class="csl-entry">
+Little, Roderick JA, and Donald B Rubin. 2019. <em>Statistical Analysis with Missing Data</em>. Vol. 793. John Wiley &amp; Sons.
 </div>
-<div id="ref-molenberghs2014handbook">
-<p>Molenberghs, Geert, Garrett Fitzmaurice, Michael G Kenward, Anastasios Tsiatis, and Geert Verbeke. 2014. <em>Handbook of Missing Data Methodology</em>. Chapman; Hall/CRC.</p>
+<div id="ref-molenberghs2014handbook" class="csl-entry">
+Molenberghs, Geert, Garrett Fitzmaurice, Michael G Kenward, Anastasios Tsiatis, and Geert Verbeke. 2014. <em>Handbook of Missing Data Methodology</em>. Chapman; Hall/CRC.
 </div>
-<div id="ref-robins1995semiparametric">
-<p>Robins, James M, and Andrea Rotnitzky. 1995. “Semiparametric Efficiency in Multivariate Regression Models with Missing Data.” <em>Journal of the American Statistical Association</em> 90 (429): 122–29.</p>
+<div id="ref-robins1995semiparametric" class="csl-entry">
+Robins, James M, and Andrea Rotnitzky. 1995. <span>“Semiparametric Efficiency in Multivariate Regression Models with Missing Data.”</span> <em>Journal of the American Statistical Association</em> 90 (429): 122–29.
 </div>
-<div id="ref-robins1994estimation">
-<p>Robins, James M, Andrea Rotnitzky, and Lue Ping Zhao. 1994. “Estimation of Regression Coefficients When Some Regressors Are Not Always Observed.” <em>Journal of the American Statistical Association</em> 89 (427): 846–66.</p>
+<div id="ref-robins1994estimation" class="csl-entry">
+Robins, James M, Andrea Rotnitzky, and Lue Ping Zhao. 1994. <span>“Estimation of Regression Coefficients When Some Regressors Are Not Always Observed.”</span> <em>Journal of the American Statistical Association</em> 89 (427): 846–66.
 </div>
-<div id="ref-robins1995analysis">
-<p>———. 1995. “Analysis of Semiparametric Regression Models for Repeated Outcomes in the Presence of Missing Data.” <em>Journal of the American Statistical Association</em> 90 (429): 106–21.</p>
+<div id="ref-robins1995analysis" class="csl-entry">
+———. 1995. <span>“Analysis of Semiparametric Regression Models for Repeated Outcomes in the Presence of Missing Data.”</span> <em>Journal of the American Statistical Association</em> 90 (429): 106–21.
 </div>
-<div id="ref-rotnitzky1998semiparametric">
-<p>Rotnitzky, Andrea, James M Robins, and Daniel O Scharfstein. 1998. “Semiparametric Regression for Repeated Outcomes with Nonignorable Nonresponse.” <em>Journal of the American Statistical Association</em> 93 (444): 1321–39.</p>
+<div id="ref-rotnitzky1998semiparametric" class="csl-entry">
+Rotnitzky, Andrea, James M Robins, and Daniel O Scharfstein. 1998. <span>“Semiparametric Regression for Repeated Outcomes with Nonignorable Nonresponse.”</span> <em>Journal of the American Statistical Association</em> 93 (444): 1321–39.
 </div>
-<div id="ref-schafer2002missing">
-<p>Schafer, Joseph L, and John W Graham. 2002. “Missing Data: Our View of the State of the Art.” <em>Psychological Methods</em> 7 (2): 147.</p>
+<div id="ref-schafer2002missing" class="csl-entry">
+Schafer, Joseph L, and John W Graham. 2002. <span>“Missing Data: Our View of the State of the Art.”</span> <em>Psychological Methods</em> 7 (2): 147.
 </div>
-<div id="ref-zeger1988models">
-<p>Zeger, Scott L, Kung-Yee Liang, and Paul S Albert. 1988. “Models for Longitudinal Data: A Generalized Estimating Equation Approach.” <em>Biometrics</em>, 1049–60.</p>
+<div id="ref-zeger1988models" class="csl-entry">
+Zeger, Scott L, Kung-Yee Liang, and Paul S Albert. 1988. <span>“Models for Longitudinal Data: A Generalized Estimating Equation Approach.”</span> <em>Biometrics</em>, 1049–60.
 </div>
 </div>
 </div>

@@ -23,7 +23,7 @@ image:
 projects: []
 ---
 
-I have finally found some time to update the version for my R package [missingHE](https://agabrioblog.onrender.com/missingHE/), for which version 1.2.1 is now available on [CRAN](https://cran.r-project.org/web/packages/missingHE/). 
+I have finally found some time to update the version for my R package [missingHE](https://github.com/AnGabrio/missingHE), for which version 1.2.1 is now available on [CRAN](https://cran.r-project.org/web/packages/missingHE/). 
 I included two main features to the previous version of the package. 
 
 First, I have added a new type of identifying restriction when fitting pattern mixture models through the function "pattern". Before, only the complete case
@@ -34,12 +34,11 @@ Second, I added a new accessory function called "ppc", which allows to perform p
 The function implements a relatively large number of checks, mostly taken from the R package [bayesplot](https://cran.r-project.org/web/packages/bayesplot/), which allow to assess the fit of the model to the observed data by type of outcome (effects and costs) and treatment group (control and intervention).
 For example, overalyed density plots can be generated to compare the empirical and replicated densities of the data to detect possible failures of the model. 
 
-{{< figure library="1" src="plotec.png" title="Density plots for the observed and replicated data" >}}
+![Density plots for the observed and replicated data](/media/plotec.jpg)
 
 I feel this is very important as when fitting a Bayesian model it is crucial to assess whether the model seems to adequately capture the different characteristics of the observed data (e.g. skewness, structural values, etc.). 
 A wide range of predictive checks are available, including histograms (see thumbnail pciture), scatterplots, error intervals, empirical cumulative distribution fucntions, statistcis of interest and many others. In addition ,
 these checks can be performed for each type of missingness model and parametric distribution chosen within missingHE. 
-
 
 ![](https://media.giphy.com/media/NEvPzZ8bd1V4Y/giphy.gif)
 

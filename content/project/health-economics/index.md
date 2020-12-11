@@ -50,8 +50,7 @@ There are several reasons that make the use of Bayesian methods in economic eval
 
 The general process of conducting a Bayesian analysis (with a view of using the results of the model to perform an economic evaluation) can be broken down in several steps, which are graphically summarized in the Figure below.
 
-{{< figure library="1" src="HTA.jpg" title="Process of health economic evaluation." >}}
-
+![Process of health economic evaluation](/media/HTA.jpg)
 
 The starting point is the identification of the decision problem, which defines the objective of the economic evaluation (e.g. the interventions being compared, the target population, the relevant time horizon). In line with the decision problem, a statistical model is constructed to describe the (by necessity, limited) knowledge of the underlying clinical pathways. This implies, for example, the definition of suitable models to describe variability in potentially observed data (e.g. the number of patients recovering from the disease because of a given treatment), as well as the epistemic uncertainty in the population parameters (e.g.~the underlying probability that a random individual in the target population is cured, if given the treatment under study).  At this point, all the relevant data are identified, collected and quantitatively sytnthesised to derive the estimates of the input parameters of interest for the model. 
 

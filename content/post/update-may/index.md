@@ -34,8 +34,6 @@ To be honest, you can get away by simply including some baseline covariate into 
 
 I think this is also a good chance to tell that I have updated an old paper on my on my [Arxiv account](https://arxiv.org/pdf/1805.07149.pdf). Both the content and title of the paper have changed considerably, but overall I feel that the overall message and quality of the article has improved. It is still an on-going version, but I am quite satisfied with its current status given all the effort I put into it. Have a lool in case you are interested. New title : "Joint longitudinal models for dealing with missing at random data in trial-based economic evaluations".
 
-More information on the paper can be found at this [dedicated page]({{< ref "/publication/gabrio2019d/index.md" >}})
-
 I believe that is all for this update. Not much going on due to the whole lockdown situation here in the UK but hopefully things are improving a little in a two-months time we will be able to at least go to the office. Let's see.
 
 
