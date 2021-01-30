@@ -12,7 +12,7 @@ lastmod: '2021-01-15T11:54:30+01:00'
 featured: yes
 draft: no
 image:
-  caption: 'Bayesian statistics is for babies'
+  caption: 'Bayesian statistics is for babies!'
   focal_point: 'Center'
   # Options: Smart, Center, TopLeft, Top, TopRight, Left, Right, BottomLeft, Bottom, BottomRight
   preview_only: no
@@ -22,6 +22,8 @@ projects: ["Missing Data"]
 Happy new year everybody! Yeah, I know it already almost February but I have been incredibly busy the past few weeks after the Xmas break. From getting familiar with the courses I am teaching this term to providing consultancy advice on statistical problems for students from FHML at UM. This last task has been particularly challenging as I did not have a clear idea of what was the statistical background of the students I has to work with and, in fact, the level of statistical knowledge varied considerably depending on the specific cases considered and I had to adjust my way of interacting with the clients on a case-by-case basis. Overall, I have learned a lot in these past weeks, from doing lots of online teaching and consultations, and I believe I am now well prepared to deal with more students, which is something I am looking for now that I have this experience. So, come at me students!
 
 Now, leaving aside this little off-topic with respect to the content of this post, let us go back to the key aspect which I glossed over last month. The question that was asked by Dr. Morris was *how do you interpret a Bayesian credible interval?*. In his comment he argued that the interpretation of such interval was not clear when compared, for example, to the frequentist interpretation of confidence intervals, i.e. the range of likely values for the population parameter of interest based on a $(1-\alpha)\%100$ confidence level. 
+
+![How CIs are computed](/media/CIs_example.jpg)
 
 The definition relies on the typical frequentist concept of treating *sample data* as *random quantities* that can be hypothetically drawn many times from the population and for each of these data a different confidence interval can be computed based on the sample statistics. This procedure ensures that out of all possible samples that I can draw from the population (and therefore out of all CIs I can compute), about 95\% of these intervals will contain the true (unknown) *population parameters* of interest which are considered *fixed quantities*. This, however, means that if I consider the specific CI that I computed over my collected sample data, I have no guarantee that it contains the true parameter value. Indeed, it is always possible that I got particularly unlucky with my sample and my CI belongs to that 5\% (out of the many possible that I could compute based on many drawn samples) that will not contain the true parameter value. This means that, although very powerful on a theoretical level, the frequentist argument may not be that useful when I have to focus on the available data that I have, rather than relying on long-term justifications which may not be applicable to my specific situation.
 
