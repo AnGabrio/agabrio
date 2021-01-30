@@ -1,5 +1,5 @@
 ---
-title: "What is a Bayesian credible interval?"
+title: "What is a Bayesian credible interval"
 author: Andrea Gabrio
 date: '2021-01-15'
 slug: update-january2021
@@ -12,11 +12,11 @@ lastmod: '2021-01-15T11:54:30+01:00'
 featured: yes
 draft: no
 image:
-  caption: 'Bayesian statistics is for babies!'
+  caption: 'Bayesian statistics is for babies'
   focal_point: 'Center'
   # Options: Smart, Center, TopLeft, Top, TopRight, Left, Right, BottomLeft, Bottom, BottomRight
   preview_only: no
-projects: ["Bayesian statistics"]
+projects: ["Missing Data"]
 ---
 
 Happy new year everybody! Yeah, I know it already almost February but I have been incredibly busy the past few weeks after the Xmas break. From getting familiar with the courses I am teaching this term to providing consultancy advice on statistical problems for students from FHML at UM. This last task has been particularly challenging as I did not have a clear idea of what was the statistical background of the students I has to work with and, in fact, the level of statistical knowledge varied considerably depending on the specific cases considered and I had to adjust my way of interacting with the clients on a case-by-case basis. Overall, I have learned a lot in these past weeks, from doing lots of online teaching and consultations, and I believe I am now well prepared to deal with more students, which is something I am looking for now that I have this experience. So, come at me students!
@@ -38,6 +38,10 @@ A hardcore frequenstist may also point out that Bayesian inference requires prio
 The appealing of the Bayesian approach is precisely to be very practical: combine the current data and an initial assumption about parameter values that generated the data to update my initial belief (in a rational and coherent way) and quantify how the uncertainty around the likely values for the parameter has changed after observing the data. This straightforward interpretation of how to deal with expressing the uncertainty for any unobserved quantity (parameter, prediction, missing value) makes the Bayesian approach optimal for handling decision-making problems where the quantification of the uncertainty around the conclusions is a fundamental element in the decision process.
 
 ![](https://media.giphy.com/media/Y3f0NgsEYR67OqRPdn/giphy.gif)
+
+
+
+
 
 
 
