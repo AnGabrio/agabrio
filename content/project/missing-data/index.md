@@ -18,7 +18,7 @@ links:
 #  icon_pack: 
 #  name: 
 #  url:
-url_code: ""
+url_code: "https://github.com/AnGabrio/Code/tree/master/longitudinal%20model"
 url_pdf: "https://rss.onlinelibrary.wiley.com/doi/full/10.1111/rssa.12522"
 url_slides: "https://github.com/AnGabrio/Talks/blob/master/Longitudinal%20Model/pres_ictmc_v2.pdf"
 url_video: ""

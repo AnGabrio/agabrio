@@ -19,12 +19,12 @@ links:
 #  icon_pack: 
 #  name: 
 #  url: 
-url_code: "https://github.com/AnGabrio/missingHE"
+url_code: "https://github.com/AnGabrio/Code/tree/master/structural%20ones"
 url_pdf: "https://onlinelibrary.wiley.com/doi/full/10.1002/sim.8045"
-url_slides: "https://www.ucl.ac.uk/drupal/site_statistics/sites/statistics/files/baio_ucl_5feb.pdf"
+url_slides: "https://github.com/AnGabrio/Talks/tree/master/Hurdle%20Model"
 url_video: ""
 url_source: "https://github.com/AnGabrio/short-course"
-url_poster: "https://www.ucl.ac.uk/drupal/site_statistics/sites/statistics/files/poster_ag_hurdle.pdf"
+url_poster: "https://github.com/AnGabrio/Talks/blob/master/Hurdle%20Model/poster.pdf"
 
 # Slides (optional).
 #   Associate this project with Markdown slides.
