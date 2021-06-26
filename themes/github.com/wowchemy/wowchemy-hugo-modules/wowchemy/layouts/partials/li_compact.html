@@ -2,23 +2,21 @@
 
 {{/* Dynamic view adjusts to content type. */}}
 {{ $show_authors_only := false }}{{/* Show authors only or full metadata? */}}
-{{ $show_buttons := false }}
 {{ $link := $item.RelPermalink }}
 {{ $target := "" }}
 {{ if $item.Params.external_link }}
   {{ $link = $item.Params.external_link }}
   {{ $target = "target=\"_blank\" rel=\"noopener\"" }}
 {{ end }}
-{{ if eq $item.Type "talk" }}
+{{ if eq $item.Type "event" }}
   {{ $show_authors_only = true }}
-  {{ $show_buttons = true }}
 {{ else if eq $item.Type "publication" }}
   {{ $show_authors_only = true }}
-  {{ $show_buttons = true }}
 {{ else if eq $item.Type "project" }}
   {{ $show_authors_only = true }}
-  {{ $show_buttons = true }}
 {{ end }}
+
+{{ $has_attachments := partial "functions/has_attachments" . }}
 
 {{/* Get summary. */}}
 {{ $summary := "" }}
@@ -33,9 +31,9 @@
 <div class="media stream-item">
   <div class="media-body">
 
-    <h3 class="article-title mb-0 mt-0">
+    <div class="section-subheading article-title mb-0 mt-0">
       <a href="{{$link}}" {{ $target | safeHTMLAttr }}>{{ $item.Title }}</a>
-    </h3>
+    </div>
 
     {{ with $summary }}
     <a href="{{ $link }}" {{ $target | safeHTMLAttr }} class="summary-link">
@@ -47,7 +45,7 @@
 
     <div class="stream-meta article-metadata">
 
-      {{ if eq $item.Type "talk" }}
+      {{ if eq $item.Type "event" }}
       <div>
         <span>
           {{ partial "functions/get_event_dates" $item }}
@@ -68,7 +66,7 @@
       {{ end }}
     </div>
 
-    {{ if $show_buttons }}
+    {{ if $has_attachments }}
     <div class="btn-links">
       {{ partial "page_links" (dict "page" $item "is_list" 1) }}
     </div>
@@ -78,11 +76,9 @@
   <div class="ml-3">
     {{ $resource := ($item.Resources.ByType "image").GetMatch "*featured*" }}
     {{ with $resource }}
-    {{ $filters := slice (images.GaussianBlur 21) (images.Pixelate 8) }}
     {{ $image := .Resize "150x" }}
-    {{ $image_lq := (.Resize "150x q1").Filter $filters }}
     <a href="{{$link}}" {{ $target | safeHTMLAttr }}>
-      <img src="{{ $image_lq.RelPermalink }}" data-src="{{ $image.RelPermalink }}" alt="{{ $item.Title }}" class="lazyload">
+      <img src="{{ $image.RelPermalink }}" alt="{{ $item.Title }}" loading="lazy">
     </a>
     {{end}}
   </div>

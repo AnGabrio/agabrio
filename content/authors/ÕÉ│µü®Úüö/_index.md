@@ -1,6 +1,4 @@
 ---
-authors:
-- 吳恩達
 bio: My research interests include distributed robotics, mobile computing and programmable
   matter.
 education:
@@ -30,17 +28,14 @@ social:
 - icon: twitter
   icon_pack: fab
   link: https://twitter.com/GeorgeCushen
-- icon: google-scholar
-  icon_pack: ai
+- icon: graduation-cap
+  icon_pack: fas
   link: https://scholar.google.co.uk/citations?user=sIwtMXoAAAAJ
 - icon: github
   icon_pack: fab
   link: https://github.com/gcushen
 superuser: false
 title: 吳恩達
-user_groups:
-- Researchers
-- Visitors
 ---
 
 吳恩達 is a professor of artificial intelligence at the Stanford AI Lab. His research interests include distributed robotics, mobile computing and programmable matter. He leads the Robotic Neurobiology group, which develops self-reconfiguring robots, systems of self-organizing robots, and mobile sensor networks.

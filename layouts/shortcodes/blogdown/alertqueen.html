@@ -1,0 +1,8 @@
+<div class="alertqueen alertqueen-{{ .Get 0 }}">
+    <h4 class="alertqueen-heading;">&#9819; Queen's note! &#9819; </h4>
+  <div>
+        <hr>
+    {{ .Inner | markdownify | emojify }}
+        <hr>
+  </div>
+</div>

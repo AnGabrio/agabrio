@@ -2,8 +2,8 @@
 abstract: Invited presentation
 all_day: false
 authors: []
-date: "2021-07-01T16:00:00Z"
-date_end: "2021-07-02T17:00:00Z"
+date: "2021-06-01T16:00:00Z"
+date_end: "2021-06-02T17:00:00Z"
 event: R for HTA workshop
 featured: false
 image:
@@ -13,7 +13,7 @@ location: Trinity College Dublin (virtual meeting) - IRL
 math: true
 projects:
 - health-economics
-publishDate: "2020-11-11T00:00:00Z"
+publishDate: "2021-06-06T00:00:00Z"
 slides: 
 summary: 
 tags: ["Economic Evaluations", "Missing Data", "R", "Bayesian"]

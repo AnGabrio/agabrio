@@ -1,13 +1,7 @@
 {{ $item := . }}
 
-
 {{/* Dynamic view adjusts to content type. */}}
-{{ $show_buttons := false }}
-{{ if eq $item.Type "talk" }}
-  {{ $show_buttons = true }}
-{{ else if eq $item.Type "publication" }}
-  {{ $show_buttons = true }}
-{{ end }}
+{{ $has_attachments := partial "functions/has_attachments" . }}
 
 {{/* Get summary. */}}
 {{ $summary := "" }}
@@ -21,7 +15,7 @@
 
 <div class="card-simple">
 
-  {{ if eq $item.Type "talk" }}
+  {{ if eq $item.Type "event" }}
   <div class="article-metadata">
     {{ if $item.Params.authors }}
     <div>
@@ -43,17 +37,15 @@
   {{ $resource := ($item.Resources.ByType "image").GetMatch "*featured*" }}
   {{ $anchor := $item.Params.image.focal_point | default "Smart" }}
   {{ with $resource }}
-  {{ $filters := slice (images.GaussianBlur 21) (images.Pixelate 8) }}
   {{ $image := .Fill (printf "808x455 %s" $anchor) }}
-  {{ $image_lq := (.Fill (printf "808x455 %s q1" $anchor)).Filter $filters }}
   <a href="{{ $item.RelPermalink }}">
-    <div class="img-hover-zoom"><img src="{{ $image_lq.RelPermalink }}" data-src="{{ $image.RelPermalink }}" class="article-banner lazyload" alt="{{ $item.Title }}"></div>
+    <div class="img-hover-zoom"><img src="{{ $image.RelPermalink }}" class="article-banner" alt="{{ $item.Title }}" loading="lazy"></div>
   </a>
   {{end}}
 
-  <h3 class="article-title mb-1 mt-3">
+  <div class="section-subheading article-title mb-1 mt-3">
     <a href="{{ $item.RelPermalink }}">{{ $item.Title }}</a>
-  </h3>
+  </div>
 
   {{ with $summary }}
   <a href="{{ $item.RelPermalink }}" class="summary-link">
@@ -63,7 +55,7 @@
   </a>
   {{ end }}
 
-  {{ if $show_buttons }}
+  {{ if $has_attachments }}
   <div class="btn-links">
     {{ partial "page_links" (dict "page" $item "is_list" 1) }}
   </div>

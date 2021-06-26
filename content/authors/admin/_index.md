@@ -70,8 +70,8 @@ I have collaborated with the [Statistics for Health Economic Evaluation research
 
 I have also collaborated with the [Health Economics Analysis and Research methodology Team](https://hearteam.blogspot.com/) in the [Institute for Clinical Trials and Methodology](https://www.ucl.ac.uk/clinical-trials-and-methodology/) at UCL, working primarily with the members of the [Priment Clinical Trials Unit](https://www.ucl.ac.uk/clinical-trials-and-methodology/about/priment). The group focuses on the development of methodological tools for the analysis of the economic components in randomised control trials across a wide range of clinical areas and is formed by a group of interdisciplinary and varied experience. 
 
+
 {{< alert note >}}
 I am a huge fan of **RStudio** and its tools, such as [Rmarkdown](https://rmarkdown.rstudio.com/) and [blogdown](https://bookdown.org/) packages, which are aimed at the construction of documents that combine text, **R** code and the output from the execution of that code: from html and pdf files to multi-page web sites and e-books (yes this website is written in **Markdown**!). Oh, and I ❤ $\rm \LaTeX$.
 {{< /alert >}}
-
 
