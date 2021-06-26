@@ -31,11 +31,11 @@ will be an essential virtue that I must show off in order to survive the upcomin
 Second, alongside with teaching statistics in a course I get lots of emails from the students on different parts of the course. This is not something that really bothers me expect when their questions
 are all about what type of questions there will be in the exam rather than "I would like to understand better this concept" which can be a bit frustrating from time to time. Again part of the job, so I can complain 
 as much as I want but it is something I really need to do.
-Third, I have given my first invited talk at my (department of methodology and statistics)[https://stat.mumc.maastrichtuniversity.nl/methodology-statistics-0] and it has been a very interesting and nice experience. I think I overdid it since I wanted to give a nice overview of what my research is about 
+Third, I have given my first invited talk at my [department of methodology and statistics](https://stat.mumc.maastrichtuniversity.nl/methodology-statistics-0) and it has been a very interesting and nice experience. I think I overdid it since I wanted to give a nice overview of what my research is about 
 but I ended up putting too many slides for a 1 hour presentation. This hurted a bit the pace of my talk since I had to speed up in certain points and I felt that many people were lost, especially towards the end. It was very nice to 
 introduce my work to my collegaues and receive their feedback on some parts of the work as well as suggesitons to explore in the future. I hope next time I will be able to adjust the presentation based on the actual time given to me
 so to make sure people will not feel disoriented/bored (at least not too much).
-Finally, next week I will also give another invited talk about my (missingHE)[https://cran.r-project.org/web/packages/missingHE/index.html] package at the (R-HTA summer workshop)[https://r-hta.org/]. This annual conference is specifically directed towards people who would like 
+Finally, next week I will also give another invited talk about my [missingHE](https://cran.r-project.org/web/packages/missingHE/index.html) package at the [R-HTA summer workshop](https://r-hta.org/). This annual conference is specifically directed towards people who would like 
 to use R in health economic analyses and I hope I can capture the attention of someone who might decide to try out my package on their own analyses. I still have to finish the presentation but since this time I only have
 15 minutes I need to make sure to not talk for more than 1 hour!
 
