@@ -1,16 +1,16 @@
 ---
-title: "Variance Heterogeneity (STAN)"
+title: "Variance Heterogeneity (Stan)"
 author: "Andrea Gabrio"
 date: '2020-02-07'
 slug: heterogeneity-stan
 categories:
 - heterogeneity
 - heteroskedasticity
-- STAN
+- Stan
 - R
 tags:
 - tutorials
-- STAN
+- Stan
 - heterogeneity
 - heteroskedasticity
 subtitle: ''
@@ -35,7 +35,7 @@ This tutorial will focus on the use of Bayesian estimation to fit simple linear 
  
 2. **JAGS** - (Just Another Gibbs Sampler) - written in `C++`. 
 
-3. **STAN** - a dedicated Bayesian modelling framework written in `C++` and implementing *Hamiltonian* MCMC samplers.
+3. **Stan** - a dedicated Bayesian modelling framework written in `C++` and implementing *Hamiltonian* MCMC samplers.
 
 Whilst the above programs can be used stand-alone, they do offer the rich data pre-processing and graphical capabilities of `R`, and thus, they are best accessed from within `R` itself. As such there are multiple packages devoted to interfacing with the various software implementations:
 
@@ -43,9 +43,9 @@ Whilst the above programs can be used stand-alone, they do offer the rich data p
 
 * *R2jags* - interfaces with `JAGS`
 
-* *rstan* - interfaces with `STAN`
+* *rstan* - interfaces with `Stan`
 
-This tutorial will demonstrate how to fit models in `STAN` (@gelman2015stan) using the package `rstan` (@rstanpackage) as interface, which also requires to load some other packages.
+This tutorial will demonstrate how to fit models in `Stan` (@gelman2015stan) using the package `rstan` (@rstanpackage) as interface, which also requires to load some other packages.
 
 # Overview
 
@@ -109,7 +109,7 @@ The observed response ($y_i$) are assumed to be drawn from a normal distribution
 
 \[y_i \sim N(\mu_i,\sigma \times \omega),  \]
 
-where $\mu_i=\beta_0 +\boldsymbol \beta \boldsymbol X$. The assumed priors are: $\beta \sim N(0,100)$ and $\sigma \sim \text{Cauchy}(0,5)$. We proceed to code the model into `STAN`
+where $\mu_i=\beta_0 +\boldsymbol \beta \boldsymbol X$. The assumed priors are: $\beta \sim N(0,100)$ and $\sigma \sim \text{Cauchy}(0,5)$. We proceed to code the model into `Stan`
 
 ```{r code_model, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 modelString = "
@@ -150,7 +150,7 @@ modelString = "
 writeLines(modelString, con = "heteroskModel.stan")
 ```
 
-Arrange the data as a list (as required by `STAN`). As input, `STAN` will need to be supplied with: the response variable, the predictor variable, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.
+Arrange the data as a list (as required by `Stan`). As input, `Stan` will need to be supplied with: the response variable, the predictor variable, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.
 
 ```{r data_model, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 Xmat <- model.matrix(~x, data.het)
@@ -486,7 +486,7 @@ modelString2 = "
 writeLines(modelString2, con = "heteroskModel2.stan")
 ```
 
-Arrange the data as a list (as required by `STAN`). As input, `STAN` will need to be supplied with: the response variable, the predictor matrix, the number of predictors, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.
+Arrange the data as a list (as required by `Stan`). As input, `Stan` will need to be supplied with: the response variable, the predictor matrix, the number of predictors, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.
 
 ```{r data_model_ex2, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 Xmat <- model.matrix(~x, data.het1)
@@ -506,7 +506,7 @@ nIter = ceiling(burnInSteps + (numSavedSteps * thinSteps)/nChains)
 nIter
 ```
 
-Now run the `STAN` code via the `rstan` interface. Note that the first time STAN is run after the `rstan` package is loaded, it is often necessary to run any kind of randomization function just to initiate the .Random.seed variable.
+Now run the `Stan` code via the `rstan` interface. Note that the first time Stan is run after the `rstan` package is loaded, it is often necessary to run any kind of randomization function just to initiate the .Random.seed variable.
 
 ```{r fit_model_ex2, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 data.het1.rstan <- stan(data = data.het1.list, file = "heteroskModel2.stan",

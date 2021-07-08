@@ -1,5 +1,5 @@
 ---
-title: "Factorial Analysis of Variance (STAN)"
+title: "Factorial Analysis of Variance (Stan)"
 author: "Andrea Gabrio"
 date: '2020-02-06'
 slug: factorial-anova-stan
@@ -7,11 +7,11 @@ categories:
 - factor analysis
 - factorial designs
 - anova
-- STAN
+- Stan
 - R
 tags:
 - tutorials
-- STAN
+- Stan
 - factor analysis
 - factorial designs
 - anova
@@ -37,7 +37,7 @@ This tutorial will focus on the use of Bayesian estimation to fit simple linear 
  
 2. **JAGS** - (Just Another Gibbs Sampler) - written in `C++`. 
 
-3. **STAN** - a dedicated Bayesian modelling framework written in `C++` and implementing *Hamiltonian* MCMC samplers.
+3. **Stan** - a dedicated Bayesian modelling framework written in `C++` and implementing *Hamiltonian* MCMC samplers.
 
 Whilst the above programs can be used stand-alone, they do offer the rich data pre-processing and graphical capabilities of `R`, and thus, they are best accessed from within `R` itself. As such there are multiple packages devoted to interfacing with the various software implementations:
 
@@ -45,9 +45,9 @@ Whilst the above programs can be used stand-alone, they do offer the rich data p
 
 * *R2jags* - interfaces with `JAGS`
 
-* *rstan* - interfaces with `STAN`
+* *rstan* - interfaces with `Stan`
 
-This tutorial will demonstrate how to fit models in `STAN` (@gelman2015stan) using the package `rstan` (@rstanpackage) as interface, which also requires to load some other packages.
+This tutorial will demonstrate how to fit models in `Stan` (@gelman2015stan) using the package `rstan` (@rstanpackage) as interface, which also requires to load some other packages.
 
 # Overview
 
@@ -301,7 +301,7 @@ The observed response ($y_i$) are assumed to be drawn from a normal distribution
 
 \[y_i \sim N(\mu_i,\sigma),  \]
 
-where $\mu_i=\beta_0 +\boldsymbol \beta \boldsymbol X$. The assumed priors are: $\beta \sim N(0,100)$ and $\sigma \sim \text{Cauchy}(0,5)$. Exploratory data analysis suggests that the intercept and effects could be drawn from similar distributions (with mean in the $10$'s and variances in the $100$'s). Whilst we might therefore be tempted to provide different priors for the intercept, compared to the effects, for a simple model such as this, it is unlikely to be necessary. However, for more complex models, where prior specification becomes more critical, separate priors would probably be necessary. We proceed to code the model into `STAN`.
+where $\mu_i=\beta_0 +\boldsymbol \beta \boldsymbol X$. The assumed priors are: $\beta \sim N(0,100)$ and $\sigma \sim \text{Cauchy}(0,5)$. Exploratory data analysis suggests that the intercept and effects could be drawn from similar distributions (with mean in the $10$'s and variances in the $100$'s). Whilst we might therefore be tempted to provide different priors for the intercept, compared to the effects, for a simple model such as this, it is unlikely to be necessary. However, for more complex models, where prior specification becomes more critical, separate priors would probably be necessary. We proceed to code the model into `Stan`.
 
 ```{r code_model, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 modelString = "
@@ -341,7 +341,7 @@ modelString = "
 writeLines(modelString, con = "fact_anovaModel.stan")
 ```
 
-Arrange the data as a list (as required by `STAN`). As input, `STAN` will need to be supplied with: the response variable, the predictor variable, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.
+Arrange the data as a list (as required by `Stan`). As input, `Stan` will need to be supplied with: the response variable, the predictor variable, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.
 
 ```{r data_model, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 Xmat <- model.matrix(~A * B, data)
@@ -573,7 +573,7 @@ mcmcpvalue(as.matrix(data.rstan)[, "beta[6]"])
 mcmcpvalue(as.matrix(data.rstan)[, c("beta[5]", "beta[6]")])
 ```
 
-There is evidence of an interaction between A and B. In a Bayesian context, we can compare models using the **leave-one-out cross-validation** statistics. Leave-one-out (LOO) cross-validation explores how well a series of models can predict withheld values @vehtari2017practical. The LOO Information Criterion (LOOIC) is analogous to the AIC except that the LOOIC takes priors into consideration, does not assume that the posterior distribution is drawn from a multivariate normal and integrates over parameter uncertainty so as to yield a distribution of looic rather than just a point estimate. The LOOIC does however assume that all observations are equally influential (it does not matter which observations are left out). This assumption can be examined via the Pareto $k$ estimate (values greater than $0.5$ or more conservatively $0.75$ are considered overly influential). We can compute LOOIC if we store the loglikelihood from our `STAN` model, which can then be extracted to compute the information criterion using the package `loo`.
+There is evidence of an interaction between A and B. In a Bayesian context, we can compare models using the **leave-one-out cross-validation** statistics. Leave-one-out (LOO) cross-validation explores how well a series of models can predict withheld values @vehtari2017practical. The LOO Information Criterion (LOOIC) is analogous to the AIC except that the LOOIC takes priors into consideration, does not assume that the posterior distribution is drawn from a multivariate normal and integrates over parameter uncertainty so as to yield a distribution of looic rather than just a point estimate. The LOOIC does however assume that all observations are equally influential (it does not matter which observations are left out). This assumption can be examined via the Pareto $k$ estimate (values greater than $0.5$ or more conservatively $0.75$ are considered overly influential). We can compute LOOIC if we store the loglikelihood from our `Stan` model, which can then be extracted to compute the information criterion using the package `loo`.
 
 ```{r mcmc_looic, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 library(loo)

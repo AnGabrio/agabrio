@@ -1,15 +1,15 @@
 ---
-title: "Item Response Theory Models (STAN)"
+title: "Item Response Theory Models (Stan)"
 author: "Andrea Gabrio"
 date: '2020-03-21'
 slug: irt-stan
 categories:
 - item response theory
-- STAN
+- Stan
 - R
 tags:
 - tutorials
-- STAN
+- Stan
 - item response theory
 subtitle: ''
 summary: ''
@@ -24,30 +24,28 @@ bibliography: citations_stan14.bib
 ---
 
 <script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
-<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
-<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
 
 
 <p>This tutorial will focus on the use of Bayesian estimation to fit simple linear regression models. <code>BUGS</code> (Bayesian inference Using <em>Gibbs Sampling</em>) is an algorithm and supporting language (resembling <code>R</code>) dedicated to performing the Gibbs sampling implementation of <em>Markov Chain Monte Carlo</em> (MCMC) method. Dialects of the <code>BUGS</code> language are implemented within three main projects:</p>
 <ol style="list-style-type: decimal">
 <li><p><strong>OpenBUGS</strong> - written in component pascal.</p></li>
 <li><p><strong>JAGS</strong> - (Just Another Gibbs Sampler) - written in <code>C++</code>.</p></li>
-<li><p><strong>STAN</strong> - a dedicated Bayesian modelling framework written in <code>C++</code> and implementing <em>Hamiltonian</em> MCMC samplers.</p></li>
+<li><p><strong>Stan</strong> - a dedicated Bayesian modelling framework written in <code>C++</code> and implementing <em>Hamiltonian</em> MCMC samplers.</p></li>
 </ol>
 <p>Whilst the above programs can be used stand-alone, they do offer the rich data pre-processing and graphical capabilities of <code>R</code>, and thus, they are best accessed from within <code>R</code> itself. As such there are multiple packages devoted to interfacing with the various software implementations:</p>
 <ul>
 <li><p><em>R2OpenBUGS</em> - interfaces with <code>OpenBUGS</code></p></li>
 <li><p><em>R2jags</em> - interfaces with <code>JAGS</code></p></li>
-<li><p><em>rstan</em> - interfaces with <code>STAN</code></p></li>
+<li><p><em>rstan</em> - interfaces with <code>Stan</code></p></li>
 </ul>
-<p>This tutorial will demonstrate how to fit models in <code>STAN</code> (<span class="citation">Gelman, Lee, and Guo (2015)</span>) using the package <code>rstan</code> (<span class="citation">Stan Development Team (2018)</span>) as interface, which also requires to load some other packages.</p>
+<p>This tutorial will demonstrate how to fit models in <code>Stan</code> (<span class="citation"><a href="#ref-gelman2015stan" role="doc-biblioref">Gelman, Lee, and Guo</a> (<a href="#ref-gelman2015stan" role="doc-biblioref">2015</a>)</span>) using the package <code>rstan</code> (<span class="citation"><a href="#ref-rstanpackage" role="doc-biblioref">Stan Development Team</a> (<a href="#ref-rstanpackage" role="doc-biblioref">2018</a>)</span>) as interface, which also requires to load some other packages.</p>
 <div id="overview" class="section level1">
 <h1>Overview</h1>
 <p>Item response theory (IRT) is a paradigm for investigating the relationship between an individual’s response to a single test item and their performance on an overall measure of the ability or trait that item was intended to measure. Many models exist in the IRT field for evaulating how well an item captures an underlying latent trait, but some of the most popular IRT models are <em>logistic IRT models</em> for dichotmous responses. In particular, the main types of models are:</p>
 <p>1 <strong>1 parameter logistic model</strong></p>
 <p>2 <strong>2 parameter logistic model</strong></p>
 <p>3 <strong>3 parameter logistic model</strong></p>
-<p>Throughout this tutorial, I assume that the reader has some basic understanding of IRT model and working knowledge of a software implementation of the <code>STAN</code> language. However, if this is not the case, excellent sources for learning IRT are <span class="citation">Baker and Kim (2004)</span>, who provide a mathematically detailed introduction to IRT, and <span class="citation">Hambleton, Swaminathan, and Rogers (1991)</span>, who give an intuitive introduction to the topic. For an in-depth description of how to implement different types of IRT models in <code>STAN</code>, I also refer to this very nice review of <span class="citation">Luo and Jiao (2018)</span> and this other online <a href="https://quantdev.ssri.psu.edu/sites/qdev/files/IRT_tutorial_FA17.html#3_2-parameter_logistic_(2pl)_irt_model">tutorial</a>.</p>
+<p>Throughout this tutorial, I assume that the reader has some basic understanding of IRT model and working knowledge of a software implementation of the <code>Stan</code> language. However, if this is not the case, excellent sources for learning IRT are <span class="citation"><a href="#ref-baker2004item" role="doc-biblioref">Baker and Kim</a> (<a href="#ref-baker2004item" role="doc-biblioref">2004</a>)</span>, who provide a mathematically detailed introduction to IRT, and <span class="citation"><a href="#ref-hambleton1991fundamentals" role="doc-biblioref">Hambleton, Swaminathan, and Rogers</a> (<a href="#ref-hambleton1991fundamentals" role="doc-biblioref">1991</a>)</span>, who give an intuitive introduction to the topic. For an in-depth description of how to implement different types of IRT models in <code>Stan</code>, I also refer to this very nice review of <span class="citation"><a href="#ref-luo2018using" role="doc-biblioref">Luo and Jiao</a> (<a href="#ref-luo2018using" role="doc-biblioref">2018</a>)</span> and this other online <a href="https://quantdev.ssri.psu.edu/sites/qdev/files/IRT_tutorial_FA17.html#3_2-parameter_logistic_(2pl)_irt_model">tutorial</a>.</p>
 <p>At the core of all the IRT models presented in this tutorial is the <em>Item Response Function</em> (IRF). The IRF estimates the probability of getting item <span class="math inline">\(j\)</span> “correct” as a function of item characteristics and the <span class="math inline">\(i\)</span>-th individual’s latent trait/ability level (<span class="math inline">\(\theta_i\)</span>). These item response functions are defined by a logistic curve (i.e. an <span class="math inline">\(S\)</span>-shape from <span class="math inline">\(0-1\)</span>).</p>
 </div>
 <div id="parameter-logistic-model-1plm" class="section level1">
@@ -98,12 +96,12 @@ Item.5      2.83 0.01</code></pre>
 </div>
 <div id="fit-the-model" class="section level2">
 <h2>Fit the model</h2>
-<p>We fit the 1PLM to the data. First, I rename and preprocess the data to be passed to <code>STAN</code>.</p>
+<p>We fit the 1PLM to the data. First, I rename and preprocess the data to be passed to <code>Stan</code>.</p>
 <pre class="r"><code>&gt; Y&lt;-data_dicho[,4:8]
 &gt; n&lt;-nrow(Y)
 &gt; p&lt;-ncol(Y)
 &gt; data_list&lt;-list(Y=Y,n=n,p=p)</code></pre>
-<p>Then I specify the model using the following <code>STAN</code> code.</p>
+<p>Then I specify the model using the following <code>Stan</code> code.</p>
 <pre class="r"><code>&gt; model1&lt;-&quot;
 + data {
 + int&lt;lower=0&gt; n;
@@ -157,7 +155,7 @@ Item.5      2.83 0.01</code></pre>
 &gt; nIter = ceiling(burnInSteps + (numSavedSteps * thinSteps)/nChains)
 &gt; nIter
 [1] 1750</code></pre>
-<p>Start the <code>STAN</code> model (check the model, load data into the model, specify the number of chains and compile the model). Run the <code>STAN</code> code via the <code>rstan</code> interface and the <code>stan</code> function.</p>
+<p>Start the <code>Stan</code> model (check the model, load data into the model, specify the number of chains and compile the model). Run the <code>Stan</code> code via the <code>rstan</code> interface and the <code>stan</code> function.</p>
 <pre class="r"><code>&gt; library(rstan)
 &gt; set.seed(3456)
 &gt; model1_stan&lt;- stan(data = data_list, file = &quot;model1PLM.stan&quot;, 
@@ -184,15 +182,15 @@ Chain 1: Iteration: 1550 / 1750 [ 88%]  (Sampling)
 Chain 1: Iteration: 1725 / 1750 [ 98%]  (Sampling)
 Chain 1: Iteration: 1750 / 1750 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 12.583 seconds (Warm-up)
-Chain 1:                17.744 seconds (Sampling)
-Chain 1:                30.327 seconds (Total)
+Chain 1:  Elapsed Time: 11.824 seconds (Warm-up)
+Chain 1:                17.505 seconds (Sampling)
+Chain 1:                29.329 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL &#39;model1PLM&#39; NOW (CHAIN 2).
 Chain 2: 
-Chain 2: Gradient evaluation took 0.001 seconds
-Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 10 seconds.
+Chain 2: Gradient evaluation took 0 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
 Chain 2: Adjust your expectations accordingly!
 Chain 2: 
 Chain 2: 
@@ -209,9 +207,9 @@ Chain 2: Iteration: 1550 / 1750 [ 88%]  (Sampling)
 Chain 2: Iteration: 1725 / 1750 [ 98%]  (Sampling)
 Chain 2: Iteration: 1750 / 1750 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 12.441 seconds (Warm-up)
-Chain 2:                19.417 seconds (Sampling)
-Chain 2:                31.858 seconds (Total)
+Chain 2:  Elapsed Time: 11.168 seconds (Warm-up)
+Chain 2:                16.923 seconds (Sampling)
+Chain 2:                28.091 seconds (Total)
 Chain 2: </code></pre>
 </div>
 <div id="plot-the-item-characteristic-curves" class="section level2">
@@ -310,7 +308,7 @@ Chain 2: </code></pre>
 <p>where <span class="math inline">\(\alpha_j\)</span> is the <em>discrimination parameter</em> for item <span class="math inline">\(j\)</span> of the test, and is assumed to be positive and lognormally distributed according to some mean <span class="math inline">\(\mu_{\alpha}\)</span> and standard deviation <span class="math inline">\(\sigma_{\alpha}\)</span> which must be specified by the analyst. The item discriminability <span class="math inline">\(\alpha_j\)</span> indicates how well an item is able to discriminate between persons with different ability levels. Item discriminability is reflected in the steepness of the slope of the ICC.</p>
 <div id="fit-the-model-1" class="section level2">
 <h2>Fit the model</h2>
-<p>We fit the 2PLM to the data using the following <code>STAN</code> code.</p>
+<p>We fit the 2PLM to the data using the following <code>Stan</code> code.</p>
 <pre class="r"><code>&gt; model2&lt;-&quot;
 + data {
 + int&lt;lower=0&gt; n;
@@ -368,7 +366,7 @@ Chain 2: </code></pre>
 &gt; nIter = ceiling(burnInSteps + (numSavedSteps * thinSteps)/nChains)
 &gt; nIter
 [1] 1750</code></pre>
-<p>Start the <code>STAN</code> model (check the model, load data into the model, specify the number of chains and compile the model). Run the <code>STAN</code> code via the <code>rstan</code> interface and the <code>stan</code> function.</p>
+<p>Start the <code>Stan</code> model (check the model, load data into the model, specify the number of chains and compile the model). Run the <code>Stan</code> code via the <code>rstan</code> interface and the <code>stan</code> function.</p>
 <pre class="r"><code>&gt; set.seed(3456)
 &gt; model2_stan&lt;- stan(data = data_list, file = &quot;model2PLM.stan&quot;, 
 +                    chains = nChains, pars = params, iter = nIter, 
@@ -394,9 +392,9 @@ Chain 1: Iteration: 1550 / 1750 [ 88%]  (Sampling)
 Chain 1: Iteration: 1725 / 1750 [ 98%]  (Sampling)
 Chain 1: Iteration: 1750 / 1750 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 86.189 seconds (Warm-up)
-Chain 1:                48.136 seconds (Sampling)
-Chain 1:                134.325 seconds (Total)
+Chain 1:  Elapsed Time: 78.795 seconds (Warm-up)
+Chain 1:                41.905 seconds (Sampling)
+Chain 1:                120.7 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL &#39;model2PLM&#39; NOW (CHAIN 2).
@@ -419,9 +417,9 @@ Chain 2: Iteration: 1550 / 1750 [ 88%]  (Sampling)
 Chain 2: Iteration: 1725 / 1750 [ 98%]  (Sampling)
 Chain 2: Iteration: 1750 / 1750 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 32.706 seconds (Warm-up)
-Chain 2:                49.49 seconds (Sampling)
-Chain 2:                82.196 seconds (Total)
+Chain 2:  Elapsed Time: 32.74 seconds (Warm-up)
+Chain 2:                47.985 seconds (Sampling)
+Chain 2:                80.725 seconds (Total)
 Chain 2: </code></pre>
 </div>
 <div id="plot-the-item-characteristic-curves-1" class="section level2">
@@ -569,7 +567,7 @@ Chain 2: </code></pre>
 <p>where <span class="math inline">\(\eta_j\)</span> is the <em>guessing parameter</em>. Under this model, individuals with zero ability have a nonzero chance of endorsing any item, just by guessing randomly. The guessing parameter is reflected in the <span class="math inline">\(y\)</span>-intercept (i.e. probability) of the ICC. The parameter is normally distributed according to some mean <span class="math inline">\(\mu_{\eta}\)</span> and standard deviation <span class="math inline">\(\sigma_{\eta}\)</span> which must be specified by the analyst.</p>
 <div id="fit-the-model-2" class="section level2">
 <h2>Fit the model</h2>
-<p>We fit the 3PLM to the data using the following <code>STAN</code> code.</p>
+<p>We fit the 3PLM to the data using the following <code>Stan</code> code.</p>
 <pre class="r"><code>&gt; model3&lt;-&quot;
 + data {
 + int&lt;lower=0&gt; n;
@@ -631,7 +629,7 @@ Chain 2: </code></pre>
 &gt; nIter = ceiling(burnInSteps + (numSavedSteps * thinSteps)/nChains)
 &gt; nIter
 [1] 1750</code></pre>
-<p>Start the <code>STAN</code> model (check the model, load data into the model, specify the number of chains and compile the model). Run the <code>STAN</code> code via the <code>rstan</code> interface and the <code>stan</code> function.</p>
+<p>Start the <code>Stan</code> model (check the model, load data into the model, specify the number of chains and compile the model). Run the <code>Stan</code> code via the <code>rstan</code> interface and the <code>stan</code> function.</p>
 <pre class="r"><code>&gt; set.seed(3456)
 &gt; model3_stan&lt;- stan(data = data_list, file = &quot;model3PLM.stan&quot;, 
 +                    chains = nChains, pars = params, iter = nIter, 
@@ -657,15 +655,15 @@ Chain 1: Iteration: 1550 / 1750 [ 88%]  (Sampling)
 Chain 1: Iteration: 1725 / 1750 [ 98%]  (Sampling)
 Chain 1: Iteration: 1750 / 1750 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 31.451 seconds (Warm-up)
-Chain 1:                57.246 seconds (Sampling)
-Chain 1:                88.697 seconds (Total)
+Chain 1:  Elapsed Time: 30.502 seconds (Warm-up)
+Chain 1:                52.971 seconds (Sampling)
+Chain 1:                83.473 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL &#39;model3PLM&#39; NOW (CHAIN 2).
 Chain 2: 
-Chain 2: Gradient evaluation took 0.002 seconds
-Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 20 seconds.
+Chain 2: Gradient evaluation took 0.001 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 10 seconds.
 Chain 2: Adjust your expectations accordingly!
 Chain 2: 
 Chain 2: 
@@ -682,9 +680,9 @@ Chain 2: Iteration: 1550 / 1750 [ 88%]  (Sampling)
 Chain 2: Iteration: 1725 / 1750 [ 98%]  (Sampling)
 Chain 2: Iteration: 1750 / 1750 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 32.121 seconds (Warm-up)
-Chain 2:                54.609 seconds (Sampling)
-Chain 2:                86.73 seconds (Total)
+Chain 2:  Elapsed Time: 35.361 seconds (Warm-up)
+Chain 2:                53.403 seconds (Sampling)
+Chain 2:                88.764 seconds (Total)
 Chain 2: </code></pre>
 </div>
 <div id="plot-the-item-characteristic-curves-2" class="section level2">
@@ -835,8 +833,8 @@ Chain 2: </code></pre>
 </div>
 <div id="conclusions" class="section level1">
 <h1>Conclusions</h1>
-<p>The use of <code>STAN</code> software to estimate IRT models allows the user to alter existing
-code to fit new variations of current models that cannot be fit in existing software packages. For example, longitudinal or multilevel data can easily be accommodated by small changes to existing <code>STAN</code> code. The <code>STAN</code> software takes care of the “grunt work” involved in estimating model parameters by constructing an MCMC algorithm to sample from the posterior distribution. Using <code>STAN</code> frees the user to experiment with different models that may be more appropriate for specialised data than the models that can currently be fit in other software packages. Of course, more complicated models involve more parameters than simpler models, and the analyst must specify prior distributions for these new parameters. This is a small price to pay, however, for the flexibility that the Bayesian framework and <code>STAN</code> software provide.</p>
+<p>The use of <code>Stan</code> software to estimate IRT models allows the user to alter existing
+code to fit new variations of current models that cannot be fit in existing software packages. For example, longitudinal or multilevel data can easily be accommodated by small changes to existing <code>Stan</code> code. The <code>Stan</code> software takes care of the “grunt work” involved in estimating model parameters by constructing an MCMC algorithm to sample from the posterior distribution. Using <code>Stan</code> frees the user to experiment with different models that may be more appropriate for specialised data than the models that can currently be fit in other software packages. Of course, more complicated models involve more parameters than simpler models, and the analyst must specify prior distributions for these new parameters. This is a small price to pay, however, for the flexibility that the Bayesian framework and <code>Stan</code> software provide.</p>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1>References</h1>

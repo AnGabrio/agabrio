@@ -1,15 +1,15 @@
 ---
-title: "Simple Linear Regression (STAN)"
+title: "Simple Linear Regression (Stan)"
 author: "Andrea Gabrio"
 date: '2020-02-02'
 slug: simple-linear-regression-stan
 categories:
 - linear regression
-- STAN
+- Stan
 - R
 tags:
 - tutorials
-- STAN
+- Stan
 - linear regression
 subtitle: ''
 summary: ''
@@ -33,7 +33,7 @@ This tutorial will focus on the use of Bayesian estimation to fit simple linear 
  
 2. **JAGS** - (Just Another Gibbs Sampler) - written in `C++`. 
 
-3. **STAN** - a dedicated Bayesian modelling framework written in `C++` and implementing *Hamiltonian* MCMC samplers.
+3. **Stan** - a dedicated Bayesian modelling framework written in `C++` and implementing *Hamiltonian* MCMC samplers.
 
 Whilst the above programs can be used stand-alone, they do offer the rich data pre-processing and graphical capabilities of `R`, and thus, they are best accessed from within `R` itself. As such there are multiple packages devoted to interfacing with the various software implementations:
 
@@ -41,15 +41,15 @@ Whilst the above programs can be used stand-alone, they do offer the rich data p
 
 * *R2jags* - interfaces with `JAGS`
 
-* *rstan* - interfaces with `STAN`
+* *rstan* - interfaces with `Stan`
 
-This tutorial will demonstrate how to fit models in `STAN` (@gelman2015stan) using the package `rstan` (@rstanpackage) as interface, which also requires to load some other packages.
+This tutorial will demonstrate how to fit models in `Stan` (@gelman2015stan) using the package `rstan` (@rstanpackage) as interface, which also requires to load some other packages.
 
 # Overview
 
 ## Introduction
 
-Many clinicians get a little twitchy and nervous around mathematical and statistical formulae and nomenclature. Whilst it is possible to perform basic statistics without too much regard for the actual equation (model) being employed, as the complexity of the analysis increases, the need to understand the underlying model becomes increasingly important. Moreover, model specification in `BUGS/JAGS/STAN` (the language used to program Bayesian modelling) aligns very closely to the underlying formulae. Hence a good understanding of the underlying model is vital to be able to create a sensible Bayesian model. Consequently, I will always present the linear model formulae along with the analysis. 
+Many clinicians get a little twitchy and nervous around mathematical and statistical formulae and nomenclature. Whilst it is possible to perform basic statistics without too much regard for the actual equation (model) being employed, as the complexity of the analysis increases, the need to understand the underlying model becomes increasingly important. Moreover, model specification in `BUGS/JAGS/Stan` (the language used to program Bayesian modelling) aligns very closely to the underlying formulae. Hence a good understanding of the underlying model is vital to be able to create a sensible Bayesian model. Consequently, I will always present the linear model formulae along with the analysis. 
 
 To introduce the philosophical and mathematical differences between classical (frequentist) and Bayesian statistics, based on previous works, we present a provocative yet compelling trend analysis of two hypothetical populations (A vs B). The temporal trend of population A shows very little variability from a very subtle linear decline ($n=10$, $\text{slope}=-0.10$, $\text{p-value}=0.048$). By contrast, the B population appears to decline more dramatically, yet has substantially more variability ($n=10$, $\text{slope}=-10.23$, $\text{p-value}=0.058$). From a traditional frequentist perspective, we would conclude that there is a "significant" relationship in Population A ($p<0.05$), yet not in Population B ($p>0.05$). However, if we consider a third population C which is exactly the same as populstion B but with a higher number of observations, then we may end up with a completely different conclusion compared with that based on population B ($n=100$, $\text{slope}=-10.47$, $\text{p-value}<0.001$).
 
@@ -160,13 +160,13 @@ There is no evidence that the response variable is non-normal. The spread of val
 
 # Model fitting
 
-Whilst Gibbs sampling provides an elegantly simple MCMC sampling routine, very complex hierarchical models can take enormous numbers of iterations (often prohibitory large) to converge on a stable posterior distribution. To address this, Andrew Gelman (and other collaborators) have implemented a variation on *Hamiltonian Monte Carlo* (HMC): a sampler that selects subsequent samples in a way that reduces the correlation between samples, thereby speeding up convergence) called the *No-U-Turn* (NUTS) sampler. All of these developments are brought together into a tool called *Stan*. By design (to appeal to the vast `BUGS/JAGS` users), `STAN` models are defined in a manner reminiscent of `BUGS/JAGS`. `STAN` first converts these models into `C++` code which is then compiled to allow very rapid computation. Consistent with this, the model must be accompanied by variable declarations for all inputs and parameters.
+Whilst Gibbs sampling provides an elegantly simple MCMC sampling routine, very complex hierarchical models can take enormous numbers of iterations (often prohibitory large) to converge on a stable posterior distribution. To address this, Andrew Gelman (and other collaborators) have implemented a variation on *Hamiltonian Monte Carlo* (HMC): a sampler that selects subsequent samples in a way that reduces the correlation between samples, thereby speeding up convergence) called the *No-U-Turn* (NUTS) sampler. All of these developments are brought together into a tool called *Stan*. By design (to appeal to the vast `BUGS/JAGS` users), `Stan` models are defined in a manner reminiscent of `BUGS/JAGS`. `Stan` first converts these models into `C++` code which is then compiled to allow very rapid computation. Consistent with this, the model must be accompanied by variable declarations for all inputs and parameters.
 
-Note the following important characteristics of a `STAN` code:
+Note the following important characteristics of a `Stan` code:
 
-* A `STAN` model file comprises a number of blocks (not all of which are compulsory).
+* A `Stan` model file comprises a number of blocks (not all of which are compulsory).
 
-* The `STAN` language is an intermediary between (`R/BUGS` and `c++`) and requires all types (integers, vectors, matrices etc) to be declared prior to use and it uses `c++` commenting (`//` and `/* */`)
+* The `Stan` language is an intermediary between (`R/BUGS` and `c++`) and requires all types (integers, vectors, matrices etc) to be declared prior to use and it uses `c++` commenting (`//` and `/* */`)
 
 * Code order is important, objects must be declared before they are used. When a type is declared in one block, it is available in subsequent blocks.
 
@@ -196,13 +196,13 @@ cat("
 )
 ```
 
-The minimum model in `STAN` required to fit the above simple regression follows. Note the following modifications from the model defined in `JAGS`:
+The minimum model in `Stan` required to fit the above simple regression follows. Note the following modifications from the model defined in `JAGS`:
 
 * The normal distribution is defined by standard deviation rather than precision
 
 * Rather than using a uniform prior for $\sigma$, I am using a half-Cauchy
 
-We now translate the likelihood model into `STAN` code.
+We now translate the likelihood model into `Stan` code.
 
 ```{r code_model, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 modelString = "
@@ -234,7 +234,7 @@ modelString = "
 writeLines(modelString, con = "linregModel.stan")
 ```
 
-The No-U-Turn sampler operates much more efficiently if all predictors are centered. Although it is possible to pre-center all predictors that are passed to `STAN`, it is then often necessary to later convert back to the original scale for graphing and further analyses. Since centering is a routine procedure, arguably it should be built into the `STAN` we generate. Furthermore, we should also include the back-scaling as well. In this version, the data are to be supplied as a model matrix (so as to leverage various vectorized and matrix multiplier routines). The transformed data block is used to center the non-intercept columns of the predictor model matrix. The model is fit on centered data thereby generating a slope and intercept. This intercept parameter is also expressed back on the non-centered scale (generated properties block).
+The No-U-Turn sampler operates much more efficiently if all predictors are centered. Although it is possible to pre-center all predictors that are passed to `Stan`, it is then often necessary to later convert back to the original scale for graphing and further analyses. Since centering is a routine procedure, arguably it should be built into the `Stan` we generate. Furthermore, we should also include the back-scaling as well. In this version, the data are to be supplied as a model matrix (so as to leverage various vectorized and matrix multiplier routines). The transformed data block is used to center the non-intercept columns of the predictor model matrix. The model is fit on centered data thereby generating a slope and intercept. This intercept parameter is also expressed back on the non-centered scale (generated properties block).
 
 ```{r code_model2, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 modelStringv2 = "
@@ -280,7 +280,7 @@ data {
 writeLines(modelStringv2, con = "linregModelv2.stan")
 ```
 
-Arrange the data as a list (as required by `STAN`). As input, `STAN` will need to be supplied with: the response variable, the predictor variable, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.
+Arrange the data as a list (as required by `Stan`). As input, `Stan` will need to be supplied with: the response variable, the predictor variable, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.
 
 ```{r data_model, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 Xmat <- model.matrix(~x, data = data)
@@ -312,7 +312,7 @@ nIter = ceiling(burnInSteps + (numSavedSteps * thinSteps)/nChains)
 nIter
 ```
 
-Start the `STAN` model (check the model, load data into the model, specify the number of chains and compile the model). Load the `rstan` package.
+Start the `Stan` model (check the model, load data into the model, specify the number of chains and compile the model). Load the `rstan` package.
 
 ```{r load_packagerstan, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 library(rstan)
@@ -435,7 +435,7 @@ tidyMCMC(data.rstan, conf.int = TRUE, conf.method = "HPDinterval", rhat = TRUE, 
 
 A one unit increase in $x$ is associated with a $-1.39$ change in $y$. That is, $y$ declines at a rate of $-1.39$ per unit increase in $x$. The $95$% confidence interval for the slope does not overlap with $0$ implying a significant effect of $x$ on $y$. While workers attempt to become comfortable with a new statistical framework, it is only natural that they like to evaluate and comprehend new structures and output alongside more familiar concepts. One way to facilitate this is via Bayesian p-values that are somewhat analogous to the frequentist p-values for investigating the hypothesis that a parameter is equal to zero.
 
-Also note that since our `STAN` model incorporated predictor centering, we have estimates of the intercept based on both centered (`cbeta0`) and uncentered data (`beta0`). Since the intercept from uncentered data is beyond the domain of our sampling data it has very little interpretability. However, the intercept based on centered data can be interpreted as the estimate of the response at the mean predictor (in this case $28.5$).
+Also note that since our `Stan` model incorporated predictor centering, we have estimates of the intercept based on both centered (`cbeta0`) and uncentered data (`beta0`). Since the intercept from uncentered data is beyond the domain of our sampling data it has very little interpretability. However, the intercept based on centered data can be interpreted as the estimate of the response at the mean predictor (in this case $28.5$).
 
 ```{r mcmc_pval, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 mcmcpvalue <- function(samp) {

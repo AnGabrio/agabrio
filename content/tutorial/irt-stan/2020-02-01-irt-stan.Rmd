@@ -1,15 +1,15 @@
 ---
-title: "Item Response Theory Models (STAN)"
+title: "Item Response Theory Models (Stan)"
 author: "Andrea Gabrio"
 date: '2020-03-21'
 slug: irt-stan
 categories:
 - item response theory
-- STAN
+- Stan
 - R
 tags:
 - tutorials
-- STAN
+- Stan
 - item response theory
 subtitle: ''
 summary: ''
@@ -33,7 +33,7 @@ This tutorial will focus on the use of Bayesian estimation to fit simple linear 
  
 2. **JAGS** - (Just Another Gibbs Sampler) - written in `C++`. 
 
-3. **STAN** - a dedicated Bayesian modelling framework written in `C++` and implementing *Hamiltonian* MCMC samplers.
+3. **Stan** - a dedicated Bayesian modelling framework written in `C++` and implementing *Hamiltonian* MCMC samplers.
 
 Whilst the above programs can be used stand-alone, they do offer the rich data pre-processing and graphical capabilities of `R`, and thus, they are best accessed from within `R` itself. As such there are multiple packages devoted to interfacing with the various software implementations:
 
@@ -41,9 +41,9 @@ Whilst the above programs can be used stand-alone, they do offer the rich data p
 
 * *R2jags* - interfaces with `JAGS`
 
-* *rstan* - interfaces with `STAN`
+* *rstan* - interfaces with `Stan`
 
-This tutorial will demonstrate how to fit models in `STAN` (@gelman2015stan) using the package `rstan` (@rstanpackage) as interface, which also requires to load some other packages.
+This tutorial will demonstrate how to fit models in `Stan` (@gelman2015stan) using the package `rstan` (@rstanpackage) as interface, which also requires to load some other packages.
 
 # Overview
 
@@ -55,7 +55,7 @@ Item response theory (IRT) is a paradigm for investigating the relationship betw
   
   3 **3 parameter logistic model**
 
-Throughout this tutorial, I assume that the reader has some basic understanding of IRT model and working knowledge of a software implementation of the `STAN` language. However, if this is not the case, excellent sources for learning IRT are @baker2004item, who provide a mathematically detailed introduction to IRT, and @hambleton1991fundamentals, who give an intuitive introduction to the topic. For an in-depth description of how to implement different types of IRT models in `STAN`, I also refer to this very nice review of @luo2018using and this other online [tutorial](https://quantdev.ssri.psu.edu/sites/qdev/files/IRT_tutorial_FA17.html#3_2-parameter_logistic_(2pl)_irt_model).
+Throughout this tutorial, I assume that the reader has some basic understanding of IRT model and working knowledge of a software implementation of the `Stan` language. However, if this is not the case, excellent sources for learning IRT are @baker2004item, who provide a mathematically detailed introduction to IRT, and @hambleton1991fundamentals, who give an intuitive introduction to the topic. For an in-depth description of how to implement different types of IRT models in `Stan`, I also refer to this very nice review of @luo2018using and this other online [tutorial](https://quantdev.ssri.psu.edu/sites/qdev/files/IRT_tutorial_FA17.html#3_2-parameter_logistic_(2pl)_irt_model).
 
 At the core of all the IRT models presented in this tutorial is the *Item Response Function* (IRF). The IRF estimates the probability of getting item $j$ "correct" as a function of item characteristics and the $i$-th individual's latent trait/ability level ($\theta_i$). These item response functions are defined by a logistic curve (i.e. an $S$-shape from $0-1$).
 
@@ -87,7 +87,7 @@ describe(data_dicho)
 
 ## Fit the model
 
-We fit the 1PLM to the data. First, I rename and preprocess the data to be passed to `STAN`.
+We fit the 1PLM to the data. First, I rename and preprocess the data to be passed to `Stan`.
 
 ```{r prepro, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 Y<-data_dicho[,4:8]
@@ -96,7 +96,7 @@ p<-ncol(Y)
 data_list<-list(Y=Y,n=n,p=p)
 ```
 
-Then I specify the model using the following `STAN` code.
+Then I specify the model using the following `Stan` code.
 
 ```{r stan_code1, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 model1<-"
@@ -157,7 +157,7 @@ nIter = ceiling(burnInSteps + (numSavedSteps * thinSteps)/nChains)
 nIter
 ```
 
-Start the `STAN` model (check the model, load data into the model, specify the number of chains and compile the model). Run the `STAN` code via the `rstan` interface and the `stan` function.
+Start the `Stan` model (check the model, load data into the model, specify the number of chains and compile the model). Run the `Stan` code via the `rstan` interface and the `stan` function.
 
 ```{r fit_model, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 library(rstan)
@@ -279,7 +279,7 @@ where $\alpha_j$ is the *discrimination parameter* for item $j$ of the test, and
 
 ## Fit the model
 
-We fit the 2PLM to the data using the following `STAN` code.
+We fit the 2PLM to the data using the following `Stan` code.
 
 ```{r stan_code2, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 model2<-"
@@ -344,7 +344,7 @@ nIter = ceiling(burnInSteps + (numSavedSteps * thinSteps)/nChains)
 nIter
 ```
 
-Start the `STAN` model (check the model, load data into the model, specify the number of chains and compile the model). Run the `STAN` code via the `rstan` interface and the `stan` function.
+Start the `Stan` model (check the model, load data into the model, specify the number of chains and compile the model). Run the `Stan` code via the `rstan` interface and the `stan` function.
 
 ```{r fit_model2, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 set.seed(3456)
@@ -488,7 +488,7 @@ where $\eta_j$ is the *guessing parameter*. Under this model, individuals with z
 
 ## Fit the model
 
-We fit the 3PLM to the data using the following `STAN` code.
+We fit the 3PLM to the data using the following `Stan` code.
 
 ```{r stan_code3, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 model3<-"
@@ -557,7 +557,7 @@ nIter = ceiling(burnInSteps + (numSavedSteps * thinSteps)/nChains)
 nIter
 ```
 
-Start the `STAN` model (check the model, load data into the model, specify the number of chains and compile the model). Run the `STAN` code via the `rstan` interface and the `stan` function.
+Start the `Stan` model (check the model, load data into the model, specify the number of chains and compile the model). Run the `Stan` code via the `rstan` interface and the `stan` function.
 
 ```{r fit_model3, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 set.seed(3456)
@@ -693,8 +693,8 @@ We see that the mean of ability scores is around $0$, and the standard deviation
 
 # Conclusions
 
-The use of `STAN` software to estimate IRT models allows the user to alter existing
-code to fit new variations of current models that cannot be fit in existing software packages. For example, longitudinal or multilevel data can easily be accommodated by small changes to existing `STAN` code. The `STAN` software takes care of the "grunt work" involved in estimating model parameters by constructing an MCMC algorithm to sample from the posterior distribution. Using `STAN` frees the user to experiment with different models that may be more appropriate for specialised data than the models that can currently be fit in other software packages. Of course, more complicated models involve more parameters than simpler models, and the analyst must specify prior distributions for these new parameters. This is a small price to pay, however, for the flexibility that the Bayesian framework and `STAN` software provide.
+The use of `Stan` software to estimate IRT models allows the user to alter existing
+code to fit new variations of current models that cannot be fit in existing software packages. For example, longitudinal or multilevel data can easily be accommodated by small changes to existing `Stan` code. The `Stan` software takes care of the "grunt work" involved in estimating model parameters by constructing an MCMC algorithm to sample from the posterior distribution. Using `Stan` frees the user to experiment with different models that may be more appropriate for specialised data than the models that can currently be fit in other software packages. Of course, more complicated models involve more parameters than simpler models, and the analyst must specify prior distributions for these new parameters. This is a small price to pay, however, for the flexibility that the Bayesian framework and `Stan` software provide.
 
 # References
 

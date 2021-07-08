@@ -1,15 +1,15 @@
 ---
-title: "Generalised Linear Mixed Models (STAN)"
+title: "Generalised Linear Mixed Models (Stan)"
 author: "Andrea Gabrio"
 date: '2020-02-15'
 slug: glmm-stan
 categories:
 - generalised linear mixed models
-- STAN
+- Stan
 - R
 tags:
 - tutorials
-- STAN
+- Stan
 - generalised linear mixed models
 subtitle: ''
 summary: ''
@@ -24,23 +24,21 @@ bibliography: citations_stan13.bib
 ---
 
 <script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
-<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
-<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
 
 
 <p>This tutorial will focus on the use of Bayesian estimation to fit simple linear regression models. <code>BUGS</code> (Bayesian inference Using <em>Gibbs Sampling</em>) is an algorithm and supporting language (resembling <code>R</code>) dedicated to performing the Gibbs sampling implementation of <em>Markov Chain Monte Carlo</em> (MCMC) method. Dialects of the <code>BUGS</code> language are implemented within three main projects:</p>
 <ol style="list-style-type: decimal">
 <li><p><strong>OpenBUGS</strong> - written in component pascal.</p></li>
 <li><p><strong>JAGS</strong> - (Just Another Gibbs Sampler) - written in <code>C++</code>.</p></li>
-<li><p><strong>STAN</strong> - a dedicated Bayesian modelling framework written in <code>C++</code> and implementing <em>Hamiltonian</em> MCMC samplers.</p></li>
+<li><p><strong>Stan</strong> - a dedicated Bayesian modelling framework written in <code>C++</code> and implementing <em>Hamiltonian</em> MCMC samplers.</p></li>
 </ol>
 <p>Whilst the above programs can be used stand-alone, they do offer the rich data pre-processing and graphical capabilities of <code>R</code>, and thus, they are best accessed from within <code>R</code> itself. As such there are multiple packages devoted to interfacing with the various software implementations:</p>
 <ul>
 <li><p><em>R2OpenBUGS</em> - interfaces with <code>OpenBUGS</code></p></li>
 <li><p><em>R2jags</em> - interfaces with <code>JAGS</code></p></li>
-<li><p><em>rstan</em> - interfaces with <code>STAN</code></p></li>
+<li><p><em>rstan</em> - interfaces with <code>Stan</code></p></li>
 </ul>
-<p>This tutorial will demonstrate how to fit models in <code>STAN</code> (<span class="citation">Gelman, Lee, and Guo (2015)</span>) using the package <code>rstan</code> (<span class="citation">Stan Development Team (2018)</span>) as interface, which also requires to load some other packages.</p>
+<p>This tutorial will demonstrate how to fit models in <code>Stan</code> (<span class="citation"><a href="#ref-gelman2015stan" role="doc-biblioref">Gelman, Lee, and Guo</a> (<a href="#ref-gelman2015stan" role="doc-biblioref">2015</a>)</span>) using the package <code>rstan</code> (<span class="citation"><a href="#ref-rstanpackage" role="doc-biblioref">Stan Development Team</a> (<a href="#ref-rstanpackage" role="doc-biblioref">2018</a>)</span>) as interface, which also requires to load some other packages.</p>
 <div id="overview" class="section level1">
 <h1>Overview</h1>
 <p>In some respects, <em>Generalized Linear Mixed effects Models</em> (GLMM) are a hierarchical extension of <em>Generalized linear models</em> (GLM) in a similar manner that Linear Mixed effects Models (LMM) are a hierarchical extension of Linear Models (LM). However, whilst the Gaussian (normal) distribution facilitates a relatively straight way of generating the marginal likelihood of the observed response by integrating likelihoods across all possible (and unobserved) levels of a random effect to yield parameter estimates, the same cannot be said for other distributions. Consequently various approximations have been developed to estimate the fixed and random parameters for GLMM’s:</p>
@@ -60,7 +58,7 @@ bibliography: citations_stan13.bib
 </div>
 <div id="loading-the-data" class="section level1">
 <h1>Loading the data</h1>
-<p>I start by loading libraries, reading in the data and preprocessing it for <code>STAN</code>. In the original verison of the analysis I used <code>JAGS</code> and a slightly more complicated model which I do not consider here, but that you may consult in my paper if interested (<span class="citation">Gabrio (2020)</span>).</p>
+<p>I start by loading libraries, reading in the data and preprocessing it for <code>Stan</code>. In the original verison of the analysis I used <code>JAGS</code> and a slightly more complicated model which I do not consider here, but that you may consult in my paper if interested (<span class="citation"><a href="#ref-gabrio2020bayesian" role="doc-biblioref">Gabrio</a> (<a href="#ref-gabrio2020bayesian" role="doc-biblioref">2020</a>)</span>).</p>
 <pre class="r"><code>&gt; library(plyr)
 &gt; library(dplyr)
 &gt; library(rstan)
@@ -123,7 +121,7 @@ bibliography: citations_stan13.bib
 <p><span class="math display">\[ \text{home} \sim N(0, 10000) \;\;\; \text{and} \;\;\; \mu \sim N(0, 10000),\]</span></p>
 <p>weakly informative priors on <span class="math inline">\(\boldsymbol \gamma\)</span>, <span class="math inline">\(\boldsymbol \delta\)</span>, and set the priors on the skill of all <span class="math inline">\(n\)</span> teams using a hierarchical approach to :</p>
 <p><span class="math display">\[ \text{skill}_{1,\ldots,n} \sim N(\mu_{\text{teams}}, \sigma^2_{\text{teams}}),\]</span></p>
-<p>so that teams are assumed to have similar but not identical mean and variance parameters for thier skill parameters. Turning this into a <code>STAN</code> model requires some minor adjustments. I have to “anchor” the sum of team skills to a constant otherwise the mean skill can drift away freely (<em>sum to zero constraint</em>) and the model cannot be identified. Doing these adjustments results in the following model description:</p>
+<p>so that teams are assumed to have similar but not identical mean and variance parameters for thier skill parameters. Turning this into a <code>Stan</code> model requires some minor adjustments. I have to “anchor” the sum of team skills to a constant otherwise the mean skill can drift away freely (<em>sum to zero constraint</em>) and the model cannot be identified. Doing these adjustments results in the following model description:</p>
 <pre class="r"><code>&gt; rstanString&lt;-&quot;
 + data{
 + int&lt;lower=1&gt; nteams; // number of teams
@@ -240,7 +238,7 @@ bibliography: citations_stan13.bib
 &gt; 
 &gt; ## write the model to a text file
 &gt; writeLines(rstanString, con = &quot;Modelbasic.stan&quot;)</code></pre>
-<p>Next, we put the data into a list to be passed to <code>STAN</code>, define the nodes (parameters and derivatives) to monitor and the chain parameters.</p>
+<p>Next, we put the data into a list to be passed to <code>Stan</code>, define the nodes (parameters and derivatives) to monitor and the chain parameters.</p>
 <pre class="r"><code>&gt; #prepare data
 &gt; y1&lt;-data$y1
 &gt; y2&lt;-data$y2
@@ -280,7 +278,7 @@ bibliography: citations_stan13.bib
 &gt; numSavedSteps = 2000
 &gt; thinSteps = 1
 &gt; nIter = ceiling((numSavedSteps * thinSteps)/nChains)</code></pre>
-<p>Start the <code>STAN</code> model (check the model, load data into the model, specify the number of chains and compile the model). Run the <code>STAN</code> code via the <code>rstan</code> package and the <code>stan</code> function.</p>
+<p>Start the <code>Stan</code> model (check the model, load data into the model, specify the number of chains and compile the model). Run the <code>Stan</code> code via the <code>rstan</code> package and the <code>stan</code> function.</p>
 <pre class="r"><code>&gt; model_stan&lt;- stan(data = datalist, file = &quot;Modelbasic.stan&quot;, 
 +                        chains = nChains, pars = params, iter = nIter, 
 +                        warmup = burnInSteps, thin = thinSteps)
@@ -305,9 +303,9 @@ Chain 1: Iteration: 800 / 1000 [ 80%]  (Sampling)
 Chain 1: Iteration: 900 / 1000 [ 90%]  (Sampling)
 Chain 1: Iteration: 1000 / 1000 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 87.413 seconds (Warm-up)
-Chain 1:                98.648 seconds (Sampling)
-Chain 1:                186.061 seconds (Total)
+Chain 1:  Elapsed Time: 80.373 seconds (Warm-up)
+Chain 1:                93.512 seconds (Sampling)
+Chain 1:                173.885 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL &#39;Modelbasic&#39; NOW (CHAIN 2).
@@ -330,9 +328,9 @@ Chain 2: Iteration: 800 / 1000 [ 80%]  (Sampling)
 Chain 2: Iteration: 900 / 1000 [ 90%]  (Sampling)
 Chain 2: Iteration: 1000 / 1000 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 91.183 seconds (Warm-up)
-Chain 2:                102.054 seconds (Sampling)
-Chain 2:                193.237 seconds (Total)
+Chain 2:  Elapsed Time: 84.528 seconds (Warm-up)
+Chain 2:                94.46 seconds (Sampling)
+Chain 2:                178.988 seconds (Total)
 Chain 2: 
 &gt; print(model_stan, pars =c(&quot;mu&quot;,&quot;home&quot;,&quot;gamma&quot;,&quot;delta&quot;,&quot;beta0_att&quot;,
 +                           &quot;beta0_def&quot;,&quot;beta1_att&quot;,&quot;beta1_def&quot;,
@@ -506,7 +504,7 @@ beta1_blo[10] 1.00
 beta1_blo[11] 1.00
 beta1_blo[12] 1.01
 
-Samples were drawn using NUTS(diag_e) at Fri Dec 11 10:13:56 2020.
+Samples were drawn using NUTS(diag_e) at Thu Jul 08 21:02:58 2021.
 For each parameter, n_eff is a crude measure of effective sample size,
 and Rhat is the potential scale reduction factor on split chains (at 
 convergence, Rhat=1).</code></pre>

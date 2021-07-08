@@ -1,15 +1,15 @@
 ---
-title: "Generalised Linear Mixed Models (STAN)"
+title: "Generalised Linear Mixed Models (Stan)"
 author: "Andrea Gabrio"
 date: '2020-02-15'
 slug: glmm-stan
 categories:
 - generalised linear mixed models
-- STAN
+- Stan
 - R
 tags:
 - tutorials
-- STAN
+- Stan
 - generalised linear mixed models
 subtitle: ''
 summary: ''
@@ -33,7 +33,7 @@ This tutorial will focus on the use of Bayesian estimation to fit simple linear 
  
 2. **JAGS** - (Just Another Gibbs Sampler) - written in `C++`. 
 
-3. **STAN** - a dedicated Bayesian modelling framework written in `C++` and implementing *Hamiltonian* MCMC samplers.
+3. **Stan** - a dedicated Bayesian modelling framework written in `C++` and implementing *Hamiltonian* MCMC samplers.
 
 Whilst the above programs can be used stand-alone, they do offer the rich data pre-processing and graphical capabilities of `R`, and thus, they are best accessed from within `R` itself. As such there are multiple packages devoted to interfacing with the various software implementations:
 
@@ -41,9 +41,9 @@ Whilst the above programs can be used stand-alone, they do offer the rich data p
 
 * *R2jags* - interfaces with `JAGS`
 
-* *rstan* - interfaces with `STAN`
+* *rstan* - interfaces with `Stan`
 
-This tutorial will demonstrate how to fit models in `STAN` (@gelman2015stan) using the package `rstan` (@rstanpackage) as interface, which also requires to load some other packages.
+This tutorial will demonstrate how to fit models in `Stan` (@gelman2015stan) using the package `rstan` (@rstanpackage) as interface, which also requires to load some other packages.
 
 # Overview
 
@@ -69,7 +69,7 @@ The model is a Bayesian hierarchical analysis of volleyball data which allows to
 
 # Loading the data
 
-I start by loading libraries, reading in the data and preprocessing it for `STAN`. In the original verison of the analysis I used `JAGS` and a slightly more complicated model which I do not consider here, but that you may consult in my paper if interested (@gabrio2020bayesian). 
+I start by loading libraries, reading in the data and preprocessing it for `Stan`. In the original verison of the analysis I used `JAGS` and a slightly more complicated model which I do not consider here, but that you may consult in my paper if interested (@gabrio2020bayesian). 
 
 ```{r generate_data, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 library(plyr)
@@ -158,7 +158,7 @@ weakly informative priors on $\boldsymbol \gamma$, $\boldsymbol \delta$, and set
 
 \[ \text{skill}_{1,\ldots,n} \sim N(\mu_{\text{teams}}, \sigma^2_{\text{teams}}),\]
 
-so that teams are assumed to have similar but not identical mean and variance parameters for thier skill parameters. Turning this into a `STAN` model requires some minor adjustments. I have to "anchor" the sum of team skills to a constant otherwise the mean skill can drift away freely (*sum to zero constraint*) and the model cannot be identified. Doing these adjustments results in the following model description:
+so that teams are assumed to have similar but not identical mean and variance parameters for thier skill parameters. Turning this into a `Stan` model requires some minor adjustments. I have to "anchor" the sum of team skills to a constant otherwise the mean skill can drift away freely (*sum to zero constraint*) and the model cannot be identified. Doing these adjustments results in the following model description:
 
 ```{r model_code, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 rstanString<-"
@@ -279,7 +279,7 @@ vector[ngames] loglik_dg;
 writeLines(rstanString, con = "Modelbasic.stan")
 ```
 
-Next, we put the data into a list to be passed to `STAN`, define the nodes (parameters and derivatives) to monitor and the chain parameters.
+Next, we put the data into a list to be passed to `Stan`, define the nodes (parameters and derivatives) to monitor and the chain parameters.
 
 ```{r chain_model, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 #prepare data
@@ -323,7 +323,7 @@ thinSteps = 1
 nIter = ceiling((numSavedSteps * thinSteps)/nChains)
 ```
 
-Start the `STAN` model (check the model, load data into the model, specify the number of chains and compile the model). Run the `STAN` code via the `rstan` package and the `stan` function. 
+Start the `Stan` model (check the model, load data into the model, specify the number of chains and compile the model). Run the `Stan` code via the `rstan` package and the `stan` function. 
 
 ```{r fit_model, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 model_stan<- stan(data = datalist, file = "Modelbasic.stan", 

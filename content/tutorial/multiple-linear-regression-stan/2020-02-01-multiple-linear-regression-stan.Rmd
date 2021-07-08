@@ -1,15 +1,15 @@
 ---
-title: "Multiple Linear Regression (STAN)"
+title: "Multiple Linear Regression (Stan)"
 author: "Andrea Gabrio"
 date: '2020-02-03'
 slug: multiple-linear-regression-stan
 categories:
 - linear regression
-- STAN
+- Stan
 - R
 tags:
 - tutorials
-- STAN
+- Stan
 - linear regression
 subtitle: ''
 summary: ''
@@ -33,7 +33,7 @@ This tutorial will focus on the use of Bayesian estimation to fit simple linear 
  
 2. **JAGS** - (Just Another Gibbs Sampler) - written in `C++`. 
 
-3. **STAN** - a dedicated Bayesian modelling framework written in `C++` and implementing *Hamiltonian* MCMC samplers.
+3. **Stan** - a dedicated Bayesian modelling framework written in `C++` and implementing *Hamiltonian* MCMC samplers.
 
 Whilst the above programs can be used stand-alone, they do offer the rich data pre-processing and graphical capabilities of `R`, and thus, they are best accessed from within `R` itself. As such there are multiple packages devoted to interfacing with the various software implementations:
 
@@ -41,9 +41,9 @@ Whilst the above programs can be used stand-alone, they do offer the rich data p
 
 * *R2jags* - interfaces with `JAGS`
 
-* *rstan* - interfaces with `STAN`
+* *rstan* - interfaces with `Stan`
 
-This tutorial will demonstrate how to fit models in `STAN` (@gelman2015stan) using the package `rstan` (@rstanpackage) as interface, which also requires to load some other packages.
+This tutorial will demonstrate how to fit models in `Stan` (@gelman2015stan) using the package `rstan` (@rstanpackage) as interface, which also requires to load some other packages.
 
 # Overview
 
@@ -171,7 +171,7 @@ MCMC sampling requires priors on all parameters. We will employ weakly informati
 
 \[ y_i \sim \text{Normal}(\mu_i, \sigma),\]
 
-where $\mu_i=\beta_0 + \boldsymbol \beta \boldsymbol X_i$. Priors are specified as: $\boldsymbol \beta \sim \text{Normal}(0,1000)$ and $\sigma \sim \text{Cauchy}(0,5)$. We will explore Bayesian modelling of multiple linear regression using `STAN`. The minimum model in `STAN` required to fit the above simple regression follows. Note the following modifications from the model defined in `JAGS`:
+where $\mu_i=\beta_0 + \boldsymbol \beta \boldsymbol X_i$. Priors are specified as: $\boldsymbol \beta \sim \text{Normal}(0,1000)$ and $\sigma \sim \text{Cauchy}(0,5)$. We will explore Bayesian modelling of multiple linear regression using `Stan`. The minimum model in `Stan` required to fit the above simple regression follows. Note the following modifications from the model defined in `JAGS`:
 
 * The normal distribution is defined by standard deviation rather than precision
 
@@ -179,7 +179,7 @@ where $\mu_i=\beta_0 + \boldsymbol \beta \boldsymbol X_i$. Priors are specified 
 
 ## Additive model
 
-We now translate the likelihood for the additive model into `STAN` code.
+We now translate the likelihood for the additive model into `Stan` code.
 
 ```{r code_model, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 modelString = "
@@ -230,7 +230,7 @@ writeLines(modelString, con = "linregModeladd.stan")
 writeLines(modelString, con = "linregModelmult.stan")
 ```
 
-Arrange the data as a list (as required by `STAN`). As input, `STAN` will need to be supplied with: the response variable, the predictor variable, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.
+Arrange the data as a list (as required by `Stan`). As input, `Stan` will need to be supplied with: the response variable, the predictor variable, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.
 
 ```{r data_model, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 X = model.matrix(~cx1 + cx2, data = data)
@@ -266,7 +266,7 @@ data.rstan.add
 
 ## Multiplicative model
 
-We now translate the likelihood for the multiplicative model into `STAN` code. Arrange the data as a list (as required by `STAN`). As input, `STAN` will need to be supplied with: the response variable, the predictor variable, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.
+We now translate the likelihood for the multiplicative model into `Stan` code. Arrange the data as a list (as required by `Stan`). As input, `Stan` will need to be supplied with: the response variable, the predictor variable, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.
 
 ```{r data_model2, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 X = model.matrix(~cx1 * cx2, data = data)
@@ -498,7 +498,7 @@ mcmcpvalue(as.matrix(data.rstan.mult)[, "beta[2]"])
 mcmcpvalue(as.matrix(data.rstan.mult)[, "beta[3]"])
 ```
 
-With a p-value of essentially $0$, we would conclude that there is almost no evidence that the slope was likely to be equal to zero, suggesting there is a relationship. An alternative way of quantifying the impact of an interaction is to compare models with and without the interactions. In a Bayesian context, this can be achieved by comparing the **leave-one-out cross-validation** statistics. Leave-one-out (LOO) cross-validation explores how well a series of models can predict withheld values @vehtari2017practical. The LOO Information Criterion (LOOIC) is analogous to the AIC except that the LOOIC takes priors into consideration, does not assume that the posterior distribution is drawn from a multivariate normal and integrates over parameter uncertainty so as to yield a distribution of looic rather than just a point estimate. The LOOIC does however assume that all observations are equally influential (it does not matter which observations are left out). This assumption can be examined via the Pareto $k$ estimate (values greater than $0.5$ or more conservatively $0.75$ are considered overly influential). We can compute LOOIC if we store the loglikelihood from our `STAN` model, which can then be extracted to compute the information criterion using the package `loo`.
+With a p-value of essentially $0$, we would conclude that there is almost no evidence that the slope was likely to be equal to zero, suggesting there is a relationship. An alternative way of quantifying the impact of an interaction is to compare models with and without the interactions. In a Bayesian context, this can be achieved by comparing the **leave-one-out cross-validation** statistics. Leave-one-out (LOO) cross-validation explores how well a series of models can predict withheld values @vehtari2017practical. The LOO Information Criterion (LOOIC) is analogous to the AIC except that the LOOIC takes priors into consideration, does not assume that the posterior distribution is drawn from a multivariate normal and integrates over parameter uncertainty so as to yield a distribution of looic rather than just a point estimate. The LOOIC does however assume that all observations are equally influential (it does not matter which observations are left out). This assumption can be examined via the Pareto $k$ estimate (values greater than $0.5$ or more conservatively $0.75$ are considered overly influential). We can compute LOOIC if we store the loglikelihood from our `Stan` model, which can then be extracted to compute the information criterion using the package `loo`.
 
 ```{r mcmc_loo, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 ## since values are less than zero
@@ -809,7 +809,7 @@ where $\tilde{\lambda}_j^2 = \frac{c^2\lambda^2_j}{c^2+\tau^2 \lambda^2_j}$ and 
 
 \[ c^2 \sim \text{Inv-Gamma}(\alpha,\beta),\]
 
-where $\alpha=v/2$ and $\beta=vs^2/2$, which translates to a $\text{Student-t}_ν(0, s^2)$ slab for the coefficients far from zero and is typically a good default choice for a weakly informative prior. This prior can be encoded into `STAN` using the following code.
+where $\alpha=v/2$ and $\beta=vs^2/2$, which translates to a $\text{Student-t}_ν(0, s^2)$ slab for the coefficients far from zero and is typically a good default choice for a weakly informative prior. This prior can be encoded into `Stan` using the following code.
 
 ```{r code_modelHP, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 modelStringHP = "

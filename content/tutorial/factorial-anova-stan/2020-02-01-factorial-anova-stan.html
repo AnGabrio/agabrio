@@ -1,5 +1,5 @@
 ---
-title: "Factorial Analysis of Variance (STAN)"
+title: "Factorial Analysis of Variance (Stan)"
 author: "Andrea Gabrio"
 date: '2020-02-06'
 slug: factorial-anova-stan
@@ -7,11 +7,11 @@ categories:
 - factor analysis
 - factorial designs
 - anova
-- STAN
+- Stan
 - R
 tags:
 - tutorials
-- STAN
+- Stan
 - factor analysis
 - factorial designs
 - anova
@@ -28,23 +28,21 @@ bibliography: citations_stan7.bib
 ---
 
 <script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
-<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
-<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
 
 
 <p>This tutorial will focus on the use of Bayesian estimation to fit simple linear regression models. <code>BUGS</code> (Bayesian inference Using <em>Gibbs Sampling</em>) is an algorithm and supporting language (resembling <code>R</code>) dedicated to performing the Gibbs sampling implementation of <em>Markov Chain Monte Carlo</em> (MCMC) method. Dialects of the <code>BUGS</code> language are implemented within three main projects:</p>
 <ol style="list-style-type: decimal">
 <li><p><strong>OpenBUGS</strong> - written in component pascal.</p></li>
 <li><p><strong>JAGS</strong> - (Just Another Gibbs Sampler) - written in <code>C++</code>.</p></li>
-<li><p><strong>STAN</strong> - a dedicated Bayesian modelling framework written in <code>C++</code> and implementing <em>Hamiltonian</em> MCMC samplers.</p></li>
+<li><p><strong>Stan</strong> - a dedicated Bayesian modelling framework written in <code>C++</code> and implementing <em>Hamiltonian</em> MCMC samplers.</p></li>
 </ol>
 <p>Whilst the above programs can be used stand-alone, they do offer the rich data pre-processing and graphical capabilities of <code>R</code>, and thus, they are best accessed from within <code>R</code> itself. As such there are multiple packages devoted to interfacing with the various software implementations:</p>
 <ul>
 <li><p><em>R2OpenBUGS</em> - interfaces with <code>OpenBUGS</code></p></li>
 <li><p><em>R2jags</em> - interfaces with <code>JAGS</code></p></li>
-<li><p><em>rstan</em> - interfaces with <code>STAN</code></p></li>
+<li><p><em>rstan</em> - interfaces with <code>Stan</code></p></li>
 </ul>
-<p>This tutorial will demonstrate how to fit models in <code>STAN</code> (<span class="citation">Gelman, Lee, and Guo (2015)</span>) using the package <code>rstan</code> (<span class="citation">Stan Development Team (2018)</span>) as interface, which also requires to load some other packages.</p>
+<p>This tutorial will demonstrate how to fit models in <code>Stan</code> (<span class="citation"><a href="#ref-gelman2015stan" role="doc-biblioref">Gelman, Lee, and Guo</a> (<a href="#ref-gelman2015stan" role="doc-biblioref">2015</a>)</span>) using the package <code>rstan</code> (<span class="citation"><a href="#ref-rstanpackage" role="doc-biblioref">Stan Development Team</a> (<a href="#ref-rstanpackage" role="doc-biblioref">2018</a>)</span>) as interface, which also requires to load some other packages.</p>
 <div id="overview" class="section level1">
 <h1>Overview</h1>
 <div id="introduction" class="section level2">
@@ -262,7 +260,7 @@ Res &quot;&quot;                         &quot;&quot;                         </
 <h1>Model fitting</h1>
 <p>The observed response (<span class="math inline">\(y_i\)</span>) are assumed to be drawn from a normal distribution with a given mean (<span class="math inline">\(\mu\)</span>) and standard deviation (<span class="math inline">\(\sigma\)</span>). The expected values are themselves determined by the linear predictor (<span class="math inline">\(\boldsymbol X \boldsymbol \beta\)</span>). In this case, <span class="math inline">\(\boldsymbol \beta\)</span> represents the intercept associated with the first combination of groups, as well as the (effects) differences between this intercept and each other group. <span class="math inline">\(\boldsymbol X\)</span> is the model matrix. MCMC sampling requires priors on all parameters. We will employ weakly informative priors. Specifying ‘uninformative’ priors is always a bit of a balancing act. If the priors are too vague (wide) the MCMC sampler can wander off into nonscence areas of likelihood rather than concentrate around areas of highest likelihood (desired when wanting the outcomes to be largely driven by the data). On the other hand, if the priors are too strong, they may have an influence on the parameters. In such a simple model, this balance is very forgiving - it is for more complex models that prior choice becomes more important. For this simple model, we will go with zero-centered Gaussian (normal) priors with relatively large standard deviations (<span class="math inline">\(100\)</span>) for both the intercept and the treatment effect and a wide half-cauchy (<span class="math inline">\(\text{scale}=5\)</span>) for the standard deviation.</p>
 <p><span class="math display">\[y_i \sim N(\mu_i,\sigma),  \]</span></p>
-<p>where <span class="math inline">\(\mu_i=\beta_0 +\boldsymbol \beta \boldsymbol X\)</span>. The assumed priors are: <span class="math inline">\(\beta \sim N(0,100)\)</span> and <span class="math inline">\(\sigma \sim \text{Cauchy}(0,5)\)</span>. Exploratory data analysis suggests that the intercept and effects could be drawn from similar distributions (with mean in the <span class="math inline">\(10\)</span>’s and variances in the <span class="math inline">\(100\)</span>’s). Whilst we might therefore be tempted to provide different priors for the intercept, compared to the effects, for a simple model such as this, it is unlikely to be necessary. However, for more complex models, where prior specification becomes more critical, separate priors would probably be necessary. We proceed to code the model into <code>STAN</code>.</p>
+<p>where <span class="math inline">\(\mu_i=\beta_0 +\boldsymbol \beta \boldsymbol X\)</span>. The assumed priors are: <span class="math inline">\(\beta \sim N(0,100)\)</span> and <span class="math inline">\(\sigma \sim \text{Cauchy}(0,5)\)</span>. Exploratory data analysis suggests that the intercept and effects could be drawn from similar distributions (with mean in the <span class="math inline">\(10\)</span>’s and variances in the <span class="math inline">\(100\)</span>’s). Whilst we might therefore be tempted to provide different priors for the intercept, compared to the effects, for a simple model such as this, it is unlikely to be necessary. However, for more complex models, where prior specification becomes more critical, separate priors would probably be necessary. We proceed to code the model into <code>Stan</code>.</p>
 <pre class="r"><code>&gt; modelString = &quot;
 +   data {
 +   int&lt;lower=1&gt; n;
@@ -298,7 +296,7 @@ Res &quot;&quot;                         &quot;&quot;                         </
 +   &quot;
 &gt; ## write the model to a stan file 
 &gt; writeLines(modelString, con = &quot;fact_anovaModel.stan&quot;)</code></pre>
-<p>Arrange the data as a list (as required by <code>STAN</code>). As input, <code>STAN</code> will need to be supplied with: the response variable, the predictor variable, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.</p>
+<p>Arrange the data as a list (as required by <code>Stan</code>). As input, <code>Stan</code> will need to be supplied with: the response variable, the predictor variable, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.</p>
 <pre class="r"><code>&gt; Xmat &lt;- model.matrix(~A * B, data)
 &gt; data.list &lt;- with(data, list(y = y, X = Xmat, nX = ncol(Xmat), n = nrow(data)))</code></pre>
 <p>Define the nodes (parameters and derivatives) to monitor and chain parameters.</p>
@@ -336,9 +334,9 @@ Chain 1: Iteration: 1250 / 1500 [ 83%]  (Sampling)
 Chain 1: Iteration: 1400 / 1500 [ 93%]  (Sampling)
 Chain 1: Iteration: 1500 / 1500 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 0.063 seconds (Warm-up)
-Chain 1:                0.078 seconds (Sampling)
-Chain 1:                0.141 seconds (Total)
+Chain 1:  Elapsed Time: 0.064 seconds (Warm-up)
+Chain 1:                0.076 seconds (Sampling)
+Chain 1:                0.14 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL &#39;fact_anovaModel&#39; NOW (CHAIN 2).
@@ -361,9 +359,9 @@ Chain 2: Iteration: 1250 / 1500 [ 83%]  (Sampling)
 Chain 2: Iteration: 1400 / 1500 [ 93%]  (Sampling)
 Chain 2: Iteration: 1500 / 1500 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 0.064 seconds (Warm-up)
-Chain 2:                0.078 seconds (Sampling)
-Chain 2:                0.142 seconds (Total)
+Chain 2:  Elapsed Time: 0.062 seconds (Warm-up)
+Chain 2:                0.081 seconds (Sampling)
+Chain 2:                0.143 seconds (Total)
 Chain 2: 
 &gt; 
 &gt; print(data.rstan, par = c(&quot;beta&quot;, &quot;sigma&quot;))
@@ -380,7 +378,7 @@ beta[5] -14.68    0.07 1.85 -18.27 -15.86 -14.69 -13.49 -10.79   801    1
 beta[6]  10.98    0.06 1.87   7.35   9.79  10.97  12.20  14.69   893    1
 sigma     2.89    0.01 0.28   2.40   2.69   2.86   3.06   3.53  1247    1
 
-Samples were drawn using NUTS(diag_e) at Fri Dec 11 09:08:15 2020.
+Samples were drawn using NUTS(diag_e) at Thu Jul 08 20:54:33 2021.
 For each parameter, n_eff is a crude measure of effective sample size,
 and Rhat is the potential scale reduction factor on split chains (at 
 convergence, Rhat=1).</code></pre>
@@ -550,7 +548,7 @@ beta[5] -14.68    0.07 1.85 -18.27 -15.86 -14.69 -13.49 -10.79   801    1
 beta[6]  10.98    0.06 1.87   7.35   9.79  10.97  12.20  14.69   893    1
 sigma     2.89    0.01 0.28   2.40   2.69   2.86   3.06   3.53  1247    1
 
-Samples were drawn using NUTS(diag_e) at Fri Dec 11 09:08:15 2020.
+Samples were drawn using NUTS(diag_e) at Thu Jul 08 20:54:33 2021.
 For each parameter, n_eff is a crude measure of effective sample size,
 and Rhat is the potential scale reduction factor on split chains (at 
 convergence, Rhat=1).
@@ -592,7 +590,7 @@ convergence, Rhat=1).
 [1] 0
 &gt; mcmcpvalue(as.matrix(data.rstan)[, c(&quot;beta[5]&quot;, &quot;beta[6]&quot;)])
 [1] 0</code></pre>
-<p>There is evidence of an interaction between A and B. In a Bayesian context, we can compare models using the <strong>leave-one-out cross-validation</strong> statistics. Leave-one-out (LOO) cross-validation explores how well a series of models can predict withheld values <span class="citation">Vehtari, Gelman, and Gabry (2017)</span>. The LOO Information Criterion (LOOIC) is analogous to the AIC except that the LOOIC takes priors into consideration, does not assume that the posterior distribution is drawn from a multivariate normal and integrates over parameter uncertainty so as to yield a distribution of looic rather than just a point estimate. The LOOIC does however assume that all observations are equally influential (it does not matter which observations are left out). This assumption can be examined via the Pareto <span class="math inline">\(k\)</span> estimate (values greater than <span class="math inline">\(0.5\)</span> or more conservatively <span class="math inline">\(0.75\)</span> are considered overly influential). We can compute LOOIC if we store the loglikelihood from our <code>STAN</code> model, which can then be extracted to compute the information criterion using the package <code>loo</code>.</p>
+<p>There is evidence of an interaction between A and B. In a Bayesian context, we can compare models using the <strong>leave-one-out cross-validation</strong> statistics. Leave-one-out (LOO) cross-validation explores how well a series of models can predict withheld values <span class="citation"><a href="#ref-vehtari2017practical" role="doc-biblioref">Vehtari, Gelman, and Gabry</a> (<a href="#ref-vehtari2017practical" role="doc-biblioref">2017</a>)</span>. The LOO Information Criterion (LOOIC) is analogous to the AIC except that the LOOIC takes priors into consideration, does not assume that the posterior distribution is drawn from a multivariate normal and integrates over parameter uncertainty so as to yield a distribution of looic rather than just a point estimate. The LOOIC does however assume that all observations are equally influential (it does not matter which observations are left out). This assumption can be examined via the Pareto <span class="math inline">\(k\)</span> estimate (values greater than <span class="math inline">\(0.5\)</span> or more conservatively <span class="math inline">\(0.75\)</span> are considered overly influential). We can compute LOOIC if we store the loglikelihood from our <code>Stan</code> model, which can then be extracted to compute the information criterion using the package <code>loo</code>.</p>
 <pre class="r"><code>&gt; library(loo)
 &gt; (full = loo(extract_log_lik(data.rstan)))
 
@@ -671,9 +669,9 @@ Chain 1: Iteration: 1250 / 1500 [ 83%]  (Sampling)
 Chain 1: Iteration: 1400 / 1500 [ 93%]  (Sampling)
 Chain 1: Iteration: 1500 / 1500 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 0.053 seconds (Warm-up)
-Chain 1:                0.055 seconds (Sampling)
-Chain 1:                0.108 seconds (Total)
+Chain 1:  Elapsed Time: 0.051 seconds (Warm-up)
+Chain 1:                0.051 seconds (Sampling)
+Chain 1:                0.102 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL &#39;fact_anovaModel2&#39; NOW (CHAIN 2).
@@ -696,9 +694,9 @@ Chain 2: Iteration: 1250 / 1500 [ 83%]  (Sampling)
 Chain 2: Iteration: 1400 / 1500 [ 93%]  (Sampling)
 Chain 2: Iteration: 1500 / 1500 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 0.053 seconds (Warm-up)
-Chain 2:                0.061 seconds (Sampling)
-Chain 2:                0.114 seconds (Total)
+Chain 2:  Elapsed Time: 0.048 seconds (Warm-up)
+Chain 2:                0.054 seconds (Sampling)
+Chain 2:                0.102 seconds (Total)
 Chain 2: 
 &gt; 
 &gt; (reduced = loo(extract_log_lik(data.rstan.red)))
@@ -762,7 +760,7 @@ See help(&#39;pareto-k-diagnostic&#39;) for details.
 <div id="finite-population-standard-deviations" class="section level1">
 <h1>Finite population standard deviations</h1>
 <p>Variance components, the amount of added variance attributed to each influence, are traditionally estimated for so called random effects. These are the effects for which the levels employed in the design are randomly selected to represent a broader range of possible levels. For such effects, effect sizes (differences between each level and a reference level) are of little value. Instead, the “importance” of the variables are measured in units of variance components. On the other hand, regular variance components for fixed factors (those whose measured levels represent the only levels of interest) are not logical - since variance components estimate variance as if the levels are randomly selected from a larger population. Nevertheless, in order to compare and contrast the scale of variability of both fixed and random factors, it is necessary to measure both on the same scale (sample or population based variance).</p>
-<p>Finite-population variance components assume that the levels of all factors (fixed and random) in the design are all the possible levels available (<span class="citation">Gelman and others (2005)</span>). In other words, they are assumed to represent finite populations of levels. Sample (rather than population) statistics are then used to calculate these finite-population variances (or standard deviations). Since standard deviation (and variance) are bound at zero, standard deviation posteriors are typically non-normal. Consequently, medians and HPD intervals are more robust estimates.</p>
+<p>Finite-population variance components assume that the levels of all factors (fixed and random) in the design are all the possible levels available (<span class="citation"><a href="#ref-gelman2005analysis" role="doc-biblioref">Gelman and others</a> (<a href="#ref-gelman2005analysis" role="doc-biblioref">2005</a>)</span>). In other words, they are assumed to represent finite populations of levels. Sample (rather than population) statistics are then used to calculate these finite-population variances (or standard deviations). Since standard deviation (and variance) are bound at zero, standard deviation posteriors are typically non-normal. Consequently, medians and HPD intervals are more robust estimates.</p>
 <pre><code># A tibble: 4 x 5
   term     estimate std.error conf.low conf.high
   &lt;chr&gt;       &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
@@ -782,7 +780,7 @@ See help(&#39;pareto-k-diagnostic&#39;) for details.
 </div>
 <div id="r-squared" class="section level1">
 <h1>R squared</h1>
-<p>In a frequentist context, the <span class="math inline">\(R^2\)</span> value is seen as a useful indicator of goodness of fit. Whilst it has long been acknowledged that this measure is not appropriate for comparing models (for such purposes information criterion such as AIC are more appropriate), it is nevertheless useful for estimating the amount (percent) of variance explained by the model. In a frequentist context, <span class="math inline">\(R^2\)</span> is calculated as the variance in predicted values divided by the variance in the observed (response) values. Unfortunately, this classical formulation does not translate simply into a Bayesian context since the equivalently calculated numerator can be larger than the an equivalently calculated denominator - thereby resulting in an <span class="math inline">\(R^2\)</span> greater than <span class="math inline">\(100\)</span>%. <span class="citation">Gelman et al. (2019)</span> proposed an alternative formulation in which the denominator comprises the sum of the explained variance and the variance of the residuals.</p>
+<p>In a frequentist context, the <span class="math inline">\(R^2\)</span> value is seen as a useful indicator of goodness of fit. Whilst it has long been acknowledged that this measure is not appropriate for comparing models (for such purposes information criterion such as AIC are more appropriate), it is nevertheless useful for estimating the amount (percent) of variance explained by the model. In a frequentist context, <span class="math inline">\(R^2\)</span> is calculated as the variance in predicted values divided by the variance in the observed (response) values. Unfortunately, this classical formulation does not translate simply into a Bayesian context since the equivalently calculated numerator can be larger than the an equivalently calculated denominator - thereby resulting in an <span class="math inline">\(R^2\)</span> greater than <span class="math inline">\(100\)</span>%. <span class="citation"><a href="#ref-gelman2019r" role="doc-biblioref">Gelman et al.</a> (<a href="#ref-gelman2019r" role="doc-biblioref">2019</a>)</span> proposed an alternative formulation in which the denominator comprises the sum of the explained variance and the variance of the residuals.</p>
 <p>So in the standard regression model notation of:</p>
 <p><span class="math display">\[ y_i \sim \text{Normal}(\boldsymbol X \boldsymbol \beta, \sigma),\]</span></p>
 <p>the <span class="math inline">\(R^2\)</span> could be formulated as</p>

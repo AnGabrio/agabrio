@@ -1,15 +1,15 @@
 ---
-title: "Comparing Two Populations (STAN)"
+title: "Comparing Two Populations (Stan)"
 author: "Andrea Gabrio"
 date: '2020-02-01'
 slug: comparing-two-populations-stan
 categories:
 - population differences
-- STAN
+- Stan
 - R
 tags:
 - tutorials
-- STAN
+- Stan
 - population differences
 subtitle: ''
 summary: ''
@@ -33,7 +33,7 @@ This tutorial will focus on the use of Bayesian estimation to explore difference
  
 2. **JAGS** - (Just Another Gibbs Sampler) - written in `C++`. 
 
-3. **STAN** - a dedicated Bayesian modelling framework written in `C++` and implementing *Hamiltonian* MCMC samplers.
+3. **Stan** - a dedicated Bayesian modelling framework written in `C++` and implementing *Hamiltonian* MCMC samplers.
 
 Whilst the above programs can be used stand-alone, they do offer the rich data pre-processing and graphical capabilities of R, and thus, they are best accessed from within `R` itself. As such there are multiple packages devoted to interfacing with the various software implementations:
 
@@ -41,9 +41,9 @@ Whilst the above programs can be used stand-alone, they do offer the rich data p
 
 * *R2jags* - interfaces with `JAGS`
 
-* *rstan* - interfaces with `STAN`
+* *rstan* - interfaces with `Stan`
 
-The `BUGS/JAGS/STAN` languages and algorithms are very powerful and flexible. However, the cost of this power and flexibility is complexity and the need for a firm understanding of the model you wish to fit as well as the priors to be used. The algorithms requires the following inputs.
+The `BUGS/JAGS/Stan` languages and algorithms are very powerful and flexible. However, the cost of this power and flexibility is complexity and the need for a firm understanding of the model you wish to fit as well as the priors to be used. The algorithms requires the following inputs.
 
 * Within the model:
 
@@ -65,7 +65,7 @@ The `BUGS/JAGS/STAN` languages and algorithms are very powerful and flexible. Ho
 
 * The list of model parameters and derivatives to monitor (and return the posterior distributions of)
 
-This tutorial will demonstrate how to fit models in `STAN` (@gelman2015stan) using the package `rstan` (@rstanpackage) as interface, which also requires to load some other packages.
+This tutorial will demonstrate how to fit models in `Stan` (@gelman2015stan) using the package `rstan` (@rstanpackage) as interface, which also requires to load some other packages.
 
 # Data generation
 
@@ -114,7 +114,7 @@ Priors are defined as:
 
 for $j=0,1$.
 
-## Fitting the model in STAN
+## Fitting the model in Stan
 
 Broadly, there are two ways of parameterising (expressing the unknown (to be estimated) components of a model) a model. Either we can estimate the means of each group (*Means parameterisation*) or we can estimate the mean of one group and the difference between this group and the other group(s) (*Effects parameterisation*). The latter is commonly used for frequentist null hypothesis testing as its parameters are more consistent with the null hypothesis of interest (that the difference between the two groups equals zero).
 
@@ -130,7 +130,7 @@ Each $y_i$ is modelled by an intercept $\beta_0$ (mean of group A) plus a differ
 
 Each $y_i$ is modelled as the mean $\beta_j$ of each group ($j=1,2$) plus a residual drawn from a normal distribution with a mean of zero and a standard deviation of $\sigma$. Actually, $\boldsymbol \beta$ is a set of $j$ coefficients corresponding to the $j$ dummy coded factor levels. Expected values of $y$ are modelled assuming they are drawn from a normal distribution whose mean is determined by a linear combination of means parameters and whose variance is defined by the degree of variability in this mean. The parameters are: $\beta_1$, $\beta_2$ and $\sigma$.
 
-Whilst the `STAN` language broadly resembles `BUGS/JAGS`, there are numerous important differences. Some of these differences are to support translation to `c++` for compilation (such as declaring variables). Others reflect leveraging of vectorization to speed up run time. Here are some important notes about `STAN`:
+Whilst the `Stan` language broadly resembles `BUGS/JAGS`, there are numerous important differences. Some of these differences are to support translation to `c++` for compilation (such as declaring variables). Others reflect leveraging of vectorization to speed up run time. Here are some important notes about `Stan`:
 
 * All variables must be declared
 
@@ -138,7 +138,7 @@ Whilst the `STAN` language broadly resembles `BUGS/JAGS`, there are numerous imp
 
 * Anything in the transformed block will be collected as samples. Also, checks will be made every loop
 
-Now I will demonstrate fitting the models with `STAN`. Note, I am using the `refresh=0` option so as to suppress the larger regular output in the interest of keeping output to what is necessary for this tutorial. When running outside of a tutorial context, the regular verbose output is useful as it provides a way to gauge progress.
+Now I will demonstrate fitting the models with `Stan`. Note, I am using the `refresh=0` option so as to suppress the larger regular output in the interest of keeping output to what is necessary for this tutorial. When running outside of a tutorial context, the regular verbose output is useful as it provides a way to gauge progress.
 
 **Effects Parameterisation**
 
@@ -228,7 +228,7 @@ stanString.means = "
 writeLines(stanString.means, con = "ttestModelMeans.stan")
 ```
 
-Arrange the data as a list (as required by `STAN`).
+Arrange the data as a list (as required by `Stan`).
 
 ```{r data_model, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 data.list <- with(data, list(y = y, x = (xn - 1), n = nrow(data)))
@@ -260,7 +260,7 @@ thinSteps = 1  # the thinning rate
 nIter = 2000
 ```
 
-Start the `STAN` model (check the model, load data into the model, specify the number of chains and compile the model). Load the `rstan` package.
+Start the `Stan` model (check the model, load data into the model, specify the number of chains and compile the model). Load the `rstan` package.
 
 ```{r load_packageR2jags, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 library(rstan)
@@ -316,7 +316,7 @@ The total number samples collected is $3000$. That is, there are $3000$ samples 
 
 # MCMC diagnostics
 
-Again, prior to examining the summaries, we should have explored the convergence diagnostics. There are numerous ways of working with `STAN` model fits (for exploring diagnostics and summarisation).
+Again, prior to examining the summaries, we should have explored the convergence diagnostics. There are numerous ways of working with `Stan` model fits (for exploring diagnostics and summarisation).
 
 1. extract the mcmc samples and convert them into a mcmc.list to leverage the various `mcmcplots` routines
 
@@ -538,7 +538,7 @@ Start by defining the model
 
 \[ y_i = \beta_0 + \beta_1x_i + \epsilon, \]
 
-where $\epsilon_1 \sim \text{Normal}(0,\sigma_1)$ for $x_1=0$ (females), and $\epsilon_2 \sim \text{Normal}(0,\sigma_2)$ for $x_2=1$ (males). In `STAN` code, the model becomes:
+where $\epsilon_1 \sim \text{Normal}(0,\sigma_1)$ for $x_1=0$ (females), and $\epsilon_2 \sim \text{Normal}(0,\sigma_2)$ for $x_2=1$ (males). In `Stan` code, the model becomes:
 
 ```{r model_ex2, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 stanStringv3 = " 
@@ -583,7 +583,7 @@ stanStringv3 = "
 writeLines(stanStringv3,con="ttestModelv3.stan")
 ```
 
-We specify priors directly on $\sigma_1$ and $\sigma_2$ using Cauchy distributions with a scale of $25$. Next, arrange the data as a list (as required by `STAN`) and define the MCMC parameters. 
+We specify priors directly on $\sigma_1$ and $\sigma_2$ using Cauchy distributions with a scale of $25$. Next, arrange the data as a list (as required by `Stan`) and define the MCMC parameters. 
 
 ```{r model_dataex2, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 data2.list <- with(data, list(y = y, x = (xn - 1), xn = xn, n = nrow(data)))
@@ -594,7 +594,7 @@ thinSteps = 1
 nIter = 2000
 ```
 
-Finally, fit the model in `STAN` and print the results.
+Finally, fit the model in `Stan` and print the results.
 
 ```{r model_jagsex2, eval=TRUE, echo=TRUE, comment=NA, warning=FALSE, error=FALSE, message=FALSE}
 data.stanv3 = stan(file = "ttestModelv3.stan", 

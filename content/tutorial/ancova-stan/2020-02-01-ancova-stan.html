@@ -1,16 +1,16 @@
 ---
-title: "Ancova (STAN)"
+title: "Ancova (Stan)"
 author: "Andrea Gabrio"
 date: '2020-02-05'
 slug: ancova-stan
 categories:
 - factor analysis
-- STAN
+- Stan
 - ancova
 - R
 tags:
 - tutorials
-- STAN
+- Stan
 - ancova
 - factor analysis
 subtitle: ''
@@ -26,23 +26,21 @@ bibliography: citations_stan6.bib
 ---
 
 <script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
-<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
-<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
 
 
 <p>This tutorial will focus on the use of Bayesian estimation to fit simple linear regression models. <code>BUGS</code> (Bayesian inference Using <em>Gibbs Sampling</em>) is an algorithm and supporting language (resembling <code>R</code>) dedicated to performing the Gibbs sampling implementation of <em>Markov Chain Monte Carlo</em> (MCMC) method. Dialects of the <code>BUGS</code> language are implemented within three main projects:</p>
 <ol style="list-style-type: decimal">
 <li><p><strong>OpenBUGS</strong> - written in component pascal.</p></li>
 <li><p><strong>JAGS</strong> - (Just Another Gibbs Sampler) - written in <code>C++</code>.</p></li>
-<li><p><strong>STAN</strong> - a dedicated Bayesian modelling framework written in <code>C++</code> and implementing <em>Hamiltonian</em> MCMC samplers.</p></li>
+<li><p><strong>Stan</strong> - a dedicated Bayesian modelling framework written in <code>C++</code> and implementing <em>Hamiltonian</em> MCMC samplers.</p></li>
 </ol>
-<p>Whilst the above programs can be used stand-alone, they do offer the rich data pre-processing and graphical capabilities of <code>R</code>, and thus, they are best accessed from within <code>R</code> itself. As such there are multiple packages devoted to interfacing with the various software implementations:</p>
+<p>Whilst the above programs can be used stand-alone, they do offer the rich data pre-processing and graphical capabilities of <code>R</code>, and thus, they are best accessed from within <code>R</code> itself. As such there are multiple packages dedicated to interfacing with the various software implementations:</p>
 <ul>
 <li><p><em>R2OpenBUGS</em> - interfaces with <code>OpenBUGS</code></p></li>
 <li><p><em>R2jags</em> - interfaces with <code>JAGS</code></p></li>
-<li><p><em>rstan</em> - interfaces with <code>STAN</code></p></li>
+<li><p><em>rstan</em> - interfaces with <code>Stan</code></p></li>
 </ul>
-<p>This tutorial will demonstrate how to fit models in <code>STAN</code> (<span class="citation">Gelman, Lee, and Guo (2015)</span>) using the package <code>rstan</code> (<span class="citation">Stan Development Team (2018)</span>) as interface, which also requires to load some other packages.</p>
+<p>This tutorial will demonstrate how to fit models in <code>Stan</code> (<span class="citation"><a href="#ref-gelman2015stan" role="doc-biblioref">Gelman, Lee, and Guo</a> (<a href="#ref-gelman2015stan" role="doc-biblioref">2015</a>)</span>) using the package <code>rstan</code> (<span class="citation"><a href="#ref-rstanpackage" role="doc-biblioref">Stan Development Team</a> (<a href="#ref-rstanpackage" role="doc-biblioref">2018</a>)</span>) as interface, which also requires to load some other packages.</p>
 <div id="overview" class="section level1">
 <h1>Overview</h1>
 <div id="introduction" class="section level2">
@@ -198,7 +196,7 @@ Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&
 <h1>Model fitting</h1>
 <p>The observed response (<span class="math inline">\(y_i\)</span>) are assumed to be drawn from a normal distribution with a given mean (<span class="math inline">\(\mu\)</span>) and standard deviation (<span class="math inline">\(\sigma\)</span>). The expected values are themselves determined by the linear predictor (<span class="math inline">\(\boldsymbol X \boldsymbol \beta\)</span>). In this case, <span class="math inline">\(\boldsymbol \beta\)</span> represents the vector of <span class="math inline">\(\beta\)</span>’s - the intercept associated with the first group, the (effects) differences between this intercept and the intercepts for each other group as well as the slope associated with the continuous covariate. <span class="math inline">\(\boldsymbol X\)</span> is the model matrix. MCMC sampling requires priors on all parameters. We will employ weakly informative priors. Specifying ‘uninformative’ priors is always a bit of a balancing act. If the priors are too vague (wide) the MCMC sampler can wander off into nonscence areas of likelihood rather than concentrate around areas of highest likelihood (desired when wanting the outcomes to be largely driven by the data). On the other hand, if the priors are too strong, they may have an influence on the parameters. In such a simple model, this balance is very forgiving - it is for more complex models that prior choice becomes more important. For this simple model, we will go with zero-centered Gaussian (normal) priors with relatively large standard deviations (<span class="math inline">\(100\)</span>) for both the intercept and the treatment effect and a wide half-cauchy (<span class="math inline">\(\text{scale}=5\)</span>) for the standard deviation.</p>
 <p><span class="math display">\[y_i \sim N(\mu_i,\sigma),  \]</span></p>
-<p>where <span class="math inline">\(\mu_i=\beta_0 +\boldsymbol \beta \boldsymbol X\)</span>. The assumed priors are: <span class="math inline">\(\beta \sim N(0,100)\)</span> and <span class="math inline">\(\sigma \sim \text{Cauchy}(0,5)\)</span>. Note, exploratory data analysis suggests that while the intercept (intercept of Group A) and categorical predictor effects (differences between intercepts of each of the Group and Group A’s intercept) could be drawn from a similar distribution (with mean in the <span class="math inline">\(10\)</span>’s and variances in the <span class="math inline">\(100\)</span>’s), the slope (effect associated with Group A linear relationship) is likely to be an order of magnitude less. We might therefore be tempted to provide different priors for the intercept, categorical effects and slope effect. For a simple model such as this, it is unlikely to be necessary. However, for more complex models, where prior specification becomes more critical, separate priors would probably be necessary. We proceed to code the model into <code>STAN</code>.</p>
+<p>where <span class="math inline">\(\mu_i=\beta_0 +\boldsymbol \beta \boldsymbol X\)</span>. The assumed priors are: <span class="math inline">\(\beta \sim N(0,100)\)</span> and <span class="math inline">\(\sigma \sim \text{Cauchy}(0,5)\)</span>. Note, exploratory data analysis suggests that while the intercept (intercept of Group A) and categorical predictor effects (differences between intercepts of each of the Group and Group A’s intercept) could be drawn from a similar distribution (with mean in the <span class="math inline">\(10\)</span>’s and variances in the <span class="math inline">\(100\)</span>’s), the slope (effect associated with Group A linear relationship) is likely to be an order of magnitude less. We might therefore be tempted to provide different priors for the intercept, categorical effects and slope effect. For a simple model such as this, it is unlikely to be necessary. However, for more complex models, where prior specification becomes more critical, separate priors would probably be necessary. We proceed to code the model into <code>Stan</code>.</p>
 <pre class="r"><code>&gt; modelString = &quot;
 +   data {
 +   int&lt;lower=1&gt; n;
@@ -234,7 +232,7 @@ Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&
 +   &quot;
 &gt; ## write the model to a stan file 
 &gt; writeLines(modelString, con = &quot;ancovaModel.stan&quot;)</code></pre>
-<p>Arrange the data as a list (as required by <code>STAN</code>). As input, <code>STAN</code> will need to be supplied with: the response variable, the predictor variable, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.</p>
+<p>Arrange the data as a list (as required by <code>Stan</code>). As input, <code>Stan</code> will need to be supplied with: the response variable, the predictor variable, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.</p>
 <pre class="r"><code>&gt; Xmat &lt;- model.matrix(~A + B, data)
 &gt; data.list &lt;- with(data, list(y = Y, X = Xmat, nX = ncol(Xmat), n = nrow(data)))</code></pre>
 <p>Define the nodes (parameters and derivatives) to monitor and chain parameters.</p>
@@ -272,15 +270,15 @@ Chain 1: Iteration: 1250 / 1500 [ 83%]  (Sampling)
 Chain 1: Iteration: 1400 / 1500 [ 93%]  (Sampling)
 Chain 1: Iteration: 1500 / 1500 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 0.082 seconds (Warm-up)
-Chain 1:                0.052 seconds (Sampling)
-Chain 1:                0.134 seconds (Total)
+Chain 1:  Elapsed Time: 0.077 seconds (Warm-up)
+Chain 1:                0.049 seconds (Sampling)
+Chain 1:                0.126 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL &#39;ancovaModel&#39; NOW (CHAIN 2).
 Chain 2: 
-Chain 2: Gradient evaluation took 0 seconds
-Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+Chain 2: Gradient evaluation took 0.001 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 10 seconds.
 Chain 2: Adjust your expectations accordingly!
 Chain 2: 
 Chain 2: 
@@ -297,9 +295,9 @@ Chain 2: Iteration: 1250 / 1500 [ 83%]  (Sampling)
 Chain 2: Iteration: 1400 / 1500 [ 93%]  (Sampling)
 Chain 2: Iteration: 1500 / 1500 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 0.082 seconds (Warm-up)
-Chain 2:                0.051 seconds (Sampling)
-Chain 2:                0.133 seconds (Total)
+Chain 2:  Elapsed Time: 0.078 seconds (Warm-up)
+Chain 2:                0.054 seconds (Sampling)
+Chain 2:                0.132 seconds (Total)
 Chain 2: 
 &gt; 
 &gt; print(data.rstan, par = c(&quot;beta&quot;, &quot;sigma&quot;))
@@ -314,7 +312,7 @@ beta[3] -20.57    0.05 1.62 -23.68 -21.69 -20.56 -19.47 -17.38  1268    1
 beta[4]  -0.48    0.00 0.04  -0.57  -0.51  -0.48  -0.45  -0.39  1189    1
 sigma     3.58    0.02 0.52   2.76   3.22   3.51   3.88   4.69  1177    1
 
-Samples were drawn using NUTS(diag_e) at Fri Dec 11 09:03:44 2020.
+Samples were drawn using NUTS(diag_e) at Thu Jul 08 21:55:10 2021.
 For each parameter, n_eff is a crude measure of effective sample size,
 and Rhat is the potential scale reduction factor on split chains (at 
 convergence, Rhat=1).</code></pre>
@@ -480,7 +478,7 @@ beta[3] -20.57    0.05 1.62 -23.68 -21.69 -20.56 -19.47 -17.38  1268    1
 beta[4]  -0.48    0.00 0.04  -0.57  -0.51  -0.48  -0.45  -0.39  1189    1
 sigma     3.58    0.02 0.52   2.76   3.22   3.51   3.88   4.69  1177    1
 
-Samples were drawn using NUTS(diag_e) at Fri Dec 11 09:03:44 2020.
+Samples were drawn using NUTS(diag_e) at Thu Jul 08 21:55:10 2021.
 For each parameter, n_eff is a crude measure of effective sample size,
 and Rhat is the potential scale reduction factor on split chains (at 
 convergence, Rhat=1).
@@ -514,7 +512,7 @@ convergence, Rhat=1).
 [1] 0
 &gt; mcmcpvalue(as.matrix(data.rstan)[, 2:4])  # effect of (model)
 [1] 0</code></pre>
-<p>There is evidence that the reponse differs between the groups. There is evidence suggesting that the response of group D differs from that of group A. In a Bayesian context, we can compare models using the <strong>leave-one-out cross-validation</strong> statistics. Leave-one-out (LOO) cross-validation explores how well a series of models can predict withheld values <span class="citation">Vehtari, Gelman, and Gabry (2017)</span>. The LOO Information Criterion (LOOIC) is analogous to the AIC except that the LOOIC takes priors into consideration, does not assume that the posterior distribution is drawn from a multivariate normal and integrates over parameter uncertainty so as to yield a distribution of looic rather than just a point estimate. The LOOIC does however assume that all observations are equally influential (it does not matter which observations are left out). This assumption can be examined via the Pareto <span class="math inline">\(k\)</span> estimate (values greater than <span class="math inline">\(0.5\)</span> or more conservatively <span class="math inline">\(0.75\)</span> are considered overly influential). We can compute LOOIC if we store the loglikelihood from our <code>STAN</code> model, which can then be extracted to compute the information criterion using the package <code>loo</code>.</p>
+<p>There is evidence that the reponse differs between the groups. There is evidence suggesting that the response of group D differs from that of group A. In a Bayesian context, we can compare models using the <strong>leave-one-out cross-validation</strong> statistics. Leave-one-out (LOO) cross-validation explores how well a series of models can predict withheld values <span class="citation"><a href="#ref-vehtari2017practical" role="doc-biblioref">Vehtari, Gelman, and Gabry</a> (<a href="#ref-vehtari2017practical" role="doc-biblioref">2017</a>)</span>. The LOO Information Criterion (LOOIC) is analogous to the AIC except that the LOOIC takes priors into consideration, does not assume that the posterior distribution is drawn from a multivariate normal and integrates over parameter uncertainty so as to yield a distribution of looic rather than just a point estimate. The LOOIC does however assume that all observations are equally influential (it does not matter which observations are left out). This assumption can be examined via the Pareto <span class="math inline">\(k\)</span> estimate (values greater than <span class="math inline">\(0.5\)</span> or more conservatively <span class="math inline">\(0.75\)</span> are considered overly influential). We can compute LOOIC if we store the loglikelihood from our <code>Stan</code> model, which can then be extracted to compute the information criterion using the package <code>loo</code>.</p>
 <pre class="r"><code>&gt; library(loo)
 &gt; (full = loo(extract_log_lik(data.rstan)))
 
@@ -600,9 +598,9 @@ Chain 1: Iteration: 1250 / 1500 [ 83%]  (Sampling)
 Chain 1: Iteration: 1400 / 1500 [ 93%]  (Sampling)
 Chain 1: Iteration: 1500 / 1500 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 0.02 seconds (Warm-up)
-Chain 1:                0.026 seconds (Sampling)
-Chain 1:                0.046 seconds (Total)
+Chain 1:  Elapsed Time: 0.017 seconds (Warm-up)
+Chain 1:                0.028 seconds (Sampling)
+Chain 1:                0.045 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL &#39;ancovaModel2&#39; NOW (CHAIN 2).
@@ -625,9 +623,9 @@ Chain 2: Iteration: 1250 / 1500 [ 83%]  (Sampling)
 Chain 2: Iteration: 1400 / 1500 [ 93%]  (Sampling)
 Chain 2: Iteration: 1500 / 1500 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 0.004 seconds (Warm-up)
-Chain 2:                0.031 seconds (Sampling)
-Chain 2:                0.035 seconds (Total)
+Chain 2:  Elapsed Time: 0.021 seconds (Warm-up)
+Chain 2:                0.022 seconds (Sampling)
+Chain 2:                0.043 seconds (Total)
 Chain 2: 
 &gt; 
 &gt; (reduced = loo(extract_log_lik(data.rstan.red)))
@@ -772,7 +770,7 @@ Group C - Group B           1        0        1 19.29344
 <div id="finite-population-standard-deviations" class="section level1">
 <h1>Finite population standard deviations</h1>
 <p>Variance components, the amount of added variance attributed to each influence, are traditionally estimated for so called random effects. These are the effects for which the levels employed in the design are randomly selected to represent a broader range of possible levels. For such effects, effect sizes (differences between each level and a reference level) are of little value. Instead, the “importance” of the variables are measured in units of variance components. On the other hand, regular variance components for fixed factors (those whose measured levels represent the only levels of interest) are not logical - since variance components estimate variance as if the levels are randomly selected from a larger population. Nevertheless, in order to compare and contrast the scale of variability of both fixed and random factors, it is necessary to measure both on the same scale (sample or population based variance).</p>
-<p>Finite-population variance components assume that the levels of all factors (fixed and random) in the design are all the possible levels available (<span class="citation">Gelman and others (2005)</span>). In other words, they are assumed to represent finite populations of levels. Sample (rather than population) statistics are then used to calculate these finite-population variances (or standard deviations). Since standard deviation (and variance) are bound at zero, standard deviation posteriors are typically non-normal. Consequently, medians and HPD intervals are more robust estimates.</p>
+<p>Finite-population variance components assume that the levels of all factors (fixed and random) in the design are all the possible levels available (<span class="citation"><a href="#ref-gelman2005analysis" role="doc-biblioref">Gelman and others</a> (<a href="#ref-gelman2005analysis" role="doc-biblioref">2005</a>)</span>). In other words, they are assumed to represent finite populations of levels. Sample (rather than population) statistics are then used to calculate these finite-population variances (or standard deviations). Since standard deviation (and variance) are bound at zero, standard deviation posteriors are typically non-normal. Consequently, medians and HPD intervals are more robust estimates.</p>
 <pre><code>          parameters
 iterations  beta[1]   beta[2]   beta[3]    beta[4]    sigma log_lik[1]
       [1,] 50.46775 -17.37306 -17.30715 -0.4655002 2.944843  -2.009059
@@ -846,7 +844,7 @@ iterations log_lik[28] log_lik[29] log_lik[30]      lp__
 </div>
 <div id="r-squared" class="section level1">
 <h1>R squared</h1>
-<p>In a frequentist context, the <span class="math inline">\(R^2\)</span> value is seen as a useful indicator of goodness of fit. Whilst it has long been acknowledged that this measure is not appropriate for comparing models (for such purposes information criterion such as AIC are more appropriate), it is nevertheless useful for estimating the amount (percent) of variance explained by the model. In a frequentist context, <span class="math inline">\(R^2\)</span> is calculated as the variance in predicted values divided by the variance in the observed (response) values. Unfortunately, this classical formulation does not translate simply into a Bayesian context since the equivalently calculated numerator can be larger than the an equivalently calculated denominator - thereby resulting in an <span class="math inline">\(R^2\)</span> greater than <span class="math inline">\(100\)</span>%. <span class="citation">Gelman et al. (2019)</span> proposed an alternative formulation in which the denominator comprises the sum of the explained variance and the variance of the residuals.</p>
+<p>In a frequentist context, the <span class="math inline">\(R^2\)</span> value is seen as a useful indicator of goodness of fit. Whilst it has long been acknowledged that this measure is not appropriate for comparing models (for such purposes information criterion such as AIC are more appropriate), it is nevertheless useful for estimating the amount (percent) of variance explained by the model. In a frequentist context, <span class="math inline">\(R^2\)</span> is calculated as the variance in predicted values divided by the variance in the observed (response) values. Unfortunately, this classical formulation does not translate simply into a Bayesian context since the equivalently calculated numerator can be larger than the an equivalently calculated denominator - thereby resulting in an <span class="math inline">\(R^2\)</span> greater than <span class="math inline">\(100\)</span>%. <span class="citation"><a href="#ref-gelman2019r" role="doc-biblioref">Gelman et al.</a> (<a href="#ref-gelman2019r" role="doc-biblioref">2019</a>)</span> proposed an alternative formulation in which the denominator comprises the sum of the explained variance and the variance of the residuals.</p>
 <p>So in the standard regression model notation of:</p>
 <p><span class="math display">\[ y_i \sim \text{Normal}(\boldsymbol X \boldsymbol \beta, \sigma),\]</span></p>
 <p>the <span class="math inline">\(R^2\)</span> could be formulated as</p>
@@ -978,7 +976,7 @@ Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&
 &gt; 
 &gt; ## write the model to a text file
 &gt; writeLines(modelString2, con = &quot;ancovaModel2.stan&quot;)</code></pre>
-<p>Arrange the data as a list (as required by <code>STAN</code>). As input, <code>STAN</code> will need to be supplied with: the response variable, the predictor matrix, the number of predictors, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.</p>
+<p>Arrange the data as a list (as required by <code>Stan</code>). As input, <code>Stan</code> will need to be supplied with: the response variable, the predictor matrix, the number of predictors, the total number of observed items. This all needs to be contained within a list object. We will create two data lists, one for each of the hypotheses.</p>
 <pre class="r"><code>&gt; Xmat &lt;- model.matrix(~A * B, data1)
 &gt; data1.list &lt;- with(data1, list(y = Y, X = Xmat, nX = ncol(Xmat), n = nrow(data1)))</code></pre>
 <p>Define the nodes (parameters and derivatives) to monitor and the chain parameters.</p>
@@ -1014,8 +1012,8 @@ Chain 1: Iteration: 1250 / 1500 [ 83%]  (Sampling)
 Chain 1: Iteration: 1400 / 1500 [ 93%]  (Sampling)
 Chain 1: Iteration: 1500 / 1500 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 0.113 seconds (Warm-up)
-Chain 1:                0.092 seconds (Sampling)
+Chain 1:  Elapsed Time: 0.117 seconds (Warm-up)
+Chain 1:                0.088 seconds (Sampling)
 Chain 1:                0.205 seconds (Total)
 Chain 1: 
 
@@ -1039,9 +1037,9 @@ Chain 2: Iteration: 1250 / 1500 [ 83%]  (Sampling)
 Chain 2: Iteration: 1400 / 1500 [ 93%]  (Sampling)
 Chain 2: Iteration: 1500 / 1500 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 0.129 seconds (Warm-up)
-Chain 2:                0.091 seconds (Sampling)
-Chain 2:                0.22 seconds (Total)
+Chain 2:  Elapsed Time: 0.135 seconds (Warm-up)
+Chain 2:                0.092 seconds (Sampling)
+Chain 2:                0.227 seconds (Total)
 Chain 2: 
 &gt; 
 &gt; print(data1.rstan, par = c(&quot;beta&quot;, &quot;sigma&quot;))
@@ -1058,7 +1056,7 @@ beta[5]  -0.26    0.01 0.11  -0.47  -0.33  -0.26  -0.19  -0.06   448 1.01
 beta[6]   0.28    0.01 0.11   0.06   0.20   0.28   0.35   0.51   444 1.01
 sigma     3.40    0.02 0.51   2.61   3.03   3.35   3.70   4.55   892 1.00
 
-Samples were drawn using NUTS(diag_e) at Fri Dec 11 09:04:56 2020.
+Samples were drawn using NUTS(diag_e) at Thu Jul 08 21:56:19 2021.
 For each parameter, n_eff is a crude measure of effective sample size,
 and Rhat is the potential scale reduction factor on split chains (at 
 convergence, Rhat=1).</code></pre>
@@ -1235,7 +1233,7 @@ beta[5]  -0.26    0.01 0.11  -0.47  -0.33  -0.26  -0.19  -0.06   448 1.01
 beta[6]   0.28    0.01 0.11   0.06   0.20   0.28   0.35   0.51   444 1.01
 sigma     3.40    0.02 0.51   2.61   3.03   3.35   3.70   4.55   892 1.00
 
-Samples were drawn using NUTS(diag_e) at Fri Dec 11 09:04:56 2020.
+Samples were drawn using NUTS(diag_e) at Thu Jul 08 21:56:19 2021.
 For each parameter, n_eff is a crude measure of effective sample size,
 and Rhat is the potential scale reduction factor on split chains (at 
 convergence, Rhat=1).
@@ -1358,9 +1356,9 @@ Chain 1: Iteration: 1250 / 1500 [ 83%]  (Sampling)
 Chain 1: Iteration: 1400 / 1500 [ 93%]  (Sampling)
 Chain 1: Iteration: 1500 / 1500 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 0.108 seconds (Warm-up)
-Chain 1:                0.081 seconds (Sampling)
-Chain 1:                0.189 seconds (Total)
+Chain 1:  Elapsed Time: 0.093 seconds (Warm-up)
+Chain 1:                0.083 seconds (Sampling)
+Chain 1:                0.176 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL &#39;ancovaModel2&#39; NOW (CHAIN 2).
@@ -1383,9 +1381,9 @@ Chain 2: Iteration: 1250 / 1500 [ 83%]  (Sampling)
 Chain 2: Iteration: 1400 / 1500 [ 93%]  (Sampling)
 Chain 2: Iteration: 1500 / 1500 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 0.1 seconds (Warm-up)
-Chain 2:                0.076 seconds (Sampling)
-Chain 2:                0.176 seconds (Total)
+Chain 2:  Elapsed Time: 0.084 seconds (Warm-up)
+Chain 2:                0.053 seconds (Sampling)
+Chain 2:                0.137 seconds (Total)
 Chain 2: 
 &gt; 
 &gt; (reduced = loo(extract_log_lik(data1.rstan.red)))
