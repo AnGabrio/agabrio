@@ -1,0 +1,130 @@
+---
+title: "Baseline adjustment in trial based CEA"
+author: Andrea Gabrio
+date: '2021-10-10'
+slug: update-october2021
+categories: ["discussion"]
+tags: ["economic evaluations", "baseline adjustment"]
+subtitle: ''
+summary: ''
+authors: ["Andrea Gabrio"]
+lastmod: '2021-10-10T11:54:30+01:00'
+featured: yes
+draft: no
+image:
+  caption: 'how to adjust'
+  focal_point: 'Center'
+  # Options: Smart, Center, TopLeft, Top, TopRight, Left, Right, BottomLeft, Bottom, BottomRight
+  preview_only: no
+projects: ["Missing Data"]
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<p>Recently I have come across something I found a little odd when performing a statistical analysis of trial-based CEA data and I would like to share here my experience in the hope that anybody may be able to read it (and correct me if I am wrong). It is something related to the implementation of baseline adjustment for utility score data via regression approach.</p>
+<p>To give an idea of the context of the analysis I quickly simulate here an example of a dataset that could be object for this type of analysis. To make things simple, I limit to simulate individual-level utility score data which are measured at baseline (<span class="math inline">\(u_0\)</span>), 6 (<span class="math inline">\(u_1\)</span>) and 12 (<span class="math inline">\(u_12\)</span>) months follow up in two competing intervention groups, say a control (t=1) and an intervention (t=2). Again, to make things super easy I am going to simulate these assuming a multivariate normal distribution with constant variance and no time correlation. Although this is not realistic it only serves the purpose to illustrate the issue I am facing. So let’s simulate the data.</p>
+<pre class="r"><code>library(MASS)
+
+#define mean vector and cov matrix for utilities in trt 1
+mu0_1&lt;-0.5
+mu1_1&lt;-0.6
+mu2_1&lt;-0.7
+mu_1&lt;-c(mu0_1,mu1_1,mu2_1)
+Sigma_1&lt;-diag(x=0.2,3,3)
+set.seed(123)
+u_1&lt;-mvrnorm(n=10000,mu=mu_1,Sigma = Sigma_1)
+
+#same thing for trt 2
+mu0_2&lt;-0.6
+mu1_2&lt;-0.7
+mu2_2&lt;-0.8
+mu_2&lt;-c(mu0_2,mu1_2,mu2_2)
+Sigma_2&lt;-diag(x=0.2,3,3)
+set.seed(123)
+u_2&lt;-mvrnorm(n=10000,mu=mu_2,Sigma = Sigma_2)</code></pre>
+<p>Next, I proceed to compute individual-level QALYs (<span class="math inline">\(e_i\)</span>) in each group by aggregating the utilities over the duration of the analysis, i.e. 1 year, using the AUC formula:</p>
+<p><span class="math display">\[e_i = \sum_{j=1}^{J}\frac{u_{ij-1} + u_{j}}{2} \times \delta, \]</span></p>
+<p>where the subscript <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> denote the individual and time indices, while <span class="math inline">\(\delta\)</span> is the portion of time covered between each successive pair of measurements. Since these measures are assumed to be collected at 6 months intervals, then in our case <span class="math inline">\(\delta=0.5\)</span>.</p>
+<pre class="r"><code>#derive qalys
+delta&lt;-0.5
+qalys_1&lt;- (u_1[,1]+u_1[,2])*delta/2 + (u_1[,2]+u_1[,3])*delta/2 
+qalys_2&lt;- (u_2[,1]+u_2[,2])*delta/2 + (u_2[,2]+u_2[,3])*delta/2
+
+#compute mean qalys in each group
+mue_1&lt;-(mu0_1+mu1_1)*delta/2 + (mu1_1+mu2_1)*delta/2
+mue_2&lt;-(mu0_2+mu1_2)*delta/2 + (mu1_2+mu2_2)*delta/2
+
+mue_1</code></pre>
+<pre><code># [1] 0.6</code></pre>
+<pre class="r"><code>mue_2</code></pre>
+<pre><code># [1] 0.7</code></pre>
+<pre class="r"><code>#rename variables for later use and add stuff
+n1&lt;-n2&lt;-10000
+q_1&lt;-c(u_1[,1],u_2[,1])
+q_2&lt;-c(u_1[,2],u_2[,2])
+q_3&lt;-c(u_1[,3],u_2[,3])
+qalys&lt;-c(qalys_1,qalys_2)
+trt&lt;-c(rep(0,n1),rep(1,n2))
+dataset.q&lt;-cbind.data.frame(q_1,q_2,q_3,qalys,trt)
+dataset.q$id&lt;-c(1:c(n1+n2))
+dataset.q$trt_f&lt;-factor(dataset.q$trt)</code></pre>
+<p>At this point I have all the data I need to perform a regression analysis and try to estimate the mean QALYs in each group, adjusting for baseline values. The simplest way to do this is to fit a linear regression model at the level of the QALY variable and then include treatment to obtain estimiates of unadjusted mean QALYs. If I also add <span class="math inline">\(u_{i0}\)</span> as a covariate into the model, then I obtain adjusted mean estimates.</p>
+<pre class="r"><code>#derive unadjuasted and adjusted mean qalys
+#unadjusted
+lm_qalys_un&lt;-lm(qalys~trt_f, data=dataset.q)
+coef(lm_qalys_un)[1] #trt 1</code></pre>
+<pre><code># (Intercept) 
+#   0.5969048</code></pre>
+<pre class="r"><code>coef(lm_qalys_un)[1]+coef(lm_qalys_un)[2] #trt 2</code></pre>
+<pre><code># (Intercept) 
+#   0.6969048</code></pre>
+<pre class="r"><code>lm_qalys&lt;-lm(qalys~trt_f+q_1, data=dataset.q)
+coef(lm_qalys)[1]+coef(lm_qalys)[3]*mean(dataset.q$q_1[dataset.q$trt==0]) #trt 1</code></pre>
+<pre><code># (Intercept) 
+#   0.5969048</code></pre>
+<pre class="r"><code>coef(lm_qalys)[1]+coef(lm_qalys)[2]+coef(lm_qalys)[3]*mean(dataset.q$q_1[dataset.q$trt==1]) #trt 2</code></pre>
+<pre><code># (Intercept) 
+#   0.6969048</code></pre>
+<p>So far so good right? well now the problem pops up. It is generally known that, when some missing utility data occur, then it is more efficient (in the sense of using more information) to fit the model at the longitudinal level, i.e. at the level of the utility scores rather than at the QALYs level. In this was information from partially-observed cases will be used in the model when deriving the estimates for the mean utilities at each time, which can then be combined via the AUC formula to obtain the final QALY mean estimates. Here for simplicity we fit this longitudinal model even without any missingness. Although there is not much literature about this type of approach, let’s say that we want to fit a linear mixed-effects model to our data and then combine the model parameter estimates to derive the final estimates of interest.</p>
+<pre class="r"><code>#convert data to long format
+library(reshape)
+dataset.q$q_base&lt;-dataset.q$q_1
+dataset.q.long&lt;-reshape(dataset.q, varying = c(&quot;q_1&quot;,&quot;q_2&quot;,&quot;q_3&quot;), direction = &quot;long&quot;, 
+                        idvar = &quot;id&quot;, sep = &quot;_&quot;)
+library(emmeans)
+library(nlme)
+library(lme4)</code></pre>
+<pre><code># Loading required package: Matrix</code></pre>
+<pre><code># 
+# Attaching package: &#39;Matrix&#39;</code></pre>
+<pre><code># The following object is masked from &#39;package:reshape&#39;:
+# 
+#     expand</code></pre>
+<pre><code># 
+# Attaching package: &#39;lme4&#39;</code></pre>
+<pre><code># The following object is masked from &#39;package:nlme&#39;:
+# 
+#     lmList</code></pre>
+<pre class="r"><code>#unadjusted
+dataset.q.long$time_f&lt;-factor(dataset.q.long$time)
+lmm_qalys&lt;-lme(q~time_f+trt_f+time_f*trt_f, random = ~ 1| id, data = dataset.q.long,
+               method = &quot;ML&quot;)
+fixed.effects(lmm_qalys)[1]</code></pre>
+<pre><code># (Intercept) 
+#    0.496825</code></pre>
+<pre class="r"><code>fixed.effects(lmm_qalys)[1]+fixed.effects(lmm_qalys)[4]</code></pre>
+<pre><code># (Intercept) 
+#    0.596825</code></pre>
+<pre class="r"><code>fixed.effects(lmm_qalys)[1]+fixed.effects(lmm_qalys)[2]</code></pre>
+<pre><code># (Intercept) 
+#   0.5959275</code></pre>
+<pre class="r"><code>fixed.effects(lmm_qalys)[1]+fixed.effects(lmm_qalys)[2]+fixed.effects(lmm_qalys)[4]+fixed.effects(lmm_qalys)[5]</code></pre>
+<pre><code># (Intercept) 
+#   0.6959275</code></pre>
+<pre class="r"><code>fixed.effects(lmm_qalys)[1]+fixed.effects(lmm_qalys)[3]</code></pre>
+<pre><code># (Intercept) 
+#   0.6989393</code></pre>
+<pre class="r"><code>fixed.effects(lmm_qalys)[1]+fixed.effects(lmm_qalys)[3]+fixed.effects(lmm_qalys)[4]+fixed.effects(lmm_qalys)[6]</code></pre>
+<pre><code># (Intercept) 
+#   0.7989393</code></pre>

@@ -1,0 +1,176 @@
+---
+title: "Baseline adjustment in trial based CEA"
+author: Andrea Gabrio
+date: '2021-10-10'
+slug: update-october2021
+categories: ["discussion"]
+tags: ["economic evaluations", "baseline adjustment"]
+subtitle: ''
+summary: ''
+authors: ["Andrea Gabrio"]
+lastmod: '2021-10-10T11:54:30+01:00'
+featured: yes
+draft: no
+image:
+  caption: 'how to adjust'
+  focal_point: 'Center'
+  # Options: Smart, Center, TopLeft, Top, TopRight, Left, Right, BottomLeft, Bottom, BottomRight
+  preview_only: no
+projects: ["Missing Data"]
+---
+
+```{r echo = FALSE}
+knitr::opts_chunk$set(comment = "#", fig.retina = 2)
+# comment out to regenerate plots, output, etc.
+#knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+Recently I have come across something I found a little odd when performing a statistical analysis of trial-based CEA data and I would like to share here my experience in the hope that anybody may be able to read it (and correct me if I am wrong). It is something related to the implementation of baseline adjustment for utility score data via regression approach. 
+
+To give an idea of the context of the analysis I quickly simulate here an example of a dataset that could be object for this type of analysis. To make things simple, I limit to simulate individual-level utility score data which are measured at baseline ($u_0$), 6 ($u_1$) and 12 ($u_12$) months follow up in two competing intervention groups, say a control (t=1) and an intervention (t=2). Again, to make things super easy I am going to simulate these assuming a multivariate normal distribution with constant variance and no time correlation. Although this is not realistic it only serves the purpose to illustrate the issue I am facing. So let's simulate the data. 
+
+```{r step1, eval=TRUE, echo=TRUE}
+library(MASS)
+
+#define mean vector and cov matrix for utilities in trt 1
+mu0_1<-0.5
+mu1_1<-0.6
+mu2_1<-0.7
+mu_1<-c(mu0_1,mu1_1,mu2_1)
+Sigma_1<-diag(x=0.2,3,3)
+set.seed(123)
+u_1<-mvrnorm(n=10000,mu=mu_1,Sigma = Sigma_1)
+
+#same thing for trt 2
+mu0_2<-0.6
+mu1_2<-0.7
+mu2_2<-0.8
+mu_2<-c(mu0_2,mu1_2,mu2_2)
+Sigma_2<-diag(x=0.2,3,3)
+set.seed(123)
+u_2<-mvrnorm(n=10000,mu=mu_2,Sigma = Sigma_2)
+```
+
+Next, I proceed to compute individual-level QALYs ($e_i$) in each group by aggregating the utilities over the duration of the analysis, i.e. 1 year, using the AUC formula:
+
+\[e_i = \sum_{j=1}^{J}\frac{u_{ij-1} + u_{j}}{2} \times \delta, \]
+
+where the subscript $i$ and $j$ denote the individual and time indices, while $\delta$ is the portion of time covered between each successive pair of measurements. Since these measures are assumed to be collected at 6 months intervals, then in our case $\delta=0.5$.
+
+```{r step2, eval=TRUE, echo=TRUE}
+#derive qalys
+delta<-0.5
+qalys_1<- (u_1[,1]+u_1[,2])*delta/2 + (u_1[,2]+u_1[,3])*delta/2 
+qalys_2<- (u_2[,1]+u_2[,2])*delta/2 + (u_2[,2]+u_2[,3])*delta/2
+
+#compute mean qalys in each group
+mue_1<-(mu0_1+mu1_1)*delta/2 + (mu1_1+mu2_1)*delta/2
+mue_2<-(mu0_2+mu1_2)*delta/2 + (mu1_2+mu2_2)*delta/2
+
+mue_1
+mue_2
+
+#rename variables for later use and add stuff
+n1<-n2<-10000
+q_1<-c(u_1[,1],u_2[,1])
+q_2<-c(u_1[,2],u_2[,2])
+q_3<-c(u_1[,3],u_2[,3])
+qalys<-c(qalys_1,qalys_2)
+trt<-c(rep(0,n1),rep(1,n2))
+dataset.q<-cbind.data.frame(q_1,q_2,q_3,qalys,trt)
+dataset.q$id<-c(1:c(n1+n2))
+dataset.q$trt_f<-factor(dataset.q$trt)
+```
+
+At this point I have all the data I need to perform a regression analysis and try to estimate the mean QALYs in each group, adjusting for baseline values. The simplest way to do this is to fit a linear regression model at the level of the QALY variable and then include treatment to obtain estimiates of unadjusted mean QALYs. If I also add $u_{i0}$ as a covariate into the model, then I obtain adjusted mean estimates. The model is:
+
+\[e_i = \beta_0 + \beta_1trt + \beta_2u_{i0} + \varepsilon_i\]
+
+```{r step3, eval=TRUE, echo=TRUE}
+#derive unadjuasted and adjusted mean qalys
+#unadjusted
+lm_qalys_un<-lm(qalys~trt_f, data=dataset.q)
+coef(lm_qalys_un)[1] #trt 1
+coef(lm_qalys_un)[1]+coef(lm_qalys_un)[2] #trt 2
+
+lm_qalys<-lm(qalys~trt_f+q_1, data=dataset.q)
+coef(lm_qalys)[1]+coef(lm_qalys)[3]*mean(dataset.q$q_1[dataset.q$trt==0]) #trt 1
+coef(lm_qalys)[1]+coef(lm_qalys)[2]+coef(lm_qalys)[3]*mean(dataset.q$q_1[dataset.q$trt==1]) #trt 2
+```
+
+So far so good right? well now the problem pops up. It is generally known that, when some missing utility data occur, then it is more efficient (in the sense of using more information) to fit the model at the longitudinal level, i.e. at the level of the utility scores rather than at the QALYs level. In this was information from partially-observed cases will be used in the model when deriving the estimates for the mean utilities at each time, which can then be combined via the AUC formula to obtain the final QALY mean estimates. Here for simplicity we fit this longitudinal model even without any missingness. Although there is not much literature about this type of approach, let's say that we want to fit a linear mixed-effects model to our data and then combine the model parameter estimates to derive the final estimates of interest. The model can be specified by including treatment, time and their first order interaction to derive unadjusted mean estimates.
+
+\[u_{ij} = \beta_0 + \beta_1trt + \beta2(j=1) + \beta_3(j=2) + \beta_4trt(j=1) + \beta_5trt(j=2) + \omega_i \varepsilon_{ij},\]
+
+where $j$ denotes the dummy-coded time variable (reference is $j=0$), while $\omega_i$ is the random effects term.
+
+```{r step4, eval=TRUE, echo=TRUE, message=FALSE, warning=FALSE}
+#convert data to long format
+library(reshape)
+dataset.q$q_base<-dataset.q$q_1
+dataset.q.long<-reshape(dataset.q, varying = c("q_1","q_2","q_3"), direction = "long", 
+                        idvar = "id", sep = "_")
+library(emmeans)
+library(nlme)
+library(lme4)
+
+#fit the model and retrieve unadjusted estimates
+dataset.q.long$time_f<-factor(dataset.q.long$time)
+lmm_qalys<-lme(q~time_f+trt_f+time_f*trt_f, random = ~ 1| id, data = dataset.q.long,
+               method = "ML")
+
+#mean at j=0
+fixed.effects(lmm_qalys)[1] #trt 1
+fixed.effects(lmm_qalys)[1]+fixed.effects(lmm_qalys)[4] #trt 2
+
+#mean at j=1
+fixed.effects(lmm_qalys)[1]+fixed.effects(lmm_qalys)[2] #trt 1
+fixed.effects(lmm_qalys)[1]+fixed.effects(lmm_qalys)[2]+fixed.effects(lmm_qalys)[4]+fixed.effects(lmm_qalys)[5] #trt 2
+
+#mean at j=2
+fixed.effects(lmm_qalys)[1]+fixed.effects(lmm_qalys)[3] #trt 1
+fixed.effects(lmm_qalys)[1]+fixed.effects(lmm_qalys)[3]+fixed.effects(lmm_qalys)[4]+fixed.effects(lmm_qalys)[6] #trt 2
+```
+
+Again, everything ok since all mean estimates coincide with the ones we generated, therefore ensuring that also the mean QALY estimates will be correct. However, what happens when I run the adjusted analysis including baseline utilities as a covariate?
+
+\[u_{ij} = \beta_0 + \beta_1trt + \beta2(j=1) + \beta_3(j=2) + \beta4u_{i0} + \beta_5trt(j=1) + \beta_6trt(j=2) + \omega_i \varepsilon_{ij},\]
+
+```{r step45, eval=TRUE, echo=TRUE, message=FALSE, warning=FALSE}
+#fit the model and retrieve adjusted estimates
+lmm_qalys_adj1<-lme(q~time_f+trt_f+q_base+time_f*trt_f, random = ~ 1| id, data = dataset.q.long,method = "ML")
+
+#mean at j=0
+fixed.effects(lmm_qalys_adj1)[1]+fixed.effects(lmm_qalys_adj1)[5]*mean(dataset.q$q_1[dataset.q$trt==0]) #trt 1
+fixed.effects(lmm_qalys_adj1)[1]+fixed.effects(lmm_qalys_adj1)[4]+fixed.effects(lmm_qalys_adj1)[5]*mean(dataset.q$q_1[dataset.q$trt==1]) #trt 2
+
+#mean at j=1
+fixed.effects(lmm_qalys_adj1)[1]+fixed.effects(lmm_qalys_adj1)[2]+fixed.effects(lmm_qalys_adj1)[5]*mean(dataset.q$q_1[dataset.q$trt==0]) #trt 1
+fixed.effects(lmm_qalys_adj1)[1]+fixed.effects(lmm_qalys_adj1)[2]+fixed.effects(lmm_qalys_adj1)[4]+fixed.effects(lmm_qalys_adj1)[5]*mean(dataset.q$q_1[dataset.q$trt==0])+fixed.effects(lmm_qalys_adj1)[6] #trt 2
+
+#mean at j=2
+fixed.effects(lmm_qalys_adj1)[1]+fixed.effects(lmm_qalys_adj1)[3]+fixed.effects(lmm_qalys_adj1)[5]*mean(dataset.q$q_1[dataset.q$trt==0])#trt 1
+fixed.effects(lmm_qalys_adj1)[1]+fixed.effects(lmm_qalys_adj1)[3]+fixed.effects(lmm_qalys_adj1)[4]+fixed.effects(lmm_qalys_adj1)[5]*mean(dataset.q$q_1[dataset.q$trt==0])+fixed.effects(lmm_qalys_adj1)[7] #trt 2
+```
+
+It turns out that when fitting this model it is important that an interaction between time and baseline utilities is included in the model in order to obtain correct adjusted estimates for mean utilities at follow-up. 
+
+```{r step5, eval=TRUE, echo=TRUE, message=FALSE, warning=FALSE}
+#fit the model and retrieve adjusted estimates
+lmm_qalys_adj<-lme(q~time_f+trt_f+q_base+time_f*trt_f+time_f*q_base, random = ~ 1| id, data = dataset.q.long,method = "ML")
+
+#mean at j=0
+fixed.effects(lmm_qalys_adj)[1]+fixed.effects(lmm_qalys_adj)[5]*mean(dataset.q$q_1[dataset.q$trt==0]) #trt 1
+fixed.effects(lmm_qalys_adj)[1]+fixed.effects(lmm_qalys_adj)[4]+fixed.effects(lmm_qalys_adj)[5]*mean(dataset.q$q_1[dataset.q$trt==1]) #trt 2
+
+#mean at j=1
+fixed.effects(lmm_qalys_adj)[1]+fixed.effects(lmm_qalys_adj)[2]+fixed.effects(lmm_qalys_adj)[5]*mean(dataset.q$q_1[dataset.q$trt==0])+fixed.effects(lmm_qalys_adj)[8]*mean(dataset.q$q_1[dataset.q$trt==0]) #trt 1
+fixed.effects(lmm_qalys_adj)[1]+fixed.effects(lmm_qalys_adj)[2]+fixed.effects(lmm_qalys_adj)[4]+fixed.effects(lmm_qalys_adj)[5]*mean(dataset.q$q_1[dataset.q$trt==0])+fixed.effects(lmm_qalys_adj)[6]+fixed.effects(lmm_qalys_adj)[8]*mean(dataset.q$q_1[dataset.q$trt==0]) #trt 2
+
+#mean at j=2
+fixed.effects(lmm_qalys_adj)[1]+fixed.effects(lmm_qalys_adj)[3]+fixed.effects(lmm_qalys_adj)[5]*mean(dataset.q$q_1[dataset.q$trt==0])+fixed.effects(lmm_qalys_adj)[9]*mean(dataset.q$q_1[dataset.q$trt==0]) #trt 1
+fixed.effects(lmm_qalys_adj)[1]+fixed.effects(lmm_qalys_adj)[3]+fixed.effects(lmm_qalys_adj)[4]+fixed.effects(lmm_qalys_adj)[5]*mean(dataset.q$q_1[dataset.q$trt==0])+fixed.effects(lmm_qalys_adj)[7]+fixed.effects(lmm_qalys_adj)[9]*mean(dataset.q$q_1[dataset.q$trt==0]) #trt 2
+```
+
+I am not totally convinced of why this is the case but perhaps it has something to do with the fact that baseline utilities are used as outcome and covariate in the model at the same time? not sure.....
+
