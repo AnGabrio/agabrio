@@ -12,7 +12,7 @@ lastmod: '2021-10-10T11:54:30+01:00'
 featured: yes
 draft: no
 image:
-  caption: 'how to adjust'
+  caption: 'area under the curve method for QALYs'
   focal_point: 'Center'
   # Options: Smart, Center, TopLeft, Top, TopRight, Left, Right, BottomLeft, Bottom, BottomRight
   preview_only: no
@@ -23,108 +23,86 @@ projects: ["Missing Data"]
 
 
 <p>Recently I have come across something I found a little odd when performing a statistical analysis of trial-based CEA data and I would like to share here my experience in the hope that anybody may be able to read it (and correct me if I am wrong). It is something related to the implementation of baseline adjustment for utility score data via regression approach.</p>
-<p>To give an idea of the context of the analysis I quickly simulate here an example of a dataset that could be object for this type of analysis. To make things simple, I limit to simulate individual-level utility score data which are measured at baseline (<span class="math inline">\(u_0\)</span>), 6 (<span class="math inline">\(u_1\)</span>) and 12 (<span class="math inline">\(u_12\)</span>) months follow up in two competing intervention groups, say a control (t=1) and an intervention (t=2). Again, to make things super easy I am going to simulate these assuming a multivariate normal distribution with constant variance and no time correlation. Although this is not realistic it only serves the purpose to illustrate the issue I am facing. So let’s simulate the data.</p>
-<pre class="r"><code>library(MASS)
+<p>To give an idea of the context of the analysis I quickly use some simulated data as an example of a dataset that could be object for this type of analysis. To make things simple, I simulated individual-level utility score data which are measured at baseline (<span class="math inline">\(u_0\)</span>), 6 (<span class="math inline">\(u_1\)</span>) and 12 (<span class="math inline">\(u_12\)</span>) months follow up for two competing intervention groups, say a control (t=0) and an intervention (t=1). Again, to make things super easy I simulated these assuming a multivariate normal distribution with constant variance and no time correlation. Although this is not realistic it only serves the purpose to illustrate the issue I am facing. So let’s simulate the data.</p>
+<pre class="r"><code>#load and pre-process the simulated dataset
+library(readstata13)
 
-#define mean vector and cov matrix for utilities in trt 1
-mu0_1&lt;-0.5
-mu1_1&lt;-0.6
-mu2_1&lt;-0.7
-mu_1&lt;-c(mu0_1,mu1_1,mu2_1)
-Sigma_1&lt;-diag(x=0.2,3,3)
-set.seed(123)
-u_1&lt;-mvrnorm(n=10000,mu=mu_1,Sigma = Sigma_1)
+#wide format
+data_wide&lt;-read.dta13(&quot;ex_data.dta&quot;)
+data_wide$trt &lt;- as.numeric(data_wide$arm)
+data_wide$subjects&lt;-rep(1:length(data_wide$arm))
+data_wide &lt;- data_wide[data_wide$arm %in% c(&quot;Placebo&quot;,&quot;Mirtazapine&quot;),]
+data_wide$trt &lt;- ifelse(data_wide$trt == 1, 0, 1)
+data_wide$id &lt;- rep(1:nrow(data_wide))
+data_wide$eq5d_1 &lt;- data_wide$eq5d0
+data_wide$eq5d_2 &lt;- data_wide$eq5d13
+data_wide$eq5d_3 &lt;- data_wide$eq5d39
 
-#same thing for trt 2
-mu0_2&lt;-0.6
-mu1_2&lt;-0.7
-mu2_2&lt;-0.8
-mu_2&lt;-c(mu0_2,mu1_2,mu2_2)
-Sigma_2&lt;-diag(x=0.2,3,3)
-set.seed(123)
-u_2&lt;-mvrnorm(n=10000,mu=mu_2,Sigma = Sigma_2)</code></pre>
-<p>Next, I proceed to compute individual-level QALYs (<span class="math inline">\(e_i\)</span>) in each group by aggregating the utilities over the duration of the analysis, i.e. 1 year, using the AUC formula:</p>
-<p><span class="math display">\[e_i = \sum_{j=1}^{J}\frac{u_{ij-1} + u_{j}}{2} \times \delta, \]</span></p>
-<p>where the subscript <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> denote the individual and time indices, while <span class="math inline">\(\delta\)</span> is the portion of time covered between each successive pair of measurements. Since these measures are assumed to be collected at 6 months intervals, then in our case <span class="math inline">\(\delta=0.5\)</span>.</p>
-<pre class="r"><code>#derive qalys
-delta&lt;-0.5
-qalys_1&lt;- (u_1[,1]+u_1[,2])*delta/2 + (u_1[,2]+u_1[,3])*delta/2 
-qalys_2&lt;- (u_2[,1]+u_2[,2])*delta/2 + (u_2[,2]+u_2[,3])*delta/2
-
-#compute mean qalys in each group
-mue_1&lt;-(mu0_1+mu1_1)*delta/2 + (mu1_1+mu2_1)*delta/2
-mue_2&lt;-(mu0_2+mu1_2)*delta/2 + (mu1_2+mu2_2)*delta/2
-
-mue_1</code></pre>
-<pre><code># [1] 0.6</code></pre>
-<pre class="r"><code>mue_2</code></pre>
-<pre><code># [1] 0.7</code></pre>
-<pre class="r"><code>#rename variables for later use and add stuff
-n1&lt;-n2&lt;-10000
-q_1&lt;-c(u_1[,1],u_2[,1])
-q_2&lt;-c(u_1[,2],u_2[,2])
-q_3&lt;-c(u_1[,3],u_2[,3])
-qalys&lt;-c(qalys_1,qalys_2)
-trt&lt;-c(rep(0,n1),rep(1,n2))
-dataset.q&lt;-cbind.data.frame(q_1,q_2,q_3,qalys,trt)
-dataset.q$id&lt;-c(1:c(n1+n2))
-dataset.q$trt_f&lt;-factor(dataset.q$trt)</code></pre>
-<p>At this point I have all the data I need to perform a regression analysis and try to estimate the mean QALYs in each group, adjusting for baseline values. The simplest way to do this is to fit a linear regression model at the level of the QALY variable and then include treatment to obtain estimiates of unadjusted mean QALYs. If I also add <span class="math inline">\(u_{i0}\)</span> as a covariate into the model, then I obtain adjusted mean estimates.</p>
-<pre class="r"><code>#derive unadjuasted and adjusted mean qalys
-#unadjusted
-lm_qalys_un&lt;-lm(qalys~trt_f, data=dataset.q)
-coef(lm_qalys_un)[1] #trt 1</code></pre>
-<pre><code># (Intercept) 
-#   0.5969048</code></pre>
-<pre class="r"><code>coef(lm_qalys_un)[1]+coef(lm_qalys_un)[2] #trt 2</code></pre>
-<pre><code># (Intercept) 
-#   0.6969048</code></pre>
-<pre class="r"><code>lm_qalys&lt;-lm(qalys~trt_f+q_1, data=dataset.q)
-coef(lm_qalys)[1]+coef(lm_qalys)[3]*mean(dataset.q$q_1[dataset.q$trt==0]) #trt 1</code></pre>
-<pre><code># (Intercept) 
-#   0.5969048</code></pre>
-<pre class="r"><code>coef(lm_qalys)[1]+coef(lm_qalys)[2]+coef(lm_qalys)[3]*mean(dataset.q$q_1[dataset.q$trt==1]) #trt 2</code></pre>
-<pre><code># (Intercept) 
-#   0.6969048</code></pre>
-<p>So far so good right? well now the problem pops up. It is generally known that, when some missing utility data occur, then it is more efficient (in the sense of using more information) to fit the model at the longitudinal level, i.e. at the level of the utility scores rather than at the QALYs level. In this was information from partially-observed cases will be used in the model when deriving the estimates for the mean utilities at each time, which can then be combined via the AUC formula to obtain the final QALY mean estimates. Here for simplicity we fit this longitudinal model even without any missingness. Although there is not much literature about this type of approach, let’s say that we want to fit a linear mixed-effects model to our data and then combine the model parameter estimates to derive the final estimates of interest.</p>
-<pre class="r"><code>#convert data to long format
+#long format
 library(reshape)
-dataset.q$q_base&lt;-dataset.q$q_1
-dataset.q.long&lt;-reshape(dataset.q, varying = c(&quot;q_1&quot;,&quot;q_2&quot;,&quot;q_3&quot;), direction = &quot;long&quot;, 
-                        idvar = &quot;id&quot;, sep = &quot;_&quot;)
+data_long.eq5d&lt;-reshape(data_wide, varying = c(&quot;eq5d_1&quot;,&quot;eq5d_2&quot;,&quot;eq5d_3&quot;),
+                        direction = &quot;long&quot;,idvar = &quot;id&quot;,sep = &quot;_&quot;)
+data_long.eq5d$time_u &lt;- data_long.eq5d$time
+data_long.eq5d&lt;-data_long.eq5d[,c(&quot;id&quot;,&quot;trt&quot;,&quot;time_u&quot;,&quot;eq5d&quot;,&quot;eq5d0&quot;,&quot;qaly&quot;)]</code></pre>
+<p>Next, I previously computed individual-level QALYs (<span class="math inline">\(e_i\)</span>) in each group by aggregating the utilities over the duration of the analysis, i.e. 1 year, using the AUC formula (see post thumbnail):</p>
+<p><span class="math display">\[e_i = \sum_{j=1}^{J}\frac{u_{ij-1} + u_{j}}{2} \times \delta, \]</span></p>
+<p>where the subscript <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> denote the individual and time indices, while <span class="math inline">\(\delta\)</span> is the portion of time covered between each successive pair of measurements. Since these measures are assumed to be collected at 6 months intervals, then in our case <span class="math inline">\(\delta=0.5\)</span>. At this point I have all the data I need to perform a regression analysis and try to estimate the mean QALYs in each group, adjusting for baseline values. The simplest way to do this is to fit a linear regression model at the level of the QALY variable and then include treatment to obtain estimates of unadjusted mean QALYs. If I also add <span class="math inline">\(u_{i0}\)</span> as a covariate into the model, then I obtain adjusted mean estimates. The model is:</p>
+<p><span class="math display">\[e_i = \boldsymbol \beta \boldsymbol X_i + \varepsilon_i,\]</span></p>
+<p>where <span class="math inline">\(\boldsymbol \beta\)</span> is the vector of regression parameters, while <span class="math inline">\(\boldsymbol X_i\)</span> is the matrix of predictors in the model (including an intercept, trt and <span class="math inline">\(u_{i0}\)</span>).</p>
+<pre class="r"><code>#perform the analysis
 library(emmeans)
 library(nlme)
-library(lme4)</code></pre>
-<pre><code># Loading required package: Matrix</code></pre>
-<pre><code># 
-# Attaching package: &#39;Matrix&#39;</code></pre>
-<pre><code># The following object is masked from &#39;package:reshape&#39;:
+library(lme4)
+
+#linear regression for QALYs (focus on complete cases for simplicity)
+data_wide$trtf &lt;- factor(data_wide$trt)
+data_wide.cc&lt;-data_wide[!is.na(data_wide$qaly),]
+
+ols.cc.wide.qalys&lt;-lm(qaly ~ trtf + eq5d0,data = data_wide.cc)
+ci_ols.cc_qalys.means&lt;-emmeans(ols.cc.wide.qalys,~trtf+ eq5d0)
+print(ci_ols.cc_qalys.means)</code></pre>
+<pre><code>#  trtf eq5d0 emmean     SE  df lower.CL upper.CL
+#  0    0.718  0.553 0.0152 103    0.523    0.583
+#  1    0.718  0.582 0.0164 103    0.549    0.614
 # 
-#     expand</code></pre>
-<pre><code># 
-# Attaching package: &#39;lme4&#39;</code></pre>
-<pre><code># The following object is masked from &#39;package:nlme&#39;:
+# Confidence level used: 0.95</code></pre>
+<p>So far so good right? well now the problem pops up. It is generally known that, when some missing utility data occur, then it is more efficient (in the sense of using more information) to fit the model at the longitudinal level, i.e. at the level of the utility scores rather than at the QALYs level. In this was information from partially-observed cases will be used in the model when deriving the estimates for the mean utilities at each time, which can then be combined via the AUC formula to obtain the final QALY mean estimates. Here for simplicity we fit this longitudinal model even without any missingness. Although there is not much literature about this type of approach, let’s say that we want to fit a linear mixed-effects model to our data and then combine the model parameter estimates to derive the final estimates of interest. The model can be specified by including treatment, time, their first order interaction, and baseline values to derive the adjusted mean estimates.</p>
+<p><span class="math display">\[u_{ij} = \boldsymbol \beta \boldsymbol X_i + \omega_i + \varepsilon_{ij},\]</span></p>
+<p>where <span class="math inline">\(\boldsymbol \beta\)</span> is the vector of fixed effects, while <span class="math inline">\(\boldsymbol X_i\)</span> is the matrix of predictors in the model. This includes: an intercept; trt; <span class="math inline">\(u_{i0}\)</span> and time, which is often expressed as a dummy-coded variable (with reference time <span class="math inline">\(j=0\)</span>), and the interaction between trt and time. Finally, <span class="math inline">\(\omega_i\)</span> is the random effects term.</p>
+<pre class="r"><code>#perform the analysis 
+data_long_cc &lt;- data_long.eq5d[!is.na(data_long.eq5d$qaly),]
+data_long_cc$trtf &lt;- factor(data_long_cc$trt)
+data_long_cc$timef_u &lt;- factor(data_long_cc$time_u)
+
+#mixed model for utilities (focus on complete cases for simplicity)
+cgm3_u_ml.cc&lt;-lme(eq5d ~ timef_u * trtf + eq5d0, random = ~ 1 | id, data=data_long_cc, method = &quot;ML&quot;,na.action = na.omit)
+#derive mean utilities
+em3_u_ml.cc.eq5d&lt;-emmeans(cgm3_u_ml.cc,~timef_u * trtf)
+#derive mean QALYs as linear combination of mean utilities
+cgm3_u_ml.cc.qalys&lt;-contrast(em3_u_ml.cc.eq5d,list(mue1 = c(13/104,13/104 + 26/104,26/104,0,0,0), mue2=c(0,0,0,13/104,13/104 + 26/104,26/104)))
+ci.cgm3_u_ml.cc.qalys&lt;-confint(cgm3_u_ml.cc.qalys)
+print(ci.cgm3_u_ml.cc.qalys)</code></pre>
+<pre><code>#  contrast estimate     SE  df lower.CL upper.CL
+#  mue1        0.555 0.0126 103    0.530    0.580
+#  mue2        0.580 0.0136 103    0.553    0.607
 # 
-#     lmList</code></pre>
-<pre class="r"><code>#unadjusted
-dataset.q.long$time_f&lt;-factor(dataset.q.long$time)
-lmm_qalys&lt;-lme(q~time_f+trt_f+time_f*trt_f, random = ~ 1| id, data = dataset.q.long,
-               method = &quot;ML&quot;)
-fixed.effects(lmm_qalys)[1]</code></pre>
-<pre><code># (Intercept) 
-#    0.496825</code></pre>
-<pre class="r"><code>fixed.effects(lmm_qalys)[1]+fixed.effects(lmm_qalys)[4]</code></pre>
-<pre><code># (Intercept) 
-#    0.596825</code></pre>
-<pre class="r"><code>fixed.effects(lmm_qalys)[1]+fixed.effects(lmm_qalys)[2]</code></pre>
-<pre><code># (Intercept) 
-#   0.5959275</code></pre>
-<pre class="r"><code>fixed.effects(lmm_qalys)[1]+fixed.effects(lmm_qalys)[2]+fixed.effects(lmm_qalys)[4]+fixed.effects(lmm_qalys)[5]</code></pre>
-<pre><code># (Intercept) 
-#   0.6959275</code></pre>
-<pre class="r"><code>fixed.effects(lmm_qalys)[1]+fixed.effects(lmm_qalys)[3]</code></pre>
-<pre><code># (Intercept) 
-#   0.6989393</code></pre>
-<pre class="r"><code>fixed.effects(lmm_qalys)[1]+fixed.effects(lmm_qalys)[3]+fixed.effects(lmm_qalys)[4]+fixed.effects(lmm_qalys)[6]</code></pre>
-<pre><code># (Intercept) 
-#   0.7989393</code></pre>
+# Degrees-of-freedom method: containment 
+# Confidence level used: 0.95</code></pre>
+<p>Do you see the issue? the derived mean QALYs for both groups do not exactly match those obtained from the linear regression fitted to the QALYs despite the fact that the data used are the same, i.e. complete cases. This is a bit odd. However, what happens when I run the adjusted analysis including the interaction between time and baseline utilities alongside the main effects of <span class="math inline">\(u_{i0}\)</span> ?</p>
+<p><span class="math display">\[u_{ij} = \boldsymbol \beta \boldsymbol X_i + \omega_i + \varepsilon_{ij},\]</span></p>
+<p>where <span class="math inline">\(\boldsymbol \beta\)</span> is the vector of fixed effects, while <span class="math inline">\(\boldsymbol X_i\)</span> is the matrix of predictors in the model. This includes: an intercept; trt; <span class="math inline">\(u_{i0}\)</span> and time, which is often expressed as a dummy-coded variable (with reference time <span class="math inline">\(j=0\)</span>), the interaction between trt and time, and also the interaction between time and <span class="math inline">\(u_{i0}\)</span>. Finally, <span class="math inline">\(\omega_i\)</span> is the random effects term.</p>
+<pre class="r"><code>cgm3_u_ml.cc2&lt;-lme(eq5d ~ timef_u * trtf + timef_u*eq5d0, random = ~ 1 | id, data=data_long_cc, method = &quot;ML&quot;,na.action = na.omit)
+#derive mean utilities
+em3_u_ml.cc.eq5d2&lt;-emmeans(cgm3_u_ml.cc2,~timef_u * trtf + timef_u*eq5d0)
+#derive mean QALYs as linear combination of mean utilities
+cgm3_u_ml.cc.qalys2&lt;-contrast(em3_u_ml.cc.eq5d2,list(mue1 = c(13/104,13/104 + 26/104,26/104,0,0,0), mue2=c(0,0,0,13/104,13/104 + 26/104,26/104)))
+ci.cgm3_u_ml.cc.qalys2&lt;-confint(cgm3_u_ml.cc.qalys2)
+print(ci.cgm3_u_ml.cc.qalys2)</code></pre>
+<pre><code>#  contrast estimate     SE  df lower.CL upper.CL
+#  mue1        0.553 0.0125 103    0.528    0.578
+#  mue2        0.582 0.0135 103    0.555    0.608
+# 
+# Degrees-of-freedom method: containment 
+# Confidence level used: 0.95</code></pre>
+<p>Ta da! the estimates now perfectly coincide. It turns out that when fitting this longitudinal model for the utility, it is important that an interaction between time and baseline utilities is included in the model to match the adjusted estimates that would be obtained via standard linear regressions fitted at the QALY level.</p>
+<p>I am not totally convinced of why this is the case but perhaps it has something to do with the fact that baseline utilities are used as outcome and covariate at the same time in both types of models ? I need to study this in more detail.</p>
