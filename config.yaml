@@ -57,6 +57,11 @@ markup:
   tableOfContents:
     startLevel: 2
     endLevel: 3
+security:
+  funcs:
+    getenv:
+      - ^HUGO_
+      - ^WC_
 imaging:
   resampleFilter: lanczos
   quality: 75
