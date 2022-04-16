@@ -17,7 +17,7 @@ image:
   preview_only: false
 projects: 
 - health-economics
-publication: '*Value in Health*'
+publication: '*Value in Health, 24*(5), 699-706'
 publication_short: ""
 publication_types:
 - "2"

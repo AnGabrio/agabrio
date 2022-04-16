@@ -30,7 +30,6 @@ url_poster: "https://github.com/AnGabrio/Talks/blob/master/Literature%20Review/p
 #   Simply enter your slide deck's filename without extension.
 #   E.g. `slides = "example-slides"` references `content/slides/example-slides.md`.
 #   Otherwise, set `slides = ""`.
-slides: example
 ---
 
 # Introduction

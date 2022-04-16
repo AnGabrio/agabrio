@@ -11,7 +11,7 @@ image:
   preview_only: false
 projects: 
 - volleyball
-publication: 'Journal of Applied Statistics'
+publication: '*Journal of Applied Statistics, 48*(2), 301-3211'
 publication_short: ""
 publication_types:
 - "2"

@@ -29,7 +29,6 @@ url_pdf: "https://www.tandfonline.com/doi/full/10.1080/02664763.2020.1723506"
 #   Simply enter your slide deck's filename without extension.
 #   E.g. `slides = "example-slides"` references `content/slides/example-slides.md`.
 #   Otherwise, set `slides = ""`.
-slides: example
 ---
 
 # Modelling Framework

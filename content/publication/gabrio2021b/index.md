@@ -27,7 +27,7 @@ image:
   preview_only: false
 projects: 
 - health-economics
-publication: '*Clinical Interventions in Aging*'
+publication: '*Clinical Interventions in Aging, 16*, 2095-2109'
 publication_short: ""
 publication_types:
 - "2"

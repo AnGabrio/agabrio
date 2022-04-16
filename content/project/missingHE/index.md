@@ -30,7 +30,6 @@ url_poster: ""
 #   Simply enter your slide deck's filename without extension.
 #   E.g. `slides = "example-slides"` references `content/slides/example-slides.md`.
 #   Otherwise, set `slides = ""`.
-slides: example
 ---
 
 `missingHE` is a `R` package, available on [CRAN](https://cran.r-project.org/web/packages/missingHE/) which is aimed at providing some useful tools to analysts in order to handle missing outcome data under a full Bayesian framework in economic evaluations. 
