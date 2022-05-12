@@ -1,0 +1,232 @@
+---
+title: "R markdown for teaching"
+author: Andrea Gabrio
+date: '2022-05-05'
+slug: update-may2022
+categories: ["teaching", "R markdown", "academia"]
+tags: ["teaching", "R markdown"]
+subtitle: ''
+summary: ''
+authors: ["Andrea Gabrio"]
+lastmod: '2022-05-05T11:54:30+01:00'
+featured: yes
+draft: no
+image:
+  caption: 'R markdown'
+  focal_point: 'Center'
+  # Options: Smart, Center, TopLeft, Top, TopRight, Left, Right, BottomLeft, Bottom, BottomRight
+  preview_only: no
+projects: ["Missing Data"]
+---
+
+
+
+<p>Hi guys, today I wanted to post something different from usual research tediousness that is only liked by statisticians and try to focus on another component my academic career, education or teaching, which has recently become quite prominent (with pros and cons of course).</p>
+<p>Specifically, I have been recently interested in incorporating some reproducible documentation within my own teaching material since I am not course coordinators in statistics for bachelor students here at UM. In the past, I saw that people tended to use these very nice but really time-consuming word documents that needed update every year for making questions and assignment tasks. Do not get me wrong the different examples and ideas behind these assessments are really nice but I have to admit that, given the inevitable need to use the same type of dataset every year, the chance that students received some tips about these tasks was quite nonignorable.</p>
+<p>Thus, after receiving some inputs from one of my colleagues (thanks Sophie!), I have decided to try out full <strong>R markdown</strong> documentation to generate examples similar to the ones used in the past but that could be generated in a slightly different way every year taking advantage of the reproducibility of such documents with an incorporated R coding at the basis of the data generation procedure. I really think these approaches will represent the future for any type of teaching activity that involves some sort of data analysis and interpretation such as statistics: the possibility they offer to efficiently provide new examples without the need to look for new data or each time generate new datasets is so enticing for teachers and researchers who are involved in education. It makes our job so much easier in the long term which more than compensates the cost of learning how to implement these approaches.</p>
+<p>As an example, I will focus here on the topic of <strong>simple linear regression</strong> which I give to students of the second year. For example, let’s say that the objective of the tutorial is to learn some basic concepts of linear regression modelling, e.g. interpretation of coefficients and correlation measures. You can start with an introductory part to describe the type of dataset students will need to work on.</p>
+<p><strong>Background</strong></p>
+<p><em>The dataset XXX comprises 40 countries (Country) in the world with populations of more than 20 million as of 1990 and records the life expectancy at birth (Lex), the number of people per television set (Ptel), and the number of people per physician (Pphy). The average life expectancies between males and females are provided as the country’s overall life expectancy.</em></p>
+<p>This text will directly appear on the final document as you typed in the Rmd file. So for it works like a standard word file but it is now that the magic happens. We can create <strong>chunks</strong> of R code and embed them within the Rmd file and use different options to decide whether to show or not such code lines. For example, let’s say we want to generate the data of the above mentioned dataset. We can create a new chunk which incorporates the following R code that simulates the desired variables, their relationships, and combine them together into the new dataset.</p>
+<pre class="r"><code>set.seed(768)
+n &lt;- 40
+ln_pphy &lt;- rnorm(n, 7.2, 1.3)
+ln_ptel &lt;- rnorm(n, 2.38, 1.56)
+pphy &lt;- exp(ln_pphy)
+ptel &lt;- exp(ln_ptel)
+error &lt;- rnorm(n, 0, 6)
+lex &lt;- 70 - 0.023*ptel - 0.001*pphy + error
+country &lt;- c(&quot;Argentina&quot;, &quot;Bangladesh&quot;, &quot;Brazil&quot;, &quot;Canada&quot;, &quot;China&quot;, &quot;Colombia&quot;, &quot;Egypt&quot;, &quot;Ethiopia&quot;, &quot;France&quot;, &quot;Germany&quot;, &quot;India&quot;, &quot;Indonesia&quot;, &quot;Iran&quot;, &quot;Italy&quot;, &quot;Japan&quot;, &quot;Kenya&quot;, &quot;Korea North&quot;, &quot;Korea South&quot;, &quot;Mexico&quot;, &quot;Morocco&quot;, &quot;Myanmar Bur&quot;, &quot;Pakistan&quot;, &quot;Peru&quot;, &quot;Philippines&quot;, &quot;Poland&quot;, &quot;Romania&quot;, &quot;Russia&quot;, &quot;South Afric&quot;, &quot;Spain&quot;, &quot;Sudan&quot;, &quot;Taiwan&quot;, &quot;Tanzania&quot;, &quot;Thailand&quot;, &quot;Turkey&quot;, &quot;Ukraine&quot;, &quot;UK&quot;, &quot;USA&quot;, &quot;Venezuela&quot;, &quot;Vietnam&quot;, &quot;Zaire&quot;)
+data_le_tv_sim &lt;- data.frame(country, lex, ptel, pphy)</code></pre>
+<p>Now all the generated variables, namely <em>lex</em>, <em>ptel</em>, <em>pphy</em> and <em>country</em>, are included into the data frame called <em>data_le_tv_sim</em> which has been created in the R workspace. If the focus on the tutorial is not on coding, it is desirable to hide the R code from the final document so that it is not displayed (but is still present and saved within R). R markdown allows you to do this in a really straightforward way by means of <strong>chunk options</strong> which can be customised for each created chunk. For example,</p>
+<ol style="list-style-type: decimal">
+<li><p>The option <em>echo=FALSE</em> allows to hide the R lines (while setting it to <em>TRUE</em> shows the lines)</p></li>
+<li><p>The option <em>eval=TRUE</em> tells the software to actually run the lines inside the chunk (setting it to <em>FALSE</em> prevents from doing so)</p></li>
+</ol>
+<p>These are only two of many different options that can be customised in regard to the display of tables, figures, code lines colore, size, font, etc…. For a full illustration of the high degree of customisation provided by R markdown I refer to the <a href="https://rmarkdown.rstudio.com/">dedicated webpage</a>.</p>
+<p>After the introduction is done and perhaps the context and objective of the analysis presented, we can start asking questions. Let’s start with somehting simple, such as</p>
+<p><strong>Exercise</strong></p>
+<p><strong>a</strong>. <em>Examine and comment on the distributions of each variable separately (descriptives, histograms etc).</em></p>
+<p>Well we can answer our own question (i.e. we give ourselves the solutions) by creating a new chunk in which we generate the desired output in R. Since we generated the dataset in the chunk before, it is still available within the R environment and we do not need to re-create it!</p>
+<pre class="r"><code>library(ggplot2)
+hist_lex &lt;- r2spss::histogram(data_le_tv_sim, variable = &quot;lex&quot;) + xlab(&quot;life expectancy&quot;)
+hist_ptel &lt;- r2spss::histogram(data_le_tv_sim, variable = &quot;ptel&quot;) + xlab(&quot;people per television&quot;)
+hist_pphy &lt;- r2spss::histogram(data_le_tv_sim, variable = &quot;pphy&quot;) + xlab(&quot;people per physician&quot;)
+box_lex &lt;- r2spss::box_plot(data_le_tv_sim, variables = &quot;lex&quot;) + xlab(&quot;life expectancy&quot;)
+box_ptel &lt;- r2spss::box_plot(data_le_tv_sim, variables = &quot;ptel&quot;) + xlab(&quot;people per television&quot;)
+box_pphy &lt;- r2spss::box_plot(data_le_tv_sim, variables = &quot;pphy&quot;) + xlab(&quot;people per physician&quot;)
+gridExtra::grid.arrange(hist_lex, hist_ptel, hist_pphy,
+             box_lex, box_ptel, box_pphy, nrow = 2)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/hist_lex-1.png" width="768" /></p>
+<p>Here I used some <em>ggplot2</em> coding to generate some boxplots and histograms of the data but of course the choice is entirely yours to decide which graphs or summaries should be provided by the students. For generating tables, we can also take advantage of the package <strong>knitr</strong> and its function <strong>kable</strong> which allows to display standard R tables in a much prettier format.</p>
+<pre class="r"><code>library(knitr)
+library(dplyr)
+d.summary.extended &lt;- data_le_tv_sim %&gt;%
+    dplyr::select(lex, ptel, pphy) %&gt;%
+    psych::describe(quant=c(.25,.75)) %&gt;%
+    as_tibble(rownames=&quot;rowname&quot;)
+d.summary &lt;- d.summary.extended %&gt;%
+    dplyr::select(var=rowname, min, q25=Q0.25, median, q75=Q0.75, max, mean, sd)
+kable(d.summary, caption = &quot;Summary statistics&quot;, format = &quot;html&quot;, digits = 1)</code></pre>
+<table>
+<caption>
+(#tab:descr_r_lex)Summary statistics
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+var
+</th>
+<th style="text-align:right;">
+min
+</th>
+<th style="text-align:right;">
+q25
+</th>
+<th style="text-align:right;">
+median
+</th>
+<th style="text-align:right;">
+q75
+</th>
+<th style="text-align:right;">
+max
+</th>
+<th style="text-align:right;">
+mean
+</th>
+<th style="text-align:right;">
+sd
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+lex
+</td>
+<td style="text-align:right;">
+28.7
+</td>
+<td style="text-align:right;">
+62.3
+</td>
+<td style="text-align:right;">
+68.0
+</td>
+<td style="text-align:right;">
+70.0
+</td>
+<td style="text-align:right;">
+81.3
+</td>
+<td style="text-align:right;">
+65.9
+</td>
+<td style="text-align:right;">
+8.2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ptel
+</td>
+<td style="text-align:right;">
+0.2
+</td>
+<td style="text-align:right;">
+3.6
+</td>
+<td style="text-align:right;">
+19.5
+</td>
+<td style="text-align:right;">
+41.2
+</td>
+<td style="text-align:right;">
+1349.5
+</td>
+<td style="text-align:right;">
+62.9
+</td>
+<td style="text-align:right;">
+211.4
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+pphy
+</td>
+<td style="text-align:right;">
+106.1
+</td>
+<td style="text-align:right;">
+710.2
+</td>
+<td style="text-align:right;">
+1375.0
+</td>
+<td style="text-align:right;">
+2767.5
+</td>
+<td style="text-align:right;">
+11031.2
+</td>
+<td style="text-align:right;">
+2206.0
+</td>
+<td style="text-align:right;">
+2321.1
+</td>
+</tr>
+</tbody>
+</table>
+<p>Also <strong>kable</strong> provides a lot of customisation options that allow to have many different types of formats and styles for your table, which can also be further extended using the package <a href="https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html"><strong>kableExtra</strong></a>. But let’s continue with our test.</p>
+<p><strong>b</strong>. <em>Would you expect an association between a country’s life expectancy and its density of people per television set? If yes, would that be positive or negative (use the scatter plot function)?</em></p>
+<p>To answer this question we could produce some scatter plots between the variables in R. An alternative would be to calculate the Pearson’s correlation coefficient as an indicative number. We could obtain such number by creating a corresponding chunk code but given that we only need a number it is actually more convenient to generate it within our line of text. How can we do that? simple, in the Rmd file you can include some inline R code by using the quotes signs. This means that instead of having:</p>
+<pre class="r"><code>#corr coeff
+round(cor(lex, ptel, method = c(&quot;pearson&quot;)), digits = 2)
+#corr coeff test
+as.numeric(cor.test(lex, ptel, method = c(&quot;pearson&quot;))[&quot;p.value&quot;])</code></pre>
+<p>you can directly write a sentence an inlcude the output of the two above functions within the text. The results would be something like: the estimated Pearson’s correlation coefficient value between life expectancy and people per television is -0.76. The p-value given by the correlation test is 1.7073596^{-8}. What if now we want to include some theoretical stuff for the students?</p>
+<p><strong>d</strong>. <em>Interpret your results. Would the sending of television shiploads to countries with short life expectancies improve the latter? Is there an explanation for your findings?</em></p>
+<p>We can do it in an easy way since R markdown also supports latex math environments in combination with inline R code. For example, we can answer with something like the following. Since we are looking at the correlation coefficient <span class="math inline">\(\rho\)</span> (Pearson’s), then the null and alternative hypotheses about the test for the linear association between life expectancy and people per television can be formulated as:</p>
+<p>H0. <span class="math inline">\(\rho = 0\)</span> (no linear association between variables)</p>
+<p>H1. <span class="math inline">\(\rho \neq 0\)</span> (linear association between variables)</p>
+<p>We can use the correspnding p-value of this test equal to 1.7073596^{-8} to make a decision to whether reject or not the null hypothesis based on the evidence from the observed data. Finally, let’s do what we are here for, linear regression!</p>
+<p><strong>e</strong>. <em>Perform a procedure that predicts life expectancy from people per television</em></p>
+<p>In the following code I run the model and save some key output that I will need to display later on. A convenient feature of R markdown writing is that, after running a code chunk, everything that was successfully run is saved in the current R workspace and can be called back later on in the document very easily.</p>
+<pre class="r"><code>fitm1_r &lt;- lm(lex ~ ptel, data = data_le_tv_sim)
+fitm1rsq &lt;- round(summary(fitm1_r)$r.square, digits = 2)
+fitm1RSS &lt;- round(anova(fitm1_r)[&quot;ptel&quot;, &quot;Sum Sq&quot;], digits = 2)
+fitm1ESS &lt;- round(anova(fitm1_r)[&quot;Residuals&quot;, &quot;Sum Sq&quot;], digits = 2)
+fitm1TSS &lt;- fitm1RSS + fitm1ESS
+fitm1pval &lt;- round(summary(fitm1_r)$coefficients[2, 4], digits = 4)  </code></pre>
+<p>We can then decide whether we want to show the summary results directly from the R output</p>
+<pre class="r"><code>summary(fitm1_r)</code></pre>
+<pre><code># 
+# Call:
+# lm(formula = lex ~ ptel, data = data_le_tv_sim)
+# 
+# Residuals:
+#    Min     1Q Median     3Q    Max 
+# -9.792 -3.218  1.341  3.231 13.850 
+# 
+# Coefficients:
+#              Estimate Std. Error t value Pr(&gt;|t|)    
+# (Intercept) 67.784092   0.895708  75.677  &lt; 2e-16 ***
+# ptel        -0.029235   0.004108  -7.117 1.71e-08 ***
+# ---
+# Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+# 
+# Residual standard error: 5.424 on 38 degrees of freedom
+# Multiple R-squared:  0.5714,  Adjusted R-squared:  0.5601 
+# F-statistic: 50.66 on 1 and 38 DF,  p-value: 1.707e-08</code></pre>
+<p>or perhaps hide the above output (setting the chunk option <em>echo=FALSE</em>) and provide a textual explanation while also embedding the R code generating the numeric results of interest (e.g. estimates or CI bounds) within the written text. If doing so, then we could have something like the following.</p>
+<p>The model intercept and coefficient are 67.78 and -0.03, respectively. This means that 67.78 change in life expectancy is associated with a one unit increase in people per television. The p-value of this estimate is 0 with corresponding <span class="math inline">\(95\%\)</span> confidence interval being (-0.04, -0.02).</p>
+<p>The analysis of variance reveals that the residual sum of squares (ESS) is 1118.01, the regression sum of squares (RSS) is 1490.38, for a total sum of squares (TSS) of 2608.39. The corresponding <span class="math inline">\(R^2=\frac{\text{RSS}}{TSS}\)</span> value of the model is given by 0.57, which suggests how about 57 % of the variation in life expectancy is explained by people per television.</p>
+<p><strong>Conclusions</strong></p>
+<p><strong>R markdown</strong> provides a really nice opportunity to replace old and static documents with files that can be easily updated by simply changing a couple of lines of code. The results of this exercise can be replicated by using the same seed number but can also be varied by simply changing such number or by setting it to be randomly generated every time. Although not very popular yet, I truly believe R markdown will innovate the way teaching is done, at least within the scientific and quantitative data analysis field. For statistics, this is perfect since it allows an automated procedure to obtain new datasets that are consistent with the coding source created by the educator while also providing students with different numeric examples that makes it harder to cheat by simply “copying the answers from the previous years”.</p>
+<p>I have started using R markdown for my own research a few years ago but its extreme flexibility and advantage over standard education tools for writing up documents has lead me to make it my best option also within my educational activities. Of course, I understand that the barrier to entry can be quite steep, especially for people who are not familiar with coding. However, I believe that getting familiar with these methods has become more and more relevant in the last years and will represent an essential skill for every teacher involved in data analysis topics.</p>
+<p>Not convinced yet? are you not a fan of latex or html coding? no problem, R markdown allows also to produce these documents in word and even power point formats!</p>
+<p><strong>Hurray for R markdown!!!</strong></p>
