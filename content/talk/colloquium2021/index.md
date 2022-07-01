@@ -18,8 +18,8 @@ slides:
 summary: 
 tags: ["Economic Evaluations", "Missing Data"]
 title: "Handling missing values in individual-level cost-effectiveness analyses"
-url_code: ""
-url_pdf: ""
+url_code: "https://github.com/AnGabrio/Talks/tree/master/Longitudinal%20Model"
+url_pdf: "https://rss.onlinelibrary.wiley.com/doi/pdf/10.1111/rssa.12522"
 url_slides: ""
 url_video: ""
 ---

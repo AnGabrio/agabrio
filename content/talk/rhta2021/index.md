@@ -12,14 +12,14 @@ image:
 location: Trinity College Dublin (virtual meeting) - IRL
 math: true
 projects:
-- health-economics
+- missingHE
 publishDate: "2021-06-06T00:00:00Z"
 slides: 
 summary: 
 tags: ["Economic Evaluations", "Missing Data", "R", "Bayesian"]
 title: "missingHE a Package to Handle Missing Data in Health Economic Evaluations"
-url_code: ""
-url_pdf: ""
+url_code: "https://github.com/AnGabrio/missingHE"
+url_pdf: "https://cran.r-project.org/web/packages/missingHE/vignettes"
 url_slides: ""
 url_video: ""
 ---

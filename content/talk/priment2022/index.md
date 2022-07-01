@@ -18,14 +18,14 @@ links:
 location: University College London (UCL), London, UK
 math: true
 projects:
-- missing-data
+- health-economics
 publishDate: "2022-01-24T00:00:00Z"
 slides: 
 summary: 
 tags: ["Economic Evaluations", "Missing Data"]
 title: Health economic decision model for a school-based relationship and sexuality education intervention in the UK
 url_code: ""
-url_pdf: ""
+url_pdf: "https://www.thelancet.com/journals/lanpub/article/PIIS2468-2667(22)00117-7/fulltext?rss=yes"
 url_slides: ""
 url_video: ""
 ---

@@ -18,15 +18,15 @@ links:
 location: Kasteel Vaeshartelt, Maastricht, NL
 math: true
 projects:
-- missing-data
+- missing-data-review
 publishDate: "2022-03-24T00:00:00Z"
 slides: 
 summary: 
 tags: ["Economic Evaluations", "Missing Data", "review", "conference"]
 title: A review of heath economic evaluation practice in the Netherlands
 url_code: ""
-url_pdf: ""
-url_slides: ""
+url_pdf: "https://arxiv.org/abs/2203.15707"
+url_slides: "https://github.com/AnGabrio/Talks/blob/master/lolaHESG_2022/Presentation_lolaHESG_2022.pdf"
 url_video: ""
 ---
 

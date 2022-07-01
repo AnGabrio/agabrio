@@ -12,14 +12,14 @@ image:
 location: Health Service and Population Research Department, King’s College London, London - UK
 math: true
 projects:
-- health-economics
+- missing-data
 publishDate: "2022-01-11T00:00:00Z"
 slides: 
 summary: 
 tags: ["Economic Evaluations", "Missing Data"]
 title: "Bayesian methods for missingness in HTA"
-url_code: ""
-url_pdf: ""
+url_code: "https://github.com/AnGabrio/Talks/tree/master/Longitudinal%20Model"
+url_pdf: "https://rss.onlinelibrary.wiley.com/doi/pdf/10.1111/rssa.12522"
 url_slides: ""
 url_video: ""
 ---
