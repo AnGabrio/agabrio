@@ -26,7 +26,7 @@ tags:
 - Missing Data
 - Economic Evaluations
 title: "Linear mixed models to handle missing at random data in trial‐based economic evaluations"
-url_code: ""
+url_code: "https://github.com/AnGabrio/Code/tree/master/lmm_in_CEA"
 url_dataset: ""
 url_pdf: https://onlinelibrary.wiley.com/doi/full/10.1002/hec.4510
 url_project: ""
