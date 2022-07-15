@@ -1,10 +1,10 @@
 ---
-title: "EuEA 2022 Conference"
+title: "EuHEA 2022 Conference"
 author: Andrea Gabrio
 date: '2022-07-07'
 slug: update-july2022
-categories: ["discussion", "academia", "HTA"]
-tags: ["publication", "economic evaluations"]
+categories: ["discussion", "academia", "conference"]
+tags: ["presentation", "economic evaluations"]
 subtitle: ''
 summary: ''
 authors: ["Andrea Gabrio"]
