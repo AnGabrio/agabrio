@@ -8,7 +8,7 @@ tags: ["economic evaluations", "R markdown", "longitudinal data"]
 subtitle: ''
 summary: ''
 authors: ["Andrea Gabrio"]
-lastmod: '2022-11-11T11:54:30+01:00'
+lastmod: '2022-10-10T11:54:30+01:00'
 featured: yes
 draft: no
 image:
