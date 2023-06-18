@@ -1,0 +1,37 @@
+---
+title: "Back from lola"
+author: Andrea Gabrio
+date: '2023-06-11'
+slug: update-june2023
+categories: ["discussion", "academia","conference"]
+tags: ["missing data","lolaHESG"]
+subtitle: ''
+summary: ''
+authors: ["Andrea Gabrio"]
+lastmod: '2023-06-11T11:54:30+01:00'
+featured: yes
+draft: no
+image:
+  caption: 'lolaHESG 2023'
+  focal_point: 'Center'
+  # Options: Smart, Center, TopLeft, Top, TopRight, Left, Right, BottomLeft, Bottom, BottomRight
+  preview_only: no
+projects: ["Missing Data"]
+---
+
+Hello folks, I am back with my usual update and today I have some good news to report! Last month I went to the annual [lolaHESG 2023](https://www.eur.nl/en/events/lolahesg-2023-05-25) conference meeting here in the Netherlands which, this year, was organised by the [Erasmus Centre for Health Economics Rotterdam](https://www.eur.nl/en/research/research-initiatives/escher/research#:~:text=The%20Erasmus%20Centre%20for%20Health,performance%20of%20health%20care%20systems.) in the beautiful sea town of Egmond aan Zee in North Holland. This was my second time attending this Dutch conference (last year was in Maasticht) and I have to say I was quite impressed with how the conference was grown compared to that time. Not only more attendees in general but also more talks and panel sessions with researchers coming from all over the world to discuss about many different topics related to health economics. 
+
+Personally, I went there to talk about an on-going project I have been working on since last year, still about missing data methods for economic evaluations, whose idea was kind of related to one of my [past papers](https://onlinelibrary.wiley.com/doi/full/10.1002/hec.4510) which I tried to expand a bit. My aim was to receive feedback from the audience in terms of the future directions for this work and I must admit I was not expecting such interest in my work, especially since my talk was the last day of the conference after the party of the night before (which was quite nice). The entirety of my panel session was dedicated to methodological works in the field of health economics with some interesting works from a few other reserachers. Unfortunately, I had to leave just right after my talk as I needed to be back in Maastricht before night (it is a long way to travel by train!), but I received very valuable suggestions and I had nice discussions with a few people attending my session. Among these I must mention the great team from [VU Amsterdam](https://vu.nl/nl) with whom I also started some collaborations the past months on some interesting work. Special thanks go to the members of the Health Economics and Health Technology Assessment group at VU, lead by the great [Judith Bosmans](https://research.vu.nl/en/persons/judith-e-bosmans), the lovely [Hanneke van Dongen], and the talented PhD student [Jonas Esser](https://research.vu.nl/en/persons/jonas-esser) with whom I had some nice chats during the whole conference.
+
+In terms of organisation, the conference was really well structured within the huge building of the Hotel Zuiderduin with plenty of activities in between-sessions and after them in the two days of the conference. I arrived a day earlier due to the long way from Maastricht and I had the pleasure to enjoy the beautiful landscape of the sea and dunes of Egmond since my arrival. The wehather was really nice and sunny the whole time which also gave us opportunity at the end of the first day of the conference to gather ourselves at the beach right close to the conference building with someone even playing some games!   
+
+{{< tweet 1661764950623240192 >}}
+
+And after dinner we also had some fun time with some pub quiz games with people randomly assigned to different groups to try to guess some answers to some general and health-economics specific quizzes. It was a lot of fun and my group ended up even in second place (mostly not thanks to me I must say). After that, there was the usual party of lolaHESG which I heard lasted until late night. I could join this one as the day after in the morning I had my talk but I am also getting a bit older now, so not sure if I would have been awake the day after otherwise.
+
+In terms of work, I attended a few talks which I found interesting and that I did not now much about before joining them. However, I must say that, for my tastes, there were too few methodological talks related to statistical methods in HE. This might be my bias but I really hoped I could see my statistical works although I recognise the spectrum of topics covered by the general definition of "Health Economics" makes it really hard to have multiple talks about a specific research field. Neverhteless, I saw a great interest in my work and, for what I could attend, also for the other more methodological works presented in my session. Looking forward to next year's conference which is expected to  be even bigger and interesting. 
+
+As a final note, a bit unrelated to this, I wanted to draw your attention to a nice live speech that professor Gelman gave recently at UCL. I am not sure the live is still on YT but it was a very interesting talk I was the pleasure to follow. The topic was about Gelman's take on teaching statistics to applied Master and Bachelor students (e.g. political science, medicine, etc...). The argumnet touches me very closely as this is something I am confronted with basically every day at UM, with sometimes non-trivial difficulties in terms of engaging and motivating the students to study something they find it difficult to appreciate. Gelman provided some examples about how he tried to make his sessions about basic statistics more interesting to the students by means of group work, reletable examples through some physical games in class, demonstration via software simulation, etc. Although I defintely agree with him with the imprtance of trying something novel that could motivate the students to study statistics, I am also concerned about the time spent on preparing these exercises. Given the limited amount of time teachers are paid to prepare material, sometimes it is really hard to find a right balance between effort spent on preparing teaching material, grading, feedback and reserach time, which already suffers quite a lot. I will try to make treasure of his talk and think about how to apply some of the ideas I think could be interesting in my own teaching as much as possible starting from next academic year. The new course I will coordinate is the perfect occasion to try something new. We will see how it goes but at least now I am motivated to try my best! Let us see for how long it lasts!    
+
+
+![](https://i.gifer.com/CA6S.gif)
