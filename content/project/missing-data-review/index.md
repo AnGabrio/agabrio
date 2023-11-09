@@ -2,6 +2,7 @@
 title: "Missingness Methods in trial-based CEA"
 summary: With [Alexina Mason](https://www.lshtm.ac.uk/aboutus/people/mason.alexina) and [Gianluca Baio](https://www.ucl.ac.uk/statistics/people/gianlucabaio)
 tags:
+- Health Economics
 - Missing Data
 date: "2017-06-01T00:00:00Z"
 
