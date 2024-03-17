@@ -33,8 +33,6 @@ Finally, a couple of personal notes.
 	
 * I would also like to highlight a recent tweet from [UCL PRIMENT CTU](https://www.ucl.ac.uk/priment/) 
 
-{{< tweet 1230124818244173824 >}}
-
 which advertises a new position as health economist in our HEART group for performing health economics using data from clinical trials. I would encourage anyone interested in some good applied health economic work to apply for this position. Deadline 15 March 2020.  
 
 ![](https://media.giphy.com/media/kHZu4LDtvpY63RT1He/giphy.gif)

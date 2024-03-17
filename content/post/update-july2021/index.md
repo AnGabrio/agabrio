@@ -23,7 +23,7 @@ I have recently been invited to give a talk about my R package [missingHE](https
 and I would like to spend a couple of words to describe what was my experience at this event which for me was a first-time. 
 Here you can see one of my tweets about the event (I will try to use Twitter more often in the future, promise!)
 
-{{< tweet 1410904148573409280 >}}
+{{% tweet user="AndreaGabrio" id="1410904148573409280" %}}
 
 In general, I found it to be a very interesting conference with a crazy amount of people coming from all over the world who were interested, in one way or another, in the use and application 
 of R for health economic assessment. To be honest, the fact that the workshop was fully online, for obvious reasons, may have encouraged lots of people to join compared to what would have been a standard in person 

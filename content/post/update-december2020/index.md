@@ -43,7 +43,7 @@ to thank him again very much for noticing this mistake which I fixed in the new 
 
 Finally, a quick note about somehting I found curious. A medical statistician who I deeply respect and admire, Dr.[Tim Morris](https://iris.ucl.ac.uk/iris/browse/profile?upi=TNMOR17) from [MRCCTU](https://www.ctu.mrc.ac.uk/), posted the following provocative tweet 
 
-{{< tweet 1330420633646325763 >}}
+{{% tweet user="tmorris_mrc" id="1330420633646325763" %}}
 
 where he asks about the interpretation of a Bayesian credible interval while also saying that quick and simple answers will not be considered reliable. Well, I have much to say on this but I feel like twitter is not 
 the best location to try and argument a proper discussion. I hope I will be able to find some time to post on my website a more constructive answer. The topic is not very quick to grasp, especially if someone is used to think

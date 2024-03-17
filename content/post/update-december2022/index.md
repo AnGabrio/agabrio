@@ -54,8 +54,6 @@ used and a more transparent framework for their assessment.
 Finally, and a bit unrelated to what I said so far, I would like to put here a recent tweet from [Silvia Evers](https://www.maastrichtuniversity.nl/nl/s.evers) with regard to the next edition of [lolaHESG](https://www.eur.nl/en/events/lolahesg-2023-05-25), which 
 this time will be held at **EsCHER** (Erasmus Centre for Health Economics Rotterdam) between 25-26th May.  
 
-{{% tweet 1587791266825129984 %}}
-
 Last edition I had a blast in presenting my work at this conference and meeting a bunch of amazing people involved in HTA in the Netherlands. I sincerely hope that I can replicate 
 my experience in the upcoming year!
 

@@ -32,7 +32,7 @@ to spread and give us some time to come up with a possible vaccine in the next m
 
 There have already been attempts to estimate the fatality ratio of the virus using statistical methods. Here I post the tweet from Andrew Gelman
 
-{{< tweet 1236845267275702273 >}}
+{{% tweet user="StatModeling" id="1236845267275702273" %}}
 
 which refers to epidemiologists who tried to use [STAN](https://www.medrxiv.org/content/10.1101/2020.03.04.20031104v1.full.pdf) for achieving this objective, although an additional reference
 to another work based on the use of [differential equation analysis](https://www.medrxiv.org/content/10.1101/2020.02.14.20023127v1) is also made. However, results 
