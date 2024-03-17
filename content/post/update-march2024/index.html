@@ -1,0 +1,432 @@
+---
+title: "Item-Response Theory"
+author: Andrea Gabrio
+date: '2024-03-13'
+slug: update-march2024
+categories: ["R markdown", "academia"]
+tags: ["IRT", "R markdown", "Bayesian"]
+subtitle: ''
+summary: ''
+authors: ["Andrea Gabrio"]
+lastmod: '2024-03-13T11:54:30+01:00'
+featured: yes
+draft: no
+image:
+  caption: 'Item Characteristic Curves'
+  focal_point: 'Center'
+  # Options: Smart, Center, TopLeft, Top, TopRight, Left, Right, BottomLeft, Bottom, BottomRight
+  preview_only: no
+projects: ["Missing Data"]
+---
+
+
+
+<p>Hello everyone, and welcome back to my blog. Today I would like to resume a topic that I promised myself I will study more but which I kind of left alone for quite some time now. I initially introduced the topic a few months ago in another post, using a primary reference the book of <a href="https://www.jean-paulfox.com/">Jean-Paul Fox</a> called <a href="https://link.springer.com/book/10.1007/978-1-4419-0742-4#:~:text=The%20Bayesian%20approach%20has%20two,additional%20information%20can%20be%20used."><strong>Bayesian Item Response Modelling</strong></a>. With this post I would like to take over from where I left and continue talking a bit about <em>Item Response Theory</em> (IRT).</p>
+<p>Last time I focussed on IRT models, I introduced the simplest type of model for binary IRT response data, called the <strong>Rasch Model</strong> or one-parameter logistic response model, in which the probability of a correct response is given by:</p>
+<p><span class="math display">\[ P(Y_{ik}=1 | \theta_i,b_k) = \frac{\text{exp}(\theta_i - b_k)}{1+\text{exp}(\theta_i-b_k)},   \]</span></p>
+<p>for individual <span class="math inline">\(i\)</span> with ability level <span class="math inline">\(\theta_i\)</span> and item <span class="math inline">\(k\)</span> with item-difficulty parameter <span class="math inline">\(b_k\)</span>. Now, let’s try to simulate some data according to the Rasch model.</p>
+<p>Let’s start by considering a simple questionnaire example formed by <span class="math inline">\(K=2\)</span> dichotomous items, and for each of these the <span class="math inline">\(i\)</span>-th respondent in the dataset may provide either a negative (e.g. wrong/failure) or positive (e.g. correct/success) response <span class="math inline">\(Y_{ik}=0\)</span> or <span class="math inline">\(Y_{ik}=1\)</span> according to some probability which in turn depends on some person-specific ability level <span class="math inline">\(\theta_i\)</span> and item-specific difficulty level <span class="math inline">\(b_k\)</span>. We proceed as follows:</p>
+<ol style="list-style-type: decimal">
+<li><p>Simulate item difficulties <span class="math inline">\(b_k\)</span> using a uniform distribution, i.e. <span class="math inline">\(b_k\sim \text{Uniform}(a_b,b_b)\)</span> for <span class="math inline">\(k=1,K=2\)</span>.</p></li>
+<li><p>Simulate the person abilities <span class="math inline">\(\theta_i\)</span> using a normal distribution, i.e. <span class="math inline">\(\theta_i \sim \text{Normal}(\mu_{\theta},\sigma_{\theta})\)</span> for <span class="math inline">\(i=1,\ldots,N=100\)</span>.</p></li>
+<li><p>Use the generated values of <span class="math inline">\(\theta_i\)</span> and <span class="math inline">\(b_k\)</span> to obtain <span class="math inline">\(P(Y_{ik}=1 | \theta_i,b_k)\)</span>, i.e. the probability of giving the correct response for the <span class="math inline">\(i\)</span>-th person on the <span class="math inline">\(k\)</span>-th item using the <strong>Item Characteristic Curve</strong> (ICC) equation of the Rasch model.</p></li>
+</ol>
+<pre class="r"><code>set.seed(7689)
+
+K &lt;- 2
+b &lt;- runif(K,-1,1) 
+N &lt;- 10
+theta &lt;- rnorm(N,0,2)
+temp &lt;- matrix( rep( theta, length( b ) ) , ncol = length( b ) )
+p_resp &lt;- matrix(NA, nrow = N, ncol = K)
+for(i in 1:N){
+ for(k in 1:K){
+  p_resp[i,k] &lt;- (exp(theta[i] - b[k])) / (1 + exp(theta[i] - b[k]))
+ }
+}
+obs_resp &lt;- matrix( sapply( c(p_resp), rbinom, n = 1, size = 1), ncol = length(b) )
+
+#put everything into a function
+sim_rasch &lt;- function(N,K,a_b=-1,b_b=1,mu_theta=0,sigma_theta=2){
+b &lt;- runif(K,a_b,b_b) 
+theta &lt;- rnorm(N,mu_theta,sigma_theta)
+temp &lt;- matrix( rep( theta, length( b ) ) , ncol = length( b ) )
+p_resp &lt;- matrix(NA, nrow = N, ncol = K)
+for(i in 1:N){
+ for(k in 1:K){
+  p_resp[i,k] &lt;- (exp(theta[i] - b[k])) / (1 + exp(theta[i] - b[k]))
+ }
+}
+ obs_resp &lt;- matrix( sapply( c(p_resp), rbinom, n = 1, size = 1), ncol = length(b) )
+ output &lt;- list(&quot;y&quot;=obs_resp, &quot;p&quot;=p_resp, &quot;theta&quot;=theta, &quot;b&quot;=b)
+ return(output)
+}
+
+obs_resp</code></pre>
+<pre><code>#       [,1] [,2]
+#  [1,]    0    0
+#  [2,]    0    0
+#  [3,]    0    0
+#  [4,]    1    1
+#  [5,]    1    0
+#  [6,]    1    1
+#  [7,]    0    1
+#  [8,]    0    0
+#  [9,]    0    0
+# [10,]    0    1</code></pre>
+<p>Now, let’s put everything we have done into a function so that we can customise the output as much as we like, for example considering a sample of <span class="math inline">\(N=25\)</span> people who answer a set of <span class="math inline">\(K=5\)</span> dichotomous items:</p>
+<pre class="r"><code>set.seed(7689)
+
+#put everything into a function
+sim_rasch &lt;- function(N,K,a_b=-1,b_b=1,mu_theta=0,sigma_theta=2){
+b &lt;- runif(K,a_b,b_b) 
+theta &lt;- rnorm(N,mu_theta,sigma_theta)
+temp &lt;- matrix( rep( theta, length( b ) ) , ncol = length( b ) )
+p_resp &lt;- matrix(NA, nrow = N, ncol = K)
+for(i in 1:N){
+ for(k in 1:K){
+  p_resp[i,k] &lt;- (exp(theta[i] - b[k])) / (1 + exp(theta[i] - b[k]))
+ }
+}
+ obs_resp &lt;- matrix( sapply( c(p_resp), rbinom, n = 1, size = 1), ncol = length(b) )
+ output &lt;- list(&quot;y&quot;=obs_resp, &quot;p&quot;=p_resp, &quot;theta&quot;=theta, &quot;b&quot;=b)
+ return(output)
+}
+
+data_sim &lt;- sim_rasch(N=50,K=5)
+
+#extract observed data
+data_sim$y</code></pre>
+<pre><code>#       [,1] [,2] [,3] [,4] [,5]
+#  [1,]    0    0    0    1    1
+#  [2,]    0    0    1    0    1
+#  [3,]    0    0    0    0    0
+#  [4,]    1    1    1    1    1
+#  [5,]    1    1    0    1    1
+#  [6,]    1    1    1    1    1
+#  [7,]    0    0    1    0    0
+#  [8,]    1    1    1    1    1
+#  [9,]    1    1    1    1    1
+# [10,]    1    0    1    0    1
+# [11,]    0    0    0    0    0
+# [12,]    1    0    0    0    0
+# [13,]    0    0    0    1    0
+# [14,]    1    1    1    1    1
+# [15,]    1    1    1    1    1
+# [16,]    0    1    0    0    1
+# [17,]    0    0    0    0    0
+# [18,]    0    1    0    0    1
+# [19,]    1    1    1    1    1
+# [20,]    0    0    0    0    1
+# [21,]    1    1    0    1    0
+# [22,]    0    0    0    0    0
+# [23,]    0    0    1    0    0
+# [24,]    0    0    0    1    0
+# [25,]    0    0    1    1    1
+# [26,]    0    0    0    0    0
+# [27,]    0    0    1    1    1
+# [28,]    0    0    1    0    0
+# [29,]    1    1    1    1    1
+# [30,]    0    1    0    0    0
+# [31,]    1    1    1    1    1
+# [32,]    0    0    1    0    1
+# [33,]    0    0    0    0    1
+# [34,]    0    0    0    1    1
+# [35,]    1    0    1    0    1
+# [36,]    1    0    1    1    1
+# [37,]    1    0    1    0    1
+# [38,]    1    1    1    1    1
+# [39,]    0    0    0    1    1
+# [40,]    1    1    1    1    1
+# [41,]    0    0    0    0    0
+# [42,]    0    0    0    0    1
+# [43,]    0    0    1    0    0
+# [44,]    1    1    0    0    1
+# [45,]    0    0    0    1    0
+# [46,]    1    1    1    1    1
+# [47,]    1    0    1    0    1
+# [48,]    1    1    1    1    1
+# [49,]    0    1    0    1    0
+# [50,]    0    0    1    1    0</code></pre>
+<p>Ok cool, now that we simulated the data, let’s try to use one of the many <code>R</code> packages to fit a Rasch model to the data and see whether the model fits them as it should be. For this purpose, I will use the <code>eRm</code> package, specifically dedicated to the fitting and checking of Rasch models to the data. I refer to <a href="http://publicifsv.sund.ku.dk/~kach/scaleval_IRT/Rasch-models-in-R.html">this webpage</a> for a more in depth explanation of the package and its function, from which most of the stuff I will show is taken from.</p>
+<pre class="r"><code>#laod package
+library(eRm)</code></pre>
+<pre><code># Warning: package &#39;eRm&#39; was built under R version 4.3.3</code></pre>
+<pre class="r"><code>#fit model to simulated item responses
+items &lt;- data_sim$y
+K &lt;- ncol(items)
+N &lt;- nrow(items)
+colnames(items) &lt;- c(sprintf(&quot;item%01d&quot;, seq(1,K)))
+#fit the model
+raschfit &lt;- RM(items)</code></pre>
+<p>After fitting the model and saving the output in the object <code>raschfit</code>, we can inspect the coefficient estimates of the model both in terms of person and item-specific parameters:</p>
+<pre class="r"><code>#print estimates
+
+i.param &lt;- coef(raschfit)
+#item parameters/difficulties
+i.param</code></pre>
+<pre><code># beta item1 beta item2 beta item3 beta item4 beta item5 
+# -0.4359822 -0.7641137  0.2419883  0.1154749  0.8426327</code></pre>
+<pre class="r"><code>p.param &lt;- person.parameter(raschfit)
+#person parameters/abilities
+p.param</code></pre>
+<pre><code># 
+# Person Parameters:
+# 
+#  Raw Score   Estimate Std.Error
+#          0 -2.5773973        NA
+#          1 -1.4777665 1.1455225
+#          2 -0.4349030 0.9460434
+#          3  0.4371723 0.9454381
+#          4  1.4776048 1.1439623
+#          5  2.5743185        NA</code></pre>
+<pre class="r"><code>#plot item and persons together
+plotPImap(raschfit)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/fit_rasch2-1.png" width="672" /></p>
+<p>We can also obtain the ICC function for each item. For example, let’s say we want to show the ICC for item <span class="math inline">\(2\)</span> and <span class="math inline">\(4\)</span>:</p>
+<pre class="r"><code>#item 2
+plotICC(raschfit, item.subset = c(2), ask=F)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/fit_rasch3-1.png" width="672" /></p>
+<pre class="r"><code>#item 4
+plotICC(raschfit, item.subset = c(4), ask=F)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/fit_rasch3-2.png" width="672" /></p>
+<p>Next, it may be useful to test some of the key assumptions of the Rasch model to see whether the model seems to be reasonable for the data at hand. Among the most popular test procedures that are available in in the package, we can consider the following:</p>
+<ol style="list-style-type: decimal">
+<li>Andersen’s conditional Likelihood Ratio Test.</li>
+</ol>
+<p>It is a surprising result that we can take our items and then get the correct estimates of all the item parameters <span class="math inline">\(\boldsymbol b=(b_1,\ldots,b_K)\)</span> in the any of these sub samples. This only work because we use conditional inference. It works if we divide the sample into two or more groups using any splitting criterion. We can do it in <code>eRm</code>:</p>
+<pre class="r"><code>gr &lt;- cut(
+  rowSums(items),
+  breaks=c(0,2,5),
+  include.lowest = TRUE)
+LRtest(raschfit, splitcr=gr)</code></pre>
+<pre><code># 
+# Andersen LR-test: 
+# LR-value: 8.896 
+# Chi-square df: 4 
+# p-value:  0.064</code></pre>
+<pre class="r"><code>#graphically
+lr &lt;- LRtest(raschfit, splitcr = gr, se = T)
+plotGOF(lr)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/test_rasch-1.png" width="672" /></p>
+<pre class="r"><code>plotGOF(lr, conf=list(), xlim=c(-4,4), ylim=c(-5,5))</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/test_rasch-2.png" width="672" /></p>
+<ol start="2" style="list-style-type: decimal">
+<li>Wald test</li>
+</ol>
+<p>The test allows for testing each item <span class="math inline">\(k\)</span>. The idea is the same: divide sample into two subgroups. Item parameters should be invariant</p>
+<pre class="r"><code>Waldtest(raschfit, splitcr = gr)</code></pre>
+<pre><code># 
+# Wald test on item level (z-values):
+# 
+#            z-statistic p-value
+# beta item1      -2.081   0.037
+# beta item2       1.385   0.166
+# beta item3       0.494   0.622
+# beta item4       1.729   0.084
+# beta item5      -0.391   0.696</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>Infit and Outfit test statistics</li>
+</ol>
+<p>Expected response matrix obtained from <span class="math inline">\(\pi_{ij}=\frac{\text{exp}(\hat{b}_k+\hat{\theta}_i)}{1+\text{exp}(\hat{b}_k+\hat{\theta}_i)}\)</span>, while residuals are defined as <span class="math inline">\(e_{ik}=y_{ik}-\pi_{ik}\)</span>. From these quantities, we can retrieve the two statistics: <span class="math inline">\(\text{INFIT}_k=w_k=\frac{1}{N}\frac{\sum_i e^2_{ik}}{\sum_i \nu_{ik}}\)</span> and <span class="math inline">\(\text{OUTFIT}_k=u_k=\frac{1}{N}\sum_i \frac{e^2_{ik}}{\nu_{ik}}\)</span>, where <span class="math inline">\(\nu_{ik}=\pi_{ik}\times (1-\pi_{ik})\)</span>. The INFIT and OUTFIT item fit test statistics have expected value <span class="math inline">\(1\)</span>. Informal evaluation: <span class="math inline">\(0.7\)</span> to <span class="math inline">\(1.3\)</span> is fine (<span class="math inline">\(0.5\)</span> to <span class="math inline">\(1.5\)</span> is OK). The interpretation of the OUTFIT statistic is sensitive against outlying observations e.g. when a very able person gets an easy item wrong. To calculate in <code>eRm</code> we have to use the <code>p.param</code> object:</p>
+<pre class="r"><code>itemfit(p.param)</code></pre>
+<pre><code># 
+# Itemfit Statistics: 
+#        Chisq df p-value Outfit MSQ Infit MSQ Outfit t Infit t Discrim
+# item1 20.869 30   0.892      0.673     0.689   -1.297  -1.771   2.353
+# item2 31.971 30   0.369      1.031     1.053    0.204   0.308  -0.228
+# item3 37.423 30   0.165      1.207     1.137    1.118   0.897  -0.921
+# item4 34.630 30   0.256      1.117     1.136    0.650   0.875  -1.691
+# item5 23.833 30   0.780      0.769     0.806   -1.198  -1.364   0.715</code></pre>
+<pre class="r"><code>#use iarm package to shows p-values less than 0.05
+library(iarm)</code></pre>
+<pre><code># Warning: package &#39;iarm&#39; was built under R version 4.3.3</code></pre>
+<pre class="r"><code>out_infit(raschfit)</code></pre>
+<pre><code># 
+#       Outfit se    pvalue padj sig  Infit se    pvalue padj  sig 
+# item1 0.705  0.299 0.324  1         0.716 0.205 0.165  0.772     
+# item2 1.137  0.38  0.718  1         1.124 0.244 0.611  1         
+# item3 1.253  0.195 0.195  1         1.165 0.162 0.309  0.772     
+# item4 1.155  0.206 0.452  1         1.174 0.167 0.298  0.772     
+# item5 0.779  0.223 0.321  1         0.819 0.15  0.227  0.772     
+# 
+# P value adjustment: BH</code></pre>
+<p>Item-total correlations and item-score correlations are routinely reported in classical test theory. We can use the simple structure in the Rasch model to compute the expected values of the item-score correlation:</p>
+<pre class="r"><code>item_restscore(raschfit)</code></pre>
+<pre><code>#       observed expected se     pvalue padj.BH sig
+# item1 0.8768   0.7233   0.0851 0.0714 0.3568     
+# item2 0.7057   0.7603   0.1295 0.6732 0.6732     
+# item3 0.5632   0.6538   0.1507 0.5476 0.6732     
+# item4 0.5770   0.6661   0.1446 0.5378 0.6732     
+# item5 0.7328   0.5992   0.1174 0.2550 0.6374</code></pre>
+<ol start="4" style="list-style-type: decimal">
+<li>ICC plots compared to empirical ICC</li>
+</ol>
+<p>Data with no missing values - score distribution:</p>
+<pre class="r"><code>s &lt;- rowSums(items)
+table(s)</code></pre>
+<pre><code># s
+#  0  1  2  3  4  5 
+#  6 12  9  8  2 13</code></pre>
+<pre class="r"><code>hist(s)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/test_rasch5-1.png" width="672" /></p>
+<pre class="r"><code>fit&lt;-RM(items)
+ppar &lt;- person.parameter(raschfit)
+
+#one to one correspondence between y and theta
+plot(ppar)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/test_rasch5-2.png" width="672" /></p>
+<pre class="r"><code>#we look at the item 2
+plotICC(fit,
+item.subset = c(2),
+empICC = list(&quot;raw&quot;),
+empCI = list(gamma=0.95, col=&quot;blue&quot;)
+)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/test_rasch5-3.png" width="672" /></p>
+<p>This plot shows the ICC for the selected item. The x-axis shows the ability continuum, the y-axis the response probability. The continuous line describes the probability to respond correctly to the problem given a level of ability. The difficulty of the item is where the probability of a correct response equals <span class="math inline">\(0.5\)</span>. The option <code>empICC</code> equal to “raw” also plots the relative frequencies of positive responses for each rawscore group at the position of the corresponding ability level. The blue dotted lines represent the <span class="math inline">\(95\%\)</span> confidence level for the relative frequencies and are shown if options are provided if the optional argument <code>empCI</code> is specified.</p>
+<ol start="5" style="list-style-type: decimal">
+<li>tests for local dependence</li>
+</ol>
+<p>Testing for local dependence can be done by removing an item, fitting the Rasch model to the remaining items, splitting with respect to the removed item. The general method for testing local dependence is to compute Yens <span class="math inline">\(Q_3\)</span> statistic, which proceeds as follows. Estimate <span class="math inline">\(\boldsymbol b\)</span> and <span class="math inline">\(\boldsymbol \theta\)</span>; compute the expected data matrix <span class="math inline">\(\boldsymbol E=E_{ik}=E(Y_{ik}\mid \theta_i=\hat{\theta}_i)=P(Y_{ik}=1\mid \theta_i=\hat{\theta}_i)\)</span>; compute the matrix of residuals <span class="math inline">\(\boldsymbol R=R_{ik}=\frac{Y_{ik} - E_{ik}}{\text{Var}(Y_{ik})}\)</span>; evaluate correlation between residuals. We use the <code>sirt</code> package for this</p>
+<pre class="r"><code>mod &lt;- sirt::rasch.mml2(items)</code></pre>
+<pre><code># ------------------------------------------------------------
+# Semiparametric Marginal Maximum Likelihood Estimation 
+# Raschtype Model with generalized logistic link function: alpha1= 0 , alpha2= 0  
+# ------------------------------------------------------------
+# ...........................................................
+# Iteration 1     2024-03-17 13:28:25.984257 
+#    Deviance=302.8245
+#     Maximum b parameter change=0.149448 
+# ...........................................................
+# Iteration 2     2024-03-17 13:28:25.995789 
+#    Deviance=299.1961 | Deviance change=3.628433
+#     Maximum b parameter change=0.036572 
+# ...........................................................
+# Iteration 3     2024-03-17 13:28:25.99958 
+#    Deviance=296.505 | Deviance change=2.691082
+#     Maximum b parameter change=0.036111 
+# ...........................................................
+# Iteration 4     2024-03-17 13:28:26.004423 
+#    Deviance=294.5184 | Deviance change=1.986675
+#     Maximum b parameter change=0.034245 
+# ...........................................................
+# Iteration 5     2024-03-17 13:28:26.007448 
+#    Deviance=293.147 | Deviance change=1.371326
+#     Maximum b parameter change=0.031046 
+# ...........................................................
+# Iteration 6     2024-03-17 13:28:26.010305 
+#    Deviance=292.2506 | Deviance change=0.896385
+#     Maximum b parameter change=0.027082 
+# ...........................................................
+# Iteration 7     2024-03-17 13:28:26.015146 
+#    Deviance=291.6894 | Deviance change=0.561218
+#     Maximum b parameter change=0.022895 
+# ...........................................................
+# Iteration 8     2024-03-17 13:28:26.018038 
+#    Deviance=291.3492 | Deviance change=0.340225
+#     Maximum b parameter change=0.018872 
+# ...........................................................
+# Iteration 9     2024-03-17 13:28:26.021982 
+#    Deviance=291.1472 | Deviance change=0.202026
+#     Maximum b parameter change=0.01525 
+# ...........................................................
+# Iteration 10     2024-03-17 13:28:26.024846 
+#    Deviance=291.0282 | Deviance change=0.11894
+#     Maximum b parameter change=0.012139 
+# ...........................................................
+# Iteration 11     2024-03-17 13:28:26.028088 
+#    Deviance=290.958 | Deviance change=0.070237
+#     Maximum b parameter change=0.009558 
+# ...........................................................
+# Iteration 12     2024-03-17 13:28:26.031092 
+#    Deviance=290.916 | Deviance change=0.042003
+#     Maximum b parameter change=0.00747 
+# ...........................................................
+# Iteration 13     2024-03-17 13:28:26.033968 
+#    Deviance=290.8904 | Deviance change=0.025604
+#     Maximum b parameter change=0.005808 
+# ...........................................................
+# Iteration 14     2024-03-17 13:28:26.036534 
+#    Deviance=290.8744 | Deviance change=0.015958
+#     Maximum b parameter change=0.004501 
+# ...........................................................
+# Iteration 15     2024-03-17 13:28:26.039781 
+#    Deviance=290.8643 | Deviance change=0.010172
+#     Maximum b parameter change=0.003481 
+# ...........................................................
+# Iteration 16     2024-03-17 13:28:26.042407 
+#    Deviance=290.8576 | Deviance change=0.00662
+#     Maximum b parameter change=0.002688 
+# ...........................................................
+# Iteration 17     2024-03-17 13:28:26.045544 
+#    Deviance=290.8533 | Deviance change=0.004387
+#     Maximum b parameter change=0.002073 
+# ...........................................................
+# Iteration 18     2024-03-17 13:28:26.048463 
+#    Deviance=290.8503 | Deviance change=0.002952
+#     Maximum b parameter change=0.001598 
+# ...........................................................
+# Iteration 19     2024-03-17 13:28:26.051086 
+#    Deviance=290.8483 | Deviance change=0.002011
+#     Maximum b parameter change=0.001231 
+# ...........................................................
+# Iteration 20     2024-03-17 13:28:26.053908 
+#    Deviance=290.8469 | Deviance change=0.001384
+#     Maximum b parameter change=0.000948 
+# ...........................................................
+# Iteration 21     2024-03-17 13:28:26.056509 
+#    Deviance=290.8459 | Deviance change=0.000961
+#     Maximum b parameter change=0.000729 
+# ...........................................................
+# Iteration 22     2024-03-17 13:28:26.060084 
+#    Deviance=290.8453 | Deviance change=0.000673
+#     Maximum b parameter change=0.000561 
+# ...........................................................
+# Iteration 23     2024-03-17 13:28:26.064253 
+#    Deviance=290.8448 | Deviance change=0.000474
+#     Maximum b parameter change=0.000431 
+# ...........................................................
+# Iteration 24     2024-03-17 13:28:26.067168 
+#    Deviance=290.8445 | Deviance change=0.000336
+#     Maximum b parameter change=0.000331 
+# ...........................................................
+# Iteration 25     2024-03-17 13:28:26.070118 
+#    Deviance=290.8442 | Deviance change=0.000239
+#     Maximum b parameter change=0.000255 
+# ...........................................................
+# Iteration 26     2024-03-17 13:28:26.074808 
+#    Deviance=290.8441 | Deviance change=0.000171
+#     Maximum b parameter change=0.000196 
+# ...........................................................
+# Iteration 27     2024-03-17 13:28:26.078359 
+#    Deviance=290.8439 | Deviance change=0.000123
+#     Maximum b parameter change=0.00015 
+# ...........................................................
+# Iteration 28     2024-03-17 13:28:26.081353 
+#    Deviance=290.8438 | Deviance change=8.9e-05
+#     Maximum b parameter change=0.000115 
+# ...........................................................
+# Iteration 29     2024-03-17 13:28:26.084764 
+#    Deviance=290.8438 | Deviance change=6.5e-05
+#     Maximum b parameter change=8.8e-05 
+# ------------------------------------------------------------
+# Start: 2024-03-17 13:28:25.975074 
+# End: 2024-03-17 13:28:26.09876 
+# Time difference of 0.1236858 secs
+# Difference: 0.1236858 
+# ------------------------------------------------------------</code></pre>
+<pre class="r"><code>beta &lt;- mod$item$b
+mod.wle &lt;- sirt::wle.rasch(dat= items , b = beta)</code></pre>
+<pre><code># 
+# WLE Reliability= 0.54</code></pre>
+<pre class="r"><code>eta &lt;- mod.wle$theta
+
+#and now we can calculate Yen’s Q3 statistic
+q3 &lt;- sirt::Q3(dat = items, theta = eta , b = beta)</code></pre>
+<pre><code># Yen&#39;s Q3 Statistic based on an estimated theta score 
+# *** 5 Items | 10 item pairs
+# *** Q3 Descriptives
+#      M     SD    Min    10%    25%    50%    75%    90%    Max 
+# -0.210  0.179 -0.540 -0.397 -0.336 -0.169 -0.073 -0.026  0.002</code></pre>
+<p>The conventional interpretation is that correlations should be close to zero. A large value is evidence of a problem with the scale, but since we do not know the asymptotic distribution we have to rely on a rule of thumb to decide when to reject model fit. Based on simulation studies, a value of <span class="math inline">\(0.2\)</span> is considered above the average and works well in many situations.</p>
+<p>So, what do you think? pretty fun, isn’t it? Next time I will delve into this a bit more and check the model fit. Another excuse to keep studying this super cool topic!</p>

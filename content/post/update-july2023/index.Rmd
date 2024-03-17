@@ -33,7 +33,7 @@ Initially, IRMs were developed with the objective to analyse item responses in q
 
 A key concept in the context of IRMs is represent by latent variables, often referred to as **latent construct**, in that item responses are often assumed to be indicators of an underlying construct or latent variable. IRMs allow the estimation of such construct through the specification of an underlying model structure linking the item responses and the value of the latent variable (supposedly generating such responses). Indeed, the definition of a latent variable that generates the responses allows to reduce the dimensionality of the data thus simplifying the analysis task through the specification of relationships between fewer sets of variables with respect to those measured.  
 
-## Traditional IRMs: the Rasch model model
+## Traditional IRMs: the Rasch model
 
 There is a huge literature on IRM for analysing item-response data but here I will simply focus on one of the simplest and most popular example for the analysis of binary item-responses known as the **Rasch Model**. In general, key features of all IRMs include the assumption that:
 
@@ -63,7 +63,7 @@ icc_ex2 <- icc_rasch(theta = theta_ex, b = 0)
 icc_ex3 <- icc_rasch(theta = theta_ex, b = 1)
 ```
 
-We can then plot the generated ICCs for a range of $theta_i$ values to show what the ICC looks like under the Rasch model under each scenario for the item-difficulty parameter $b_k$. 
+We can then plot the generated ICCs for a range of $\theta_i$ values to show what the ICC looks like under the Rasch model under each scenario for the item-difficulty parameter $b_k$. 
 
 ```{r plot_rasch, echo=FALSE, message=FALSE, warnings=FALSE, eval=TRUE, fig.align='center'}
 #plot ICC
